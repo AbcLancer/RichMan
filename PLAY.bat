@@ -1,21 +1,35 @@
 @echo off
-chcp 65001 >nul
 setlocal
 
-set "GODOT=%LOCALAPPDATA%\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe"
+rem ==== °´ÓÅÏÈ¼¶×Ô¶¯Ì½²â Godot 4.7.2 ====
+set "GODOT="
 
-if not exist "%GODOT%" (
+if exist "D:\Godot\Godot_v4.7.2-stable_win64.exe" set "GODOT=D:\Godot\Godot_v4.7.2-stable_win64.exe"
+if not defined GODOT if exist "%~dp0Godot\Godot_v4.7.2-stable_win64.exe" set "GODOT=%~dp0Godot\Godot_v4.7.2-stable_win64.exe"
+if not defined GODOT if exist "%~dp0.tools\Godot_v4.7.2-stable_win64.exe" set "GODOT=%~dp0.tools\Godot_v4.7.2-stable_win64.exe"
+if not defined GODOT if exist "%LOCALAPPDATA%\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe" set "GODOT=%LOCALAPPDATA%\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe"
+
+if not defined GODOT (
   echo.
-  echo  [é”™è¯¯] æ²¡æ‰¾åˆ° Godot 4.7.2ï¼š
-  echo    %GODOT%
+  echo   [´íÎó] Ã»ÕÒµ½ Godot 4.7.2
   echo.
-  echo  è¯·å…ˆå®‰è£…ï¼Œæˆ–ç”¨ç¼–è¾‘å™¨æ‰“å¼€ %~dp0game åæŒ‰ F5 è¿è¡Œã€‚
+  echo   ÒÑ³¢ÊÔÒÔÏÂÎ»ÖÃ£º
+  echo     D:\Godot\
+  echo     %~dp0Godot\
+  echo     %~dp0.tools\
+  echo     %%LOCALAPPDATA%%\Microsoft\WinGet\Packages\...
+  echo.
+  echo   Çë°Ñ Godot_v4.7.2-stable_win64.exe ·Å½ø D:\Godot\
+  echo   »òÓÃ Godot ±à¼­Æ÷´ò¿ª %~dp0game ºó°´ F5 ÔËĞĞ¡£
   echo.
   pause
   exit /b 1
 )
 
-echo æ­£åœ¨å¯åŠ¨ å¤§å¯Œç¿6 å³æ—¶åˆ¶å¤åˆ» ...
+echo.
+echo   ÕıÔÚÆô¶¯ ´ó¸»ÎÌ6 ¼´Ê±ÖÆ¸´¿Ì ...
+echo   Godot: %GODOT%
+echo.
 start "" "%GODOT%" --path "%~dp0game" --resolution 1440x810
 
 endlocal

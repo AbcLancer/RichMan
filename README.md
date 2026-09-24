@@ -13,10 +13,18 @@
 
 ### 方式一：双击 `PLAY.bat`（推荐）
 
-在工程根目录双击 **`PLAY.bat`** 即可。它会用 Godot 4.7.2 直接运行 `game/`，窗口分辨率 1440×810。
+在工程根目录双击 **`PLAY.bat`** 即可。它会自动按以下顺序找 Godot，找到哪个用哪个：
 
-> 若提示找不到 Godot，说明安装路径变了 —— 用记事本打开 `PLAY.bat`，
-> 把 `set "GODOT=..."` 改成实际的 exe 路径即可。
+1. `D:\Godot\Godot_v4.7.2-stable_win64.exe` ← 当前用的
+2. `.\Godot\`（放在工程里也行）
+3. `.\.tools\`
+4. `%LOCALAPPDATA%\Microsoft\WinGet\Packages\...`
+
+窗口分辨率 1440×810。四个位置都没有时会提示，并告诉你放哪里。
+
+> ⚠️ **别敲 `godot` 命令** —— winget 非管理员安装建不出符号链接，
+> `%LOCALAPPDATA%\Microsoft\WinGet\Links\godot.exe` 是个 0 字节空文件，
+> 敲下去**不报错也不启动**，很容易误判成 Godot 坏了。
 
 ### 方式二：Godot 编辑器
 
@@ -34,7 +42,7 @@
 ### 命令行（等价）
 
 ```bash
-GODOT="C:/Users/12733/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe"
+GODOT="D:/Godot/Godot_v4.7.2-stable_win64_console.exe"   # 本项目统一用这一份
 "$GODOT" --path game --resolution 1440x810
 ```
 
@@ -61,7 +69,7 @@ $PY tools/build_map.py
 ### 1. 无头逻辑自检 —— 45 项断言全通过
 
 ```bash
-GODOT="C:/Users/12733/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe"
+GODOT="D:/Godot/Godot_v4.7.2-stable_win64_console.exe"   # 本项目统一用这一份
 "$GODOT" --headless --path game -- --selftest
 ```
 

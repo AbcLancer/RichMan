@@ -27,7 +27,24 @@
 | 解包工具 | `tools/r6pck.py`（`info` / `list` / `extract`） |
 | 地图生成 | `tools/build_map.py` → `game/data/maps/*.json` |
 | 解包产物 | `samples/`（203 MB，**已 gitignore**） |
-| Godot 可执行 | `%LOCALAPPDATA%\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_*\Godot_v4.7.2-stable_win64_console.exe` |
+| Godot 可执行 | `D:\Godot\Godot_v4.7.2-stable_win64_console.exe`（老板自备，本项目统一用这份） |
+
+> **Godot 环境（2026-09-25 实测）**
+> 工程统一用 `D:\Godot\` 下老板自己下载的那份：
+> - `Godot_v4.7.2-stable_win64.exe`（180 MB）—— GUI 版，`PLAY.bat` 用它
+> - `Godot_v4.7.2-stable_win64_console.exe`（198 KB）—— **跑脚本/无头验收一律用这个**，stdout 才拿得到
+>
+> 与 winget 装的那份 **MD5 完全一致**（`2afa3142b68f7758755dc6015c54cbd8`），可互换。
+> winget 路径（备用）：`%LOCALAPPDATA%\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\`
+>
+> ⚠️ **`godot` / `godot_console` 命令别名是坏的**：winget 非管理员安装建不出符号链接，
+> `…\WinGet\Links\godot.exe` 是 **0 字节空文件**，敲下去不报错也不启动（PATH 里确实加了
+> Links 目录，所以更容易误判）。**用完整路径，或直接双击 `PLAY.bat`。**
+>
+> ⚠️ **`PLAY.bat` 必须存成 GBK + CRLF**，不能是 UTF-8。UTF-8 的中文会被 cmd 按 GBK
+> 解析错位，把命令行从中间切断（症状：`'7.2' 不是内部或外部命令`），启动器直接失效。
+> 另外**不要用 bash heredoc 写含 `D:\...` 内容的 bat** —— MSYS2 会把 `\` 改写成 `/`。
+> 正确做法：Write 工具写 UTF-8 临时文件 → Python 读 UTF-8 转码写 GBK → 删临时文件。
 
 ## 常用命令
 
