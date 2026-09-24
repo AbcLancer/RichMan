@@ -1,0 +1,25 @@
+# 提取的资源（原始游戏素材，勿提交）
+samples/
+out/
+exports/
+
+# Godot
+game/.godot/
+game/.import/
+*.translation
+
+# 解包产出的资源目录（体积大）
+assets_extracted/
+
+# 本地工具（Godot 可执行包等）
+.tools/
+
+# 演示模式产出的临时截图/日志
+demo_shot_*.png
+demo_out.txt
+selftest_out.txt
+
+# 系统
+Thumbs.db
+desktop.ini
+.DS_Store

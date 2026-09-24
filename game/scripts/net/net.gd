@@ -1,0 +1,226 @@
+extends Node
+## Net —— 联机层（autoload）
+##
+## 架构：权威服务端（房主即 peer 1）
+##   - 服务端跑 Sim.step()，把权威状态按固定频率广播
+##   - 客户端只发「意图」（掷骰/买地/升级/用卡），由服务端校验后生效
+##   - 客户端不做本地预测（P0 阶段：状态量极小，直接同步最稳）
+##
+## 后续 P2 会把「房主即服务端」换成独立大厅 + 专用服务器；
+## 因为 Sim 与 IO 完全解耦，届时只需替换本文件。
+
+signal lobby_changed(peers: Array)
+signal game_started(map_name: String, seed_val: int)
+signal state_received(snapshot: Dictionary)
+signal log_received(text: String)
+signal connection_failed(reason: String)
+signal disconnected()
+
+const DEFAULT_PORT := 27060
+const MAX_PLAYERS := 4
+const TICK_RATE := 20.0          # 服务端逻辑帧率
+const SNAPSHOT_RATE := 10.0      # 状态广播频率
+
+var is_host: bool = false
+var in_lobby: bool = false
+var map_name: String = "china"
+var sim: Sim = null
+
+var players_info: Dictionary = {}   # peer_id -> String(name)
+
+var _tick_acc: float = 0.0
+var _snap_acc: float = 0.0
+var _pending_seed: int = 0
+
+func _ready() -> void:
+	multiplayer.peer_connected.connect(_on_peer_connected)
+	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+	multiplayer.connected_to_server.connect(_on_connected_ok)
+	multiplayer.connection_failed.connect(_on_connect_fail)
+	multiplayer.server_disconnected.connect(_on_server_disconnected)
+	set_process(false)
+
+# ------------------------------------------------------------------ 建立连接
+
+func host_game(pname: String, port: int = DEFAULT_PORT) -> bool:
+	var peer := ENetMultiplayerPeer.new()
+	var err := peer.create_server(port, MAX_PLAYERS - 1)
+	if err != OK:
+		connection_failed.emit("无法监听端口 %d（错误 %d）" % [port, err])
+		return false
+	multiplayer.multiplayer_peer = peer
+	is_host = true
+	in_lobby = true
+	players_info = {1: pname if pname != "" else "房主"}
+	_emit_lobby()
+	set_process(true)
+	return true
+
+func join_game(pname: String, ip: String, port: int = DEFAULT_PORT) -> bool:
+	var peer := ENetMultiplayerPeer.new()
+	var err := peer.create_client(ip, port)
+	if err != OK:
+		connection_failed.emit("无法连接 %s:%d（错误 %d）" % [ip, port, err])
+		return false
+	multiplayer.multiplayer_peer = peer
+	is_host = false
+	in_lobby = true
+	players_info = {}
+	_my_name = pname if pname != "" else "玩家"
+	set_process(true)
+	return true
+
+var _my_name: String = "玩家"
+
+func leave() -> void:
+	if multiplayer.multiplayer_peer != null:
+		multiplayer.multiplayer_peer.close()
+	multiplayer.multiplayer_peer = null
+	is_host = false
+	in_lobby = false
+	sim = null
+	players_info.clear()
+	set_process(false)
+	disconnected.emit()
+
+# ------------------------------------------------------------ 连接事件回调
+
+func _on_peer_connected(id: int) -> void:
+	if is_host:
+		# 新客户端加入，等服务端收到其 register 后再广播
+		pass
+
+func _on_peer_disconnected(id: int) -> void:
+	if is_host:
+		players_info.erase(id)
+		if sim != null:
+			sim.remove_player(id)
+			sim.log_message.emit("有玩家断线")
+		_emit_lobby()
+
+func _on_connected_ok() -> void:
+	# 客户端连上后向服务端登记
+	_rpc_register.rpc_id(1, _my_name)
+
+func _on_connect_fail() -> void:
+	connection_failed.emit("连接失败：目标未响应或版本不一致")
+	leave()
+
+func _on_server_disconnected() -> void:
+	disconnected.emit()
+	leave()
+
+# ---------------------------------------------------------------- 大厅同步
+
+@rpc("any_peer", "call_remote", "reliable")
+func _rpc_register(pname: String) -> void:
+	if not is_host:
+		return
+	var id := multiplayer.get_remote_sender_id()
+	players_info[id] = pname
+	_emit_lobby()
+
+@rpc("authority", "call_remote", "reliable")
+func _rpc_lobby(peers: Dictionary) -> void:
+	players_info = {}
+	for k in peers.keys():
+		players_info[int(k)] = peers[k]
+	_emit_lobby()
+
+func _emit_lobby() -> void:
+	var arr: Array = []
+	for id in players_info.keys():
+		arr.append({"id": id, "name": players_info[id], "host": id == 1})
+	arr.sort_custom(func(a, b): return a["id"] < b["id"])
+	lobby_changed.emit(arr)
+	if is_host:
+		_rpc_lobby.rpc(players_info)
+
+# ---------------------------------------------------------------- 开局
+
+func start_game(m: String, seed_val: int = 0) -> void:
+	if not is_host:
+		return
+	map_name = m
+	_pending_seed = seed_val if seed_val != 0 else randi()
+	_internal_start(map_name, _pending_seed)
+	_rpc_start.rpc(map_name, _pending_seed)
+
+@rpc("authority", "call_remote", "reliable")
+func _rpc_start(m: String, seed_val: int) -> void:
+	_internal_start(m, seed_val)
+
+func _internal_start(m: String, seed_val: int) -> void:
+	var md := MapData.load_from(m)
+	if md == null:
+		push_error("Net: 地图加载失败 %s" % m)
+		return
+	sim = Sim.new()
+	sim.setup(md, seed_val)
+	sim.log_message.connect(func(t): log_received.emit(t))
+	for id in players_info.keys():
+		sim.add_player(int(id), str(players_info[id]))
+	sim.running = true          # 必须显式开启，否则 Sim.step() 会直接返回
+	in_lobby = false
+	game_started.emit(m, seed_val)
+
+# ---------------------------------------------------------------- 玩家动作
+
+func send_action(action: String, args: Array = []) -> void:
+	if is_host:
+		_apply_action(multiplayer.get_unique_id(), action, args)
+	else:
+		_rpc_action.rpc_id(1, action, args)
+
+@rpc("any_peer", "call_remote", "reliable")
+func _rpc_action(action: String, args: Array) -> void:
+	if not is_host:
+		return
+	var sender := multiplayer.get_remote_sender_id()
+	_apply_action(sender, action, args)
+
+func _apply_action(who: int, action: String, args: Array) -> void:
+	if sim == null:
+		return
+	match action:
+		"roll":
+			sim.act_roll(who)
+		"buy":
+			sim.act_buy(who)
+		"upgrade":
+			sim.act_upgrade(who)
+		"card":
+			if args.size() > 0:
+				sim.act_use_card(who, str(args[0]))
+	# 动作产生的结果立即回灌，降低主观延迟
+	_broadcast_state()
+
+# ---------------------------------------------------------------- 主循环
+
+func _process(delta: float) -> void:
+	if not is_host or sim == null:
+		return
+	_tick_acc += delta
+	var step_dt := 1.0 / TICK_RATE
+	var guard := 0
+	while _tick_acc >= step_dt and guard < 8:
+		sim.step(step_dt)
+		_tick_acc -= step_dt
+		guard += 1
+	_snap_acc += delta
+	if _snap_acc >= 1.0 / SNAPSHOT_RATE:
+		_snap_acc = 0.0
+		_broadcast_state()
+
+func _broadcast_state() -> void:
+	if sim == null:
+		return
+	var snap := sim.to_dict()
+	state_received.emit(snap)          # 房主本地直接用
+	_rpc_state.rpc(snap)
+
+@rpc("authority", "call_remote", "unreliable")
+func _rpc_state(snap: Dictionary) -> void:
+	if is_host:
+		return
+	state_received.emit(snap)

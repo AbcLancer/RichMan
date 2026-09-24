@@ -1,0 +1,166 @@
+{
+  "_source": "F:\\游戏\\Rich6\\config\\Initvar_r.txt  (即时制 / real-time)",
+  "_note": "原版注释中明确：即时制以「秒」计量，回合制以「天」计量，且 1 天 = 24 秒。本文件仅取即时制分支。",
+  "_units": {
+    "money": "元",
+    "time": "秒",
+    "distance": "格"
+  },
+
+  "time": {
+    "seconds_per_day": 24,
+    "_comment": "由 Card_WuDi_Steps 原文『72 秒（即时制）／1 天（回合制）』推得"
+  },
+
+  "movement": {
+    "bulldozer_speed": 2.0,
+    "ambulance_speed": 2.0,
+    "player_idle_sleep_seconds": 25.0,
+    "_comment": "BullDozer_Speed / Ambulance_Speed / Player_Sleep_StandTime"
+  },
+
+  "camera": {
+    "default_distance": 12.0,
+    "default_yaw": 40.0,
+    "_comment": "Camera_Default_Dist / Camera_Default_Yall（单位：格 / 度）",
+    "_per_map_override": "各 .r6m 头部自带相机参数：aiji 俯角 30°、paris 45°"
+  },
+
+  "hp": {
+    "hamburger_heal": 1000,
+    "mine_damage": 1000,
+    "nuke_damage": 1000,
+    "missile_max_damage": 700,
+    "_comment": "HanBao_Inc_HP / Mine_Exp_HPDec / Card_HeDan_DecHP / Card_FeiDan_MaxDecHP"
+  },
+
+  "economy": {
+    "empty_grid_price_factor": 200,
+    "empty_grid_rent_factor": 25,
+    "estate_price_index_min": 5,
+    "player_company": {
+      "init_capital": 500000,
+      "init_total_shares": 10000,
+      "init_self_shares": 2000
+    },
+    "auction": {
+      "wait_seconds": 15,
+      "init_price_rate": 0.8,
+      "ai_cash_rate_limit": 0.2,
+      "ai_grid_value_rate_limit": 3.0
+    },
+    "stock": {
+      "handle_charge_rate": 0.01,
+      "price_min_step": 0.01,
+      "price_max_step": 0.05,
+      "issue_proportion": 0.70,
+      "issue_price_effect": 0.1,
+      "withdraw_price_effect": 0.1,
+      "total_shares_min": 10000,
+      "total_shares_max": 30000,
+      "open_price_min_pct": -10,
+      "open_price_max_pct": 10,
+      "trend_change_days_min": 2,
+      "trend_change_days_max": 9,
+      "player_company_bonus_rate": 0.3,
+      "virtual_company_bonus_min": 0.0,
+      "virtual_company_bonus_max": 0.5
+    },
+    "city_fund_min": 1000
+  },
+
+  "events": {
+    "casino_fee": 2500,
+    "casino_top_rate": 1.0,
+    "casino_middle_rate": 0.3,
+    "hospital_days_min": 0,
+    "hospital_days_max": 0,
+    "news_bonus_min": 1000,
+    "news_bonus_max": 10000,
+    "memory_game_credit_min": 1,
+    "memory_game_credit_max": 50
+  },
+
+  "cards": [
+    {"id": "caishen",        "name": "财神卡", "effect": "gain_money",        "min": 10000, "max": 50000},
+    {"id": "fushen",         "name": "福神卡", "effect": "free_upgrade",      "steps": 30, "cards_gained": 5},
+    {"id": "qiongshen",      "name": "穷神卡", "effect": "rent_double",       "steps": 30, "target_lose_min": 10000, "target_lose_max": 30000},
+    {"id": "shuaishen",      "name": "衰神卡", "effect": "no_upgrade",        "steps": 30},
+    {"id": "tianshi",        "name": "天使卡", "effect": "auto_upgrade"},
+    {"id": "emo",            "name": "恶魔卡", "effect": "auto_downgrade"},
+    {"id": "qingshen",       "name": "请神卡", "effect": "summon_stock_god"},
+    {"id": "tudigong",       "name": "土地公", "effect": "free_land"},
+    {"id": "step1",          "name": "1步卡",  "effect": "move",  "distance": 1},
+    {"id": "step2",          "name": "2步卡",  "effect": "move",  "distance": 2},
+    {"id": "step3",          "name": "3步卡",  "effect": "move",  "distance": 3},
+    {"id": "step4",          "name": "4步卡",  "effect": "move",  "distance": 4},
+    {"id": "step5",          "name": "5步卡",  "effect": "move",  "distance": 5},
+    {"id": "turn",           "name": "转向卡", "effect": "reverse_direction"},
+    {"id": "run",            "name": "暴走卡", "effect": "double_speed"},
+    {"id": "dice",           "name": "骰子卡", "effect": "reroll"},
+    {"id": "rebuild",        "name": "改建卡", "effect": "change_building_type"},
+    {"id": "upgrade",        "name": "升级卡", "effect": "upgrade_building"},
+    {"id": "monster",        "name": "怪兽卡", "effect": "downgrade_building"},
+    {"id": "buyland",        "name": "购地卡", "effect": "buy_any_plot"},
+    {"id": "priceup",        "name": "涨价卡", "effect": "raise_estate_index",  "amount": 5},
+    {"id": "pricedown",      "name": "降价卡", "effect": "lower_estate_index",  "amount": 5},
+    {"id": "mine",           "name": "地雷卡", "effect": "place_mine"},
+    {"id": "roadblock",      "name": "路障卡", "effect": "place_roadblock"},
+    {"id": "free",           "name": "免费卡", "effect": "no_rent",             "steps": 20},
+    {"id": "invincible",     "name": "无敌卡", "effect": "immune",              "seconds": 72},
+    {"id": "missile",        "name": "飞弹卡", "effect": "destroy_buildings",   "range": 5, "max_damage": 700},
+    {"id": "hibernate",      "name": "冬眠卡", "effect": "sleep_target",        "seconds": 10},
+    {"id": "redcard",        "name": "红卡",   "effect": "stock_up",            "rate": 0.20},
+    {"id": "blackcard",      "name": "黑卡",   "effect": "stock_down",          "rate": 0.20},
+    {"id": "seize",          "name": "查封卡", "effect": "seal_building",       "days": 5},
+    {"id": "copy",           "name": "复制卡", "effect": "copy_card"},
+    {"id": "gem",            "name": "宝石卡", "effect": "gain_gems"},
+    {"id": "hamburger",      "name": "汉堡卡", "effect": "heal",                "hp": 500},
+    {"id": "abduct",         "name": "诱拐卡", "effect": "teleport_target"},
+    {"id": "tax",            "name": "查税卡", "effect": "steal_ratio",         "min_rate": 0.05, "max_rate": 0.10},
+    {"id": "rob",            "name": "抢夺卡", "effect": "steal_card"},
+    {"id": "sharewealth",    "name": "均富卡", "effect": "even_out_money",      "range": 2},
+    {"id": "clear",          "name": "清除卡", "effect": "remove_obstacle"},
+    {"id": "stay",           "name": "停留卡", "effect": "force_stop"},
+    {"id": "invisible",      "name": "隐形卡", "effect": "invisible",           "seconds": 72},
+    {"id": "nuke",           "name": "核弹卡", "effect": "nuke",                "range": 5, "hp_dec": 1000}
+  ],
+
+  "ai": {
+    "_comment": "AI_Player_* / AI_Init_Capital*，三档难度",
+    "pause_seconds": {
+      "easy":   [10, 20],
+      "medium": [9, 15],
+      "hard":   [6, 12]
+    },
+    "use_card_chance":   {"easy": 2, "medium": 1, "hard": 1},
+    "use_pet_chance":    {"easy": 2, "medium": 1, "hard": 1},
+    "trade_stock_chance":{"easy": 2, "medium": 1, "hard": 1},
+    "init_capital_mult": {"easy": 1, "medium": 1, "hard": 2}
+  },
+
+  "news": {
+    "_comment": "XinWen1..14，14 种新闻事件",
+    "stock_down": 1.00,
+    "stock_up": 0.50,
+    "shop_rent_up": [0.1, 0.3],
+    "industry_price_up": [0.1, 0.3],
+    "uptown_price_up": [0.1, 0.3],
+    "market_close_days": [1, 5],
+    "interest_rate_pct": [5, 15],
+    "all_price_up": [0.1, 0.3],
+    "all_price_down": [0.1, 0.2],
+    "gift_cards": [1, 3],
+    "scatter_cards": [1, 9],
+    "lost_chest": [1, 3],
+    "lost_crystal": [1, 3]
+  },
+
+  "pet": {
+    "hatch_days": 1,
+    "consume_interval_days": 3,
+    "upgrade_steps_per_level": 300,
+    "birth": {"crystal_days": 3, "chest_days": 5, "egg_days": 1},
+    "_species_source": "F:\\游戏\\Rich6\\config\\Pet.txt"
+  }
+}

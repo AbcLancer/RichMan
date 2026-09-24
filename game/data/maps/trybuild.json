@@ -1,0 +1,235 @@
+{
+ "_source": "gamedata.pck scene/trybuild  (原版数据生成)",
+ "name": "trybuild",
+ "display_name": "测试",
+ "camera": {
+  "distance": 12.0,
+  "yaw": 45.0
+ },
+ "build_flags": {
+  "industry": 1,
+  "shop": 1,
+  "uptown": 1
+ },
+ "virtual_companies": [
+  {
+   "name": "SEGA",
+   "capital": 1500000,
+   "shares": 10000
+  },
+  {
+   "name": "SONY",
+   "capital": 3000000,
+   "shares": 10000
+  },
+  {
+   "name": "三井百货",
+   "capital": 1600000,
+   "shares": 10000
+  },
+  {
+   "name": "松下电机",
+   "capital": 800000,
+   "shares": 10000
+  },
+  {
+   "name": "富士旅游",
+   "capital": 500000,
+   "shares": 10000
+  },
+  {
+   "name": "丰田汽车",
+   "capital": 900000,
+   "shares": 10000
+  },
+  {
+   "name": "三菱工业",
+   "capital": 300000,
+   "shares": 10000
+  },
+  {
+   "name": "任天堂",
+   "capital": 2000000,
+   "shares": 10000
+  }
+ ],
+ "landmarks": {
+  "hospital": [
+   0.0,
+   100.0,
+   0.0
+  ],
+  "20": [
+   6.0,
+   240.0,
+   600.0
+  ]
+ },
+ "streets": [
+  "aaa",
+  "bbb",
+  "宝马路",
+  "奔驰路"
+ ],
+ "tile_count": 21,
+ "plots_per_street": 4,
+ "tiles": [
+  {
+   "i": 0,
+   "kind": "start",
+   "name": "起点"
+  },
+  {
+   "i": 1,
+   "kind": "plot",
+   "street": "aaa",
+   "street_index": 0,
+   "plot_in_street": 0,
+   "plot_key": "0000"
+  },
+  {
+   "i": 2,
+   "kind": "plot",
+   "street": "aaa",
+   "street_index": 0,
+   "plot_in_street": 1,
+   "plot_key": "0001"
+  },
+  {
+   "i": 3,
+   "kind": "plot",
+   "street": "aaa",
+   "street_index": 0,
+   "plot_in_street": 2,
+   "plot_key": "0002"
+  },
+  {
+   "i": 4,
+   "kind": "plot",
+   "street": "aaa",
+   "street_index": 0,
+   "plot_in_street": 3,
+   "plot_key": "0003"
+  },
+  {
+   "i": 5,
+   "kind": "event",
+   "event": "platform",
+   "name": "传送平台"
+  },
+  {
+   "i": 6,
+   "kind": "plot",
+   "street": "bbb",
+   "street_index": 1,
+   "plot_in_street": 0,
+   "plot_key": "0100"
+  },
+  {
+   "i": 7,
+   "kind": "plot",
+   "street": "bbb",
+   "street_index": 1,
+   "plot_in_street": 1,
+   "plot_key": "0101"
+  },
+  {
+   "i": 8,
+   "kind": "plot",
+   "street": "bbb",
+   "street_index": 1,
+   "plot_in_street": 2,
+   "plot_key": "0102"
+  },
+  {
+   "i": 9,
+   "kind": "plot",
+   "street": "bbb",
+   "street_index": 1,
+   "plot_in_street": 3,
+   "plot_key": "0103"
+  },
+  {
+   "i": 10,
+   "kind": "event",
+   "event": "cardshop",
+   "name": "卡片商店"
+  },
+  {
+   "i": 11,
+   "kind": "plot",
+   "street": "宝马路",
+   "street_index": 2,
+   "plot_in_street": 0,
+   "plot_key": "0200"
+  },
+  {
+   "i": 12,
+   "kind": "plot",
+   "street": "宝马路",
+   "street_index": 2,
+   "plot_in_street": 1,
+   "plot_key": "0201"
+  },
+  {
+   "i": 13,
+   "kind": "plot",
+   "street": "宝马路",
+   "street_index": 2,
+   "plot_in_street": 2,
+   "plot_key": "0202"
+  },
+  {
+   "i": 14,
+   "kind": "plot",
+   "street": "宝马路",
+   "street_index": 2,
+   "plot_in_street": 3,
+   "plot_key": "0203"
+  },
+  {
+   "i": 15,
+   "kind": "event",
+   "event": "hospital",
+   "name": "医院"
+  },
+  {
+   "i": 16,
+   "kind": "plot",
+   "street": "奔驰路",
+   "street_index": 3,
+   "plot_in_street": 0,
+   "plot_key": "0300"
+  },
+  {
+   "i": 17,
+   "kind": "plot",
+   "street": "奔驰路",
+   "street_index": 3,
+   "plot_in_street": 1,
+   "plot_key": "0301"
+  },
+  {
+   "i": 18,
+   "kind": "plot",
+   "street": "奔驰路",
+   "street_index": 3,
+   "plot_in_street": 2,
+   "plot_key": "0302"
+  },
+  {
+   "i": 19,
+   "kind": "plot",
+   "street": "奔驰路",
+   "street_index": 3,
+   "plot_in_street": 3,
+   "plot_key": "0303"
+  },
+  {
+   "i": 20,
+   "kind": "event",
+   "event": "cardpt",
+   "name": "卡片点"
+  }
+ ]
+}

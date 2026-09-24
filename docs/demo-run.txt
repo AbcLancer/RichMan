@@ -1,0 +1,10 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 616.64 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 5070 Ti
+
+[Rules] 已载入 42 张卡牌定义
+[demo] 已开局，开始自动演示
+[demo] 截图 D:/Projects/RichMan/demo_shot_0.png -> OK
+[demo] 截图 D:/Projects/RichMan/demo_shot_1.png -> OK
+[demo] 截图 D:/Projects/RichMan/demo_shot_2.png -> OK
+[demo] 截图 D:/Projects/RichMan/demo_shot_3.png -> OK
+[demo] 演示结束，退出

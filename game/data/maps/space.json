@@ -1,0 +1,72 @@
+{
+ "_source": "gamedata.pck scene/space  (原版数据生成)",
+ "name": "space",
+ "display_name": "太空",
+ "camera": {
+  "distance": 12.0,
+  "yaw": 45.0
+ },
+ "build_flags": {
+  "industry": 0,
+  "shop": 0,
+  "uptown": 0
+ },
+ "virtual_companies": [],
+ "landmarks": {
+  "hospital": [
+   0.0,
+   100.0,
+   0.0
+  ]
+ },
+ "streets": [
+  "火星"
+ ],
+ "tile_count": 6,
+ "plots_per_street": 4,
+ "tiles": [
+  {
+   "i": 0,
+   "kind": "start",
+   "name": "起点"
+  },
+  {
+   "i": 1,
+   "kind": "plot",
+   "street": "火星",
+   "street_index": 0,
+   "plot_in_street": 0,
+   "plot_key": "0000"
+  },
+  {
+   "i": 2,
+   "kind": "plot",
+   "street": "火星",
+   "street_index": 0,
+   "plot_in_street": 1,
+   "plot_key": "0001"
+  },
+  {
+   "i": 3,
+   "kind": "plot",
+   "street": "火星",
+   "street_index": 0,
+   "plot_in_street": 2,
+   "plot_key": "0002"
+  },
+  {
+   "i": 4,
+   "kind": "plot",
+   "street": "火星",
+   "street_index": 0,
+   "plot_in_street": 3,
+   "plot_key": "0003"
+  },
+  {
+   "i": 5,
+   "kind": "event",
+   "event": "platform",
+   "name": "传送平台"
+  }
+ ]
+}
