@@ -9,24 +9,50 @@
 
 ---
 
-## 快速开始
+## 怎么打开
+
+### 方式一：双击 `PLAY.bat`（推荐）
+
+在工程根目录双击 **`PLAY.bat`** 即可。它会用 Godot 4.7.2 直接运行 `game/`，窗口分辨率 1440×810。
+
+> 若提示找不到 Godot，说明安装路径变了 —— 用记事本打开 `PLAY.bat`，
+> 把 `set "GODOT=..."` 改成实际的 exe 路径即可。
+
+### 方式二：Godot 编辑器
+
+打开 Godot 4.7.2 → 「导入」→ 选择 `D:\Projects\RichMan\game\project.godot` → 打开后按 **F5**。
+（推荐后续做画面调试时用这个。）
+
+### 进去之后怎么玩
+
+1. 主菜单填昵称 → 选地图 → 点 **▶ 单人练习（对阵 3 名电脑）** —— 立刻开局，无需配置
+2. 想联机：一方点 **创建房间（主机）**，记下显示的局域网 IP；
+   另一方填该 IP 点 **加入房间**；房主点 **开始游戏**
+3. 对局中：**空格**或点「掷骰子」前进；走到空地会亮起「购买地产」；站在自己地上可「升级地产」
+4. 左下角是实时事件日志，右上角是四家资产对比
+
+### 命令行（等价）
 
 ```bash
-# 1. 解包原版资源（首次运行）
-PY=C:/Users/12733/.workbuddy/binaries/python/versions/3.13.12/python.exe
-$PY tools/r6pck.py extract "F:/游戏/Rich6/gamedata.pck" samples --filter scene/
-
-# 2. 由原版数据生成地图（街道名/公司/坐标均为原版真实数据）
-$PY tools/build_map.py
-
-# 3. 用 Godot 打开工程
-#    工程目录：D:\Projects\RichMan\game
+GODOT="C:/Users/12733/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe"
+"$GODOT" --path game --resolution 1440x810
 ```
 
-**联机**：
-- 一方点「创建房间（主机）」，记下显示的局域网 IP
-- 另一方填入该 IP，点「加入房间」
-- 房主点「开始游戏」
+---
+
+## 首次使用：准备数据
+
+若 `game/data/maps/` 为空，或想重新解包原版素材：
+
+```bash
+PY=C:/Users/12733/.workbuddy/binaries/python/versions/3.13.12/python.exe
+
+# 1. 解包原版资源
+$PY tools/r6pck.py extract "F:/游戏/Rich6/gamedata.pck" samples --filter scene/
+
+# 2. 由原版数据生成地图（街道名 / 公司 / 坐标均为原版真实数据）
+$PY tools/build_map.py
+```
 
 ---
 
@@ -50,8 +76,27 @@ GODOT="C:/Users/12733/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotE
 "$GODOT" --path game --resolution 1280x720 -- --demo
 ```
 
-自动开一局（人类 + 电脑对手），按脚本操作并把截图写到工程根目录。
-证据：`docs/screenshots/`（开局 / 移动中 / 买地与升级 / 过路费与事件点）
+自动开一局（1 人 + 3 电脑），按脚本操作并把截图写到工程根目录。
+证据：`docs/screenshots/`（开局 / 移动中 / 买地与升级 / 过路费与事件点 / 四人对局）
+
+### 3. 单人练习冒烟测试（走生产入口）
+
+```bash
+"$GODOT" --path game --resolution 1280x720 -- --solotest
+```
+
+**直接调用主菜单上那个「单人练习」按钮的同一个函数 `_on_solo()`**，
+断言开局后是 4 名玩家 / 3 个本地 AI / 逻辑处于运行态 / 地图为 china。
+
+> 之所以单独做这一步：demo 模式走的是另一条代码路径，
+> 用它来自证「按钮能开起局」是不成立的。验收必须打在真实入口上。
+> 输出留档：`docs/solotest-run.txt`
+
+### 4. 主菜单截图
+
+```bash
+"$GODOT" --path game --resolution 1280x720 -- --menushot
+```
 
 ---
 

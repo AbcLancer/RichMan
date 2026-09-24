@@ -21,6 +21,19 @@ const MAX_PLAYERS := 4
 const TICK_RATE := 20.0          # 服务端逻辑帧率
 const SNAPSHOT_RATE := 10.0      # 状态广播频率
 
+# ---- 本地 AI（权威服务端直接模拟，不走网络）----
+# 名字与颜色按原版 Role.txt 的角色顺序对齐（洋红=钱夫人 / 土黄=阿土伯 / 蓝=宫本宝藏 …）
+const AI_BASE_ID := 1000
+const AI_NAMES := ["电脑·阿土伯", "电脑·宫本宝藏", "电脑·乌咪"]
+# 注意：这是【演示节奏】，不是原版参数。
+# 原版 AI 停留时间为 6~20 秒（AI_Player_MinPause1..3），已如实记录在
+# data/rules/realtime.json 的 ai.pause_seconds；验收时用原版节奏会太闷，故调快。
+const AI_THINK_MIN := 1.1
+const AI_THINK_MAX := 2.2
+
+var ai_ids: Array = []
+var _ai_next: Dictionary = {}
+
 var is_host: bool = false
 var in_lobby: bool = false
 var map_name: String = "china"
@@ -80,8 +93,53 @@ func leave() -> void:
 	in_lobby = false
 	sim = null
 	players_info.clear()
+	ai_ids.clear()
+	_ai_next.clear()
 	set_process(false)
 	disconnected.emit()
+
+# ------------------------------------------------------------------ 本地 AI
+
+func add_local_ai(count: int) -> void:
+	## 房主专用：往房间里塞本地电脑玩家（由服务端直接驱动，不占网络连接）
+	if not is_host:
+		return
+	for i in range(count):
+		var id: int = AI_BASE_ID + i
+		if players_info.has(id):
+			continue
+		ai_ids.append(id)
+		players_info[id] = AI_NAMES[i % AI_NAMES.size()]
+	_emit_lobby()
+
+func _drive_ai() -> void:
+	if sim == null:
+		return
+	for id in ai_ids:
+		if not sim.players.has(id):
+			continue
+		var p: Dictionary = sim.players[id]
+		if not bool(p["alive"]) or int(p["moving"]) > 0:
+			continue
+		if sim.time < float(p["effects"]["sleep_until"]):
+			continue
+		if sim.time < float(_ai_next.get(id, 0.0)):
+			continue
+		_ai_next[id] = sim.time + randf_range(AI_THINK_MIN, AI_THINK_MAX)
+		_ai_think(id, p)
+
+func _ai_think(id: int, p: Dictionary) -> void:
+	## 极简 AI：能买就买 / 自己的地就升级 / 否则掷骰。
+	## 后续 P1 会按原版 Role.txt 的三项性格权重（害人/股票/买地）重写。
+	if int(p["last_plot"]) >= 0:
+		sim.act_buy(id)
+		return
+	var t: int = int(p["tile"])
+	if sim.plots.has(t) and int(sim.plots[t]["owner"]) == id:
+		if int(sim.plots[t]["level"]) < Sim.MAX_BUILD_LEVEL and int(p["money"]) > 120000:
+			sim.act_upgrade(id)
+			return
+	sim.act_roll(id)
 
 # ------------------------------------------------------------ 连接事件回调
 
@@ -210,6 +268,7 @@ func _process(delta: float) -> void:
 	_snap_acc += delta
 	if _snap_acc >= 1.0 / SNAPSHOT_RATE:
 		_snap_acc = 0.0
+		_drive_ai()
 		_broadcast_state()
 
 func _broadcast_state() -> void:

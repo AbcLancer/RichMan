@@ -23,6 +23,7 @@ var _port_edit: LineEdit
 var _map_opt: OptionButton
 var _host_btn: Button
 var _join_btn: Button
+var _solo_btn: Button
 var _status: Label
 
 var _lobby_list: VBoxContainer
@@ -47,8 +48,16 @@ var _demo := false
 var _demo_time := 0.0
 var _demo_next_act := 1.0
 var _demo_shots := 0
-const DEMO_BOT_ID := 99
 const DEMO_SHOT_AT := [3.0, 5.5, 8.0, 11.0]
+
+# ---- 主菜单截图模式（godot --path game -- --menushot）----
+var _menu_shot := false
+var _menu_shot_t := 0.0
+
+# ---- 单人练习冒烟测试（godot --path game -- --solotest）----
+# 直接走生产入口 _on_solo()，避免"只用 demo 路径自证"
+var _solo_test := false
+var _solo_test_t := 0.0
 
 const WORLD_HEIGHT := 0.0
 
@@ -80,6 +89,40 @@ func _ready() -> void:
 
 	if OS.get_cmdline_user_args().has("--demo"):
 		_start_demo()
+	elif OS.get_cmdline_user_args().has("--menushot"):
+		_menu_shot = true
+	elif OS.get_cmdline_user_args().has("--solotest"):
+		_solo_test = true
+		_on_solo()          # 生产入口，原样调用
+
+
+func _report_solo_test() -> void:
+	var sim_alive: bool = Net.sim != null
+	var running := false
+	var n_players := 0
+	var map_name := "<无>"
+	if sim_alive:
+		running = Net.sim.running
+		n_players = Net.sim.players.size()
+		if Net.sim.map != null:
+			map_name = Net.sim.map.name
+
+	var ok: bool = sim_alive and running and n_players == 4 \
+		and Net.ai_ids.size() == 3 and map_name == "china"
+
+	print("========== 单人练习冒烟测试 ==========")
+	print("  sim 存在   : %s" % str(sim_alive))
+	print("  逻辑运行中 : %s" % str(running))
+	print("  玩家数     : %d  (期望 4)" % n_players)
+	print("  本地 AI 数 : %d  (期望 3)" % Net.ai_ids.size())
+	print("  地图       : %s  (期望 china)" % map_name)
+	if sim_alive:
+		for id in Net.sim.player_ids():
+			var p: Dictionary = Net.sim.players[id]
+			print("    - %-16s 资金 %7d  位置 %d" % [str(p["name"]), int(p["money"]), int(p["tile"])])
+	print("结果: %s" % ("PASS" if ok else "FAIL"))
+	print("=====================================")
+	get_tree().quit(0 if ok else 1)
 
 
 func _start_demo() -> void:
@@ -89,24 +132,36 @@ func _start_demo() -> void:
 		push_error("demo: host 失败")
 		get_tree().quit(1)
 		return
-	Net.players_info[DEMO_BOT_ID] = "电脑·阿土伯"
+	Net.add_local_ai(3)
 	Net.start_game("china")
-	# start_game → _internal_start 会遍历 players_info 建号，已含电脑玩家
 	print("[demo] 已开局，开始自动演示")
 
 
 func _process(delta: float) -> void:
+	if _menu_shot:
+		_menu_shot_t += delta
+		if _menu_shot_t > 0.8:
+			_menu_shot = false
+			_capture("D:/Projects/RichMan/menu_shot.png")
+			await get_tree().create_timer(0.8).timeout
+			get_tree().quit(0)
+		return
+
+	if _solo_test:
+		_solo_test_t += delta
+		if _solo_test_t > 2.5:
+			_solo_test = false
+			_report_solo_test()
+		return
+
 	if not _demo:
 		return
 	_demo_time += delta
 
+	# 只有人类玩家由演示脚本代打；电脑玩家由 Net 的 AI 系统自行驱动
 	if _demo_time >= _demo_next_act:
-		_demo_next_act += 1.4
+		_demo_next_act += 1.1
 		Net.send_action("roll")
-		if Net.sim != null:
-			Net.sim.act_roll(DEMO_BOT_ID)
-			Net.sim.act_buy(DEMO_BOT_ID)
-			Net.sim.act_upgrade(DEMO_BOT_ID)
 		Net.send_action("buy")
 		Net.send_action("upgrade")
 
@@ -195,11 +250,33 @@ func _build_menu() -> void:
 
 	box.add_child(_label("地图"))
 	_map_opt = OptionButton.new()
+	var default_idx := 0
 	for m in MapData.available_maps():
-		_map_opt.add_item(m)
+		var md := MapData.load_from(m)
+		var label: String = "%s  (%s · %d 格)" % [md.display_name, m, md.tile_count()] \
+			if md != null else m
+		_map_opt.add_item(label)
+		_map_opt.set_item_metadata(_map_opt.item_count - 1, m)
+		if m == "china":
+			default_idx = _map_opt.item_count - 1
+	_map_opt.select(default_idx)
 	box.add_child(_map_opt)
 
 	box.add_child(_spacer(6))
+
+	# 单人练习：一键开局，对阵 3 名电脑（验收表现效果最快的入口）
+	_solo_btn = Button.new()
+	_solo_btn.text = "▶  单人练习（对阵 3 名电脑）"
+	_solo_btn.custom_minimum_size = Vector2(420, 46)
+	_solo_btn.add_theme_font_size_override("font_size", 17)
+	box.add_child(_solo_btn)
+	_solo_btn.pressed.connect(_on_solo)
+
+	var sep := Label.new()
+	sep.text = "—— 或者联机 ——"
+	sep.add_theme_color_override("font_color", Color(0.45, 0.48, 0.56))
+	sep.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(sep)
 
 	var host_row := HBoxContainer.new()
 	host_row.add_theme_constant_override("separation", 8)
@@ -275,7 +352,7 @@ func _build_lobby() -> void:
 	_start_btn = Button.new()
 	_start_btn.text = "开始游戏"
 	box.add_child(_start_btn)
-	_start_btn.pressed.connect(func(): Net.start_game(_map_opt.get_item_text(_map_opt.selected)))
+	_start_btn.pressed.connect(func(): Net.start_game(_selected_map()))
 
 	var leave := Button.new()
 	leave.text = "返回"
@@ -375,6 +452,19 @@ func _show(s: int) -> void:
 	_lobby_root.visible = (s == Screen.LOBBY)
 	_hud.visible = (s == Screen.GAME)
 	_board.visible = (s == Screen.GAME)
+
+func _selected_map() -> String:
+	## 下拉项显示的是中文名，真实地图名存在 metadata 里
+	var m: Variant = _map_opt.get_item_metadata(_map_opt.selected)
+	return str(m) if m != null else "china"
+
+func _on_solo() -> void:
+	## 一键人机对战：房主 + 3 名本地电脑，直接开局
+	_status.text = ""
+	if not Net.host_game(_name_edit.text, int(_port_edit.text)):
+		return
+	Net.add_local_ai(3)
+	Net.start_game(_selected_map())
 
 func _on_host() -> void:
 	_status.text = ""

@@ -14,10 +14,14 @@ assets_extracted/
 # 本地工具（Godot 可执行包等）
 .tools/
 
-# 演示模式产出的临时截图/日志
+# 演示/验证模式产出的临时截图与日志
 demo_shot_*.png
+menu_shot.png
 demo_out.txt
 selftest_out.txt
+ms.txt
+solo.txt
+menushot_out.txt
 
 # 系统
 Thumbs.db
