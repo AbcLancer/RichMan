@@ -2752,6 +2752,8 @@ func to_dict() -> Dictionary:
 		"road_objs": road_objs.duplicate(true),
 		"road_day": road_day,
 		"stocks": stocks.duplicate(true),
+		# 拉霸状态（`casino`）也要进快照 —— 否则联机时客户端的面板永远是空的
+		"casino": casino.duplicate(true),
 	}
 
 func apply_dict(d: Dictionary) -> void:
@@ -2773,3 +2775,4 @@ func apply_dict(d: Dictionary) -> void:
 	road_objs = rf
 	road_day = int(d.get("road_day", road_day))
 	stocks = d.get("stocks", stocks)
+	casino = d.get("casino", casino)

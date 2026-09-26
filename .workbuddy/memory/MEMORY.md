@@ -268,3 +268,15 @@
     「我要改 X 去哪找」表（**音效 / 模型贴图 / 玩法数值 / 逻辑代码**）+ 数值链
     （原版配置 → `tools/build_*.py` → `game/data/**/*.json` → `rules.gd` → `sim.gd`）
     + 验收命令 + 7 条最易踩的坑。README 顶部有入口。
+
+73. **⭐ 联机：`Sim._ev()` 只在本地发信号 → 客户端什么都收不到（2026-09-26 修）**：
+    必须由**房主把事件 RPC 转发**出去，客户端收到后在本地重新 `emit` 到 `sim.game_event`
+    （这样 UI 不用改）。见 `net.gd` 的 `_rpc_event`；⚠️ 单机时**别发**（`has_remote_peers()` 判断，
+    否则报 "RPC on yourself"）。**拉霸状态 `casino` 也要进快照**（`to_dict`/`apply_dict`）。
+74. **联机烟测 `test/net_smoke.gd` 已覆盖 6 个动作**（掷骰/买股票/锁卡/精灵出战/聊天/拉霸），
+    房主要先 `_seed_resources()` 塞钱+卡+宠物否则跑不动。`--large`（满盘地产+AI）**两端都要加**。
+    期望两端各一行 `NET_SMOKE_PASS`。
+75. **GDScript 三个坑**：① `_fail` 类函数**先 `print` 再 `push_error`**（headless 下
+    `push_error` 不进 stdout，失败时日志会一片空白）② `(x as Dictionary).get(k, {})` 后
+    **不能直接点成员**，要先落到 `Dictionary` 变量 ③ 快照里 `casino` 的 key 是 **int pid**，
+    别用 `str(id)` 查。

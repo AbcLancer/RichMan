@@ -37,6 +37,13 @@ var ai_ids: Array = []
 var _ai_next: Dictionary = {}
 
 var is_host: bool = false
+
+
+## 有没有真正的对端（单机时没有 → 别发 RPC，否则报 "RPC on yourself is not allowed"）
+func has_remote_peers() -> bool:
+	if not multiplayer.has_multiplayer_peer():
+		return false
+	return multiplayer.get_peers().size() > 0
 var in_lobby: bool = false
 var map_name: String = "china"
 var sim: Sim = null
@@ -225,6 +232,10 @@ func _internal_start(m: String, seed_val: int) -> void:
 	_last_remote_seq = -1
 	sim.setup(md, seed_val)
 	sim.log_message.connect(func(t): log_received.emit(t))
+	# 把本地事件转发给客户端（单机 / 没有对端时不做，免得 RPC 报 "on yourself"）
+	if is_host and has_remote_peers():
+		sim.game_event.connect(func(kind: String, d: Dictionary) -> void:
+			_rpc_event.rpc(kind, d))
 	for id in players_info.keys():
 		sim.add_player(int(id), str(players_info[id]))
 	sim.running = true          # 必须显式开启，否则 Sim.step() 会直接返回
@@ -245,6 +256,20 @@ func _rpc_action(action: String, args: Array) -> void:
 		return
 	var sender := multiplayer.get_remote_sender_id()
 	_apply_action(sender, action, args)
+
+
+## ⭐ 房主把 `Sim` 的**语义事件**转发给所有客户端。
+##
+## 为什么必须有：`Sim._ev()` 只在**本地** `game_event.emit()` —— **房主自己的 UI 接得到**，
+## 而客户端的 `Sim` 只是回放快照（`apply_dict`），**不会自己产生事件**
+## → 联机时**客户端完全收不到 toast / 音效 / 语音 / 气泡**（2026-09-26 复查联机时发现）。
+##
+## 客户端收到后在本地**重新 emit** 到 `sim.game_event`，于是 UI 一行都不用改
+## （它连的一直是 `Net.sim.game_event`）。`call_remote` 不会回环给房主自己。
+@rpc("authority", "call_remote", "reliable")
+func _rpc_event(kind: String, data: Dictionary) -> void:
+	if sim != null:
+		sim.game_event.emit(kind, data)
 
 func _apply_action(who: int, action: String, args: Array) -> void:
 	if sim == null:

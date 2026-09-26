@@ -2219,3 +2219,71 @@ _br_map_panel.add_theme_stylebox_override("panel",
 ⚠️ 另记：`--uishot` 张数**偶尔会波动**（同一命令有时 11 张、有时 16 张）——
 是 `_process` 协程与帧回调的竞态（老问题，见铁律里那条「`_process` 是协程，await 期间会再起一次」）。
 **重跑即可**，不是代码坏了。
+
+---
+
+# 27. 2026-09-26（下午十六轮）复查联机：修两个真实缺口 + 把烟测扩到新动作
+
+老板：*"好久没有看过联机的功能了，再看看联机的功能还正不正常。"*
+
+## 27.1 ⭐ 修的第一个缺口：**客户端收不到任何事件**（toast / 音效 / 语音全无）
+
+`Sim._ev()` 的实现是 `game_event.emit(...)` —— **只在本地发信号**：
+
+| 谁 | 有没有事件 |
+|---|---|
+| **房主** | ✅ 有（他自己的 UI 连着 `Net.sim.game_event`） |
+| **客户端** | ❌ **完全没有** —— 客户端的 `Sim` 只是**回放快照**（`apply_dict`），不会自己产生事件 |
+
+**也就是说：联机时客机从头到尾一声不响、一个提示都没有。**（单机测不出来，只有真的开两个进程才发现。）
+
+**修法**（`net.gd`）：房主把事件 RPC 出去，客户端收到后在**本地重新 emit** ——
+这样 `ui/app.gd` **一行都不用改**（它连的一直是 `Net.sim.game_event`）：
+
+```gdscript
+@rpc("authority", "call_remote", "reliable")
+func _rpc_event(kind: String, data: Dictionary) -> void:
+	if sim != null:
+		sim.game_event.emit(kind, data)
+
+# 房主侧（_internal_start 里）：
+if is_host and has_remote_peers():          # ⚠️ 单机时别发，否则报 "RPC on yourself"
+	sim.game_event.connect(func(kind, d): _rpc_event.rpc(kind, d))
+```
+
+## 27.2 修的第二个缺口：**拉霸状态没进快照**
+
+`to_dict()` 里没有 `casino` → 联机时客户端的老虎机面板永远是空的。已补上（`to_dict` / `apply_dict` 两处）。
+
+## 27.3 烟测扩写：从「1 个动作」到「6 个动作」
+
+原来 `net_smoke.gd` **只验证掷骰**。这段时间加了**股票 / 拉霸 / 聊天 / 卡片锁定 / 精灵出战**，
+全部补进来（房主先 `_seed_resources()` 给每个玩家塞钱 / 卡 / 宠物，否则新动作跑不动）：
+
+| 动作 | 怎么确认 |
+|---|---|
+| `roll` | 快照里 `last_roll > 0` |
+| `buy_stock` | 快照里 `holdings` 多了一项 + `stocks` 段非空 |
+| `lock_card` | 快照里 `card_locks` 非空 |
+| `set_pet` | 快照里 `pet_active` 非空 |
+| `chat` | **事件**（走新加的 RPC 转发） |
+| `casino_bet` + `casino_pull` | 快照里 `casino.reels` 非空 |
+
+## 27.4 结果
+
+```
+普通模式   client: 掷骰 / 买股票 / 锁卡 / 精灵出战 / 聊天 / 拉霸 全部往返成功
+           host:   掷骰/买股票/锁卡/精灵出战/拉霸 都执行了；聊天收到「联机烟测你好」
+--large    host 快照 17728 → 1792 bytes（压缩到 10%，满盘地产 + AI 玩家）
+--selftest 263 / 0
+```
+
+## 27.5 排查过程踩的坑（值得记）
+
+1. **`_fail()` 用 `push_error` 在 headless 下不进 stdout** → 失败时日志一片空白，
+   排查半天。**改成先 `print` 再 `push_error`**。
+2. **`(x as Dictionary).get(...)` 后面直接点成员**（`.is_empty()`）在 GDScript 里**编译不过**，
+   必须**先落到一个 `Dictionary` 变量**再调。
+3. **快照里 `casino` 的 key 是 `int pid`**，用 `str(id)` 查会**永远查不到**。
+4. **别缓存 `client_id`** —— 房间成员会随重连变化，缓存下来的 id 不在 `players` 里时，
+   读出来全是空、白等满 12 秒超时。**每轮重新取**。

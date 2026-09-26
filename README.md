@@ -296,6 +296,7 @@ RichMan/
 - [x] **P0-6** 3D 棋盘 + HUD
 - [x] **P0-7** 逻辑自检（**263 项断言**）+ 离屏截图验收
 - [ ] **P0-8** 双机联机实测（需老板在两台机器上跑）
+  - 本机双进程烟测已覆盖 6 个动作（掷骰/买股票/锁卡/精灵出战/聊天/拉霸），见 `docs/decision-log.md §27`
 
 ### P0.5 —— 表现层对齐原版（已完成，2026-09-25）
 
@@ -602,3 +603,16 @@ RichMan/
 ---
 
 > 📖 **项目手册 & 手改指南：[`docs/HANDBOOK.md`](docs/HANDBOOK.md)**（想改音效 / 模型 / 数值 / 逻辑该去哪个文件，都在里面）
+
+---
+
+## 联机烟测（两个进程，本机）
+
+```bash
+GODOT="D:/Godot/Godot_v4.7.2-stable_win64_console.exe"
+# 终端 A（房主）
+"$GODOT" --headless --path game --script res://scripts/test/net_smoke.gd -- --host
+# 终端 B（客户端）—— 大数据量再加 --large（两端都要加）
+"$GODOT" --headless --path game --script res://scripts/test/net_smoke.gd -- --client
+```
+期望两端各打一行 `NET_SMOKE_PASS`。
