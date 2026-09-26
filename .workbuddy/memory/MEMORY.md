@@ -338,3 +338,11 @@
 88. **改分支时小心旧代码残留**：换 `match` 的一支时漏删旧行 → `sim.gd` 解析失败，
     报出来却是一串误导性的 "Could not resolve class Sim"。**先跑
     `godot --headless --path game --check-only --script res://<file>` 拿准确行号**。
+
+89. **「步数选择界面」= 骰子卡的选步数**（`String.txt` 9016「自由选择前进的步数」），
+    **不是**「掷骰选几颗」（那条是上限 2，铁律 #34）—— 两条并存，别混。
+    表现：**骰子面图标**（`assets/dice/1..6.png`）横排 + **贴角色头顶**（原版在棋盘上角色附近）。
+90. **还没做的大块**（都是独立子系统，各自相当于「股票系统」那个体量）：
+    **小游戏**（`game_a`/`game_b`；素材 `samples/gamespot/`：`ball/` 有 0..5 数字球 +
+    `.pol` 球模型，像是「数球」类）、**拍卖**（`uitex/auction/`）、
+    **9 族界面**（`form/` `option/` `gold/` `house/` `up_info/` `speaker/`）。

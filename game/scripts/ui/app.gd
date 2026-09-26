@@ -702,6 +702,8 @@ func _process(delta: float) -> void:
 				_say_bubble.visible = false
 			else:
 				_sync_say_bubble()
+		# 骰子卡的步数选择器：跟在角色头顶
+		_sync_step_picker()
 		# 「请选择对手」：每帧算鼠标指到了谁 → 脚下圆盘绿/红
 		if _card_pending != "" and Net.sim != null \
 				and Net.sim.card_target(_card_pending) == "player":
@@ -2163,21 +2165,20 @@ func _build_card_hand() -> void:
 	_hud.add_child(_card_hint)
 
 	# ---- 骰子卡的步数选择器（String.txt 9016「自由选择前进的步数」）----
+	# ⚠️ 老板的原版截图（`records/步数选择界面.png`）：**横排的骰子图标**，
+	#   而且贴在**角色附近**（棋盘上），不是屏幕正中。
+	#   ⚠️ 这跟「掷骰前选几颗骰子」（上限 2）是**两个不同的东西**，别混。
 	_step_picker = HBoxContainer.new()
 	_step_picker.visible = false
-	_step_picker.add_theme_constant_override("separation", maxi(2, int(round(3.0 * _ui_scale))))
+	_step_picker.add_theme_constant_override("separation", maxi(2, int(round(4.0 * _ui_scale))))
 	_hud.add_child(_step_picker)
 	for n in range(1, 7):
-		var sb := Button.new()
-		sb.text = str(n)
-		sb.custom_minimum_size = Vector2(28.0, 30.0) * _ui_scale
-		sb.focus_mode = Control.FOCUS_NONE
-		sb.add_theme_font_size_override("font_size", maxi(11, int(round(15.0 * _ui_scale))))
-		sb.add_theme_color_override("font_color", Color8(20, 30, 90))
-		sb.add_theme_stylebox_override("normal", _sb_round(Color8(212, 250, 238),
-			Color8(10, 80, 200), int(round(6.0 * _ui_scale)), 0, maxf(1.0, 2.0 * _ui_scale)))
-		sb.add_theme_stylebox_override("hover", _sb_round(Color8(255, 246, 190),
-			Color8(10, 80, 200), int(round(6.0 * _ui_scale)), 0, maxf(1.0, 2.0 * _ui_scale)))
+		var sb := TextureButton.new()
+		sb.texture_normal = _tex_or_null("res://assets/dice/%d.png" % n)
+		sb.ignore_texture_size = true
+		sb.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+		sb.custom_minimum_size = Vector2(42.0, 42.0) * _ui_scale
+		sb.tooltip_text = "前进 %d 步" % n
 		var k := n
 		sb.pressed.connect(func(): _on_step_picked(k))
 		_sfx(sb)
@@ -2554,12 +2555,23 @@ func _dev_give_cards(ids: Array) -> void:
 func _show_step_picker() -> void:
 	if _step_picker == null:
 		return
-	_step_picker.position = Vector2(
-		(get_viewport().get_visible_rect().size.x - 200.0 * _ui_scale) * 0.5,
-		get_viewport().get_visible_rect().size.y * 0.5 - 40.0 * _ui_scale)
 	_step_picker.visible = true
 	_step_picker_i = -1
+	_sync_step_picker()
 	_toast("骰子卡：请选择前进步数")
+
+
+## 把步数选择器贴到**角色头顶**（原版截图里就在棋盘上角色附近）
+func _sync_step_picker() -> void:
+	if _step_picker == null or not _step_picker.visible or _board == null:
+		return
+	var pos: Dictionary = _board.player_screen_positions()
+	var me := multiplayer.get_unique_id()
+	if not pos.has(me):
+		return
+	var p: Vector2 = pos[me]
+	var sz := _step_picker.get_combined_minimum_size()
+	_step_picker.position = Vector2(p.x - sz.x * 0.5, p.y - sz.y - 10.0 * _ui_scale)
 
 
 func _on_step_picked(n: int) -> void:
