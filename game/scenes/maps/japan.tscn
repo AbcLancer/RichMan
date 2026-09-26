@@ -1,0 +1,1533 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/original_mesh.gd" id="1_mesh"]
+
+[node name="OriginalScene" type="Node3D"]
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="Animations" type="Node3D" parent="."]
+
+[node name="高楼02__0" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-82.5633392, 2.01387763, -2.03053498)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/0.json"
+
+[node name="东经铁塔01__1" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-50.8665771, 11.5980892, 44.5249023)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/1.json"
+
+[node name="东经铁塔__2" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-50.8665771, 11.5980892, 44.5249023)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/2.json"
+
+[node name="房子3__3" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-47.1408539, 2.2821362, 31.1727295)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/3.json"
+
+[node name="tree18__4" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-33.9046173, -0.806749701, 41.1886444)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/4.json"
+
+[node name="tree17__5" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-24.076786, 2.31123877, -17.3164444)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/5.json"
+
+[node name="tree16__6" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(10.8872728, -0.396077633, 53.8724213)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/6.json"
+
+[node name="tree15__7" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(33.2483368, 3.50918055, 16.8317738)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/7.json"
+
+[node name="tree14__8" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1.7044158, 5.23767376, -13.5451241)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/8.json"
+
+[node name="tree13__9" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(14.3352489, 4.02272701, 16.5112877)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/9.json"
+
+[node name="tree12__10" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-66.1766434, 0.100419044, 39.5007477)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/10.json"
+
+[node name="tree11__11" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-6.07726383, -0.642038345, 46.9189606)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/11.json"
+
+[node name="tree10__12" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-35.7367744, -1.22412217, -13.6872826)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/12.json"
+
+[node name="tree07__13" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-3.71785784, 5.6390295, 2.40800309)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/13.json"
+
+[node name="tree06__14" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-12.6225891, 0.77591455, 11.9018641)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/14.json"
+
+[node name="tree05__15" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(40.3743744, 3.83847308, 16.3353157)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/15.json"
+
+[node name="tree04__16" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-20.427124, -0.549579501, 27.8917122)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/16.json"
+
+[node name="tree03__17" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-33.7011871, -0.396609545, 56.7764969)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/17.json"
+
+[node name="tree02__18" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(0.632579446, -0.92837131, 43.5720367)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/18.json"
+
+[node name="tree01__19" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-44.6029282, -0.920779943, 61.2539139)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/19.json"
+
+[node name="tree__20" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-61.6095848, -0.648817539, -6.50979328)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/20.json"
+
+[node name="ying__21" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-15.369441, -1.16525912, 78.4069214)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/21.json"
+
+[node name="Box09__22" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-35.5795364, -0.0448411703, 18.8540745)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/22.json"
+
+[node name="城堡__23" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(69.9720306, 8.79022312, -59.6498871)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/23.json"
+
+[node name="Box324__24" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(10.0736732, 4.81773233, -32.3972092)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/24.json"
+
+[node name="Box323__25" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(10.5127716, -2.0978713, 67.295929)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/25.json"
+
+[node name="Box322__26" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-5.08427238, -1.18675029, 63.8790436)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/26.json"
+
+[node name="Box321__27" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1.33125901, -0.336007595, 62.5207825)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/27.json"
+
+[node name="Box320__28" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-90.9988708, 2.29862237, 69.4850388)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/28.json"
+
+[node name="Box319__29" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-91.2507095, -0.887390852, 54.9909058)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/29.json"
+
+[node name="Box318__30" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-89.6528015, -0.745566607, 15.6776581)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/30.json"
+
+[node name="Box316__31" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-19.0396061, 4.3288393, -26.1046486)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/31.json"
+
+[node name="Box01__32" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(4.49762058, 6.28498268, 1.79886818)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/32.json"
+
+[node name="Pyramid02__33" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(4.95128679, 1.71155298, -54.7203255)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/33.json"
+
+[node name="Pyramid03__34" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(4.81387663, 2.82446218, -54.922287)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/34.json"
+
+[node name="Pyramid01__35" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(4.91477489, 0.0191277862, -55.0415688)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/35.json"
+
+[node name="Box01__36" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-50.6968079, 0.992895722, 18.58424)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/36.json"
+
+[node name="房子18__37" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-117.809021, -6.58396006, 128.287994)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/37.json"
+
+[node name="房子17__38" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-106.559341, -7.04730701, 115.496109)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/38.json"
+
+[node name="房子16__39" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-97.115715, -5.59405184, 105.485313)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/39.json"
+
+[node name="房子15__40" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-88.6704178, -3.74317217, 96.4406281)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/40.json"
+
+[node name="房子12__41" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-80.7115631, -0.976838708, 87.3174591)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/41.json"
+
+[node name="Plane09__42" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(54.2513809, -3.71698141, -60.7425842)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/42.json"
+
+[node name="Pyramid28__43" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(76.2566681, 3.59712172, -22.0411682)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/43.json"
+
+[node name="Pyramid29__44" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(76.4486847, 4.76661873, -22.3299236)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/44.json"
+
+[node name="Pyramid30__45" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(76.3352203, 1.81864047, -22.0844421)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/45.json"
+
+[node name="Pyramid25__46" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(90.5514526, 2.76190853, -39.8035812)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/46.json"
+
+[node name="Pyramid26__47" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(90.9826508, 7.63404799, -39.4153175)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/47.json"
+
+[node name="Pyramid27__48" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(90.9420166, 5.32509327, -39.2153549)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/48.json"
+
+[node name="Pyramid22__49" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(58.3044167, 1.42513871, -72.5171509)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/49.json"
+
+[node name="Pyramid23__50" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(58.6184616, 2.94542646, -72.1629562)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/50.json"
+
+[node name="Pyramid24__51" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(58.5546494, -0.886796474, -71.8460693)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/51.json"
+
+[node name="Pyramid19__52" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(60.4845543, 4.80813122, -52.3111572)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/52.json"
+
+[node name="Pyramid20__53" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(60.8188477, 6.5569334, -53.0244064)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/53.json"
+
+[node name="Pyramid21__54" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(61.0310593, 2.14868951, -53.0115318)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/54.json"
+
+[node name="Pyramid16__55" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(35.889019, 2.51300716, -96.8630905)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/55.json"
+
+[node name="Pyramid17__56" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(35.9144707, 4.24751091, -97.2360077)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/56.json"
+
+[node name="Pyramid18__57" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(35.9688911, -0.124691725, -97.5797119)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/57.json"
+
+[node name="Pyramid13__58" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(54.2968102, 1.88811851, -70.4112473)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/58.json"
+
+[node name="Pyramid14__59" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(54.3996887, 2.95789146, -70.7641449)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/59.json"
+
+[node name="Pyramid15__60" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(54.4975777, 0.261290789, -70.911087)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/60.json"
+
+[node name="Pyramid10__61" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(62.3560867, 2.76371551, -71.5656281)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/61.json"
+
+[node name="Pyramid11__62" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(62.499649, 4.1150732, -71.7687759)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/62.json"
+
+[node name="Pyramid12__63" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(62.5077095, 0.708674669, -71.5690765)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/63.json"
+
+[node name="Pyramid07__64" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(7.5707407, 1.73595142, -64.1012878)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/64.json"
+
+[node name="Pyramid08__65" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(7.35427046, 2.90544868, -64.0691757)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/65.json"
+
+[node name="Pyramid09__66" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(7.09369707, -0.0425295234, -64.0747147)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/66.json"
+
+[node name="Pyramid04__67" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(23.9007149, 1.82671499, -45.9946556)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/67.json"
+
+[node name="Pyramid05__68" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(23.8594818, 3.20672154, -45.7572021)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/68.json"
+
+[node name="Pyramid06__69" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(23.6387596, -0.271892667, -45.6258392)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/69.json"
+
+[node name="tree19__70" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(3.34538984, -1.5519495, 51.1016426)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/70.json"
+
+[node name="tree20__71" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-4.83552074, -0.17050159, 56.176712)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/71.json"
+
+[node name="ying01__72" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-88.3577194, -0.698644519, 79.1858063)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/72.json"
+
+[node name="ying02__73" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-82.926651, -0.838806868, 78.7446899)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/73.json"
+
+[node name="ying03__74" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-90.4391327, -0.506922364, 28.5345764)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/74.json"
+
+[node name="ying04__75" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-100.018593, -1.84603262, 54.596283)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/75.json"
+
+[node name="ying05__76" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-96.0093689, -0.717909455, 38.1367111)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/76.json"
+
+[node name="tree21__77" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-95.8204956, -0.451213598, 49.7440872)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/77.json"
+
+[node name="tree22__78" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-104.085648, -0.0360076427, 38.743187)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/78.json"
+
+[node name="地面__79" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(17.5087662, -11.3963699, -15.4163742)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/79.json"
+
+[node name="Pyramid31__80" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(49.810688, 6.5569315, -96.3711548)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/80.json"
+
+[node name="Pyramid32__81" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(49.4763947, 4.80812931, -95.6579132)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/81.json"
+
+[node name="Pyramid33__82" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(50.0229034, 2.1486876, -96.3582916)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/82.json"
+
+[node name="Box326__83" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(67.8875122, 3.60210323, 9.40514374)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/83.json"
+
+[node name="Box327__84" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(40.2892303, 3.68345118, -32.0829811)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/84.json"
+
+[node name="tree23__85" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(20.5286407, 3.81253982, -40.6536026)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/85.json"
+
+[node name="tree24__86" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(76.8210526, 2.68031693, -49.1356239)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/86.json"
+
+[node name="tree25__87" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(69.4536896, 2.64675117, -69.6361465)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/87.json"
+
+[node name="Box328__88" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(55.885025, 3.5752995, -5.8915329)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/88.json"
+
+[node name="Pyramid34__89" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(60.5165215, 4.65391874, -64.8656082)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/89.json"
+
+[node name="Pyramid35__90" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(60.1527061, 1.60883176, -65.1931992)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/90.json"
+
+[node name="Pyramid36__91" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(60.4822388, 3.21082163, -64.6968842)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/91.json"
+
+[node name="tree26__92" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(79.7326965, 1.97025728, -65.9600601)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/92.json"
+
+[node name="Pyramid37__93" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(47.0069275, 4.11507225, -90.5863571)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/93.json"
+
+[node name="Pyramid38__94" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(46.8633614, 2.76371431, -90.3832092)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/94.json"
+
+[node name="Pyramid39__95" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(47.0149879, 0.708674073, -90.3866577)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/95.json"
+
+[node name="tree27__96" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(70.1950912, 1.94571936, -47.4165154)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/96.json"
+
+[node name="Box329__97" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(0.118535995, -1.60090649, 75.837616)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/97.json"
+
+[node name="tree28__98" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-3.28449202, 1.33305097, 12.7263508)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/98.json"
+
+[node name="tree29__99" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(79.8210449, 2.16884494, -55.2628174)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/99.json"
+
+[node name="Pyramid40__100" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(94.5691452, 2.76371479, -75.7532654)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/100.json"
+
+[node name="Pyramid41__101" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(94.7127075, 4.1150732, -75.9564133)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/101.json"
+
+[node name="Pyramid42__102" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(94.7207642, 0.70867461, -75.7567139)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/102.json"
+
+[node name="Pyramid43__103" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(98.4314117, 2.76371551, -70.6271896)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/103.json"
+
+[node name="Pyramid44__104" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(98.5749741, 4.1150732, -70.8303452)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/104.json"
+
+[node name="Pyramid45__105" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(98.5830383, 0.708674729, -70.6306458)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/105.json"
+
+[node name="Pyramid46__106" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(109.939644, 3.72981024, -89.4316101)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/106.json"
+
+[node name="Pyramid47__107" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(110.083206, 5.08116865, -89.6347656)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/107.json"
+
+[node name="Pyramid48__108" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(110.091263, 1.67476952, -89.4350662)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/108.json"
+
+[node name="Pyramid49__109" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(101.332932, 7.01683903, -87.2238541)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/109.json"
+
+[node name="Pyramid50__110" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(101.476494, 8.36819744, -87.427002)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/110.json"
+
+[node name="Pyramid51__111" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(101.484558, 4.96179819, -87.2273102)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/111.json"
+
+[node name="Pyramid52__112" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(44.2612534, 4.78644657, -102.085686)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/112.json"
+
+[node name="Pyramid53__113" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(43.9269638, 3.03764462, -101.372452)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/113.json"
+
+[node name="Pyramid54__114" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(44.4734726, 0.378203034, -102.072815)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/114.json"
+
+[node name="Pyramid55__115" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(87.2679291, 6.55693293, -76.9640503)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/115.json"
+
+[node name="Pyramid56__116" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(86.9336395, 4.80813026, -76.2508087)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/116.json"
+
+[node name="Pyramid57__117" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(87.4801407, 2.14868832, -76.9511871)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/117.json"
+
+[node name="Pyramid58__118" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(51.604332, 3.20214224, -108.134209)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/118.json"
+
+[node name="Pyramid59__119" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(51.3858414, 2.05913472, -107.668037)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/119.json"
+
+[node name="Pyramid60__120" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(51.7430344, 0.320937216, -108.125801)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/120.json"
+
+[node name="Pyramid61__121" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(56.6870346, 2.05913472, -108.367279)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/121.json"
+
+[node name="Pyramid62__122" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(56.9055328, 3.20214224, -108.833443)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/122.json"
+
+[node name="Pyramid63__123" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(57.0442314, 0.320937216, -108.825035)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/123.json"
+
+[node name="Pyramid64__124" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(55.5287895, 3.64996934, -97.7375793)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/124.json"
+
+[node name="Pyramid65__125" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(55.7472839, 4.79297686, -98.2037506)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/125.json"
+
+[node name="Pyramid66__126" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(55.8859863, 1.91177201, -98.195343)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/126.json"
+
+[node name="Box330__127" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(42.2945709, 3.57529926, -13.8674469)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/127.json"
+
+[node name="Box331__128" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(39.9331894, 3.57529831, -23.1900635)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/128.json"
+
+[node name="Box332__129" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(47.6349297, 3.0591228, -16.3960857)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/129.json"
+
+[node name="Box333__130" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(33.6621552, 4.98396063, -31.0816116)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/130.json"
+
+[node name="Box334__131" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(46.172142, 3.57529759, -49.1758881)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/131.json"
+
+[node name="Box335__132" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(48.9302292, 2.26242876, -39.8919678)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/132.json"
+
+[node name="Pyramid67__133" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(52.9248123, 6.55693436, -46.0315857)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/133.json"
+
+[node name="Pyramid68__134" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(52.5905228, 4.80813122, -45.3183365)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/134.json"
+
+[node name="Pyramid69__135" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(53.1370277, 2.14868999, -46.0187073)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/135.json"
+
+[node name="tree30__136" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-61.3115768, -0.648817301, 4.97477436)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/136.json"
+
+[node name="tree31__137" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-38.0013962, -1.88136637, -23.61866)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/137.json"
+
+[node name="Box336__138" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-67.5688171, 0.22060895, -22.6529827)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/138.json"
+
+[node name="Box337__139" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-4.42225409, 4.32884073, -3.73780346)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/139.json"
+
+[node name="tree33__140" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-25.373764, 0.61148119, -8.24511623)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/140.json"
+
+[node name="Box345__141" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(39.6051331, 5.34234953, -83.9933777)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/141.json"
+
+[node name="Box344__142" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(43.0795898, 1.96692157, 19.7760487)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/142.json"
+
+[node name="Box343__143" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(53.3524666, 1.88567543, 30.585247)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/143.json"
+
+[node name="Box342__144" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(87.636795, 1.93683136, -43.0751572)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/144.json"
+
+[node name="Box341__145" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(69.9329529, 1.85140276, -23.9600525)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/145.json"
+
+[node name="Box340__146" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(80.7214203, 1.80336785, -61.4021683)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/146.json"
+
+[node name="Box339__147" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(74.6497116, 1.85686469, -43.4550095)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/147.json"
+
+[node name="Box338__148" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(104.963737, 2.33855939, -58.6456223)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/148.json"
+
+[node name="Mesh01__149" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(3.33470178, 4.49031258, -52.2177048)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/149.json"
+
+[node name="Box03__150" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(108.563187, 2.84622741, -71.4067383)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/150.json"
+
+[node name="Box05__151" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(64.255043, 3.94480562, -12.6908884)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/151.json"
+
+[node name="tree34__152" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-7.35393381, 5.63902807, -11.8295517)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/152.json"
+
+[node name="Box346__153" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(112.969543, 2.84622741, -60.7989502)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/153.json"
+
+[node name="Box347__154" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(49.8508682, 1.80336678, -83.5772858)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/154.json"
+
+[node name="大厦__155" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-59.4867706, 0.838120341, 57.8446007)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/155.json"
+
+[node name="Box348__156" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(105.069962, 2.33855987, -49.8409042)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/156.json"
+
+[node name="Box349__157" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(9.98689651, 1.9636637, -38.7985916)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/157.json"
+
+[node name="Box350__158" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(14.3172169, 1.94592297, -52.1069107)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/158.json"
+
+[node name="书__159" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(81.0406876, 0.835623384, -31.0660229)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/159.json"
+
+[node name="Box351__160" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-88.8490829, -0.745566964, 7.16831589)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/160.json"
+
+[node name="Box352__161" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-101.412292, -0.745566368, 25.3384743)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/161.json"
+
+[node name="Box353__162" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(100.261543, 1.93683004, -74.4692917)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/162.json"
+
+[node name="Box355__163" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(104.814957, 0.329353362, -49.7685242)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/163.json"
+
+[node name="Box356__164" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(104.861755, 0.329353005, -58.7280579)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/164.json"
+
+[node name="Box357__165" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(112.862869, 0.32589972, -60.6945953)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/165.json"
+
+[node name="Box358__166" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(108.381577, 0.274758518, -71.3378906)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/166.json"
+
+[node name="高楼08__167" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-72.3978882, 2.54314876, -4.60507774)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/167.json"
+
+[node name="高楼10__168" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-36.7837219, 1.65570259, 29.6044998)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/168.json"
+
+[node name="Plane01__169" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(108.381683, 2.4233675, -61.1602287)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/169.json"
+
+[node name="房子20__170" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-55.8792801, -2.98929691, 30.5757446)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/170.json"
+
+[node name="sky" type="Node3D" parent="Animations"]
+
+position = Vector3(15.1257019, 43.4425087, -1.47323608)
+
+[node name="sky_0__0" type="MeshInstance3D" parent="Animations/sky"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/sky_0.json"
+
+[node name="haishui" type="Node3D" parent="Animations"]
+
+position = Vector3(62.1377767, -9.41085307, -40.002004)
+
+[node name="haishui_0__0" type="MeshInstance3D" parent="Animations/haishui"]
+
+position = Vector3(1.0172526e-05, 0.858119647, -1.0172526e-05)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/haishui_0.json"
+
+[node name="haishui_1__1" type="MeshInstance3D" parent="Animations/haishui"]
+
+position = Vector3(-2.03450521e-05, -0.015718778, 2.03450521e-05)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/haishui_1.json"
+
+[node name="haishui_2__2" type="MeshInstance3D" parent="Animations/haishui"]
+
+position = Vector3(1.0172526e-05, -0.842400869, -1.0172526e-05)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/haishui_2.json"
+
+[node name="haiou" type="Node3D" parent="Animations"]
+
+position = Vector3(-33.2695351, 10.2506748, 100.784214)
+
+[node name="haiou_0__0" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(-96.5164452, -4.70257197, 61.6011616)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/haiou_0.json"
+
+[node name="haiou_1__1" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(-68.5435295, -6.94859586, 25.2738758)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/haiou_1.json"
+
+[node name="haiou_2__2" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(-99.2229881, 2.94171276, 7.78969921)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/haiou_2.json"
+
+[node name="haiou_3__3" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(-98.4204369, -4.50529585, 41.3396107)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/haiou_3.json"
+
+[node name="haiou_4__4" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(-104.420101, -4.07705651, 36.2126576)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/haiou_4.json"
+
+[node name="haiou_5__5" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(62.4437199, 22.7728924, -26.4608272)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/haiou_5.json"
+
+[node name="haiou_6__6" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(93.9967079, -6.40475164, -26.6928371)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/haiou_6.json"
+
+[node name="haiou_7__7" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(76.9694252, 2.730019, -8.40832936)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/haiou_7.json"
+
+[node name="haiou_8__8" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(60.7237453, 13.7606968, -64.3097118)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/haiou_8.json"
+
+[node name="haiou_9__9" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(71.6090012, -5.56967364, -29.4451336)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/haiou_9.json"
+
+[node name="haiou_10__10" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(101.380901, -9.99737547, -16.9001659)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/haiou_10.json"
+
+[node name="qizi" type="Node3D" parent="Animations"]
+
+position = Vector3(39.5364304, 7.32812309, -76.0115051)
+
+[node name="qizi_0__0" type="MeshInstance3D" parent="Animations/qizi"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/qizi_0.json"
+
+[node name="liyufan" type="Node3D" parent="Animations"]
+
+position = Vector3(110.828934, 8.88299942, -60.2814293)
+
+[node name="liyufan_0__0" type="MeshInstance3D" parent="Animations/liyufan"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/japan/liyufan_0.json"

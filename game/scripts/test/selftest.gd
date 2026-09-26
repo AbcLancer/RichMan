@@ -360,6 +360,12 @@ func _pet_world(pet_id: String) -> Sim:
 	p["credit"] = 1000
 	sim.add_pet(p, pet_id)
 	sim.add_pet(q, "caishen")             # 小怪兽「PK技」要有目标
+	# ⚠️ 体力系统（老板 2026-09-27）：技能要**体力满**才发得动 → 测试世界直接给满。
+	#   必须放在 add_pet **之后**（在那之前 p["pets"] 还是空的）。
+	for pe2 in (p["pets"] as Array):
+		(pe2 as Dictionary)["energy"] = Sim.PET_ENERGY_MAX
+	for qe in (q["pets"] as Array):
+		(qe as Dictionary)["energy"] = Sim.PET_ENERGY_MAX
 	return sim
 
 
@@ -975,6 +981,9 @@ func _test_pets() -> void:
 	var s6 := _fresh_sim()
 	var p6: Dictionary = s6.players[1]
 	s6.add_pet(p6, "dushen")
+	# 体力系统（老板 2026-09-27）：技能要**体力满**才发得动，测试里直接给满
+	for pe6 in (p6["pets"] as Array):
+		(pe6 as Dictionary)["energy"] = Sim.PET_ENERGY_MAX
 	p6["credit"] = 100
 	s6._tick_pets(p6)
 	_ok("小赌神发动后，下一掷必出 6 点",
@@ -1400,9 +1409,15 @@ func _test_upgrade_chain() -> void:
 	_ok("停留卡后能再升一级", sim.act_upgrade(1) and int(sim.plots[1]["level"]) == 4,
 		"level=%d" % int(sim.plots[1]["level"]))
 
+	# 扩成 2x2 住宅必须拥有相邻空地；免费卡只免造价，不免占地条件。
+	sim.plots[2] = {"owner": 1, "level": 0, "type": ""}
 	# 福神卡：Card_FuShen_Steps = 30 步内免费加盖
+	# ⚠️ 先把地块**降回 1 级** —— 上面几条已经把 1 号格顶到**本图等级上限**了，
+	#   不降的话 act_upgrade 会因为「已满级」而拒绝，测不到福神的效果。
+	sim.plots[1]["level"] = 1
 	p["effects"]["free_upgrade_steps"] = 30
 	money0 = int(p["money"])
+	p["tile"] = 5
 	_arrive_at(sim, p, 1)
 	_ok("福神状态上升级造价为 0（原版 id 1001「N 步之内免费加盖」）",
 		sim.upgrade_cost(p, 1) == 0, "cost=%d" % sim.upgrade_cost(p, 1))

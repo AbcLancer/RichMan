@@ -1,0 +1,1773 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/original_mesh.gd" id="1_mesh"]
+
+[node name="OriginalScene" type="Node3D"]
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="Animations" type="Node3D" parent="."]
+
+[node name="Object01__0" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(5.41397667, 3.37683606, 72.7782745)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/0.json"
+
+[node name="Box01__1" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(84.2571335, 9.9529295, 19.2237034)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/1.json"
+
+[node name="Box01__2" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(43.5055008, 11.768281, 64.6079407)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/2.json"
+
+[node name="Box01__3" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-87.3706818, 5.4126277, -23.0960331)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/3.json"
+
+[node name="Box25__4" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-92.4022675, 4.76094913, -15.6652994)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/4.json"
+
+[node name="Box26__5" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-91.4397278, 5.6472311, -11.0620193)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/5.json"
+
+[node name="Box39__6" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(108.341156, 3.49701405, 45.0806503)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/6.json"
+
+[node name="Box43__7" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(42.5138321, 4.56760073, -100.57901)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/7.json"
+
+[node name="Box03__8" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-112.460495, 1.34782577, -10.0861864)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/8.json"
+
+[node name="Box02__9" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-7.65490341, 4.17647028, 100.431892)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/9.json"
+
+[node name="铁塔__10" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-21.4623013, 19.1506443, 6.54003906)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/10.json"
+
+[node name="Box47__11" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(36.4486847, 3.47712731, -106.639008)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/11.json"
+
+[node name="Box49__12" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(36.4486847, 3.47712779, -79.4161224)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/12.json"
+
+[node name="Box50__13" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(109.232712, 4.89822054, 36.1304092)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/13.json"
+
+[node name="Box51__14" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(93.3090897, 2.55734444, 66.3109894)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/14.json"
+
+[node name="Box52__15" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-41.3680344, 3.47713614, 102.681717)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/15.json"
+
+[node name="Box53__16" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-25.6053505, 6.48080969, 100.025703)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/16.json"
+
+[node name="Box54__17" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-18.5700645, 4.20483255, 109.096756)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/17.json"
+
+[node name="Box55__18" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1.04727066, 2.05903387, 100.870605)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/18.json"
+
+[node name="Box58__19" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(17.0373898, 3.90519309, 104.699883)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/19.json"
+
+[node name="Box59__20" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-82.7655258, 5.0776453, 34.2481766)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/20.json"
+
+[node name="Box60__21" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-44.2510147, 3.55543566, 51.8885269)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/21.json"
+
+[node name="Box62__22" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-3.00807619, 1.99637198, 50.1453209)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/22.json"
+
+[node name="Box63__23" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(87.67379, 3.64599991, -11.9139061)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/23.json"
+
+[node name="Plane01__24" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(261.622589, 14.2589045, 171.036804)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/24.json"
+
+[node name="建筑01__25" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(98.6326141, 4.39602709, 86.0192184)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/25.json"
+
+[node name="Line01__26" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-0.276187897, 2.92852283, 0.346603394)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/26.json"
+
+[node name="Line07__27" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-33.6923141, 2.40564561, 15.2439613)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/27.json"
+
+[node name="Box09__28" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(57.6068649, 6.13500977, -48.2826843)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/28.json"
+
+[node name="Box66__29" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(62.1148796, 4.3777113, -0.559120297)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/29.json"
+
+[node name="Box07__30" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(27.8148804, 4.16430283, -5.52317524)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/30.json"
+
+[node name="Cylinder03__31" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-117.922836, 0.711792171, -24.365139)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/31.json"
+
+[node name="Cylinder02__32" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-112.421547, 0.710993409, -19.9036903)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/32.json"
+
+[node name="Cylinder04__33" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-118.201187, 0.69904387, -14.3722382)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/33.json"
+
+[node name="Cylinder01__34" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-130.049744, 0.714529455, -15.3894119)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/34.json"
+
+[node name="Cylinder05__35" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-113.200409, 0.502314806, 19.940094)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/35.json"
+
+[node name="Cylinder06__36" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-108.911041, 0.702994585, -30.9933453)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/36.json"
+
+[node name="m04__37" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(25.0017853, 0.175491005, -90.3295593)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/37.json"
+
+[node name="Box70__38" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-6.74000645, 2.35633588, 62.9235878)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/38.json"
+
+[node name="建筑07__39" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(131.727509, 3.49935031, 58.0297318)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/39.json"
+
+[node name="Box73__40" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-4.01439667, 1.99637103, 29.4084492)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/40.json"
+
+[node name="Box76__41" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(34.5201111, 1.9963721, 52.4468613)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/41.json"
+
+[node name="Box78__42" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(43.4490738, 3.70465493, 35.1907806)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/42.json"
+
+[node name="Box80__43" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(33.4688873, 1.99637139, 34.6621246)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/43.json"
+
+[node name="Box83__44" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(56.4780807, 2.35633636, 78.1647644)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/44.json"
+
+[node name="Box84__45" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(49.823513, 2.3563354, 52.0160522)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/45.json"
+
+[node name="Box87__46" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(50.5766563, 1.77010894, 45.0912323)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/46.json"
+
+[node name="Box88__47" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(56.8875656, 2.35633349, 10.518631)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/47.json"
+
+[node name="Box95__48" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(62.9414139, 2.35633397, 18.082613)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/48.json"
+
+[node name="Box96__49" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(19.8906708, 2.35633254, -7.17795563)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/49.json"
+
+[node name="Box97__50" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(62.9414139, 1.99637008, 7.77348137)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/50.json"
+
+[node name="Box99__51" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(17.7144985, 2.35633445, 31.3521423)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/51.json"
+
+[node name="Box100__52" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(22.9110451, 2.35633421, 28.6620865)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/52.json"
+
+[node name="Mesh01__53" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1.0844574, 5.84415436, -11.038887)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/53.json"
+
+[node name="Mesh26__54" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(75.4332581, -0.197753727, -1.82543111)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/54.json"
+
+[node name="Mesh28__55" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(54.665062, -0.197752535, 22.9711857)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/55.json"
+
+[node name="Box101__56" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(68.0045013, 3.0011816, -7.71653175)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/56.json"
+
+[node name="Box102__57" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(75.3170776, 2.97187066, -0.986547828)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/57.json"
+
+[node name="Mesh29__58" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(71.6255417, -0.197751641, 54.1362114)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/58.json"
+
+[node name="建筑08__59" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(128.995178, 3.49934745, -11.3163528)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/59.json"
+
+[node name="建筑09__60" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(118.72641, 3.49934793, 1.42751718)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/60.json"
+
+[node name="Mesh30__61" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-46.2435837, -0.197752059, 39.8267059)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/61.json"
+
+[node name="Box106__62" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-50.0133057, 3.5554347, 36.2498703)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/62.json"
+
+[node name="Mesh31__63" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-28.7050457, -0.197750241, 80.0929642)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/63.json"
+
+[node name="fz02__64" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(210.481232, 6.70214367, 129.998383)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/64.json"
+
+[node name="m05__65" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(24.8628654, 0.215064943, -93.9512329)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/65.json"
+
+[node name="m06__66" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(24.8628654, 0.215064615, -100.712173)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/66.json"
+
+[node name="m07__67" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(24.7186012, 0.352981478, -73.5254517)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/67.json"
+
+[node name="m08__68" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(24.8628654, 0.215066075, -68.4933929)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/68.json"
+
+[node name="m09__69" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(24.8628654, 0.215065449, -79.8420868)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/69.json"
+
+[node name="建筑10__70" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(12.1553049, 3.49934363, -95.541153)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/70.json"
+
+[node name="fz03__71" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(13.538888, 3.44781828, -79.6881714)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/71.json"
+
+[node name="m10__72" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-43.7651672, 0.352981538, -77.7934418)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/72.json"
+
+[node name="m11__73" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-43.619545, 0.215065449, -82.965004)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/73.json"
+
+[node name="fz04__74" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(210.674622, 6.19306278, 106.959183)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/74.json"
+
+[node name="Box108__75" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(278.80304, 13.4114151, 169.487)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/75.json"
+
+[node name="建筑11__76" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(263.463928, 14.1609898, 167.66214)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/76.json"
+
+[node name="m12__77" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-94.2015381, 0.215067565, -34.5822372)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/77.json"
+
+[node name="m13__78" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-81.2611694, 0.35298273, -47.7468109)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/78.json"
+
+[node name="m14__79" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(131.59874, 0.215071946, 66.7822723)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/79.json"
+
+[node name="Box109__80" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-38.4513779, 1.99636686, -67.2263947)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/80.json"
+
+[node name="Box110__81" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-33.7865448, 1.99636674, -72.4441528)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/81.json"
+
+[node name="路灯___82" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-106.672112, 0.796847343, -3.57238626)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/82.json"
+
+[node name="Mesh02__83" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(16.9159908, 1.94250417, -69.0083008)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/83.json"
+
+[node name="Mesh32__84" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(8.47120857, 1.94250417, -69.0083008)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/84.json"
+
+[node name="Mesh33__85" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(36.8807983, 1.94250512, -48.7209053)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/85.json"
+
+[node name="Mesh34__86" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(35.2561073, 1.94250417, -71.8594818)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/86.json"
+
+[node name="Mesh35__87" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(36.6032257, 1.94250321, -92.908226)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/87.json"
+
+[node name="Mesh36__88" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(44.1860275, 1.94250453, -64.2994537)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/88.json"
+
+[node name="Mesh37__89" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(57.9878082, 1.94250453, -64.2994537)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/89.json"
+
+[node name="Mesh38__90" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(31.4067783, 1.94250262, -108.403572)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/90.json"
+
+[node name="Mesh39__91" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(10.2614279, 1.94250262, -108.701958)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/91.json"
+
+[node name="Mesh40__92" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-5.94082928, 1.94250262, -109.015442)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/92.json"
+
+[node name="Mesh41__93" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(90.6092377, 1.94250846, 28.4988441)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/93.json"
+
+[node name="Box111__94" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(107.643318, 2.55734444, 66.3109894)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/94.json"
+
+[node name="Mesh42__95" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(90.6014862, 1.94250989, 62.0124207)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/95.json"
+
+[node name="Mesh43__96" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(100.716217, 1.94251025, 67.021965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/96.json"
+
+[node name="Mesh44__97" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(115.742554, 1.94251025, 67.021965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/97.json"
+
+[node name="Box112__98" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(122.282593, 2.55734444, 67.1916046)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/98.json"
+
+[node name="Mesh45__99" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(127.07415, 1.94251025, 67.021965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/99.json"
+
+[node name="Box113__100" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(140.402649, 2.55734468, 68.2460022)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/100.json"
+
+[node name="Box114__101" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(149.104919, 2.9716444, 68.5903702)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/101.json"
+
+[node name="Box115__102" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(157.80719, 3.21524239, 68.4766388)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/102.json"
+
+[node name="Box116__103" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(166.50946, 3.44631076, 69.3935089)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/103.json"
+
+[node name="Box117__104" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(175.211731, 3.82802272, 71.6843796)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/104.json"
+
+[node name="Box118__105" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(175.211731, 4.29065943, 89.3462372)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/105.json"
+
+[node name="Box119__106" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(140.402649, 2.97732234, 83.8549957)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/106.json"
+
+[node name="Box120__107" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(149.104919, 2.55734539, 84.8033447)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/107.json"
+
+[node name="Box121__108" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(157.80719, 3.54934311, 85.1465607)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/108.json"
+
+[node name="Box122__109" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(166.50946, 4.01485538, 85.745903)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/109.json"
+
+[node name="Mesh46__110" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(144.536575, 1.94251025, 67.021965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/110.json"
+
+[node name="Box123__111" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(231.291168, 15.1100407, 183.667572)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/111.json"
+
+[node name="Box124__112" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(239.993408, 15.2719259, 185.455048)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/112.json"
+
+[node name="路灯_01__113" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-112.304337, 0.796847343, -3.57238626)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/113.json"
+
+[node name="路灯_02__114" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-117.84864, 0.796847343, -3.57238626)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/114.json"
+
+[node name="Mesh47__115" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2.39236355, 1.94250655, -17.7959061)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/115.json"
+
+[node name="Mesh48__116" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(15.9438133, 0.107959986, -21.3957081)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/116.json"
+
+[node name="Mesh49__117" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(13.5268288, 1.94250631, -22.2632713)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/117.json"
+
+[node name="Box125__118" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(17.4523811, 2.35633206, -21.394577)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/118.json"
+
+[node name="Box126__119" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-0.80799675, 2.35633254, -13.6783943)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/119.json"
+
+[node name="Box127__120" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1.29452229, 2.35633206, -21.7302933)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/120.json"
+
+[node name="Mesh50__121" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1.51291823, 1.94250596, -32.5624161)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/121.json"
+
+[node name="Mesh51__122" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-28.055109, 1.94250679, -12.5105915)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/122.json"
+
+[node name="Box128__123" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(39.7013512, 3.0011816, -8.38149834)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/123.json"
+
+[node name="Mesh52__124" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(44.1034431, 1.94250679, -10.4191341)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/124.json"
+
+[node name="Mesh53__125" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(65.486618, 1.94250679, -10.4191341)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/125.json"
+
+[node name="Mesh54__126" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(74.7277908, 1.94250691, -5.77767086)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/126.json"
+
+[node name="路灯_03__127" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(21.8075066, 0.796850681, 69.7225876)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/127.json"
+
+[node name="路灯_04__128" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(21.8075066, 0.796850979, 78.6488647)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/128.json"
+
+[node name="路灯_05__129" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(14.0866871, 0.796851397, 87.199379)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/129.json"
+
+[node name="路灯_06__130" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(7.00490952, 0.796851397, 87.199379)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/130.json"
+
+[node name="路灯_07__131" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2.25521946, 0.796851397, 87.199379)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/131.json"
+
+[node name="Mesh55__132" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(19.8696918, 1.94251084, 84.9408112)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/132.json"
+
+[node name="Mesh56__133" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1.54006004, 1.9425112, 87.3732681)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/133.json"
+
+[node name="Mesh57__134" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-36.1275864, 1.94250321, -90.8315125)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/134.json"
+
+[node name="Mesh58__135" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-26.9494324, 1.94250393, -78.2093658)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/135.json"
+
+[node name="Mesh59__136" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2.14665198, 1.94250703, -1.30092359)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/136.json"
+
+[node name="Mesh60__137" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-0.891006351, 1.94250798, 15.5065899)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/137.json"
+
+[node name="Mesh61__138" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-0.256989717, 1.94250846, 28.1406784)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/138.json"
+
+[node name="Mesh62__139" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-3.97698689, 1.94250894, 38.998539)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/139.json"
+
+[node name="Mesh63__140" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-3.97698689, 1.94250977, 59.8220825)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/140.json"
+
+[node name="Box130__141" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-3.75043726, 2.35633659, 81.6703033)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/141.json"
+
+[node name="Box131__142" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(22.6342888, 2.35633636, 74.4471741)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/142.json"
+
+[node name="Mesh64__143" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-90.936676, 1.94250882, 31.879715)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/143.json"
+
+[node name="Mesh65__144" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-76.4210968, 1.94250882, 32.60569)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/144.json"
+
+[node name="Mesh66__145" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-44.9027786, 1.94250894, 38.0568237)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/145.json"
+
+[node name="Mesh67__146" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-98.947113, 1.94250703, -3.77729201)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/146.json"
+
+[node name="Box132__147" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-100.061646, 2.93625212, 1.59619558)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/147.json"
+
+[node name="Mesh68__148" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-85.983696, 1.94250655, -16.7620201)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/148.json"
+
+[node name="Box133__149" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(115.914093, 3.64599991, -13.1143818)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/149.json"
+
+[node name="Mesh69__150" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(121.375404, 1.94250655, -17.0289154)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/150.json"
+
+[node name="Box134__151" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(137.22049, 3.64599919, -17.4274273)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/151.json"
+
+[node name="Mesh70__152" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(96.8161469, 1.94250655, -17.0289154)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/152.json"
+
+[node name="路灯_08__153" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(37.2403946, 0.796843171, -98.9262085)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/153.json"
+
+[node name="Box135__154" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-26.0363884, 3.76415062, -98.2626495)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/154.json"
+
+[node name="路灯_09__155" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(37.2403946, 0.796843767, -87.557785)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/155.json"
+
+[node name="Box137__156" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-9.07517529, 4.77244854, -93.6304016)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/156.json"
+
+[node name="路灯_10__157" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-30.8999691, 0.796843231, -99.4897614)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/157.json"
+
+[node name="路灯_11__158" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-16.8308067, 0.796843231, -99.4897614)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/158.json"
+
+[node name="Mesh71__159" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(33.0366135, 0.10795936, -37.0246735)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/159.json"
+
+[node name="Mesh03__160" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(38.3829689, 0.107958376, -37.4985428)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/160.json"
+
+[node name="Mesh72__161" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(40.0089417, 0.107958496, -39.0063019)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/161.json"
+
+[node name="Mesh73__162" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(40.5120544, 0.107958525, -44.1008377)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/162.json"
+
+[node name="Mesh74__163" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(38.5135651, 0.10795787, -51.6202698)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/163.json"
+
+[node name="Mesh75__164" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(40.0965118, 0.107958049, -49.7060661)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/164.json"
+
+[node name="Mesh76__165" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(33.7431488, 0.107958436, -52.0003128)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/165.json"
+
+[node name="Mesh77__166" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(28.4064198, 0.10795784, -51.4702682)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/166.json"
+
+[node name="Mesh78__167" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(26.8047295, 0.107957929, -49.9340515)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/167.json"
+
+[node name="Mesh79__168" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(26.3553276, 0.107958913, -44.8307114)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/168.json"
+
+[node name="Mesh80__169" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(26.9005089, 0.107958376, -39.2809601)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/169.json"
+
+[node name="Mesh81__170" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(28.4367313, 0.107958466, -37.6792755)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/170.json"
+
+[node name="Box138__171" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(34.070713, 3.89168549, -43.9143219)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/171.json"
+
+[node name="路灯_12__172" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(46.7828674, 0.398452818, -8.50981331)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/172.json"
+
+[node name="路灯_13__173" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(52.7374535, 0.398452818, -8.50981331)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/173.json"
+
+[node name="Box05__174" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(57.5956802, 1.67501926, -49.6542168)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/174.json"
+
+[node name="Box139__175" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(27.8148804, 4.16430473, 32.3241196)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/175.json"
+
+[node name="Box140__176" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-37.9514084, 1.08101392, 8.77223301)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/176.json"
+
+[node name="Box141__177" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-37.9514084, 1.08101296, -13.4094276)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/177.json"
+
+[node name="Box142__178" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(27.4404716, 2.8097775, -28.4841042)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/178.json"
+
+[node name="Box143__179" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(28.2392197, 2.80978084, 56.7857742)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/179.json"
+
+[node name="Box144__180" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-31.7584991, 2.57615423, -28.3104134)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/180.json"
+
+[node name="Box145__181" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-51.8178596, 2.57615519, -13.892766)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/181.json"
+
+[node name="Box146__182" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-24.5347996, 0.709278822, -68.3643494)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/182.json"
+
+[node name="Box147__183" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-4.8911581, 0.709278822, -68.1667633)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/183.json"
+
+[node name="sky" type="Node3D" parent="Animations"]
+
+position = Vector3(2.87878418, 66.8356476, 34.680542)
+
+[node name="sky_0__0" type="MeshInstance3D" parent="Animations/sky"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/sky_0.json"
+
+[node name="haishui" type="Node3D" parent="Animations"]
+
+position = Vector3(334.416484, -3.04395056, 31.7939453)
+
+[node name="haishui_0__0" type="MeshInstance3D" parent="Animations/haishui"]
+
+position = Vector3(2.03450521e-05, 0.626813173, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/haishui_0.json"
+
+[node name="haishui_1__1" type="MeshInstance3D" parent="Animations/haishui"]
+
+position = Vector3(-4.06901042e-05, 0.123194456, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/haishui_1.json"
+
+[node name="haishui_2__2" type="MeshInstance3D" parent="Animations/haishui"]
+
+position = Vector3(2.03450521e-05, -0.750007629, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/haishui_2.json"
+
+[node name="penquan" type="Node3D" parent="Animations"]
+
+position = Vector3(-41.7718212, 0.509453657, 25.6232755)
+
+[node name="penquan_0__0" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(-21.4203709, -1.13385725, 10.5258105)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/penquan_0.json"
+
+[node name="penquan_1__1" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(39.3792703, -1.13385725, -18.7318723)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/penquan_1.json"
+
+[node name="penquan_2__2" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(-15.7136677, -0.267448577, 10.7754825)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/penquan_2.json"
+
+[node name="penquan_3__3" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(-27.0921314, 0.259212968, 10.7624286)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/penquan_3.json"
+
+[node name="penquan_4__4" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(-21.4030293, -0.267448577, 10.7754825)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/penquan_4.json"
+
+[node name="penquan_5__5" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(-27.052367, -0.267448577, 10.7754825)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/penquan_5.json"
+
+[node name="penquan_6__6" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(-21.3592213, 0.259212968, 10.7624286)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/penquan_6.json"
+
+[node name="penquan_7__7" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(-15.6936634, 0.259212968, 10.7624286)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/penquan_7.json"
+
+[node name="penquan_8__8" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(37.331032, 0.912218091, -18.8356921)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/penquan_8.json"
+
+[node name="penquan_9__9" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(36.5120742, 0.69010174, -15.369272)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/penquan_9.json"
+
+[node name="penquan_10__10" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(36.5120746, 0.690101502, -22.2027072)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/penquan_10.json"
+
+[node name="qiche" type="Node3D" parent="Animations"]
+
+position = Vector3(-29.0260308, 2.67894927, 21.9040835)
+
+[node name="qiche_0__0" type="MeshInstance3D" parent="Animations/qiche"]
+
+position = Vector3(-66.5374533, -1.91825644, -13.2105544)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/qiche_0.json"
+
+[node name="qiche_1__1" type="MeshInstance3D" parent="Animations/qiche"]
+
+position = Vector3(13.267608, -1.66304496, 70.3297879)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/qiche_1.json"
+
+[node name="qiche_2__2" type="MeshInstance3D" parent="Animations/qiche"]
+
+position = Vector3(-14.463391, -2.10035709, 6.72596713)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/qiche_2.json"
+
+[node name="qiche_3__3" type="MeshInstance3D" parent="Animations/qiche"]
+
+position = Vector3(-9.4661948, 1.15016898, -46.1684115)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/qiche_3.json"
+
+[node name="qiche_4__4" type="MeshInstance3D" parent="Animations/qiche"]
+
+position = Vector3(31.3197861, -1.96191457, 70.696243)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/qiche_4.json"
+
+[node name="qiche_5__5" type="MeshInstance3D" parent="Animations/qiche"]
+
+position = Vector3(56.0637124, 3.85789212, -57.9120334)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/qiche_5.json"
+
+[node name="qiche_6__6" type="MeshInstance3D" parent="Animations/qiche"]
+
+position = Vector3(-10.1840674, 2.63551196, -30.4609988)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/qiche_6.json"
+
+[node name="shu" type="Node3D" parent="Animations"]
+
+position = Vector3(-51.8035088, 4.4633953, -55.796284)
+
+[node name="shu_0__0" type="MeshInstance3D" parent="Animations/shu"]
+
+position = Vector3(-6.1028862, -0.277705848, -62.2911183)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/shu_0.json"
+
+[node name="shu_1__1" type="MeshInstance3D" parent="Animations/shu"]
+
+position = Vector3(-1.04641342, -2.26173562, -65.3468282)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/shu_1.json"
+
+[node name="shu_2__2" type="MeshInstance3D" parent="Animations/shu"]
+
+position = Vector3(-30.7945366, -0.277705848, -44.7070119)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/shu_2.json"
+
+[node name="shu_3__3" type="MeshInstance3D" parent="Animations/shu"]
+
+position = Vector3(-53.6198235, 1.87986737, 10.9511836)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/shu_3.json"
+
+[node name="shu_4__4" type="MeshInstance3D" parent="Animations/shu"]
+
+position = Vector3(-71.6810951, -0.223754585, 12.4885447)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/shu_4.json"
+
+[node name="shu_5__5" type="MeshInstance3D" parent="Animations/shu"]
+
+position = Vector3(-48.1692543, 1.00578719, 58.979338)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/shu_5.json"
+
+[node name="shu_6__6" type="MeshInstance3D" parent="Animations/shu"]
+
+position = Vector3(-62.36446, -0.782472789, 58.1974247)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/shu_6.json"
+
+[node name="shu_7__7" type="MeshInstance3D" parent="Animations/shu"]
+
+position = Vector3(-51.400547, -0.223754585, 79.0925258)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/shu_7.json"
+
+[node name="shu_8__8" type="MeshInstance3D" parent="Animations/shu"]
+
+position = Vector3(105.346081, 2.33934766, -70.3310277)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/shu_8.json"
+
+[node name="shu_9__9" type="MeshInstance3D" parent="Animations/shu"]
+
+position = Vector3(102.406773, -1.59876412, -73.8579518)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/shu_9.json"
+
+[node name="shu_10__10" type="MeshInstance3D" parent="Animations/shu"]
+
+position = Vector3(118.958492, 1.10551816, -11.8777425)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/shu_10.json"
+
+[node name="shu_11__11" type="MeshInstance3D" parent="Animations/shu"]
+
+position = Vector3(-1.53232956, -0.684626997, 108.702664)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/paris/shu_11.json"

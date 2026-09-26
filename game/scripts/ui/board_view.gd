@@ -699,6 +699,58 @@ func nearest_tile_to_screen(screen: Vector2, max_dist: float = 70.0) -> int:
 	return best
 
 
+## 「请选择对手」的目标高亮 —— **原版做法**（老板 2026-09-27 的实机截图）：
+##   · **候选**角色脚下的彩色圆盘 → 亮**绿色**
+##   · 鼠标**悬停**到的那一个 → **红色**
+##   · 太远（超出 `Sim.CARD_TARGET_MAX_TILES` 格）的不亮 → **目标选择是有距离限制的**
+##
+## 传空数组 = 退出选目标模式，圆盘恢复本人颜色。
+var _target_cands: Array = []
+var _target_hover := -1
+
+
+func set_card_targets(cands: Array, hover: int) -> void:
+	_target_cands = cands
+	_target_hover = hover
+
+
+## 给某个玩家的脚下圆盘染色（绿 = 可选 / 红 = 当前指到 / 暗 = 不可选）
+func _paint_disc(node: Node3D, col: Color, pid: int) -> void:
+	var dn := node.get_node_or_null("PColorDisc") as MeshInstance3D
+	if dn == null:
+		return
+	var m: StandardMaterial3D = dn.material_override as StandardMaterial3D
+	if m == null:
+		return
+	var want := col
+	if not _target_cands.is_empty():
+		if _target_hover == pid:
+			want = Color8(255, 74, 74)
+		elif _target_cands.has(pid):
+			want = Color8(96, 240, 120)
+		else:
+			want = col.darkened(0.62)
+	m.albedo_color = want
+	m.emission = want * 0.45
+
+
+## 每个玩家在**屏幕**上的位置（「鼠标指到了谁」用这个判，跟棋盘选格子同一套思路）
+func player_screen_positions() -> Dictionary:
+	var out: Dictionary = {}
+	var cam := _cam()
+	if cam == null:
+		return out
+	for id in _player_nodes.keys():
+		var node: Node3D = _player_nodes[id]
+		if not node.visible:
+			continue
+		var wp: Vector3 = node.position + Vector3(0, 1.1, 0)   # 抬到身体中部，好点
+		if cam.is_position_behind(wp):
+			continue
+		out[int(id)] = cam.unproject_position(wp)
+	return out
+
+
 func _pos_of(i: int) -> Vector3:
 	var n := _tile_pos.size()
 	if n == 0:
@@ -853,6 +905,8 @@ func sync(snap: Dictionary) -> void:
 		node.visible = bool(p["alive"])
 		if not bool(p["alive"]):
 			continue
+		# 「请选择对手」时把脚下圆盘染色（绿 = 可选 / 红 = 指到 / 暗 = 太远或自己）
+		_paint_disc(node, Color.html(str(p["color"])), int(id))
 		var f: float = clampf(float(p["progress"]), 0.0, 1.0)
 		var pos := _route_pos(int(p["tile"]), int(p["dir"]), f)
 		# 多人同格时错开，避免完全重叠
@@ -909,6 +963,8 @@ func _sync_plot_platforms(plots: Dictionary, players: Dictionary) -> void:
 		if tile < 0 or tile >= _tile_pos.size():
 			continue
 		var plot: Dictionary = plots[tile]
+		if int(plot.get("anchor", tile)) != tile:
+			continue
 		var owner := int(plot.get("owner", -1))
 		if not players.has(owner):
 			continue
@@ -917,18 +973,19 @@ func _sync_plot_platforms(plots: Dictionary, players: Dictionary) -> void:
 			_plot_nodes[tile] = _make_plot_platform(tile)
 		var node: Node3D = _plot_nodes[tile]
 		var sid := BuildingLib.id_for(str(map.name), str(plot.get("type", "")), int(plot["level"]))
-		var fp := BuildingLib.footprint(sid) if sid != "" else 1
+		var fp := int(plot.get("footprint", BuildingLib.footprint(sid) if sid != "" else 1))
 		if int(node.get_meta("footprint", 0)) != fp:
 			_size_plot_platform(node, fp)
 		node.position = _building_spot(tile, fp)
 		var d := _dir_at(tile)
 		node.rotation.y = atan2(d.x, d.y)
 		if not map.original_layout.is_empty():
-			node.transform = map.plot_transform(tile, fp)
+			node.transform = map.plot_transform(tile, fp, int(plot.get("build_cell", -1)))
 		var color := Color.html(str(players[owner]["color"]))
 		var border := (node.get_node("Edge0") as MeshInstance3D).material_override as StandardMaterial3D
 		border.albedo_color = color
 		border.emission = color * 0.6
+		_sync_owner_marker(node, players[owner], int(plot["level"]) == 0)
 		node.visible = true
 	for tile in _plot_nodes.keys():
 		if not known.has(tile):
@@ -1000,6 +1057,8 @@ func _sync_buildings(plots: Dictionary) -> void:
 	for tile_key in plots.keys():
 		var tile := int(tile_key)
 		var plot: Dictionary = plots[tile]
+		if int(plot.get("anchor", tile)) != tile:
+			continue
 		var lv := int(plot["level"])
 		if tile >= _tile_pos.size():
 			continue
@@ -1016,6 +1075,8 @@ func _sync_buildings(plots: Dictionary) -> void:
 
 		if str(node.get_meta("bld_id", "")) != sid:
 			_apply_building_model(node, sid)
+		if not map.original_layout.is_empty():
+			node.transform = map.plot_transform(tile, int(plot.get("footprint", BuildingLib.footprint(sid))), int(plot.get("build_cell", -1)))
 		node.visible = true
 
 	for tile in _level_nodes.keys():
@@ -1150,6 +1211,7 @@ func _create_player(id: int, p: Dictionary) -> void:
 	cyl.bottom_radius = 0.86
 	cyl.height = 0.10
 	disc.mesh = cyl
+	disc.name = "PColorDisc"
 	var dmat := StandardMaterial3D.new()
 	dmat.albedo_color = col
 	dmat.emission_enabled = true
@@ -1235,3 +1297,23 @@ func clear() -> void:
 	_cam_pitch = CAM_PITCH_DEF
 	_cam_yaw = CAM_YAW_DEF
 	map = null
+
+func _sync_owner_marker(platform: Node3D, player: Dictionary, empty: bool) -> void:
+	var role := int(player.get("role", 1))
+	var key := str(Rules.role_record(role).get("marker", "diamond"))
+	var marker := platform.get_node_or_null("OwnerMarker") as OriginalMesh
+	if marker != null and str(marker.get_meta("marker_id", "")) != key:
+		platform.remove_child(marker)
+		marker.queue_free()
+		marker = null
+	if marker == null and empty:
+		var path := "res://assets/original/markers/%s.json" % key
+		if FileAccess.file_exists(path):
+			marker = OriginalMesh.new()
+			marker.name = "OwnerMarker"
+			marker.set_meta("marker_id", key)
+			platform.add_child(marker)
+			marker.setup(JSON.parse_string(FileAccess.get_file_as_string(path)))
+			marker.position.y = 0.09
+	if marker != null:
+		marker.visible = empty

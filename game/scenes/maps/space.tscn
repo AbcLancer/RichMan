@@ -1,0 +1,3065 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/original_mesh.gd" id="1_mesh"]
+
+[node name="OriginalScene" type="Node3D"]
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="Animations" type="Node3D" parent="."]
+
+[node name="Torus01__0" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(68.2606812, 13.9448051, -1.1983099)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/0.json"
+
+[node name="Box01__1" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-47.2295723, -11.6020432, 1.10605621)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/1.json"
+
+[node name="Box01__2" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-51.189476, -7.40008545, -0.223420143)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/2.json"
+
+[node name="Box01__3" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-18.6760063, -13.0595884, -42.8079681)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/3.json"
+
+[node name="Cylinder01__4" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-36.375, -1.61787796, -14.1800699)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/4.json"
+
+[node name="Cylinder02__5" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-36.0646439, -1.58861637, 13.6050262)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/5.json"
+
+[node name="Cylinder03__6" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-34.5449104, -8.92439461, -42.7259674)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/6.json"
+
+[node name="Cylinder08__7" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-34.8731766, -8.9284296, 42.7407532)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/7.json"
+
+[node name="Box02__8" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-73.1426849, -10.3150463, -18.0929222)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/8.json"
+
+[node name="Box03__9" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-22.3302231, 14.0126534, 1.38121867)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/9.json"
+
+[node name="Cylinder09__10" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-127.911942, -9.08890152, 9.00545788)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/10.json"
+
+[node name="shap02__11" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(64.0047226, -13.0445871, 188.93425)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/11.json"
+
+[node name="Box18__12" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-18.7392082, -13.0445929, 42.4777527)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/12.json"
+
+[node name="Cylinder10__13" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(68.6380005, 18.2773056, -1.16338539)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/13.json"
+
+[node name="shap28__14" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(31.3309669, -13.04459, 116.391525)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/14.json"
+
+[node name="shap29__15" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(31.3309669, -13.0446005, -112.483444)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/15.json"
+
+[node name="shap30__16" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(64.0047226, -13.0446024, -178.704865)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/16.json"
+
+[node name="Box57__17" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-73.1426849, -10.3150454, 16.6445961)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/17.json"
+
+[node name="Box70__18" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(566.553589, -411.585754, -270.323456)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/18.json"
+
+[node name="star001__19" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(319.108948, -104.921036, -2035.27405)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/19.json"
+
+[node name="star02__20" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(183.720978, -208.510651, -2035.27405)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/20.json"
+
+[node name="star03__21" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(215.477875, 96.3702087, -2035.27405)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/21.json"
+
+[node name="star04__22" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(526.371094, 21.6219673, -1931.64307)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/22.json"
+
+[node name="star05__23" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-58.0848312, -30.1728973, -2035.27405)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/23.json"
+
+[node name="star06__24" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-230.803284, -208.510651, -2035.27417)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/24.json"
+
+[node name="star07__25" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-438.06543, -104.921036, -1897.09937)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/25.json"
+
+[node name="star08__26" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-576.240112, 21.6219826, -1897.09937)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/26.json"
+
+[node name="star09__27" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(837.26416, -104.921074, -1862.55566)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/27.json"
+
+[node name="star10__28" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-748.958496, -185.557251, -1793.46826)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/28.json"
+
+[node name="star11__29" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-313.150818, -710.975464, -2035.27405)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/29.json"
+
+[node name="star12__30" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-177.762817, -814.565063, -2035.27405)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/30.json"
+
+[node name="star13__31" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-209.519745, -509.684265, -2035.27405)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/31.json"
+
+[node name="star14__32" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-520.412964, -584.432495, -1931.64307)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/32.json"
+
+[node name="star15__33" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(64.0429535, -451.941864, -2035.27405)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/33.json"
+
+[node name="star16__34" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(236.761398, -653.887207, -2035.27417)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/34.json"
+
+[node name="star17__35" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(444.023499, -710.975342, -1897.09937)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/35.json"
+
+[node name="star18__36" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(582.198364, -584.432495, -1897.09937)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/36.json"
+
+[node name="star19__37" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-831.305969, -710.975464, -1862.55566)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/37.json"
+
+[node name="star20__38" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(754.916748, -791.611694, -1793.46826)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/38.json"
+
+[node name="star21__39" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-313.150818, -1046.14795, -2035.27417)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/39.json"
+
+[node name="star22__40" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-177.762817, -1149.73755, -2035.27417)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/40.json"
+
+[node name="star23__41" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-209.519745, -939.03479, -2035.27417)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/41.json"
+
+[node name="star24__42" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-520.412964, -919.604919, -1931.64307)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/42.json"
+
+[node name="star25__43" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(64.0429535, -971.39978, -2035.27405)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/43.json"
+
+[node name="star26__44" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(236.761398, -1149.73755, -2035.27405)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/44.json"
+
+[node name="star27__45" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(444.023499, -1046.14795, -1897.09937)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/45.json"
+
+[node name="star28__46" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(582.198364, -919.60498, -1897.09937)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/46.json"
+
+[node name="star29__47" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-831.305908, -1046.14795, -1862.55566)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/47.json"
+
+[node name="star30__48" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(754.916748, -1126.78418, -1793.46826)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/48.json"
+
+[node name="star31__49" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(922.845337, -2461.12329, -702.003296)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/49.json"
+
+[node name="star32__50" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(696.747437, -2461.12329, -538.169189)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/50.json"
+
+[node name="star33__51" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(749.781494, -2461.12329, -1020.35864)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/51.json"
+
+[node name="star34__52" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1268.97314, -2288.05933, -902.139282)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/52.json"
+
+[node name="star35__53" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(292.931702, -2461.12329, -820.22229)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/53.json"
+
+[node name="star36__54" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(4.49195671, -2461.12329, -538.169189)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/54.json"
+
+[node name="star37__55" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-341.635742, -2230.37134, -702.003418)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/55.json"
+
+[node name="star38__56" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-572.387695, -2230.37134, -902.139282)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/56.json"
+
+[node name="star39__57" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1788.16443, -2172.68335, -702.003418)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/57.json"
+
+[node name="star40__58" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-860.827454, -2057.30737, -574.471558)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/58.json"
+
+[node name="star41__59" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-133.028503, -2461.12329, 256.511841)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/59.json"
+
+[node name="star42__60" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(93.0694275, -2461.12329, 420.345276)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/60.json"
+
+[node name="star43__61" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(40.0353928, -2461.12329, -61.8434715)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/61.json"
+
+[node name="star44__62" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-479.156311, -2288.05933, 56.3757095)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/62.json"
+
+[node name="star45__63" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(496.885132, -2461.12329, -153.167023)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/63.json"
+
+[node name="star46__64" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(785.324951, -2461.12329, 166.222748)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/64.json"
+
+[node name="star47__65" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1131.45264, -2230.37134, 256.511505)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/65.json"
+
+[node name="star48__66" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1362.20459, -2230.37134, 56.3757095)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/66.json"
+
+[node name="star49__67" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-998.347656, -2172.68335, 256.511841)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/67.json"
+
+[node name="star50__68" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1650.64429, -2057.30737, 384.042999)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/68.json"
+
+[node name="star51__69" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-133.028488, -2461.12305, 786.609131)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/69.json"
+
+[node name="star52__70" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(93.0694351, -2461.12305, 950.442932)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/70.json"
+
+[node name="star53__71" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(40.0354004, -2461.12305, 617.202881)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/71.json"
+
+[node name="star54__72" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-479.156311, -2288.05957, 586.473083)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/72.json"
+
+[node name="star55__73" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(496.885132, -2461.12329, 668.390076)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/73.json"
+
+[node name="star56__74" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(785.324951, -2461.12329, 950.442993)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/74.json"
+
+[node name="star57__75" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1131.45264, -2230.37109, 786.608826)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/75.json"
+
+[node name="star58__76" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1362.20459, -2230.37109, 586.473022)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/76.json"
+
+[node name="star59__77" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-998.347534, -2172.68335, 786.60907)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/77.json"
+
+[node name="star60__78" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1650.64429, -2057.30737, 914.140625)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/78.json"
+
+[node name="star61__79" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(319.108948, -104.92083, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/79.json"
+
+[node name="star62__80" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(183.720978, -208.510452, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/80.json"
+
+[node name="star63__81" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(215.477875, 96.3703918, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/81.json"
+
+[node name="star64__82" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(526.371094, 21.6221695, 2279.50854)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/82.json"
+
+[node name="star65__83" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-58.0848312, -30.1727142, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/83.json"
+
+[node name="star66__84" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-230.803284, -208.510498, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/84.json"
+
+[node name="star67__85" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-438.06543, -104.920853, 2244.96484)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/85.json"
+
+[node name="star68__86" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-576.240112, 21.6221504, 2244.96484)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/86.json"
+
+[node name="star69__87" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(837.26416, -104.920914, 2210.42114)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/87.json"
+
+[node name="star70__88" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-748.958496, -185.557068, 2141.33374)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/88.json"
+
+[node name="star71__89" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-313.150818, -710.97522, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/89.json"
+
+[node name="star72__90" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-177.762817, -814.564819, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/90.json"
+
+[node name="star73__91" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-209.519745, -509.684082, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/91.json"
+
+[node name="star74__92" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-520.412964, -584.432312, 2279.50854)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/92.json"
+
+[node name="star75__93" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(64.0429535, -451.94165, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/93.json"
+
+[node name="star76__94" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(236.761398, -653.886963, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/94.json"
+
+[node name="star77__95" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(444.023499, -710.97522, 2244.96484)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/95.json"
+
+[node name="star78__96" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(582.198364, -584.432312, 2244.96484)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/96.json"
+
+[node name="star79__97" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-831.305969, -710.975281, 2210.42114)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/97.json"
+
+[node name="star80__98" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(754.916748, -791.611511, 2141.33374)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/98.json"
+
+[node name="star81__99" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-313.150818, -1046.14783, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/99.json"
+
+[node name="star82__100" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-177.762817, -1149.7373, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/100.json"
+
+[node name="star83__101" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-209.519745, -939.034546, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/101.json"
+
+[node name="star84__102" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-520.412964, -919.604736, 2279.5083)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/102.json"
+
+[node name="star85__103" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(64.0429535, -971.399597, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/103.json"
+
+[node name="star86__104" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(236.761398, -1149.7373, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/104.json"
+
+[node name="star87__105" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(444.023499, -1046.14771, 2244.96484)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/105.json"
+
+[node name="star88__106" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(582.198364, -919.604858, 2244.96484)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/106.json"
+
+[node name="star89__107" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-831.305908, -1046.14783, 2210.42114)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/107.json"
+
+[node name="star90__108" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(754.916748, -1126.78406, 2141.33374)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/108.json"
+
+[node name="star91__109" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -653.887085, -59.849247)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/109.json"
+
+[node name="star92__110" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22827, -208.510559, -6.8087883)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/110.json"
+
+[node name="star93__111" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, 96.3703003, -38.5657806)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/111.json"
+
+[node name="star94__112" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2102.59717, 21.622036, -349.458954)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/112.json"
+
+[node name="star95__113" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -30.1727982, 234.996857)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/113.json"
+
+[node name="star96__114" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -208.510559, 407.715302)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/114.json"
+
+[node name="star97__115" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2068.05322, -104.920921, 614.977661)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/115.json"
+
+[node name="star98__116" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2068.05347, 21.6220989, 753.152161)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/116.json"
+
+[node name="star99__117" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2033.50952, -104.921021, -660.35199)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/117.json"
+
+[node name="star100__118" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1964.42236, -185.557129, 925.870605)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/118.json"
+
+[node name="star101__119" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -710.975342, 490.063171)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/119.json"
+
+[node name="star102__120" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -814.564941, 354.67511)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/120.json"
+
+[node name="star103__121" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -509.684204, 386.431824)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/121.json"
+
+[node name="star104__122" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2102.59717, -584.432373, 697.324951)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/122.json"
+
+[node name="star105__123" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -451.941772, 112.869171)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/123.json"
+
+[node name="star106__124" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -104.920959, -142.196838)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/124.json"
+
+[node name="star107__125" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2068.05322, -710.975281, -267.111359)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/125.json"
+
+[node name="star108__126" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2068.05347, -584.432373, -405.286255)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/126.json"
+
+[node name="star109__127" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2033.50952, -710.975281, 1008.21814)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/127.json"
+
+[node name="star110__128" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1964.42236, -791.611572, -578.004639)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/128.json"
+
+[node name="star111__129" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -1046.14795, 490.062897)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/129.json"
+
+[node name="star112__130" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -1149.73755, 354.67511)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/130.json"
+
+[node name="star113__131" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -939.034729, 386.431824)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/131.json"
+
+[node name="star114__132" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2102.59717, -919.604858, 697.325073)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/132.json"
+
+[node name="star115__133" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -971.39978, 112.869194)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/133.json"
+
+[node name="star116__134" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -1149.73755, -59.8492279)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/134.json"
+
+[node name="star117__135" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2068.05322, -1046.14783, -267.111328)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/135.json"
+
+[node name="star118__136" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2068.05322, -919.604919, -405.286255)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/136.json"
+
+[node name="star119__137" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2033.50964, -1046.14783, 1008.21796)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/137.json"
+
+[node name="star120__138" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1964.42236, -1126.78418, -578.004639)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/138.json"
+
+[node name="star121__139" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -653.887085, -59.849247)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/139.json"
+
+[node name="star122__140" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -208.510559, -6.8087883)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/140.json"
+
+[node name="star123__141" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, 96.370285, -38.5657806)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/141.json"
+
+[node name="star124__142" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2108.55444, 21.6220551, -349.458954)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/142.json"
+
+[node name="star125__143" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -30.1728058, 234.997009)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/143.json"
+
+[node name="star126__144" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -208.510574, 407.715424)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/144.json"
+
+[node name="star127__145" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2074.01074, -104.920929, 614.977539)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/145.json"
+
+[node name="star128__146" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2074.01074, 21.6220856, 753.152283)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/146.json"
+
+[node name="star129__147" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2039.46704, -104.921036, -660.352173)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/147.json"
+
+[node name="star130__148" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1970.37988, -185.557129, 925.870728)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/148.json"
+
+[node name="star131__149" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -710.975342, 490.063019)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/149.json"
+
+[node name="star132__150" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -814.564941, 354.674988)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/150.json"
+
+[node name="star133__151" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -509.684204, 386.431976)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/151.json"
+
+[node name="star134__152" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2108.55469, -584.432373, 697.325073)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/152.json"
+
+[node name="star135__153" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -451.941772, 112.869171)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/153.json"
+
+[node name="star136__154" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -104.920944, -142.196838)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/154.json"
+
+[node name="star137__155" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2074.01074, -710.975281, -267.111359)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/155.json"
+
+[node name="star138__156" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2074.01074, -584.432373, -405.286133)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/156.json"
+
+[node name="star139__157" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2039.46704, -710.975281, 1008.21802)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/157.json"
+
+[node name="star140__158" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1970.37988, -791.611572, -578.004517)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/158.json"
+
+[node name="star141__159" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -1046.14795, 490.063019)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/159.json"
+
+[node name="star142__160" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -1149.73755, 354.674988)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/160.json"
+
+[node name="star143__161" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -939.034729, 386.431976)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/161.json"
+
+[node name="star144__162" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2108.55469, -919.604858, 697.325195)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/162.json"
+
+[node name="star145__163" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -971.39978, 112.869194)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/163.json"
+
+[node name="star146__164" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -1149.73755, -59.8492279)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/164.json"
+
+[node name="star147__165" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2074.01074, -1046.14783, -267.111328)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/165.json"
+
+[node name="star148__166" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2074.01074, -919.604919, -405.286133)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/166.json"
+
+[node name="star149__167" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2039.46704, -1046.14783, 1008.21808)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/167.json"
+
+[node name="star150__168" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1970.37988, -1126.78418, -578.004517)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/168.json"
+
+[node name="star151__169" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(64.0429535, -1895.40015, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/169.json"
+
+[node name="star152__170" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(183.720978, -1651.96912, -2035.27393)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/170.json"
+
+[node name="star153__171" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(215.477875, -1347.08813, -2035.27405)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/171.json"
+
+[node name="star154__172" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(526.371094, -1421.83643, -1931.64307)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/172.json"
+
+[node name="star155__173" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-58.0848312, -1473.63135, -2035.27405)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/173.json"
+
+[node name="star156__174" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-230.803284, -1651.96912, -2035.27393)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/174.json"
+
+[node name="star157__175" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-438.06543, -1548.37939, -1897.09937)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/175.json"
+
+[node name="star158__176" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-576.240112, -1421.83643, -1897.09937)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/176.json"
+
+[node name="star159__177" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(837.26416, -1548.37939, -1862.55566)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/177.json"
+
+[node name="star160__178" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-748.958496, -1629.01562, -1793.46814)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/178.json"
+
+[node name="star161__179" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-209.519745, -1953.1427, -2035.27393)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/179.json"
+
+[node name="star162__180" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2102.59717, -1421.83643, -349.458862)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/180.json"
+
+[node name="star163__181" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(64.0429535, -1895.40039, -2035.27393)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/181.json"
+
+[node name="star164__182" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1970.37988, -1629.0155, 925.870789)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/182.json"
+
+[node name="star165__183" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2039.46704, -1548.37939, -660.352051)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/183.json"
+
+[node name="star166__184" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(319.108948, -1548.37915, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/184.json"
+
+[node name="star167__185" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(183.720978, -1651.96887, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/185.json"
+
+[node name="star168__186" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(215.477875, -1347.08801, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/186.json"
+
+[node name="star169__187" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(526.371094, -1421.83618, 2279.50854)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/187.json"
+
+[node name="star170__188" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-58.0848312, -1473.6311, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/188.json"
+
+[node name="star171__189" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-230.803284, -1651.96887, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/189.json"
+
+[node name="star172__190" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-438.06543, -1548.37915, 2244.96484)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/190.json"
+
+[node name="star173__191" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-576.240112, -1421.83618, 2244.96484)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/191.json"
+
+[node name="star174__192" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(837.26416, -1548.37915, 2210.42114)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/192.json"
+
+[node name="star175__193" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-748.958496, -1629.01538, 2141.33398)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/193.json"
+
+[node name="star176__194" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-209.519745, -1953.14233, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/194.json"
+
+[node name="star177__195" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1964.42236, -1629.0155, 925.870605)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/195.json"
+
+[node name="star178__196" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -1953.14258, 386.432037)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/196.json"
+
+[node name="star179__197" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -1895.40015, 112.869232)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/197.json"
+
+[node name="star180__198" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -1548.37939, -142.196777)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/198.json"
+
+[node name="star181__199" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(319.108948, -1548.37939, -2035.27405)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/199.json"
+
+[node name="star182__200" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2074.01074, -1421.83643, 753.152344)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/200.json"
+
+[node name="star183__201" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2074.01074, -1548.37939, 614.977661)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/201.json"
+
+[node name="star184__202" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -1651.96899, 407.715515)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/202.json"
+
+[node name="star185__203" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -1473.63123, 234.99707)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/203.json"
+
+[node name="star186__204" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2108.55444, -1421.83643, -349.458862)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/204.json"
+
+[node name="star187__205" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2068.05322, -1548.37939, 614.977783)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/205.json"
+
+[node name="star188__206" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2068.05347, -1421.83643, 753.152222)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/206.json"
+
+[node name="star189__207" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2033.50952, -1548.37939, -660.351929)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/207.json"
+
+[node name="star190__208" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -1347.08813, -38.5657196)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/208.json"
+
+[node name="star191__209" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -1651.96899, -6.80872536)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/209.json"
+
+[node name="star192__210" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -1651.96899, 407.715363)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/210.json"
+
+[node name="star193__211" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -1548.37939, -142.196777)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/211.json"
+
+[node name="star194__212" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2068.05347, -2027.89075, -405.286194)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/212.json"
+
+[node name="star195__213" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2212.18555, -2097.3457, -59.8491859)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/213.json"
+
+[node name="star196__214" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -1953.14258, 386.431885)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/214.json"
+
+[node name="star197__215" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-520.412964, -2027.89062, 2279.50854)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/215.json"
+
+[node name="star198__216" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(236.761398, -2097.3457, -2035.27393)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/216.json"
+
+[node name="star199__217" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(582.198364, -2027.89087, -1897.09912)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/217.json"
+
+[node name="star200__218" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -1347.08801, -38.5657196)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/218.json"
+
+[node name="star201__219" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22827, -1651.96899, -6.80872536)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/219.json"
+
+[node name="star202__220" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2102.59717, -2027.89075, 697.325073)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/220.json"
+
+[node name="star203__221" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -1895.40015, 112.869232)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/221.json"
+
+[node name="star204__222" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-520.412964, -2027.89087, -1931.64282)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/222.json"
+
+[node name="star205__223" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -1473.63123, 234.996948)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/223.json"
+
+[node name="star206__224" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(236.761398, -2097.34546, 2383.13965)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/224.json"
+
+[node name="star207__225" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2108.55469, -2027.89075, 697.325195)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/225.json"
+
+[node name="star208__226" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(582.198364, -2027.89062, 2244.96484)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/226.json"
+
+[node name="star209__227" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2206.22803, -2097.3457, -59.8491859)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/227.json"
+
+[node name="star210__228" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(2074.01074, -2027.89075, -405.286011)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/228.json"
+
+[node name="star211__229" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1420.02368, -1149.73755, -1555.90173)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/229.json"
+
+[node name="star212__230" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1379.39258, -208.51062, -1589.99548)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/230.json"
+
+[node name="star213__231" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1403.71973, 96.370224, -1569.58252)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/231.json"
+
+[node name="star214__232" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1575.26489, 21.621994, -1290.35815)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/232.json"
+
+[node name="star215__233" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1769.01428, -104.921036, -1037.59607)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/233.json"
+
+[node name="star216__234" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1661.52393, -1126.78418, -1037.60388)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/234.json"
+
+[node name="star217__235" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1420.02368, -653.887207, -1555.90186)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/235.json"
+
+[node name="star218__236" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1489.97876, -710.975342, -1316.82837)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/236.json"
+
+[node name="star219__237" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1595.82678, -584.432495, -1228.01123)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/237.json"
+
+[node name="star220__238" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1661.52405, -791.611694, -1037.60388)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/238.json"
+
+[node name="star221__239" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1403.71973, -1347.08813, -1569.58252)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/239.json"
+
+[node name="star222__240" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1483.10571, -104.921021, -1502.96973)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/240.json"
+
+[node name="star223__241" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1489.97876, -1046.14795, -1316.82837)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/241.json"
+
+[node name="star224__242" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1595.82678, -919.60498, -1228.01123)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/242.json"
+
+[node name="star225__243" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1769.01428, -1548.37939, -1037.59595)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/243.json"
+
+[node name="star226__244" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1379.39258, -1651.96912, -1589.99536)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/244.json"
+
+[node name="star227__245" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1575.26489, -1421.83643, -1290.35815)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/245.json"
+
+[node name="star228__246" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1420.02368, -2097.3457, -1555.90161)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/246.json"
+
+[node name="star229__247" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1483.10571, -1548.37939, -1502.96973)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/247.json"
+
+[node name="star230__248" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1595.82678, -2027.89075, -1228.01111)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/248.json"
+
+[node name="star231__249" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1287.71387, -1895.40039, -1666.92285)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/249.json"
+
+[node name="star232__250" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1287.71387, -451.941833, -1666.9231)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/250.json"
+
+[node name="star233__251" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1287.71387, -971.39978, -1666.9231)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/251.json"
+
+[node name="star234__252" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1420.02368, -1149.7373, 2039.35107)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/252.json"
+
+[node name="star235__253" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1379.39258, -208.510498, 2073.44482)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/253.json"
+
+[node name="star236__254" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1403.71973, 96.3703766, 2053.03198)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/254.json"
+
+[node name="star237__255" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1575.26489, 21.6220951, 1773.80762)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/255.json"
+
+[node name="star238__256" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1769.01428, -104.920868, 1521.04541)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/256.json"
+
+[node name="star239__257" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1661.52393, -1126.78406, 1521.05322)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/257.json"
+
+[node name="star240__258" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1420.02368, -653.887085, 2039.35107)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/258.json"
+
+[node name="star241__259" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1489.97876, -710.97522, 1800.27759)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/259.json"
+
+[node name="star242__260" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1595.82678, -584.432312, 1711.46057)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/260.json"
+
+[node name="star243__261" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1661.52405, -791.611511, 1521.05322)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/261.json"
+
+[node name="star244__262" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1403.71973, -1347.08789, 2053.03198)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/262.json"
+
+[node name="star245__263" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1483.10571, -104.920883, 1986.41907)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/263.json"
+
+[node name="star246__264" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1489.97876, -1046.14771, 1800.27759)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/264.json"
+
+[node name="star247__265" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1595.82678, -919.604858, 1711.46057)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/265.json"
+
+[node name="star248__266" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1769.01428, -1548.37939, 1521.04541)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/266.json"
+
+[node name="star249__267" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1379.39258, -1651.96887, 2073.44482)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/267.json"
+
+[node name="star250__268" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1575.26489, -1421.83618, 1773.80762)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/268.json"
+
+[node name="star251__269" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1420.02368, -2097.34546, 2039.35132)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/269.json"
+
+[node name="star252__270" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1483.10571, -1548.37915, 1986.41907)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/270.json"
+
+[node name="star253__271" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1595.82678, -2027.89062, 1711.46069)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/271.json"
+
+[node name="star254__272" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1287.71387, -1895.40015, 2150.37256)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/272.json"
+
+[node name="star255__273" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1287.71387, -451.941711, 2150.37231)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/273.json"
+
+[node name="star256__274" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1287.71387, -971.399658, 2150.37231)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/274.json"
+
+[node name="star257__275" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1215.29517, -1149.73755, -1555.90173)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/275.json"
+
+[node name="star258__276" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1174.66431, -208.510651, -1589.99548)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/276.json"
+
+[node name="star259__277" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1198.99121, 96.3701935, -1569.58264)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/277.json"
+
+[node name="star260__278" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1370.53613, 21.6220436, -1290.35815)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/278.json"
+
+[node name="star261__279" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1564.28577, -104.920982, -1037.59607)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/279.json"
+
+[node name="star262__280" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1456.79541, -1126.78418, -1037.60388)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/280.json"
+
+[node name="star263__281" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1215.29517, -653.887207, -1555.90186)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/281.json"
+
+[node name="star264__282" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1285.25049, -710.975342, -1316.82837)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/282.json"
+
+[node name="star265__283" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1391.09827, -584.432495, -1228.01123)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/283.json"
+
+[node name="star266__284" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1456.79553, -791.611694, -1037.60388)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/284.json"
+
+[node name="star267__285" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1198.99121, -1347.08813, -1569.58252)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/285.json"
+
+[node name="star268__286" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1278.37744, -104.921059, -1502.96973)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/286.json"
+
+[node name="star269__287" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1285.25049, -1046.14795, -1316.82837)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/287.json"
+
+[node name="star270__288" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1391.09827, -919.60498, -1228.01123)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/288.json"
+
+[node name="star271__289" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1564.28577, -1548.37939, -1037.59595)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/289.json"
+
+[node name="star272__290" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1174.66431, -1651.96912, -1589.99536)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/290.json"
+
+[node name="star273__291" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1370.53613, -1421.83643, -1290.35815)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/291.json"
+
+[node name="star274__292" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1215.29517, -2097.3457, -1555.90161)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/292.json"
+
+[node name="star275__293" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1278.37744, -1548.37939, -1502.96973)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/293.json"
+
+[node name="star276__294" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1391.09827, -2027.89075, -1228.01111)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/294.json"
+
+[node name="star277__295" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1082.98535, -1895.40039, -1666.92285)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/295.json"
+
+[node name="star278__296" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1082.98535, -451.941833, -1666.9231)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/296.json"
+
+[node name="star279__297" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1082.98535, -971.39978, -1666.9231)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/297.json"
+
+[node name="star280__298" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1215.29517, -1149.7373, 2039.35107)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/298.json"
+
+[node name="star281__299" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1174.66431, -208.510498, 2073.44482)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/299.json"
+
+[node name="star282__300" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1198.99121, 96.3704224, 2053.03198)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/300.json"
+
+[node name="star283__301" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1370.53613, 21.6221409, 1773.80762)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/301.json"
+
+[node name="star284__302" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1564.28577, -104.920853, 1521.04541)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/302.json"
+
+[node name="star285__303" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1456.79541, -1126.78406, 1521.05322)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/303.json"
+
+[node name="star286__304" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1215.29517, -653.887085, 2039.35107)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/304.json"
+
+[node name="star287__305" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1285.25049, -710.97522, 1800.27759)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/305.json"
+
+[node name="star288__306" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1391.09827, -584.432312, 1711.46057)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/306.json"
+
+[node name="star289__307" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1456.79553, -791.611511, 1521.05322)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/307.json"
+
+[node name="star290__308" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1198.99121, -1347.08789, 2053.03198)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/308.json"
+
+[node name="star291__309" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1278.37744, -104.920853, 1986.41907)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/309.json"
+
+[node name="star292__310" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1285.25049, -1046.14771, 1800.27759)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/310.json"
+
+[node name="star293__311" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1391.09827, -919.604858, 1711.46057)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/311.json"
+
+[node name="star294__312" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1564.28577, -1548.37939, 1521.04541)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/312.json"
+
+[node name="star295__313" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1174.66431, -1651.96887, 2073.44482)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/313.json"
+
+[node name="star296__314" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1370.53613, -1421.83618, 1773.80762)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/314.json"
+
+[node name="star297__315" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1215.29517, -2097.34546, 2039.35107)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/315.json"
+
+[node name="star298__316" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1278.37744, -1548.37915, 1986.41907)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/316.json"
+
+[node name="star299__317" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1391.09827, -2027.89062, 1711.46069)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/317.json"
+
+[node name="star300__318" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1082.98535, -1895.40015, 2150.37256)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/318.json"
+
+[node name="star301__319" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1082.98535, -451.941711, 2150.37231)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/319.json"
+
+[node name="star302__320" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-1082.98535, -971.399597, 2150.37231)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/320.json"
+
+[node name="Box75__321" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(368.186401, -403.937347, 680.731812)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/321.json"
+
+[node name="Box76__322" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(601.833252, -411.585754, -190.578842)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/322.json"
+
+[node name="Box77__323" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(625.482544, -411.585754, -110.834206)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/323.json"
+
+[node name="Box78__324" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(647.126465, -411.585754, -31.0895844)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/324.json"
+
+[node name="Box79__325" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(647.126465, -411.585754, 48.6550522)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/325.json"
+
+[node name="Box80__326" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(625.482544, -411.585754, 128.399689)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/326.json"
+
+[node name="Box81__327" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(601.833252, -411.585754, 208.144333)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/327.json"
+
+[node name="Box82__328" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(566.553589, -411.585754, 287.889038)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/328.json"
+
+[node name="Box83__329" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(368.186401, -321.017792, 602.630127)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/329.json"
+
+[node name="Box84__330" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(368.186401, -321.017792, 758.833435)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/330.json"
+
+[node name="Box85__331" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(368.186401, -489.137573, 602.630127)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/331.json"
+
+[node name="Box86__332" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(368.186401, -489.137573, 758.833435)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/332.json"
+
+[node name="Box87__333" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(368.186401, -321.017853, -760.960999)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/333.json"
+
+[node name="Box88__334" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(368.186401, -321.017853, -604.75769)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/334.json"
+
+[node name="Box89__335" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(368.186401, -403.937408, -682.859375)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/335.json"
+
+[node name="Box90__336" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(368.186401, -489.137634, -760.960999)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/336.json"
+
+[node name="Box91__337" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(368.186401, -489.137634, -604.75769)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/337.json"
+
+[node name="Box93__338" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-739.975037, -170.731781, 366.547974)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/338.json"
+
+[node name="Box94__339" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-680.910645, -203.198792, 264.429901)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/339.json"
+
+[node name="Box95__340" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-635.609497, -245.414185, 162.311829)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/340.json"
+
+[node name="Box96__341" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-587.833984, -276.94104, 60.1937561)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/341.json"
+
+[node name="Box97__342" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-587.833984, -276.94104, -41.9243317)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/342.json"
+
+[node name="Box98__343" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-635.609497, -245.414185, -144.042419)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/343.json"
+
+[node name="Box99__344" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-680.910645, -203.198853, -246.160492)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/344.json"
+
+[node name="Box100__345" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-739.975037, -170.731812, -348.278595)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/345.json"
+
+[node name="Cylinder11__346" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2.41802883, -8.84997749, -42.7722092)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/346.json"
+
+[node name="Cylinder12__347" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(53.9444504, 13.1193476, -8.82720661)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/347.json"
+
+[node name="Cylinder13__348" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(54.3284149, 12.998786, 7.45653439)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/348.json"
+
+[node name="Cylinder14__349" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2.30538225, -8.89428711, 42.5111313)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/349.json"
+
+[node name="leida" type="Node3D" parent="Animations"]
+
+position = Vector3(-16.7098799, 6.64675546, -33.8136511)
+
+[node name="leida_0__0" type="MeshInstance3D" parent="Animations/leida"]
+
+position = Vector3(-41.8685312, 0.658064127, 33.8199396)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/leida_0.json"
+
+[node name="leida_1__1" type="MeshInstance3D" parent="Animations/leida"]
+
+position = Vector3(41.8685312, -0.658064127, -33.8199396)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/leida_1.json"
+
+[node name="kexuechuan" type="Node3D" parent="Animations"]
+
+position = Vector3(-17.9985847, 7.24119282, -11.8388062)
+
+[node name="kexuechuan_0__0" type="MeshInstance3D" parent="Animations/kexuechuan"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/kexuechuan_0.json"
+
+[node name="zhongfeichuan" type="Node3D" parent="Animations"]
+
+position = Vector3(-78.7896955, -13.5211606, 156.547813)
+
+[node name="zhongfeichuan_0__0" type="MeshInstance3D" parent="Animations/zhongfeichuan"]
+
+position = Vector3(34.9986913, -12.3930163, 44.4246902)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/zhongfeichuan_0.json"
+
+[node name="zhongfeichuan_1__1" type="MeshInstance3D" parent="Animations/zhongfeichuan"]
+
+position = Vector3(22.4120443, -8.018291, 44.3722916)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/zhongfeichuan_1.json"
+
+[node name="zhongfeichuan_2__2" type="MeshInstance3D" parent="Animations/zhongfeichuan"]
+
+position = Vector3(57.7551363, -12.3930163, -294.865562)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/zhongfeichuan_2.json"
+
+[node name="zhongfeichuan_3__3" type="MeshInstance3D" parent="Animations/zhongfeichuan"]
+
+position = Vector3(70.3413312, -8.018291, -294.783989)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/zhongfeichuan_3.json"
+
+[node name="zhongfeichuan_4__4" type="MeshInstance3D" parent="Animations/zhongfeichuan"]
+
+position = Vector3(15.4320753, 48.7069821, 199.81144)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/zhongfeichuan_4.json"
+
+[node name="zhongfeichuan_5__5" type="MeshInstance3D" parent="Animations/zhongfeichuan"]
+
+position = Vector3(11.5143049, 53.0817037, 188.019753)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/zhongfeichuan_5.json"
+
+[node name="zhongfeichuan_6__6" type="MeshInstance3D" parent="Animations/zhongfeichuan"]
+
+position = Vector3(-106.05761, -32.6703982, 50.2223282)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/zhongfeichuan_6.json"
+
+[node name="zhongfeichuan_7__7" type="MeshInstance3D" parent="Animations/zhongfeichuan"]
+
+position = Vector3(-106.395973, -28.2956729, 62.7990494)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/zhongfeichuan_7.json"
+
+[node name="feiji" type="Node3D" parent="Animations"]
+
+position = Vector3(-15.3955371, -12.3852154, -115.090014)
+
+[node name="feiji_0__0" type="MeshInstance3D" parent="Animations/feiji"]
+
+position = Vector3(-103.76613, 34.6336514, -57.6848119)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/feiji_0.json"
+
+[node name="feiji_1__1" type="MeshInstance3D" parent="Animations/feiji"]
+
+position = Vector3(-25.3469365, -33.7831653, -75.568723)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/feiji_1.json"
+
+[node name="feiji_2__2" type="MeshInstance3D" parent="Animations/feiji"]
+
+position = Vector3(129.113066, -0.85048612, 133.253535)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/feiji_2.json"
+
+[node name="paota" type="Node3D" parent="Animations"]
+
+position = Vector3(-19.748899, 4.08086245, 9.24830103)
+
+[node name="paota_0__0" type="MeshInstance3D" parent="Animations/paota"]
+
+position = Vector3(1.79078245, -3.36014579, 0.00967931747)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/paota_0.json"
+
+[node name="paota_1__1" type="MeshInstance3D" parent="Animations/paota"]
+
+position = Vector3(-2.19941759, 2.11598928, -1.7742238)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/paota_1.json"
+
+[node name="paota_2__2" type="MeshInstance3D" parent="Animations/paota"]
+
+position = Vector3(-3.06019068, 1.10177048, 1.75486517)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/paota_2.json"
+
+[node name="paota_3__3" type="MeshInstance3D" parent="Animations/paota"]
+
+position = Vector3(3.46882582, 0.142386034, 0.00967931747)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/paota_3.json"
+
+[node name="xiaoleida" type="Node3D" parent="Animations"]
+
+position = Vector3(26.2566612, 9.08759477, -19.3254963)
+
+[node name="xiaoleida_0__0" type="MeshInstance3D" parent="Animations/xiaoleida"]
+
+position = Vector3(-14.5161197, -8.94953164, -24.8402179)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/xiaoleida_0.json"
+
+[node name="xiaoleida_1__1" type="MeshInstance3D" parent="Animations/xiaoleida"]
+
+position = Vector3(-14.5161197, -8.94953164, 60.4550205)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/xiaoleida_1.json"
+
+[node name="xiaoleida_2__2" type="MeshInstance3D" parent="Animations/xiaoleida"]
+
+position = Vector3(-14.8855388, -7.28369834, -24.8457683)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/xiaoleida_2.json"
+
+[node name="xiaoleida_3__3" type="MeshInstance3D" parent="Animations/xiaoleida"]
+
+position = Vector3(-14.8855388, -7.54265752, 60.4494702)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/xiaoleida_3.json"
+
+[node name="xiaoleida_4__4" type="MeshInstance3D" parent="Animations/xiaoleida"]
+
+position = Vector3(14.2377808, 14.1175596, -35.4926952)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/xiaoleida_4.json"
+
+[node name="xiaoleida_5__5" type="MeshInstance3D" parent="Animations/xiaoleida"]
+
+position = Vector3(24.2207864, 3.24065612, -42.0958637)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/xiaoleida_5.json"
+
+[node name="xiaoleida_6__6" type="MeshInstance3D" parent="Animations/xiaoleida"]
+
+position = Vector3(24.3574136, 9.82980178, -11.3723892)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/xiaoleida_6.json"
+
+[node name="xiaoleida_7__7" type="MeshInstance3D" parent="Animations/xiaoleida"]
+
+position = Vector3(14.2396004, 0.633955219, -17.8157314)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/xiaoleida_7.json"
+
+[node name="xiaoleida_8__8" type="MeshInstance3D" parent="Animations/xiaoleida"]
+
+position = Vector3(0.723357461, 7.6015074, -25.0969852)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/xiaoleida_8.json"
+
+[node name="xiaoleida_9__9" type="MeshInstance3D" parent="Animations/xiaoleida"]
+
+position = Vector3(-1.4345443, 2.87272094, 41.4609905)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/xiaoleida_9.json"
+
+[node name="xiaoleida_10__10" type="MeshInstance3D" parent="Animations/xiaoleida"]
+
+position = Vector3(-17.5410774, -5.57078197, 19.1941698)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/space/xiaoleida_10.json"

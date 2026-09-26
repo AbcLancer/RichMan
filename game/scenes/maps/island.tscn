@@ -1,0 +1,1373 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/original_mesh.gd" id="1_mesh"]
+
+[node name="OriginalScene" type="Node3D"]
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="Animations" type="Node3D" parent="."]
+
+[node name="Box02__0" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-39.7288361, -2.24737787, 0.000410079956)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/0.json"
+
+[node name="Box07__1" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-49.0216522, 2.67053986, 20.7581329)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/1.json"
+
+[node name="Box03__2" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(76.3450699, 5.72819328, 33.988678)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/2.json"
+
+[node name="Box02__3" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-37.2180786, 5.32118225, -17.1420135)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/3.json"
+
+[node name="Cylinder02__4" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-30.0045185, 3.8406508, -25.1835632)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/4.json"
+
+[node name="楼7__5" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-36.5129166, 5.60630941, 16.3994236)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/5.json"
+
+[node name="体育馆__6" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-7.77037191, 1.19747138, -8.16995907)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/6.json"
+
+[node name="天塔__7" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-39.1925392, 12.3268719, -0.822981358)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/7.json"
+
+[node name="医院__8" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-52.3932953, 1.02703452, -24.547287)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/8.json"
+
+[node name="科技中心__9" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-64.3526459, 4.20789289, 11.7448578)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/9.json"
+
+[node name="Sphere34__10" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-71.6257324, 1.69800615, 29.6959209)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/10.json"
+
+[node name="Sphere35__11" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-66.2924805, 1.69800591, 24.4039021)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/11.json"
+
+[node name="Sphere36__12" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-60.6470642, 1.69800568, 18.831955)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/12.json"
+
+[node name="Sphere37__13" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-54.4446182, 1.73010063, 12.5196857)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/13.json"
+
+[node name="Sphere45__14" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-69.6802826, 1.69800615, 31.6413612)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/14.json"
+
+[node name="Sphere46__15" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-64.3470459, 1.69800591, 26.3493423)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/15.json"
+
+[node name="Sphere47__16" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-58.7016258, 1.69800568, 20.7773933)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/16.json"
+
+[node name="Sphere48__17" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-52.4991798, 1.73010063, 14.4651241)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/17.json"
+
+[node name="Sphere55__18" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-46.0103455, 1.6980052, 7.97141647)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/18.json"
+
+[node name="Sphere56__19" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-47.9557838, 1.69800496, 6.02597857)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/19.json"
+
+[node name="树05__20" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-16.6796207, 2.30362916, 14.7413921)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/20.json"
+
+[node name="Box08__21" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-27.9021759, 2.49993992, 20.9484158)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/21.json"
+
+[node name="Cylinder01__22" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-151.947144, 7.25789356, 123.63765)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/22.json"
+
+[node name="Cylinder03__23" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(32.8706169, 0.466488361, -123.157501)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/23.json"
+
+[node name="Cylinder04__24" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(21.1181602, 2.67811537, -122.823601)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/24.json"
+
+[node name="Box01__25" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(81.5276337, -2.15528893, 0.295536041)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/25.json"
+
+[node name="Box01__26" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(98.9617004, 10.7080317, 0.297346592)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/26.json"
+
+[node name="Box09__27" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(63.8192368, 2.67053747, -34.5145569)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/27.json"
+
+[node name="体育馆01__28" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(74.2634735, 1.19747138, -8.44298744)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/28.json"
+
+[node name="Cylinder05__29" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(73.4260712, 3.84065175, 6.95312881)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/29.json"
+
+[node name="Cylinder06__30" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(235.773071, 8.8979702, -70.5284042)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/30.json"
+
+[node name="树73__31" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(111.438148, 19.8745728, 241.931671)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/31.json"
+
+[node name="树74__32" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(45.9490623, 27.3204193, 230.335175)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/32.json"
+
+[node name="Cylinder07__33" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(55.2831078, 10.2057638, 223.32135)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/33.json"
+
+[node name="Cylinder08__34" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(107.798141, 5.66646957, 243.894287)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/34.json"
+
+[node name="树75__35" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-220.53833, 19.8574657, -79.6965332)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/35.json"
+
+[node name="树76__36" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-225.21701, 20.4866867, -83.392128)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/36.json"
+
+[node name="树77__37" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-229.222839, 28.6176071, -97.0324402)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/37.json"
+
+[node name="Cylinder09__38" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-219.123917, 11.0305882, -95.5441437)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/38.json"
+
+[node name="树78__39" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(60.0785446, 27.5887794, 230.335175)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/39.json"
+
+[node name="Box10__40" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-54.9119339, 5.74405193, 3.22825694)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/40.json"
+
+[node name="Box11__41" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-66.2185287, 2.76700163, -14.2524014)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/41.json"
+
+[node name="Cylinder10__42" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-39.192543, 0.518337429, -0.822980523)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/42.json"
+
+[node name="Sphere68__43" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-27.1165028, 1.69800425, -13.8369007)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/43.json"
+
+[node name="Sphere69__44" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-25.1710663, 1.69800436, -11.8914623)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/44.json"
+
+[node name="Sphere70__45" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-32.0517464, 1.69800436, -9.04242992)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/45.json"
+
+[node name="Sphere71__46" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-30.106308, 1.69800448, -7.09699106)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/46.json"
+
+[node name="Sphere72__47" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-21.4484463, 1.69800401, -19.4907875)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/47.json"
+
+[node name="Sphere73__48" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-19.5030098, 1.69800401, -17.5453491)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/48.json"
+
+[node name="Sphere74__49" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-15.5620708, 1.73009896, -25.4316559)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/49.json"
+
+[node name="Sphere75__50" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-13.6166353, 1.7300992, -23.4862194)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/50.json"
+
+[node name="Sphere76__51" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-9.76813507, 1.69800353, -31.2237549)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/51.json"
+
+[node name="Sphere77__52" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-7.82270145, 1.69800353, -29.2783165)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/52.json"
+
+[node name="Sphere78__53" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-65.1692047, 1.7300992, -23.4149895)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/53.json"
+
+[node name="Sphere79__54" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-63.2237625, 1.73009908, -25.3604279)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/54.json"
+
+[node name="Sphere80__55" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-69.0158539, 1.69800353, -31.1543598)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/55.json"
+
+[node name="Sphere81__56" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-70.9612885, 1.69800365, -29.2089272)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/56.json"
+
+[node name="Sphere82__57" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-59.2283287, 1.69800413, -17.528614)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/57.json"
+
+[node name="Sphere83__58" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-57.2828903, 1.69800401, -19.4740524)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/58.json"
+
+[node name="Sphere84__59" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-53.5744438, 1.69800436, -11.8605585)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/59.json"
+
+[node name="Sphere85__60" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-51.6290092, 1.69800425, -13.805994)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/60.json"
+
+[node name="Sphere86__61" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-48.7799759, 1.69800448, -6.92531633)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/61.json"
+
+[node name="Sphere87__62" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-46.8345337, 1.69800448, -8.87075233)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/62.json"
+
+[node name="Sphere88__63" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-26.6609612, 1.73010075, 14.7083378)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/63.json"
+
+[node name="Sphere89__64" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-24.7155247, 1.73010063, 12.7629013)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/64.json"
+
+[node name="Sphere90__65" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-30.736721, 1.69800508, 6.71752119)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/65.json"
+
+[node name="Sphere91__66" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-32.6821594, 1.6980052, 8.66295528)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/66.json"
+
+[node name="Sphere92__67" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-20.7200909, 1.69800568, 20.5947151)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/67.json"
+
+[node name="Sphere93__68" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-18.7746544, 1.69800568, 18.6492805)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/68.json"
+
+[node name="Sphere94__69" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-15.0662069, 1.69800603, 26.2627754)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/69.json"
+
+[node name="Sphere95__70" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-13.1207705, 1.69800591, 24.3173389)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/70.json"
+
+[node name="Sphere96__71" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-10.5409327, 1.69800615, 31.4252434)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/71.json"
+
+[node name="Sphere97__72" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-8.12265301, 1.69800615, 29.1119785)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/72.json"
+
+[node name="Sphere98__73" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-46.1068611, 1.69800353, -30.4936485)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/73.json"
+
+[node name="Sphere99__74" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-44.448597, 1.69800377, -23.6736202)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/74.json"
+
+[node name="Sphere100__75" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-50.054306, 1.69800413, -17.9135513)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/75.json"
+
+[node name="Sphere101__76" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-59.2359314, 1.69800377, -26.9085064)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/76.json"
+
+[node name="Sphere102__77" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-53.6302223, 1.69800341, -32.6685715)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/77.json"
+
+[node name="树79__78" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-16.6993809, 1.53446174, 6.74775028)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/78.json"
+
+[node name="树80__79" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-12.3842258, 1.84999502, -0.682195902)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/79.json"
+
+[node name="树81__80" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-32.1532288, 2.30362964, 28.8108482)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/80.json"
+
+[node name="树82__81" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(15.9971905, 11.7645102, -123.283195)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/81.json"
+
+[node name="树83__82" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(33.2030792, 8.59432316, -122.25119)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/82.json"
+
+[node name="树84__83" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(225.599182, 23.8222771, -72.1477966)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/83.json"
+
+[node name="树85__84" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(231.385162, 21.8804035, -63.4453049)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/84.json"
+
+[node name="树86__85" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(234.17453, 20.8987484, -59.9565582)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/85.json"
+
+[node name="树87__86" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-147.11972, 18.2687626, 126.633133)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/86.json"
+
+[node name="树88__87" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-147.43869, 15.5728722, 118.776031)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/87.json"
+
+[node name="树89__88" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-150.313126, 15.0636139, 115.682968)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/88.json"
+
+[node name="树90__89" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-53.9009552, 3.2023375, 32.582489)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/89.json"
+
+[node name="树91__90" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-42.5208588, 2.36411643, 34.6106415)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/90.json"
+
+[node name="树92__91" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-30.3438473, 2.25638795, 34.6198502)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/91.json"
+
+[node name="树93__92" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-27.7174263, 1.8539046, 34.120842)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/92.json"
+
+[node name="树94__93" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-66.1067963, 2.88850236, 20.0666237)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/93.json"
+
+[node name="树95__94" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-75.0746918, 2.7516551, 13.5148449)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/94.json"
+
+[node name="树96__95" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-72.9019928, 1.96060407, 14.8705444)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/95.json"
+
+[node name="树97__96" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-68.2944183, 3.55639029, -20.9525185)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/96.json"
+
+[node name="树98__97" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-72.8248825, 2.75165439, -2.75820684)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/97.json"
+
+[node name="树99__98" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-72.3813858, 2.44845581, 0.605361164)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/98.json"
+
+[node name="树100__99" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-74.5728149, 1.93678093, -9.96468258)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/99.json"
+
+[node name="树101__100" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-57.0580826, 2.75165415, -9.92268085)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/100.json"
+
+[node name="树102__101" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-52.5077209, 1.93678129, -0.712439656)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/101.json"
+
+[node name="树103__102" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(74.728302, 4.41764641, -27.8473587)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/102.json"
+
+[node name="树104__103" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(70.5700836, 2.81568265, -27.5828571)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/103.json"
+
+[node name="树105__104" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(61.209259, 2.54816699, -25.2967167)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/104.json"
+
+[node name="树106__105" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(96.9718781, 2.81568265, -21.4772053)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/105.json"
+
+[node name="树107__106" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(79.7180099, 2.19067121, -28.898468)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/106.json"
+
+[node name="树108__107" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(68.7423248, 3.34392715, 29.6507187)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/107.json"
+
+[node name="树109__108" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(81.7059326, 4.27029705, 34.6611137)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/108.json"
+
+[node name="树110__109" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(86.0270081, 2.73903537, 33.4857712)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/109.json"
+
+[node name="Cylinder13__110" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-22.3944206, 0.212386638, 5.78373671)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/110.json"
+
+[node name="Cylinder14__111" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-21.4092712, 0.212386638, 2.65330243)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/111.json"
+
+[node name="Cylinder15__112" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-21.0524063, 0.212386459, -0.665503383)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/112.json"
+
+[node name="Cylinder16__113" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-21.3986187, 0.212386295, -3.98960257)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/113.json"
+
+[node name="Cylinder17__114" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-22.3897247, 0.212386116, -7.2056427)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/114.json"
+
+[node name="qiao05__115" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(44.9564705, 0.0619460344, -13.6490459)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/115.json"
+
+[node name="qiao08__116" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(20.0936527, 0.0619460344, -13.6490459)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/116.json"
+
+[node name="qiao09__117" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(44.9564705, 0.0619460344, 13.5265751)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/117.json"
+
+[node name="qiao10__118" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(20.0936527, 0.0619460344, 13.5265751)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/118.json"
+
+[node name="feiji" type="Node3D" parent="Animations"]
+
+position = Vector3(-53.3562126, 28.4186707, -81.437645)
+
+[node name="feiji_0__0" type="MeshInstance3D" parent="Animations/feiji"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/feiji_0.json"
+
+[node name="feiting" type="Node3D" parent="Animations"]
+
+position = Vector3(-6.46182346, 26.2140617, -27.1670284)
+
+[node name="feiting_0__0" type="MeshInstance3D" parent="Animations/feiting"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/feiting_0.json"
+
+[node name="haiou" type="Node3D" parent="Animations"]
+
+position = Vector3(22.4277134, 13.6030917, -53.9944191)
+
+[node name="haiou_0__0" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(14.1826458, -4.19291258, 2.6843605)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/haiou_0.json"
+
+[node name="haiou_1__1" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(6.81736946, -3.3479476, -5.85149765)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/haiou_1.json"
+
+[node name="haiou_2__2" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(2.95886421, -1.91565084, -5.62694168)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/haiou_2.json"
+
+[node name="haiou_3__3" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(16.2720699, -3.25956774, 8.26973724)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/haiou_3.json"
+
+[node name="haiou_4__4" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(4.97364616, 0.702888966, -5.79951096)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/haiou_4.json"
+
+[node name="haiou_5__5" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(-11.9848328, 4.77043581, -5.00213242)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/haiou_5.json"
+
+[node name="haiou_6__6" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(-21.512392, 1.56213045, -6.76085281)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/haiou_6.json"
+
+[node name="haiou_7__7" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(-1.54671669, 2.9057126, 15.460804)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/haiou_7.json"
+
+[node name="haiou_8__8" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(-11.871664, 5.75907183, -0.41759491)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/haiou_8.json"
+
+[node name="haiou_9__9" type="MeshInstance3D" parent="Animations/haiou"]
+
+position = Vector3(1.71100998, -2.9841609, 3.04362869)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/haiou_9.json"
+
+[node name="haishui" type="Node3D" parent="Animations"]
+
+position = Vector3(-39.3838806, -3.44895514, -1.90973918)
+
+[node name="haishui_0__0" type="MeshInstance3D" parent="Animations/haishui"]
+
+position = Vector3(0, 0.915870269, 1.0172526e-05)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/haishui_0.json"
+
+[node name="haishui_1__1" type="MeshInstance3D" parent="Animations/haishui"]
+
+position = Vector3(0, -0.0167771975, 1.0172526e-05)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/haishui_1.json"
+
+[node name="haishui_2__2" type="MeshInstance3D" parent="Animations/haishui"]
+
+position = Vector3(0, -0.899093072, -2.03450521e-05)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/haishui_2.json"
+
+[node name="haitun" type="Node3D" parent="Animations"]
+
+position = Vector3(58.4878654, -6.06340297, -30.4638443)
+
+[node name="haitun_0__0" type="MeshInstance3D" parent="Animations/haitun"]
+
+position = Vector3(5.31245041, -4.97500102e-05, 1.82084274)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/haitun_0.json"
+
+[node name="haitun_1__1" type="MeshInstance3D" parent="Animations/haitun"]
+
+position = Vector3(0.101104736, -4.45048014e-06, -0.308609009)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/haitun_1.json"
+
+[node name="haitun_2__2" type="MeshInstance3D" parent="Animations/haitun"]
+
+position = Vector3(-5.41355515, 5.42004903e-05, -1.51223373)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/haitun_2.json"
+
+[node name="jingyu" type="Node3D" parent="Animations"]
+
+position = Vector3(-9.4582842, -12.6035545, 102.915644)
+
+[node name="jingyu_0__0" type="MeshInstance3D" parent="Animations/jingyu"]
+
+position = Vector3(11.8919206, 4.60882545, -42.3087254)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/jingyu_0.json"
+
+[node name="jingyu_1__1" type="MeshInstance3D" parent="Animations/jingyu"]
+
+position = Vector3(-3.94813079, -1.53627515, 14.0355816)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/jingyu_1.json"
+
+[node name="jingyu_2__2" type="MeshInstance3D" parent="Animations/jingyu"]
+
+position = Vector3(-3.98111171, -1.53627515, 14.159399)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/jingyu_2.json"
+
+[node name="jingyu_3__3" type="MeshInstance3D" parent="Animations/jingyu"]
+
+position = Vector3(-3.96267813, -1.53627515, 14.1137447)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/jingyu_3.json"
+
+[node name="kuaiting" type="Node3D" parent="Animations"]
+
+position = Vector3(26.6342659, -3.52578878, 2.4437139)
+
+[node name="kuaiting_0__0" type="MeshInstance3D" parent="Animations/kuaiting"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/kuaiting_0.json"
+
+[node name="motianlun" type="Node3D" parent="Animations"]
+
+position = Vector3(98.9616928, 19.8100796, 0.297346115)
+
+[node name="motianlun_0__0" type="MeshInstance3D" parent="Animations/motianlun"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/motianlun_0.json"
+
+[node name="yeshu" type="Node3D" parent="Animations"]
+
+position = Vector3(-8.1152516, 2.95064175, -13.4466583)
+
+[node name="yeshu_0__0" type="MeshInstance3D" parent="Animations/yeshu"]
+
+position = Vector3(-5.47311776, 0.215975165, -1.72193607)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/yeshu_0.json"
+
+[node name="yeshu_1__1" type="MeshInstance3D" parent="Animations/yeshu"]
+
+position = Vector3(-6.74309247, -1.48555005, -3.24579509)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/yeshu_1.json"
+
+[node name="yeshu_2__2" type="MeshInstance3D" parent="Animations/yeshu"]
+
+position = Vector3(-38.6196346, 0.675890565, 38.2767326)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/yeshu_2.json"
+
+[node name="yeshu_3__3" type="MeshInstance3D" parent="Animations/yeshu"]
+
+position = Vector3(-53.4218273, 0.215975165, 20.4213735)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/yeshu_3.json"
+
+[node name="yeshu_4__4" type="MeshInstance3D" parent="Animations/yeshu"]
+
+position = Vector3(-54.691801, -1.48555005, 18.8975135)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/yeshu_4.json"
+
+[node name="yeshu_5__5" type="MeshInstance3D" parent="Animations/yeshu"]
+
+position = Vector3(-34.8705997, -1.0163331, 0.550450484)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/yeshu_5.json"
+
+[node name="yeshu_6__6" type="MeshInstance3D" parent="Animations/yeshu"]
+
+position = Vector3(32.1453458, 7.95549762, -105.523785)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/yeshu_6.json"
+
+[node name="yeshu_7__7" type="MeshInstance3D" parent="Animations/yeshu"]
+
+position = Vector3(-8.47532647, -0.375793099, 17.6925818)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/yeshu_7.json"
+
+[node name="yeshu_8__8" type="MeshInstance3D" parent="Animations/yeshu"]
+
+position = Vector3(-52.0676631, -1.11005461, 43.3625271)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/yeshu_8.json"
+
+[node name="yeshu_9__9" type="MeshInstance3D" parent="Animations/yeshu"]
+
+position = Vector3(-62.4358272, -0.520890117, -4.06694682)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/yeshu_9.json"
+
+[node name="yeshu_10__10" type="MeshInstance3D" parent="Animations/yeshu"]
+
+position = Vector3(-52.3976802, -0.884008288, -4.18962558)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/yeshu_10.json"
+
+[node name="yeshu_11__11" type="MeshInstance3D" parent="Animations/yeshu"]
+
+position = Vector3(98.4021931, 0.748624444, -15.633149)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/yeshu_11.json"
+
+[node name="yeshu_12__12" type="MeshInstance3D" parent="Animations/yeshu"]
+
+position = Vector3(96.9290181, -1.22514403, -17.4008263)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/yeshu_12.json"
+
+[node name="yeshu_13__13" type="MeshInstance3D" parent="Animations/yeshu"]
+
+position = Vector3(69.1298543, -1.22514403, -29.1081436)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/yeshu_13.json"
+
+[node name="yeshu_14__14" type="MeshInstance3D" parent="Animations/yeshu"]
+
+position = Vector3(72.5901585, -0.483495593, 41.6890289)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/yeshu_14.json"
+
+[node name="penquan" type="Node3D" parent="Animations"]
+
+position = Vector3(-21.7832947, 0.948737031, -0.663071851)
+
+[node name="penquan_0__0" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(-0.16299057, -0.957046717, -0.0626690586)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/penquan_0.json"
+
+[node name="penquan_1__1" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(-0.645381927, 0.191409343, 6.4658644)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/penquan_1.json"
+
+[node name="penquan_2__2" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(0.348968506, 0.191409343, 3.34946535)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/penquan_2.json"
+
+[node name="penquan_3__3" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(0.703014374, 0.191409343, 0.0326529543)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/penquan_3.json"
+
+[node name="penquan_4__4" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(0.361927032, 0.191409343, -3.28550698)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/penquan_4.json"
+
+[node name="penquan_5__5" type="MeshInstance3D" parent="Animations/penquan"]
+
+position = Vector3(-0.605537415, 0.191409343, -6.49980666)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/penquan_5.json"
+
+[node name="sky" type="Node3D" parent="Animations"]
+
+position = Vector3(14.449173, 51.060421, -1.52156067)
+
+[node name="sky_0__0" type="MeshInstance3D" parent="Animations/sky"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/island/sky_0.json"

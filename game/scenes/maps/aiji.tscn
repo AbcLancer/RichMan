@@ -1,0 +1,1429 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/original_mesh.gd" id="1_mesh"]
+
+[node name="OriginalScene" type="Node3D"]
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="Animations" type="Node3D" parent="."]
+
+[node name="Plane01__0" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-4.30415344, 17.8232021, 1.37130737)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/0.json"
+
+[node name="民局__1" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(140.528488, 1.30120564, -32.2300568)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/1.json"
+
+[node name="民局01__2" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(39.4881096, 1.29152429, -7.58871651)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/2.json"
+
+[node name="民局02__3" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(96.1550903, 1.3012079, 18.0507526)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/3.json"
+
+[node name="民局03__4" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(47.2702103, 1.30120897, 38.0737457)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/4.json"
+
+[node name="民局04__5" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(102.141266, 1.30121017, 60.6180382)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/5.json"
+
+[node name="民局05__6" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(103.682098, 1.30120897, 48.0842934)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/6.json"
+
+[node name="民局06__7" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(84.464859, 1.30120897, 58.0482788)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/7.json"
+
+[node name="民局07__8" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(131.024399, 1.33131266, 93.3678284)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/8.json"
+
+[node name="民局08__9" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(35.0354843, 1.30120897, 53.5829201)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/9.json"
+
+[node name="minju__10" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(47.904026, 3.10769844, 55.0450554)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/10.json"
+
+[node name="minju01__11" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(67.976532, 3.30655169, 81.2375259)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/11.json"
+
+[node name="minju03__12" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(97.347168, 2.57670259, 29.9836121)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/12.json"
+
+[node name="minju05__13" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(30.487175, 3.0770247, 40.4998589)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/13.json"
+
+[node name="minju2__14" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(104.981552, 4.24995756, -3.49049497)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/14.json"
+
+[node name="阿土伯__15" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-41.6490707, 5.51839542, -0.858687878)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/15.json"
+
+[node name="shangdian__16" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(42.5922279, 3.01381969, 25.4198341)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/16.json"
+
+[node name="ding02__17" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(4.10514641, 6.46283865, -36.1487274)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/17.json"
+
+[node name="ding03__18" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(34.6299629, 6.46283865, -36.1487198)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/18.json"
+
+[node name="C-Ext02__19" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(7.98697472, 2.75490165, -5.10475588)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/19.json"
+
+[node name="神庙__20" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(58.4895477, 3.94812632, -2.6917541)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/20.json"
+
+[node name="shenmiao__21" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(19.3620777, 6.39347458, -41.0295372)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/21.json"
+
+[node name="qiao__22" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-5.27943134, 0.589730084, 19.1412506)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/22.json"
+
+[node name="阿土伯01__23" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-91.7780914, 5.01742363, -60.9319992)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/23.json"
+
+[node name="Box74__24" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-41.1200104, 2.85436678, 17.0663395)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/24.json"
+
+[node name="水池__25" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(29.1388226, 0.616762102, 24.9669647)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/25.json"
+
+[node name="minju06__26" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(22.234251, 3.19883966, -8.19890499)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/26.json"
+
+[node name="民局11__27" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(136.570816, 1.30120683, -10.5238628)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/27.json"
+
+[node name="阿土伯02__28" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-111.338707, 8.01257992, -345.869812)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/28.json"
+
+[node name="阿土伯04__29" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-253.508636, 8.68949795, 91.0325623)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/29.json"
+
+[node name="民局12__30" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-116.592522, 1.48162866, 30.4721565)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/30.json"
+
+[node name="阿土伯06__31" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-90.7398148, 9.78342819, 187.348633)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/31.json"
+
+[node name="阿土伯07__32" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-180.248474, 8.43775749, -173.863434)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/32.json"
+
+[node name="民局13__33" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(152.889664, 1.65614116, -22.1869926)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/33.json"
+
+[node name="民局18__34" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(212.866608, 1.52575839, 341.007874)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/34.json"
+
+[node name="民局20__35" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-99.0784225, 1.76102984, -13.6730232)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/35.json"
+
+[node name="民局23__36" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-182.752609, 1.78048527, 177.795288)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/36.json"
+
+[node name="民局25__37" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-127.703766, 1.73374879, 46.1029205)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/37.json"
+
+[node name="民局26__38" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-113.278709, 1.73374879, 62.8699951)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/38.json"
+
+[node name="minju07__39" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-75.6816101, 3.4522233, 68.3400421)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/39.json"
+
+[node name="minju08__40" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-112.302879, 3.5363338, 4.22103167)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/40.json"
+
+[node name="阿土伯12__41" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-164.096634, 5.41704512, -346.00238)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/41.json"
+
+[node name="民局27__42" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(170.413376, 1.52575839, 339.202576)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/42.json"
+
+[node name="民局28__43" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(192.905762, 1.52575839, 325.579895)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/43.json"
+
+[node name="民局29__44" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(200.219849, 1.65392506, -86.6363602)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/44.json"
+
+[node name="民局30__45" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(199.647736, 1.69248068, -55.2352524)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/45.json"
+
+[node name="民局31__46" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(193.480743, 1.65392506, -71.8857498)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/46.json"
+
+[node name="民局32__47" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(52.0655441, 1.30121231, 121.973419)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/47.json"
+
+[node name="民局33__48" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(51.8996773, 1.30121064, 109.810959)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/48.json"
+
+[node name="民局34__49" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(139.106903, 1.65393269, 109.150803)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/49.json"
+
+[node name="民局35__50" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(125.193573, 1.69248843, 122.322189)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/50.json"
+
+[node name="民局36__51" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(116.882584, 1.65393269, 109.291245)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/51.json"
+
+[node name="民局37__52" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(72.8267059, 1.30121231, 130.773773)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/52.json"
+
+[node name="民局38__53" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(89.0952759, 1.3012135, 159.042633)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/53.json"
+
+[node name="民局39__54" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-112.470306, 1.69247854, -107.469681)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/54.json"
+
+[node name="民局40__55" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-93.3205185, 1.65392387, -121.051247)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/55.json"
+
+[node name="民局41__56" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-73.8751221, 1.52763605, -104.71019)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/56.json"
+
+[node name="民局42__57" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(164.516129, 2.07939744, 76.7494583)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/57.json"
+
+[node name="民局43__58" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(158.357864, 2.34529519, 58.6860199)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/58.json"
+
+[node name="民局44__59" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(161.736511, 2.14653087, 44.4828568)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/59.json"
+
+[node name="Box109__60" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-56.4404373, 2.73152304, -33.6239624)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/60.json"
+
+[node name="Box110__61" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-45.8541794, 2.73152304, -31.9556999)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/61.json"
+
+[node name="Box111__62" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-50.3220978, 2.73152208, -43.5242691)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/62.json"
+
+[node name="Box112__63" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-60.3641357, 2.73152208, -41.8453217)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/63.json"
+
+[node name="Box113__64" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-58.3317299, 2.73152208, -48.6120186)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/64.json"
+
+[node name="Box114__65" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-18.5211658, 2.79560137, 9.53940487)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/65.json"
+
+[node name="Box115__66" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(0.924152255, 2.79560137, -1.15818191)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/66.json"
+
+[node name="Box116__67" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(15.8771076, 2.79560137, -11.8041811)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/67.json"
+
+[node name="Box117__68" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(69.0196533, 2.79560137, 8.1836338)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/68.json"
+
+[node name="Box118__69" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-29.7709656, 2.73152113, -88.8730011)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/69.json"
+
+[node name="Box120__70" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-35.3470078, 2.73152208, -64.737793)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/70.json"
+
+[node name="Box121__71" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-34.5424118, 2.73152113, -74.5827179)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/71.json"
+
+[node name="Box122__72" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-16.3240948, 2.73152113, -77.087204)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/72.json"
+
+[node name="Box123__73" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-0.900396943, 2.73152113, -74.4206543)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/73.json"
+
+[node name="Box124__74" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-94.7546997, 2.73152304, -37.4796524)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/74.json"
+
+[node name="Box125__75" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-84.2910767, 2.74636984, -16.7190285)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/75.json"
+
+[node name="Box126__76" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-99.6713257, 2.73152447, -1.59437037)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/76.json"
+
+[node name="Box127__77" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-100.067444, 2.73152542, 14.3753424)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/77.json"
+
+[node name="Box128__78" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-74.7461014, 2.73152637, 48.7748413)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/78.json"
+
+[node name="Box129__79" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-64.7621994, 2.73152637, 46.9972649)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/79.json"
+
+[node name="Box130__80" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-65.1434784, 2.73152637, 60.5728188)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/80.json"
+
+[node name="Box131__81" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-2.34367776, 2.73152637, 38.1107903)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/81.json"
+
+[node name="Box132__82" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(0.452381015, 2.73152637, 46.167244)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/82.json"
+
+[node name="Box133__83" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-8.51261234, 2.73152637, 50.3766937)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/83.json"
+
+[node name="Box134__84" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-18.4381104, 2.73152637, 44.3758354)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/84.json"
+
+[node name="Box135__85" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-10.3709393, 2.73152542, 35.3927727)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/85.json"
+
+[node name="Box136__86" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-96.9629745, 2.73153067, 153.117508)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/86.json"
+
+[node name="Box137__87" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-65.3550873, 2.7315321, 171.087585)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/87.json"
+
+[node name="Box138__88" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-105.252808, 2.73153877, 326.484039)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/88.json"
+
+[node name="Box139__89" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-72.349144, 2.73153639, 291.558838)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/89.json"
+
+[node name="Box140__90" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-62.9829369, 2.73153877, 321.546783)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/90.json"
+
+[node name="Box141__91" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-95.3204193, 2.73153973, 350.896851)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/91.json"
+
+[node name="Box142__92" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-98.7786942, 2.73153734, 295.907349)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/92.json"
+
+[node name="Box143__93" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-193.104294, 2.73152876, 103.308517)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/93.json"
+
+[node name="Box144__94" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-208.538559, 2.72192335, 137.047958)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/94.json"
+
+[node name="Box145__95" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-255.151825, 7.27068901, 146.222473)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/95.json"
+
+[node name="Box146__96" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-315.440643, 7.27068806, 122.698288)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/96.json"
+
+[node name="Box147__97" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-242.784424, 6.34546614, 39.7655296)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/97.json"
+
+[node name="Box148__98" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-239.158463, 9.92934608, -151.279266)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/98.json"
+
+[node name="Box149__99" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-179.842377, 6.58052588, -130.311554)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/99.json"
+
+[node name="Box150__100" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-118.607979, 2.62093544, -172.471527)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/100.json"
+
+[node name="Box151__101" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-95.6528778, 2.70791245, -231.882034)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/101.json"
+
+[node name="Box152__102" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-178.342911, 7.36790895, -222.71344)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/102.json"
+
+[node name="Box153__103" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(3.97322273, 2.79560041, -25.8946438)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/103.json"
+
+[node name="Box154__104" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(5.86019373, 2.79559946, -45.4686127)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/104.json"
+
+[node name="Box155__105" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(13.033205, 2.79559946, -52.5817642)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/105.json"
+
+[node name="Box156__106" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(25.2770061, 2.79559946, -52.6094055)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/106.json"
+
+[node name="Box157__107" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(32.9676247, 2.79559946, -52.4363785)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/107.json"
+
+[node name="Box158__108" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(40.6035309, 2.79559946, -48.9722366)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/108.json"
+
+[node name="Box159__109" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(28.8309174, 2.79560041, -34.0504684)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/109.json"
+
+[node name="Box160__110" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(45.4817963, 2.79559946, -41.2564621)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/110.json"
+
+[node name="Box161__111" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(53.2313843, 2.79560041, -36.8282623)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/111.json"
+
+[node name="Box162__112" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(61.3021545, 2.79560041, -40.1929817)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/112.json"
+
+[node name="Box163__113" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(73.5374298, 2.79560041, -36.6687851)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/113.json"
+
+[node name="Box164__114" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(76.5313721, 2.79559946, -46.5617256)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/114.json"
+
+[node name="Box165__115" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(84.8363495, 2.79559946, -42.2184296)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/115.json"
+
+[node name="Box166__116" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(84.2269897, 2.79560041, -26.4951267)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/116.json"
+
+[node name="Box167__117" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(89.1985016, 2.79560041, -19.1117058)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/117.json"
+
+[node name="Box168__118" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(104.099281, 2.79560041, -35.0658722)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/118.json"
+
+[node name="Box169__119" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(105.20697, 2.79560041, -19.9079666)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/119.json"
+
+[node name="Box170__120" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(98.4703827, 2.79559946, -49.9299698)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/120.json"
+
+[node name="Box171__121" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(102.111893, 2.52046204, -67.6070328)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/121.json"
+
+[node name="Box172__122" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(119.080627, 2.79560041, -25.178196)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/122.json"
+
+[node name="Box173__123" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(123.584549, 2.79559946, -40.8676758)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/123.json"
+
+[node name="Box174__124" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(117.077469, 2.79559946, -49.3810234)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/124.json"
+
+[node name="Box175__125" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(138.6297, 2.52046347, -55.6319885)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/125.json"
+
+[node name="Box176__126" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(117.253326, 2.80047798, -78.813324)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/126.json"
+
+[node name="Box177__127" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(131.56012, 2.52046108, -95.1088257)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/127.json"
+
+[node name="Box178__128" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(182.413834, 2.52046108, -95.6085129)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/128.json"
+
+[node name="Box179__129" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(198.833862, 2.52046013, -119.401421)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/129.json"
+
+[node name="Box180__130" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(203.130096, 2.52046204, -73.8361664)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/130.json"
+
+[node name="Box181__131" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(147.452515, 2.52046537, -4.62998676)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/131.json"
+
+[node name="Box182__132" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(111.318977, 2.5204668, 12.7962332)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/132.json"
+
+[node name="Box183__133" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(125.93927, 2.7956028, 19.9484749)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/133.json"
+
+[node name="Box184__134" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(136.153412, 2.7956028, 21.2241783)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/134.json"
+
+[node name="Box185__135" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(117.673309, 2.7956028, 27.8787651)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/135.json"
+
+[node name="Box186__136" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(95.6215363, 2.79560375, 37.83255)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/136.json"
+
+[node name="Box187__137" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(104.028793, 2.7956028, 24.5574913)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/137.json"
+
+[node name="Box188__138" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(89.0820312, 2.79560471, 66.4185562)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/138.json"
+
+[node name="Box189__139" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(80.0174561, 2.79560471, 68.9404831)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/139.json"
+
+[node name="Box190__140" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(70.9988098, 2.79560471, 64.3001633)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/140.json"
+
+[node name="Box191__141" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(38.9531937, 2.79560375, 60.4862442)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/141.json"
+
+[node name="Box192__142" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(36.8498878, 2.79560375, 36.5358658)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/142.json"
+
+[node name="Box193__143" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(42.4034119, 2.79560375, 46.2267609)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/143.json"
+
+[node name="Box194__144" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(51.3630447, 2.79560375, 45.7462311)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/144.json"
+
+[node name="Box195__145" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(62.5589142, 2.79560614, 107.859871)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/145.json"
+
+[node name="Box196__146" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(48.7209625, 2.79560709, 134.96051)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/146.json"
+
+[node name="Box197__147" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(67.4546661, 2.79560804, 158.843994)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/147.json"
+
+[node name="Box198__148" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(140.437469, 2.79560709, 136.291809)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/148.json"
+
+[node name="Box199__149" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(92.3991318, 2.79561234, 253.298218)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/149.json"
+
+[node name="Box200__150" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(82.180542, 2.79561234, 255.89444)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/150.json"
+
+[node name="Box201__151" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(81.7869949, 2.79561138, 233.885834)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/151.json"
+
+[node name="Box202__152" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(149.282562, 2.79561234, 251.379761)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/152.json"
+
+[node name="Box203__153" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(179.88092, 2.79561567, 323.692657)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/153.json"
+
+[node name="Box204__154" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(220.374771, 2.79561567, 332.348053)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/154.json"
+
+[node name="Box205__155" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(248.938507, 2.79561472, 296.439575)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/155.json"
+
+[node name="Box206__156" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(213.14711, 2.79560804, 154.472275)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/156.json"
+
+[node name="Box207__157" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(207.403793, 6.59188652, 82.0583649)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/157.json"
+
+[node name="Box208__158" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(267.396667, 18.3953018, 128.515198)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/158.json"
+
+[node name="Box209__159" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(285.338867, 21.2183075, 116.273224)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/159.json"
+
+[node name="Box210__160" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-13.1176186, 2.8543644, -39.2167435)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/160.json"
+
+[node name="Box211__161" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-41.2924042, 2.85436249, -81.1748047)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/161.json"
+
+[node name="Box01__162" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-61.8004532, 5.35854721, 5.97057629)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/162.json"
+
+[node name="2feitan" type="Node3D" parent="Animations"]
+
+position = Vector3(-4.11097074, 0.165124983, -11.5064969)
+
+[node name="2feitan_0__0" type="MeshInstance3D" parent="Animations/2feitan"]
+
+position = Vector3(6.30957294, 0, -3.29756689)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/2feitan_0.json"
+
+[node name="2feitan_1__1" type="MeshInstance3D" parent="Animations/2feitan"]
+
+position = Vector3(-6.30957294, 0, 3.29756689)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/2feitan_1.json"
+
+[node name="goutoubing" type="Node3D" parent="Animations"]
+
+position = Vector3(28.6259003, 3.37018275, -41.7880974)
+
+[node name="goutoubing_0__0" type="MeshInstance3D" parent="Animations/goutoubing"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/goutoubing_0.json"
+
+[node name="heshui" type="Node3D" parent="Animations"]
+
+position = Vector3(69.0900955, -1.46487478, -0.134918213)
+
+[node name="heshui_0__0" type="MeshInstance3D" parent="Animations/heshui"]
+
+position = Vector3(0, 0.112403313, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/heshui_0.json"
+
+[node name="heshui_1__1" type="MeshInstance3D" parent="Animations/heshui"]
+
+position = Vector3(0, -0.000516374906, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/heshui_1.json"
+
+[node name="heshui_2__2" type="MeshInstance3D" parent="Animations/heshui"]
+
+position = Vector3(0, -0.111886938, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/heshui_2.json"
+
+[node name="kaogu" type="Node3D" parent="Animations"]
+
+position = Vector3(47.6614838, 1.77235413, -11.852602)
+
+[node name="kaogu_0__0" type="MeshInstance3D" parent="Animations/kaogu"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/kaogu_0.json"
+
+[node name="munaiyi" type="Node3D" parent="Animations"]
+
+position = Vector3(-45.9007187, 2.3721838, -40.293911)
+
+[node name="munaiyi_0__0" type="MeshInstance3D" parent="Animations/munaiyi"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/munaiyi_0.json"
+
+[node name="shuichishui" type="Node3D" parent="Animations"]
+
+position = Vector3(29.4112015, 1.18705118, 24.9651833)
+
+[node name="shuichishui_0__0" type="MeshInstance3D" parent="Animations/shuichishui"]
+
+position = Vector3(0, 0.0240309238, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/shuichishui_0.json"
+
+[node name="shuichishui_1__1" type="MeshInstance3D" parent="Animations/shuichishui"]
+
+position = Vector3(0, -0.0240309238, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/shuichishui_1.json"
+
+[node name="sky" type="Node3D" parent="Animations"]
+
+position = Vector3(-4.30412292, 45.0919037, 1.37130737)
+
+[node name="sky_0__0" type="MeshInstance3D" parent="Animations/sky"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/aiji/sky_0.json"

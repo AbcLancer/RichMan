@@ -252,8 +252,10 @@ func add_pet(p: Dictionary, pet_id: String) -> int:
 		_ev("pet_full", p, {"pet": pet_id, "max": max_pets()})
 		log_message.emit("%s 已经拥有 %d 位小神仙，不能再请了" % [p["name"], max_pets()])
 		return 1
-	(p["pets"] as Array).append({"id": pet_id, "level": 1, "cool": 0.0,
-		"energy": PET_ENERGY_MAX})       # 新来的直接给满体力（老板：满体力才能发动）
+	# ⚠️ 新来的小神仙体力是 **0**（要自己走步攒），**不能给满** ——
+	#   给满会让它在下次抵达时**立刻发动技能**（其中「降级」那类会直接拆掉场上的房子）。
+	#   想吃满体力就用**喂食**（`act_feed_card` 会把体力充满）。
+	(p["pets"] as Array).append({"id": pet_id, "level": 1, "cool": 0.0, "energy": 0.0})
 	if str(p.get("pet_active", "")) == "":
 		p["pet_active"] = pet_id        # 第一只自动「出战」（显示在角色面板的精灵栏位）
 	log_message.emit("%s 得到小神仙「%s」" % [p["name"], pet_name(pet_id)])
@@ -470,7 +472,7 @@ func _pet_apply(p: Dictionary, pet_id: String, lv: int) -> bool:
 			var ei := _enemy_plot_best(me)
 			if ei < 0 or int(plots[ei]["level"]) <= 0:
 				return false
-			plots[ei]["level"] = int(plots[ei]["level"]) - 1
+			_downgrade_estate(int(ei))
 			log_message.emit("%s 的小恶魔把 %s 拆了一级" % [p["name"], map.street_of(ei)])
 			_ev("downgrade", p, {"idx": ei, "level": int(plots[ei]["level"]),
 				"street": map.street_of(ei), "pet": pet_id})
@@ -827,8 +829,10 @@ func act_chat(id: int, text: String, to: int, channel: String) -> bool:
 	else:
 		payload["channel"] = "公共"
 		payload["to"] = -1
-		for pid in player_ids():
-			_ev("chat", players[pid], payload)
+		# ⚠️ 公共频道**只发一次事件**。
+		#   原来写成「对每个玩家各 `_ev` 一次」→ UI 收到 N 次就**把同一句刷 N 遍**
+		#   （老板 2026-09-27：「我发一句，公屏上会一下次出现三句同样的话」——4 人局就是 4 遍）。
+		_ev("chat", null, payload)
 	log_message.emit("[聊天] %s: %s" % [p["name"], txt])
 	return true
 
@@ -902,7 +906,7 @@ func _news_all_stocks(ratio: float) -> void:
 
 ## 新闻「所有地价 / 房租一起变」—— 直接按倍率调地块的地价系数
 func _news_all_plots(mul: float) -> void:
-	for k in plots.keys():
+	for k in unique_plot_keys():
 		var pl: Dictionary = plots[k]
 		var v := float(pl.get("price_mul", 1.0)) * mul
 		pl["price_mul"] = clampf(v, 0.3, 3.0)
@@ -991,6 +995,32 @@ const PET_LEVEL_CAP := 4               # Pet.txt 每只 4 级
 ## 小神仙的体力进度 0..1（UI 画体力条用）
 func pet_energy_ratio(e: Dictionary) -> float:
 	return clampf(float(e.get("energy", 0.0)) / PET_ENERGY_MAX, 0.0, 1.0)
+
+
+## 「请选择对手」的**合法候选**（原版有**距离限制** —— 老板 2026-09-27 的实机截图里，
+## 只有**附近**的几个角色脚下亮起绿色光圈，远处的没有）。
+##
+## ⚠️ 原版配置里**没有**「选对手的最大距离」这一项（`Initvar_r.txt` 只有
+##   `Card_FeiDan_Range = 5` / `Card_JunFu_Range = 2` / `Card_HeDan_Range = 5` 这些**效果范围**）
+##   → 这里取 **5 格**（与飞弹卡的范围一致），属**推断**，已登记在 `docs/alignment-gap.md`。
+const CARD_TARGET_MAX_TILES := 5
+
+
+func card_target_candidates(pid: int) -> Array:
+	var p: Dictionary = players.get(pid, {})
+	if p.is_empty():
+		return []
+	var out: Array = []
+	for oid in player_ids():
+		if int(oid) == pid:
+			continue
+		var o: Dictionary = players[oid]
+		if not bool(o["alive"]):
+			continue
+		if _tile_distance(int(p["tile"]), int(o["tile"])) > CARD_TARGET_MAX_TILES:
+			continue
+		out.append(int(oid))
+	return out
 
 
 ## 某公司属于哪个玩家（虚拟公司返回 -1）
@@ -1751,18 +1781,39 @@ func max_level(type_id: String) -> int:
 ## （空地→一级公寓 1000、一级公寓→二级公寓 1000、
 ##   四级公寓→一级住宅 2000、一级住宅→一级住宅区 3000，越大越贵，单调递增）。
 ## want_type 用于「空地首次建设」时按玩家挑的房型算价。
+func construction_plan(id: int, idx: int, want_type: String = "") -> Dictionary:
+	if not plots.has(idx):
+		return {}
+	var kind := str(plots[idx].get("type", ""))
+	if kind.is_empty():
+		var allowed := buildable_types()
+		kind = want_type if allowed.has(want_type) else (str(allowed[0]) if not allowed.is_empty() else "uptown")
+	return PlotAssembly.plan(map, plots, id, idx, kind)
+
 func upgrade_cost(p: Dictionary, idx: int, want_type: String = "") -> int:
-	if idx < 0 or not plots.has(idx):
-		return 0
-	var plot: Dictionary = plots[idx]
-	var ptype := str(plot.get("type", ""))
-	if ptype == "":
-		var al := buildable_types()
-		ptype = want_type if (want_type != "" and al.has(want_type)) \
-			else (str(al[0]) if not al.is_empty() else "uptown")
 	if int(p["effects"]["free_upgrade_steps"]) > 0:
-		return 0                      # 福神卡：「<NUMBER>步之内免费加盖」（id 1001）
-	return Rules.house_upgrade_cost(ptype, int(plot["level"]) + 1)
+		return 0
+	var plan := construction_plan(int(p["id"]), idx, want_type)
+	return int(plan.get("cost", 0))
+
+func _commit_construction(idx: int, plan: Dictionary) -> void:
+	var estate: Dictionary = plots[idx]
+	estate["type"] = plan.type
+	estate["level"] = plan.level
+	estate["anchor"] = plan.anchor
+	estate["members"] = plan.members.duplicate()
+	estate["footprint"] = plan.footprint
+	estate["build_cell"] = int(plan.get("cell", -1))
+	for member in plan.members:
+		plots[int(member)] = estate # One authoritative estate, shared by all road frontages.
+
+func unique_plot_keys() -> Array:
+	var result: Array = []
+	for key in plots.keys():
+		var anchor := int(plots[key].get("anchor", key))
+		if not result.has(anchor):
+			result.append(anchor)
+	return result
 
 func act_buy(id: int) -> bool:
 	## 买下**本次抵达**的空地（原版 id 91）。买地只拿到「空地」，
@@ -1826,12 +1877,16 @@ func act_upgrade(id: int, want_type: String = "") -> bool:
 			log_message.emit("%s 需要先选择房屋类型：%s" % [p["name"], str(al)])
 			_ev("need_house_type", p, {"idx": idx, "street": map.street_of(idx), "options": al})
 			return false
-		plot["type"] = ptype
 
 	var lv: int = int(plot["level"])
 	if lv >= max_level(ptype):
 		return false
-	var target := lv + 1
+	var plan := construction_plan(id, idx, ptype)
+	if plan.is_empty():
+		log_message.emit("需要相邻且同属自己的空地，才能扩建该建筑")
+		_ev("upgrade_blocked", p, {"idx": idx, "reason": "需要相邻且同属自己的空地"})
+		return false
+	var target := int(plan.level)
 	var cost := upgrade_cost(p, idx, ptype)
 	if int(p["money"]) < cost:
 		log_message.emit("%s 资金不足，无法升级（需 %d 元）" % [p["name"], cost])
@@ -1839,7 +1894,7 @@ func act_upgrade(id: int, want_type: String = "") -> bool:
 		return false
 
 	p["money"] = int(p["money"]) - cost
-	plot["level"] = target
+	_commit_construction(idx, plan)
 	_clear_chance(p)
 	var gname := str(Rules.house_grade(ptype, target).get("name", "%d 级" % target))
 	log_message.emit("%s 将 %s 建到 %s（%d 元）" % [p["name"], map.street_of(idx), gname, cost])
@@ -1869,38 +1924,29 @@ func force_upgrade(owner_id: int, idx: int, free_cost: bool,
 	var p: Dictionary = players[owner_id]
 	if int(p["effects"]["no_upgrade_steps"]) > 0:
 		return false                       # 衰神附身中，卡片也盖不了
-	var ptype := str(plot.get("type", ""))
-	if ptype == "":
-		var al := buildable_types()
-		ptype = want_type if (want_type != "" and al.has(want_type)) \
-			else (str(al[0]) if not al.is_empty() else "uptown")
-		plot["type"] = ptype
-	var lv: int = int(plot["level"])
-	if lv >= max_level(ptype):
+	var plan := construction_plan(owner_id, idx, want_type)
+	if plan.is_empty():
 		return false
-	var cost := Rules.house_upgrade_cost(ptype, lv + 1)
-	if free_cost:
-		cost = 0
-	else:
-		if int(p["money"]) < cost:
-			return false
-		p["money"] = int(p["money"]) - cost
-	plot["level"] = lv + 1
-	_ev("upgrade", p, {"idx": idx, "level": lv + 1, "cost": cost,
-		"street": map.street_of(idx), "type": ptype, "forced": true})
+	var cost := 0 if free_cost else int(plan.cost)
+	if int(p["money"]) < cost:
+		return false
+	p["money"] = int(p["money"]) - cost
+	_commit_construction(idx, plan)
+	_ev("upgrade", p, {"idx": idx, "level": int(plan.level), "cost": cost,
+		"street": map.street_of(idx), "type": str(plan.type), "forced": true})
 	return true
 
 ## 挑一块「还升得动」的自己的地，等级最高的优先（租金收益最大）
 func _own_plot_to_upgrade(id: int) -> int:
 	var best := -1
 	var best_lv := -1
-	for k in plots.keys():
+	for k in unique_plot_keys():
 		var pl: Dictionary = plots[k]
 		if int(pl["owner"]) != id:
 			continue
 		var t := str(pl.get("type", ""))
 		var mx := max_level(t) if t != "" else Rules.FALLBACK_MAX_LEVEL
-		if int(pl["level"]) >= mx:
+		if int(pl["level"]) >= mx or construction_plan(id, int(k)).is_empty():
 			continue
 		if int(pl["level"]) > best_lv:
 			best_lv = int(pl["level"])
@@ -1911,7 +1957,7 @@ func _own_plot_to_upgrade(id: int) -> int:
 func _enemy_plot_best(id: int) -> int:
 	var best := -1
 	var best_lv := -1
-	for k in plots.keys():
+	for k in unique_plot_keys():
 		var pl: Dictionary = plots[k]
 		if int(pl["owner"]) == id:
 			continue
@@ -1926,7 +1972,7 @@ func plot_value(idx: int) -> int:
 	if not plots.has(idx):
 		return EMPTY_PLOT_PRICE
 	var pl: Dictionary = plots[idx]
-	var v := EMPTY_PLOT_PRICE
+	var v := EMPTY_PLOT_PRICE * (pl.get("members", [idx]) as Array).size()
 	var tp := str(pl.get("type", ""))
 	for lv in range(1, int(pl["level"]) + 1):
 		v += Rules.house_upgrade_cost(tp, lv)
@@ -2342,7 +2388,7 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 			var cnt := 0
 			for k in _street_plots(street):
 				if int(plots[k]["level"]) > 0:
-					plots[k]["level"] = int(plots[k]["level"]) - 1
+					_downgrade_estate(int(k))
 					cnt += 1
 					_ev("downgrade", p, {"idx": int(k), "level": int(plots[k]["level"]),
 						"street": street, "card": card_id})
@@ -2415,7 +2461,7 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 				else _enemy_plot_best(pid)
 			if ei < 0 or not plots.has(ei) or int(plots[ei]["level"]) <= 0:
 				return false
-			plots[ei]["level"] = int(plots[ei]["level"]) - 1
+			_downgrade_estate(int(ei))
 			log_message.emit("%s 的怪兽把 %s 拆了一级" % [p["name"], map.street_of(ei)])
 			_ev("downgrade", p, {"idx": ei, "level": int(plots[ei]["level"]),
 				"street": map.street_of(ei), "card": card_id})
@@ -2435,7 +2481,11 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 			var lv: int = int(plots[mi]["level"])
 			plots[mi]["type"] = nxt
 			if lv > 0:
-				plots[mi]["level"] = mini(lv, max_level(nxt))
+				var fit := mini(lv, max_level(nxt))
+				var space := int(plots[mi].get("footprint", 1))
+				while fit > 1 and Rules.house_footprint(Rules.house_file(nxt, fit)) > space:
+					fit -= 1
+				plots[mi]["level"] = fit
 			log_message.emit("%s 用改建卡把 %s 改成%s" % [
 				p["name"], map.street_of(mi), Rules.house_type_cn(nxt)])
 			_ev("rebuild", p, {"idx": mi, "type": nxt, "level": int(plots[mi]["level"]),
@@ -2502,7 +2552,7 @@ func _owner_name(oid: int) -> String:
 ## 某条街上的所有地产格索引
 func _street_plots(street: String) -> Array:
 	var out: Array = []
-	for k in plots.keys():
+	for k in unique_plot_keys():
 		if map.street_of(int(k)) == street:
 			out.append(int(k))
 	return out
@@ -2755,9 +2805,9 @@ func _clear_obstacles_ahead(p: Dictionary, n: int) -> int:
 ## 以 idx 为中心、半径 radius 内的房屋各降一级，并给范围内玩家扣体力
 func _damage_area(idx: int, radius: int, hp_dec: int, owner_id: int) -> int:
 	var hits := 0
-	for k in plots.keys():
-		if _tile_distance(int(k), idx) <= radius and int(plots[k]["level"]) > 0:
-			plots[k]["level"] = int(plots[k]["level"]) - 1
+	for k in unique_plot_keys():
+		if _estate_in_radius(int(k), idx, radius) and int(plots[k]["level"]) > 0:
+			_downgrade_estate(int(k))
 			hits += 1
 	for oid in player_ids():
 		var q: Dictionary = players[oid]
@@ -2805,6 +2855,11 @@ func apply_dict(d: Dictionary) -> void:
 	for k in d.get("plots", {}).keys():
 		fixed[int(k)] = d["plots"][k]
 	plots = fixed
+	# Deep-copy and network decoding do not preserve Dictionary aliasing.
+	for key in plots.keys():
+		var anchor := int(plots[key].get("anchor", key))
+		if plots.has(anchor):
+			plots[key] = plots[anchor]
 	var rf := {}
 	for k in d.get("road_objs", {}).keys():
 		rf[int(k)] = d["road_objs"][k]
@@ -2812,3 +2867,20 @@ func apply_dict(d: Dictionary) -> void:
 	road_day = int(d.get("road_day", road_day))
 	stocks = d.get("stocks", stocks)
 	casino = d.get("casino", casino)
+
+func _estate_in_radius(key: int, center: int, radius: int) -> bool:
+	for member in plots[key].get("members", [key]):
+		if _tile_distance(int(member), center) <= radius:
+			return true
+	return false
+
+func _downgrade_estate(idx: int) -> void:
+	var estate: Dictionary = plots[idx]
+	estate["level"] = maxi(0, int(estate.level) - 1)
+	if int(estate.level) == 0:
+		for member in estate.get("members", [idx]):
+			var empty := estate.duplicate(true)
+			for key in ["anchor", "members", "footprint", "build_cell"]:
+				empty.erase(key)
+			empty["type"] = ""
+			plots[int(member)] = empty

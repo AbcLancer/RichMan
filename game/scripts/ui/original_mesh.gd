@@ -16,6 +16,11 @@ var _pivot := Vector3.ZERO
 var _position_texture: ImageTexture
 @export_file("*.json") var definition_path := ""
 
+func _validate_property(property: Dictionary) -> void:
+	# Editor saves transforms/definition only, never megabytes of generated meshes.
+	if property.name in ["mesh", "custom_aabb", "material_override"]:
+		property.usage = int(property.usage) & ~PROPERTY_USAGE_STORAGE
+
 func _ready() -> void:
 	if not definition_path.is_empty():
 		setup(JSON.parse_string(FileAccess.get_file_as_string(definition_path)))

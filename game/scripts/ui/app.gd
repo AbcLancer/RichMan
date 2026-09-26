@@ -111,7 +111,7 @@ var _news_left := 0.0
 ## 拉霸（老虎机）面板（原版 `uitex/casino/`；老板截图 records/老虎机.png）
 var _casino: CasinoPanel = null
 ## 「请选择对手」的目标选择器（穷神卡这类要点人的卡）
-var _target_pick: PanelContainer = null
+var _hover_player := -1                    # 选目标时鼠标指到了哪个玩家（脚下圆盘变红）
 var _log_panel: PanelContainer
 
 # 左下角色面板（版式 = 原版 uitex/other/atb.png）
@@ -686,6 +686,13 @@ func _process(delta: float) -> void:
 		if _casino != null and _casino.visible and Net.sim != null:
 			var st: Dictionary = Net.sim._casino_of(multiplayer.get_unique_id())
 			_casino.tick(delta, int(st.get("bet", 0)), st.get("reels", []))
+		# 「请选择对手」：每帧算鼠标指到了谁 → 脚下圆盘绿/红
+		if _card_pending != "" and Net.sim != null \
+				and Net.sim.card_target(_card_pending) == "player":
+			var hv := _pick_hover_player()
+			if hv != _hover_player:
+				_hover_player = hv
+				_sync_target_highlight()
 
 	if _menu_shot:
 		_menu_shot_t += delta
@@ -759,6 +766,19 @@ func _unhandled_input(e: InputEvent) -> void:
 			_on_go_pressed()      # 空格 = 点 GO（带当前选的骰子颗数）
 	if screen != Screen.GAME:
 		return
+	# 「请选择对手」：左键点**脚下亮着绿圈**的那个人 = 选定
+	if _card_pending != "" and Net.sim != null \
+			and Net.sim.card_target(_card_pending) == "player" \
+			and e is InputEventMouseButton and e.pressed \
+			and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
+		var hv := _pick_hover_player()
+		var cands: Array = Net.sim.card_target_candidates(multiplayer.get_unique_id())
+		if hv >= 0 and cands.has(hv):
+			_on_avatar_clicked(hv)
+		else:
+			_toast("请点在**脚下亮绿圈**的人身上（太远的人选不了）")
+		return
+
 	# 右键：先关商店 / 购买确认（原版 Info.txt 62 的批注就是「点击右键界面消失」）
 	if e is InputEventMouseButton and e.pressed 			and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_RIGHT:
 		if _pop_mode == "shop":
@@ -2395,107 +2415,53 @@ func _on_card_menu(which: String) -> void:
 
 
 ## 进入「请选择对手」模式：点亮右侧头像列，点头像即用卡
-## 「请选择对手」模式 —— 除了把右上角的头像点亮，**再在屏幕中间弹一个目标选择器**。
+## 「请选择对手」模式 —— **原版做法**（老板 2026-09-27 的实机截图）：
+##   · **附近**（`Sim.CARD_TARGET_MAX_TILES` 格内）角色的**脚下圆盘亮绿色**
+##   · 鼠标**指到**的那个变**红色**，点下去 = 选定
+##   · 太远的**不亮、也点不了** → **目标选择是有距离限制的**
 ##
-## ⚠️ 老板 2026-09-27：「那个地雷卡、穷神卡之类的需要选目标的卡牌…
-##   不管是以路径点为目标的还是以其他玩家为目标的，我都用不了，**不知道怎么选**」
-##   —— 原来只把右上角的小头像变成可点，提示条又只写「请选择对手」，
-##   等于让玩家自己猜要点哪儿。现在**明确弹一个带头像和名字的大按钮列表**，不可能点不到。
-##
-## ⚠️ 另外附上**原版权威说明**（`String.txt`），免得再猜哪张卡要不要选目标：
-##   · 地雷卡 9023「**身后一格**设置地雷」 → **不用选**（自动放身后）
-##   · 路障卡 9024「**放置路障**」        → 不用选（放前方一格）
-##   · 清除卡 9039「清除**前方**道路垃圾」→ 不用选
-##   · 穷神卡 9003「**指定**穷神附身的对象」→ **要选对手** ✔ 就是走这条
+## ⚠️ 我上一版做的是「屏幕中间弹一个目标选择器」，那不是原版的样子 → **已撤掉**。
 func _set_card_target_mode(cid: String) -> void:
 	_card_pending = cid
-	_card_hint.text = "%s  →  请点下面的人（或右上角头像）" % Rules.card_name(cid)
+	_card_hint.text = "%s  →  %s（脚下亮绿圈的人可以选）" % [Rules.card_name(cid),
+		Rules.card_target_prompt("player")]
 	_card_hint.visible = true
-	_sync_avatar_column(_player_ids(), _snapshot.get("players", {}), multiplayer.get_unique_id())
-	_open_target_picker(cid)
+	_sync_target_highlight()
 
 
-## 屏幕中央的「选择对手」列表
-func _open_target_picker(cid: String) -> void:
-	_close_target_picker()
-	if _hud == null:
+## 把候选 / 悬停状态推给棋盘（脚下的绿圈红圈）
+func _sync_target_highlight() -> void:
+	if _board == null:
 		return
-	var pc := PanelContainer.new()
-	pc.z_index = 70
-	pc.add_theme_stylebox_override("panel", _sb_round(Color8(20, 42, 96, 244),
-		Color8(160, 225, 255), int(round(9.0 * _ui_scale)),
-		maxi(2, int(round(4.0 * _ui_scale))), maxf(2.0, 3.0 * _ui_scale)))
-	_hud.add_child(pc)
-	_target_pick = pc
-	var col := VBoxContainer.new()
-	col.add_theme_constant_override("separation", maxi(2, int(round(5.0 * _ui_scale))))
-	pc.add_child(col)
-
-	var title := Label.new()
-	title.text = "%s ｜ 请选择对手" % Rules.card_name(cid)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", maxi(10, int(round(14.0 * _ui_scale))))
-	title.add_theme_color_override("font_color", Color8(226, 244, 255))
-	col.add_child(title)
-
-	var me_id := multiplayer.get_unique_id()
-	var players: Dictionary = _snapshot.get("players", {})
-	var any := false
-	for id in _player_ids():
-		if int(id) == me_id:
-			continue
-		var p: Dictionary = players.get(id, {})
-		if p.is_empty() or not bool(p.get("alive", false)):
-			continue
-		any = true
-		var b := Button.new()
-		b.text = "  %s　$%d" % [str(p.get("name", "")), int(p.get("money", 0))]
-		b.icon = _role_texture(int(p.get("role", 1)) - 1, "21")
-		b.expand_icon = true
-		b.custom_minimum_size = Vector2(180.0 * _ui_scale, 34.0 * _ui_scale)
-		b.focus_mode = Control.FOCUS_NONE
-		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.add_theme_font_size_override("font_size", maxi(10, int(round(14.0 * _ui_scale))))
-		b.add_theme_color_override("font_color", Color8(240, 250, 255))
-		b.add_theme_stylebox_override("normal", _sb_round(Color8(46, 96, 170),
-			Color8(120, 190, 250), int(round(6.0 * _ui_scale)),
-			maxi(1, int(round(2.0 * _ui_scale))), 0.0))
-		b.add_theme_stylebox_override("hover", _sb_round(Color8(80, 150, 230),
-			Color8(255, 246, 120), int(round(6.0 * _ui_scale)),
-			maxi(2, int(round(2.0 * _ui_scale))), 0.0))
-		var pid := int(id)
-		b.pressed.connect(func(): _on_avatar_clicked(pid))
-		col.add_child(b)
-	if not any:
-		var lb := Label.new()
-		lb.text = "没有可选的目标"
-		lb.add_theme_color_override("font_color", Color8(255, 200, 200))
-		col.add_child(lb)
-	var cancel := Button.new()
-	cancel.text = "取消"
-	cancel.focus_mode = Control.FOCUS_NONE
-	cancel.custom_minimum_size = Vector2(80.0 * _ui_scale, 24.0 * _ui_scale)
-	cancel.add_theme_color_override("font_color", Color8(200, 220, 240))
-	cancel.pressed.connect(func(): _clear_card_target_mode())
-	col.add_child(cancel)
-
-	var sz := pc.get_combined_minimum_size()
-	pc.size = sz
-	var vp := get_viewport().get_visible_rect()
-	pc.position = Vector2((vp.size.x - sz.x) * 0.5, (vp.size.y - sz.y) * 0.34)
+	if _card_pending == "" or Net.sim == null:
+		_board.set_card_targets([], -1)
+		return
+	_board.set_card_targets(Net.sim.card_target_candidates(multiplayer.get_unique_id()),
+		_hover_player)
 
 
-func _close_target_picker() -> void:
-	if _target_pick != null:
-		_target_pick.queue_free()
-		_target_pick = null
+## 鼠标位置 → 指到了哪个玩家（用屏幕距离判，和棋盘选格子同一套思路）
+func _pick_hover_player() -> int:
+	if _card_pending == "" or _board == null or Net.sim == null:
+		return -1
+	var m := get_viewport().get_mouse_position()
+	var best := -1
+	var best_d := 90.0 * _ui_scale
+	for id in _board.player_screen_positions().keys():
+		var d: float = (m as Vector2).distance_to(_board.player_screen_positions()[id])
+		if d < best_d:
+			best_d = d
+			best = int(id)
+	return best
 
 
 func _clear_card_target_mode() -> void:
 	_card_pending = ""
-	_close_target_picker()
+	_hover_player = -1
 	if _card_hint != null:
 		_card_hint.visible = false
+	if _board != null:
+		_board.set_card_targets([], -1)
 	if _avatar_rows.size() > 0:
 		_sync_avatar_column(_player_ids(), _snapshot.get("players", {}), multiplayer.get_unique_id())
 
@@ -3921,13 +3887,14 @@ func _sync_action_entry(me: Dictionary, plots: Dictionary, my_id: int) -> void:
 			ptype = str(opts[0])      # 只有一种房屋时不询问（原版 id 92 批注）
 		else:
 			_btn_bldtype.visible = false
+		var plan := PlotAssembly.plan(_board.map, plots, int(me["id"]), lidx, ptype)
+		if plan.is_empty():
+			_pop_text.text = "%s\n扩建需要相邻且同属自己的空地" % _plot_name(lidx)
+			return
 		var free := int((me.get("effects", {}) as Dictionary).get("free_upgrade_steps", 0)) > 0
-		var gname := str(Rules.house_grade(ptype, lv + 1).get("name", "下一级"))
-		if free:
-			_pop_text.text = "%s\n免费加盖 → %s" % [_plot_name(lidx), gname]
-		else:
-			_pop_text.text = "%s\n升级 → %s（%d 元）" % [
-				_plot_name(lidx), gname, Rules.house_upgrade_cost(ptype, lv + 1)]
+		var count := (plan.members as Array).size()
+		var prefix := "%d 联地建造" % count if lv == 0 and count > 1 else "升级"
+		_pop_text.text = "%s\n%s → %s（%d 元）" % [_plot_name(lidx), prefix, str(plan.name), 0 if free else int(plan.cost)]
 		return
 
 	_pop.visible = false

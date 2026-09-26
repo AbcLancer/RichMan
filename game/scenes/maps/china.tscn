@@ -1,0 +1,2105 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/original_mesh.gd" id="1_mesh"]
+
+[node name="OriginalScene" type="Node3D"]
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="Animations" type="Node3D" parent="."]
+
+[node name="Box01__0" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-9.96774292, 26.8777847, -7.44091797)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/0.json"
+
+[node name="Box01__1" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-99.2888412, 4.79899931, -31.7595387)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/1.json"
+
+[node name="Box01__2" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-48.5613518, 5.78262091, -81.9976196)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/2.json"
+
+[node name="Box01__3" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-132.427963, 17.677742, 60.1811638)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/3.json"
+
+[node name="Cylinder01__4" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-82.0357971, 7.14795446, -70.6534882)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/4.json"
+
+[node name="Box08__5" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-9.51232338, 8.11429024, 106.260155)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/5.json"
+
+[node name="Box05__6" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(28.0741425, -2.51921749, 32.478714)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/6.json"
+
+[node name="Box01__7" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-18.1209908, 3.739537, -51.1610031)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/7.json"
+
+[node name="Box09__8" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(29.6861687, 3.88173628, -57.893013)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/8.json"
+
+[node name="Box01__9" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(98.1096878, 8.69630051, -5.24336147)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/9.json"
+
+[node name="Cylinder02__10" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(44.9555397, 6.01182556, 30.8388004)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/10.json"
+
+[node name="Box01__11" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(53.8353043, 2.17425752, 111.962837)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/11.json"
+
+[node name="Cylinder01__12" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(56.273304, 6.2145586, 92.4330902)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/12.json"
+
+[node name="Box01__13" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(89.2379913, 8.49626446, 94.6490936)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/13.json"
+
+[node name="Box01__14" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(33.396122, 2.5538888, 121.56543)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/14.json"
+
+[node name="Box15__15" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(23.4130669, 3.28719473, 100.543472)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/15.json"
+
+[node name="Box16__16" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-34.3032951, 2.17425942, 124.995934)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/16.json"
+
+[node name="Box17__17" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-52.6079674, 3.19676733, 101.333099)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/17.json"
+
+[node name="Box18__18" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(3.97612906, 4.06981087, 152.436584)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/18.json"
+
+[node name="Box19__19" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(17.0717583, 3.16598511, 118.564758)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/19.json"
+
+[node name="Box21__20" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-77.8369827, 1.95049608, 99.8999786)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/20.json"
+
+[node name="Box22__21" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-58.2504768, 3.36293674, 117.83773)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/21.json"
+
+[node name="Box23__22" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-65.5060425, 3.1060946, 87.8627548)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/22.json"
+
+[node name="Box24__23" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-53.125061, 4.25819921, 76.4940796)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/23.json"
+
+[node name="Box25__24" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-96.2856674, 4.16755247, -14.0216026)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/24.json"
+
+[node name="Box02__25" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-45.4145851, 20.7188683, -20.5517197)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/25.json"
+
+[node name="山__26" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-40.7313766, 6.90977955, -25.4933167)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/26.json"
+
+[node name="Box01__27" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(101.343887, 24.1453247, -94.9357224)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/27.json"
+
+[node name="Box01__28" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(58.2401199, -0.630333662, -68.9897156)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/28.json"
+
+[node name="Box01__29" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(46.8498993, 4.33352327, -26.4592113)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/29.json"
+
+[node name="Box35__30" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(80.1916885, 4.33352423, -1.57959914)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/30.json"
+
+[node name="Box36__31" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(49.9135895, 3.4125545, 38.0059967)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/31.json"
+
+[node name="Box37__32" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(100.830811, 5.21116543, 62.4136696)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/32.json"
+
+[node name="Box38__33" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(96.3003998, 5.21116638, 75.1529083)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/33.json"
+
+[node name="Box39__34" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(10.6772747, 4.0513134, 108.142365)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/34.json"
+
+[node name="Box40__35" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-16.6125965, 5.2111659, 68.3131409)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/35.json"
+
+[node name="Box41__36" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-63.8140526, 4.67661476, 70.7485733)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/36.json"
+
+[node name="Box42__37" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-84.8906097, 5.21116781, 119.816101)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/37.json"
+
+[node name="Box43__38" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-110.681374, 5.21116495, 50.5756035)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/38.json"
+
+[node name="Box44__39" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-154.855072, 5.21116638, 89.0555725)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/39.json"
+
+[node name="Box45__40" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-0.642643929, 5.21116209, -15.8406162)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/40.json"
+
+[node name="Box46__41" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(45.5662041, 5.21116018, -61.1753311)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/41.json"
+
+[node name="Box47__42" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-33.8671112, 5.21116734, 104.889099)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/42.json"
+
+[node name="Box02__43" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-84.3188782, 4.6404171, -43.966568)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/43.json"
+
+[node name="Box48__44" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-93.5303192, 4.6404171, -48.7437439)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/44.json"
+
+[node name="Box49__45" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-97.1459045, 4.64041901, -4.93550777)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/45.json"
+
+[node name="Box50__46" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-93.4362183, 4.64041901, 1.08085346)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/46.json"
+
+[node name="Box51__47" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-86.155365, 4.64041996, 12.5202484)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/47.json"
+
+[node name="Box52__48" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(6.4773078, 4.64041424, -119.855576)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/48.json"
+
+[node name="Box53__49" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(12.4739685, 4.64041424, -119.855576)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/49.json"
+
+[node name="Box54__50" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(12.4739685, 4.64041519, -109.675217)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/50.json"
+
+[node name="Box55__51" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(55.9421997, 4.64041901, -6.70781088)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/51.json"
+
+[node name="Box56__52" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(80.5843201, 4.64041996, 14.7675304)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/52.json"
+
+[node name="Box57__53" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-65.8318481, 4.64041519, -91.4662476)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/53.json"
+
+[node name="Box58__54" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-39.0415115, 4.64041519, -103.544876)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/54.json"
+
+[node name="Box59__55" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-28.7510948, 4.64041424, -105.81163)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/55.json"
+
+[node name="Box60__56" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-18.0008087, 4.64041424, -104.500237)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/56.json"
+
+[node name="Box61__57" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(50.8721542, 4.64041519, -94.9339218)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/57.json"
+
+[node name="Box62__58" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(100.354431, 4.6404171, -55.5747681)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/58.json"
+
+[node name="Box63__59" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(96.196312, 4.64041805, -29.6654205)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/59.json"
+
+[node name="Box64__60" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(101.436775, 4.6404171, -39.1547699)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/60.json"
+
+[node name="Box01__61" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(4.17710924, 5.20372963, -48.3174667)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/61.json"
+
+[node name="Box65__62" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(108.514687, 5.20373011, -31.2574368)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/62.json"
+
+[node name="Box66__63" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-79.6187286, -3.63784385, 8.61094666)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/63.json"
+
+[node name="Box07__64" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-8.12378979, -3.60683465, 32.2410049)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/64.json"
+
+[node name="Cylinder03__65" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-73.885643, -1.44396305, 14.7915726)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/65.json"
+
+[node name="Box67__66" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-170.13501, 5.34957647, 95.2675781)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/66.json"
+
+[node name="Box68__67" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-139.057709, 4.64042282, 78.3355179)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/67.json"
+
+[node name="Box69__68" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-162.369629, 4.64042377, 105.876648)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/68.json"
+
+[node name="Box70__69" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-189.515015, 4.64042377, 110.250343)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/69.json"
+
+[node name="Box71__70" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(163.986572, 9.47364521, -29.3362141)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/70.json"
+
+[node name="Box72__71" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(139.15239, 4.64042282, 86.5251923)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/71.json"
+
+[node name="Box73__72" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(131.263336, 4.64042091, 22.6991425)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/72.json"
+
+[node name="Box74__73" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(209.678467, 6.06122351, -131.988617)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/73.json"
+
+[node name="Box76__74" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(325.22702, 4.4625864, 134.183044)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/74.json"
+
+[node name="Box77__75" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(171.553528, 4.64041901, 1.26787984)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/75.json"
+
+[node name="Box78__76" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(76.412178, 6.10846424, 236.59433)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/76.json"
+
+[node name="Box79__77" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(203.829041, 3.65804553, -113.275574)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/77.json"
+
+[node name="Box81__78" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(219.689911, 3.87800622, 47.9694519)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/78.json"
+
+[node name="Box82__79" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(207.784195, 3.89194226, 63.8806267)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/79.json"
+
+[node name="Box83__80" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(208.38382, 3.89194083, 31.0334282)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/80.json"
+
+[node name="Box84__81" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(218.832092, 3.71262097, -86.23909)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/81.json"
+
+[node name="Box85__82" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(210.607391, 3.82189536, -100.179001)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/82.json"
+
+[node name="Box86__83" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(155.451691, 8.21112728, 37.0890808)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/83.json"
+
+[node name="Box87__84" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-86.5136871, 3.89195919, 442.872437)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/84.json"
+
+[node name="Box88__85" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(120.402336, 3.7344532, 420.360199)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/85.json"
+
+[node name="Box89__86" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-65.236084, 3.89194798, 183.110687)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/86.json"
+
+[node name="Box90__87" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(56.8356094, 3.89194846, 200.777618)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/87.json"
+
+[node name="Box92__88" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(76.6135254, 5.01109886, 215.919754)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/88.json"
+
+[node name="Box93__89" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-83.5079193, 5.35514307, 183.193756)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/89.json"
+
+[node name="Box94__90" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(61.7304268, 5.14066744, 231.800034)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/90.json"
+
+[node name="Box96__91" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-66.6920853, 4.13436174, 446.204407)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/91.json"
+
+[node name="Box97__92" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(44.7970543, 5.10004473, 215.590729)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/92.json"
+
+[node name="Box99__93" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(109.196327, 3.71319509, 435.660767)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/93.json"
+
+[node name="Box100__94" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(95.130928, 3.89195871, 434.838623)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/94.json"
+
+[node name="Box103__95" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(84.5636826, 3.89195824, 419.393738)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/95.json"
+
+[node name="Box104__96" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-111.34523, 6.11642265, 402.946411)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/96.json"
+
+[node name="Box105__97" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-96.1788025, 5.2111702, 167.197128)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/97.json"
+
+[node name="Box106__98" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-40.510273, 5.2111721, 212.336639)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/98.json"
+
+[node name="Box107__99" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(79.4261475, 5.21118069, 403.397705)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/99.json"
+
+[node name="Box108__100" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(223.467148, 5.21116447, 33.0463142)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/100.json"
+
+[node name="Box111__101" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-374.411621, 5.21117258, 225.036285)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/101.json"
+
+[node name="Box112__102" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-394.402496, 5.21117067, 173.950775)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/102.json"
+
+[node name="Box113__103" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-223.350525, 5.21115208, -236.699005)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/103.json"
+
+[node name="Box114__104" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-425.680695, 5.21117067, 175.018463)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/104.json"
+
+[node name="Box115__105" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-442.079681, 5.21116209, -25.7816734)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/105.json"
+
+[node name="Box116__106" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-411.112213, 5.21117163, 204.906784)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/106.json"
+
+[node name="Box117__107" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-258.232788, 5.21117735, 338.403015)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/107.json"
+
+[node name="Box118__108" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-217.608353, 4.64043427, 338.168854)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/108.json"
+
+[node name="Box119__109" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-220.122803, 4.64042568, 140.480072)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/109.json"
+
+[node name="Box120__110" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-230.92601, 4.64043427, 337.691956)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/110.json"
+
+[node name="Box122__111" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-352.111542, 4.64042664, 165.442688)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/111.json"
+
+[node name="Box123__112" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-335.126678, 4.64042377, 99.9344482)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/112.json"
+
+[node name="Box128__113" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-180.305664, 4.64043427, 337.400604)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/113.json"
+
+[node name="Box131__114" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-441.947693, 5.3495698, -56.4248123)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/114.json"
+
+[node name="Box132__115" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-415.951965, 4.64041328, -137.337082)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/115.json"
+
+[node name="Box133__116" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-405.185181, 4.64042473, 131.128174)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/116.json"
+
+[node name="Box134__117" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-383.128693, 4.64041805, -15.3958549)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/117.json"
+
+[node name="Box135__118" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-407.884216, 4.64041519, -90.104538)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/118.json"
+
+[node name="Box136__119" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-441.708313, 4.64041996, 16.2239494)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/119.json"
+
+[node name="Box137__120" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-414.395264, 4.64041519, -106.267464)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/120.json"
+
+[node name="Box138__121" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-417.951263, 5.34957075, -28.9283466)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/121.json"
+
+[node name="Box140__122" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-284.139954, 4.64040375, -361.76825)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/122.json"
+
+[node name="Box141__123" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(199.932556, 6.16191292, -53.8310394)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/123.json"
+
+[node name="Box142__124" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-193.13826, 4.64041042, -206.962311)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/124.json"
+
+[node name="Box143__125" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-268.268127, 4.64041042, -195.486206)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/125.json"
+
+[node name="Box144__126" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-261.750732, 4.64040947, -226.468811)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/126.json"
+
+[node name="Box145__127" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-456.973999, 4.64042377, 99.5630493)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/127.json"
+
+[node name="Box146__128" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-73.3617935, 4.64040089, -419.305603)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/128.json"
+
+[node name="Box147__129" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(60.835144, 4.64039993, -443.680237)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/129.json"
+
+[node name="Box148__130" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(0.517247021, 4.64040375, -352.94693)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/130.json"
+
+[node name="Box149__131" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(242.631882, 4.64040947, -218.167114)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/131.json"
+
+[node name="Box150__132" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-66.5960693, 4.64040661, -291.344391)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/132.json"
+
+[node name="Box152__133" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(50.4423904, 4.6404047, -332.708435)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/133.json"
+
+[node name="Box154__134" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(0.459074378, 4.64039993, -441.885498)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/134.json"
+
+[node name="Box155__135" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-114.383003, 4.64040375, -354.420258)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/135.json"
+
+[node name="Box156__136" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-137.324799, 4.64039898, -460.175049)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/136.json"
+
+[node name="Box157__137" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-102.25473, 4.64039993, -451.219116)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/137.json"
+
+[node name="Box169__138" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(200.361862, 4.64040089, -422.298981)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/138.json"
+
+[node name="Box170__139" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(235.0923, 4.64042091, 28.7056236)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/139.json"
+
+[node name="Box172__140" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(417.583649, 4.524086, 165.396698)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/140.json"
+
+[node name="Box173__141" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(442.110138, 11.6818752, -18.5147171)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/141.json"
+
+[node name="Box174__142" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(239.296509, 4.64042187, 46.8333893)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/142.json"
+
+[node name="Box176__143" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(184.252014, 4.64042568, 140.132568)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/143.json"
+
+[node name="Box177__144" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(214.834946, 4.64041996, 18.4897175)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/144.json"
+
+[node name="Box178__145" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(360.737335, 4.32328272, 86.6501083)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/145.json"
+
+[node name="Box179__146" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-38.8389893, 4.64043808, 415.056671)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/146.json"
+
+[node name="Box180__147" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(394.315216, 4.65079689, 214.944946)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/147.json"
+
+[node name="Box181__148" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(385.379272, 11.2400341, 7.03700066)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/148.json"
+
+[node name="Box183__149" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(304.998199, 4.64041138, -176.203262)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/149.json"
+
+[node name="Box184__150" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-276.57843, 4.64041138, -173.251892)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/150.json"
+
+[node name="Box185__151" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(187.392502, 4.64040279, -371.949188)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/151.json"
+
+[node name="Box186__152" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-255.51561, 4.6404047, -339.310181)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/152.json"
+
+[node name="Box187__153" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(125.981689, 4.64040089, -417.075836)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/153.json"
+
+[node name="Box189__154" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-216.062973, 4.6404047, -346.1763)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/154.json"
+
+[node name="Box190__155" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-196.572906, 4.64040947, -230.689346)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/155.json"
+
+[node name="Box191__156" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(414.119507, 4.64042473, 112.908241)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/156.json"
+
+[node name="Box192__157" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-49.9939651, 4.64039993, -456.36676)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/157.json"
+
+[node name="Box193__158" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-261.828674, 4.64040661, -305.738129)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/158.json"
+
+[node name="Box201__159" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-156.765289, 4.64040661, -300.907074)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/159.json"
+
+[node name="Box218__160" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(159.369141, 4.64041042, -203.806458)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/160.json"
+
+[node name="Box219__161" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(161.002945, 4.64039993, -440.69931)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/161.json"
+
+[node name="Box220__162" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(245.295563, 5.80375338, -91.9476013)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/162.json"
+
+[node name="Box222__163" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(329.365051, 4.64041328, -151.56427)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/163.json"
+
+[node name="Box224__164" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(261.844635, 4.64040327, -375.407715)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/164.json"
+
+[node name="Box225__165" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(417.96701, 4.6404109, -195.177124)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/165.json"
+
+[node name="Box226__166" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(317.492615, 4.64041519, -98.4421921)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/166.json"
+
+[node name="Box231__167" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-423.554138, 3.89193773, -45.0670013)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/167.json"
+
+[node name="Box232__168" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(239.92688, 3.89192319, -382.277588)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/168.json"
+
+[node name="Box234__169" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-233.318893, 3.79257083, -248.27803)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/169.json"
+
+[node name="Box235__170" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(226.931946, 3.89192319, -382.642456)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/170.json"
+
+[node name="Box236__171" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(214.930206, 3.89192367, -368.028198)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/171.json"
+
+[node name="Box237__172" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(250.577545, 3.89192367, -366.977661)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/172.json"
+
+[node name="Box239__173" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(214.747894, 1.95048881, -66.6930771)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/173.json"
+
+[node name="Box240__174" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-424.996887, 3.89193583, -87.7849045)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/174.json"
+
+[node name="Box242__175" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-222.415985, 3.80949044, -248.345032)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/175.json"
+
+[node name="Box244__176" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-438.745178, 3.89193654, -74.5943375)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/176.json"
+
+[node name="Box245__177" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(135.322113, 4.64043379, 322.952637)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/177.json"
+
+[node name="Box246__178" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(128.185562, 5.69388437, 402.92746)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/178.json"
+
+[node name="Box247__179" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(30.3039036, 4.61686039, 433.113007)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/179.json"
+
+[node name="Box248__180" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(183.187805, 16.1241474, 192.431381)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/180.json"
+
+[node name="Box249__181" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(281.817719, 7.06318951, 192.431381)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/181.json"
+
+[node name="Box251__182" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(7.23094702, 4.51914692, 427.808838)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/182.json"
+
+[node name="Box252__183" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(316.474335, 23.0090199, 300.862427)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/183.json"
+
+[node name="Box253__184" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(302.130585, 19.1444778, 323.842133)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/184.json"
+
+[node name="Box254__185" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(375.713074, 8.42326164, -50.1000061)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/185.json"
+
+[node name="Box255__186" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(391.324799, 14.5717983, -62.0693169)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/186.json"
+
+[node name="Box256__187" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(377.407898, 7.96731663, -106.696091)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/187.json"
+
+[node name="Box257__188" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(413.316528, 12.8178492, -116.256599)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/188.json"
+
+[node name="Box258__189" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(35.0693512, 5.21117163, 198.238556)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/189.json"
+
+[node name="Box259__190" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-53.0301628, 5.21117163, 198.218353)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/190.json"
+
+[node name="Box260__191" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(1.90627134, 4.64042473, 134.812622)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/191.json"
+
+[node name="Box261__192" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(44.7664871, 4.64042854, 213.294159)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/192.json"
+
+[node name="Box262__193" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-84.9153442, 4.64042854, 198.430328)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/193.json"
+
+[node name="Box263__194" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-242.857971, 3.79257154, -244.073242)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/194.json"
+
+[node name="Box264__195" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-212.565643, 3.79257154, -244.26889)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/195.json"
+
+[node name="Box267__196" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-215.921539, 3.89195561, 363.224915)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/196.json"
+
+[node name="Box268__197" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-231.413208, 3.89195561, 363.224915)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/197.json"
+
+[node name="Box269__198" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-245.009521, 3.89195514, 350.164764)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/198.json"
+
+[node name="Box270__199" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-203.063507, 3.89195514, 346.153748)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/199.json"
+
+[node name="Box271__200" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-100.277054, 3.89195824, 425.458832)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/200.json"
+
+[node name="Box272__201" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-49.0396118, 3.89195824, 425.458832)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/201.json"
+
+[node name="Box273__202" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-28.1098804, 4.64043713, 407.801727)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/202.json"
+
+[node name="Box274__203" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-27.5023003, 4.64043713, 394.061432)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/203.json"
+
+[node name="Box33__204" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-20.2388763, 41.1238594, -152.35289)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/204.json"
+
+[node name="Box34__205" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-49.4444046, 33.2863579, -140.739944)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/205.json"
+
+[node name="Box279__206" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-75.0682983, 39.6200294, -127.794762)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/206.json"
+
+[node name="Box283__207" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-101.756165, 32.7348557, -112.945831)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/207.json"
+
+[node name="Box284__208" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-134.883804, 30.0191917, -71.5188065)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/208.json"
+
+[node name="Box285__209" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-131.582138, 26.0182858, -13.6118431)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/209.json"
+
+[node name="Box288__210" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-128.417114, 35.9143295, -96.3288727)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/210.json"
+
+[node name="Box289__211" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-136.520477, 31.9015465, -43.6380959)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/211.json"
+
+[node name="Box290__212" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-126.658447, 31.8309212, 15.0563784)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/212.json"
+
+[node name="Box291__213" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(3.86943936, 2.82997727, 49.8348923)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/213.json"
+
+[node name="Box03__214" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(3.86533189, 0.1570573, 49.8515663)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/214.json"
+
+[node name="Box292__215" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(11.2235842, 2.82997751, 51.7398376)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/215.json"
+
+[node name="Box293__216" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(11.1917658, 0.1570573, 51.7569962)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/216.json"
+
+[node name="Box294__217" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(18.0117035, 2.82997727, 51.0065918)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/217.json"
+
+[node name="Box295__218" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(18.0196724, 0.1570573, 51.0217972)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/218.json"
+
+[node name="Box296__219" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(25.0043259, 2.82997751, 50.1124458)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/219.json"
+
+[node name="Box297__220" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(24.9546394, 0.1570573, 50.1296158)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/220.json"
+
+[node name="Box298__221" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(32.6360512, 2.82997751, 50.1254387)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/221.json"
+
+[node name="Box299__222" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(32.6857376, 0.1570573, 50.1426086)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/222.json"
+
+[node name="Cylinder04__223" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-59.5922318, -1.44396102, 37.9678802)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/223.json"
+
+[node name="Mesh01__224" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-33.263237, 18.7746849, -139.62674)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/224.json"
+
+[node name="Box300__225" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-54.6819038, -3.63784194, 45.0789948)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/225.json"
+
+[node name="Box301__226" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-212.565643, 3.79257202, -228.605804)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/226.json"
+
+[node name="Box302__227" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-242.857971, 3.79257202, -228.410156)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/227.json"
+
+[node name="Box303__228" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-227.459564, 3.79257178, -224.579742)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/228.json"
+
+[node name="sky" type="Node3D" parent="Animations"]
+
+position = Vector3(-9.96772766, 81.9623718, -7.44093323)
+
+[node name="sky_0__0" type="MeshInstance3D" parent="Animations/sky"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/sky_0.json"
+
+[node name="fengzheng" type="Node3D" parent="Animations"]
+
+position = Vector3(-173.007294, 49.9740372, 45.1463776)
+
+[node name="fengzheng_0__0" type="MeshInstance3D" parent="Animations/fengzheng"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/fengzheng_0.json"
+
+[node name="laoying" type="Node3D" parent="Animations"]
+
+position = Vector3(-69.735321, 46.2635422, -197.295685)
+
+[node name="laoying_0__0" type="MeshInstance3D" parent="Animations/laoying"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/laoying_0.json"
+
+[node name="longchuan" type="Node3D" parent="Animations"]
+
+position = Vector3(-140.170517, 2.97657728, 112.334991)
+
+[node name="longchuan_0__0" type="MeshInstance3D" parent="Animations/longchuan"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/longchuan_0.json"
+
+[node name="longdeng" type="Node3D" parent="Animations"]
+
+position = Vector3(57.0528004, 28.585947, 89.234919)
+
+[node name="longdeng_0__0" type="MeshInstance3D" parent="Animations/longdeng"]
+
+position = Vector3(11.1070965, -11.006794, -17.3184303)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/longdeng_0.json"
+
+[node name="longdeng_1__1" type="MeshInstance3D" parent="Animations/longdeng"]
+
+position = Vector3(7.12722282, -9.04789543, -9.36007156)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/longdeng_1.json"
+
+[node name="longdeng_2__2" type="MeshInstance3D" parent="Animations/longdeng"]
+
+position = Vector3(0.733614731, -5.57438087, -0.870813751)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/longdeng_2.json"
+
+[node name="longdeng_3__3" type="MeshInstance3D" parent="Animations/longdeng"]
+
+position = Vector3(-4.59006233, -1.43323326, 6.32018814)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/longdeng_3.json"
+
+[node name="longdeng_4__4" type="MeshInstance3D" parent="Animations/longdeng"]
+
+position = Vector3(-6.54030342, 1.57804298, 9.41324387)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/longdeng_4.json"
+
+[node name="longdeng_5__5" type="MeshInstance3D" parent="Animations/longdeng"]
+
+position = Vector3(-6.58930321, 5.06783867, 12.0381676)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/longdeng_5.json"
+
+[node name="longdeng_6__6" type="MeshInstance3D" parent="Animations/longdeng"]
+
+position = Vector3(-1.49457283, 8.42204857, 9.27469406)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/longdeng_6.json"
+
+[node name="longdeng_7__7" type="MeshInstance3D" parent="Animations/longdeng"]
+
+position = Vector3(2.90850334, 8.40044975, 1.04428635)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/longdeng_7.json"
+
+[node name="longdeng_8__8" type="MeshInstance3D" parent="Animations/longdeng"]
+
+position = Vector3(1.28419762, 4.63821983, -6.24439468)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/longdeng_8.json"
+
+[node name="longdeng_9__9" type="MeshInstance3D" parent="Animations/longdeng"]
+
+position = Vector3(-3.9463932, -1.04429626, -4.29686966)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/longdeng_9.json"
+
+[node name="pubu" type="Node3D" parent="Animations"]
+
+position = Vector3(93.2762451, 10.8793945, -88.7696381)
+
+[node name="pubu_0__0" type="MeshInstance3D" parent="Animations/pubu"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/pubu_0.json"
+
+[node name="shuiche" type="Node3D" parent="Animations"]
+
+position = Vector3(31.0603428, 0.757709026, -43.8528404)
+
+[node name="shuiche_0__0" type="MeshInstance3D" parent="Animations/shuiche"]
+
+position = Vector3(0.112901688, 3.92024708, -0.220279694)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/shuiche_0.json"
+
+[node name="shuiche_1__1" type="MeshInstance3D" parent="Animations/shuiche"]
+
+position = Vector3(-0.112901688, -3.92024708, 0.220279694)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/shuiche_1.json"
+
+[node name="shui" type="Node3D" parent="Animations"]
+
+position = Vector3(-142.812988, -3.72021945, 137.793991)
+
+[node name="shui_0__0" type="MeshInstance3D" parent="Animations/shui"]
+
+position = Vector3(0, 0.0481694539, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/shui_0.json"
+
+[node name="shui_1__1" type="MeshInstance3D" parent="Animations/shui"]
+
+position = Vector3(0, 7.94728598e-08, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/shui_1.json"
+
+[node name="shui_2__2" type="MeshInstance3D" parent="Animations/shui"]
+
+position = Vector3(0, -0.0481695334, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/shui_2.json"
+
+[node name="xianhe" type="Node3D" parent="Animations"]
+
+position = Vector3(46.6305127, 44.6467133, -206.946598)
+
+[node name="xianhe_0__0" type="MeshInstance3D" parent="Animations/xianhe"]
+
+position = Vector3(4.52057981, 1.96776962, -1.92873764)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/xianhe_0.json"
+
+[node name="xianhe_1__1" type="MeshInstance3D" parent="Animations/xianhe"]
+
+position = Vector3(-18.5026765, 1.96776962, 2.55153275)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/xianhe_1.json"
+
+[node name="xianhe_2__2" type="MeshInstance3D" parent="Animations/xianhe"]
+
+position = Vector3(20.899219, -2.3053894, 3.43936539)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/xianhe_2.json"
+
+[node name="xianhe_3__3" type="MeshInstance3D" parent="Animations/xianhe"]
+
+position = Vector3(-6.91712236, -1.63014984, -4.06216049)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/xianhe_3.json"
+
+[node name="xiaochuan" type="Node3D" parent="Animations"]
+
+position = Vector3(-31.3019042, -0.121217489, 25.0002844)
+
+[node name="xiaochuan_0__0" type="MeshInstance3D" parent="Animations/xiaochuan"]
+
+position = Vector3(20.8539863, -2.04282212, -33.9389708)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/xiaochuan_0.json"
+
+[node name="xiaochuan_1__1" type="MeshInstance3D" parent="Animations/xiaochuan"]
+
+position = Vector3(-52.5655122, -1.91765594, 43.1566522)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/xiaochuan_1.json"
+
+[node name="xiaochuan_2__2" type="MeshInstance3D" parent="Animations/xiaochuan"]
+
+position = Vector3(47.367805, -2.01230192, 7.7909677)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/xiaochuan_2.json"
+
+[node name="xiaochuan_3__3" type="MeshInstance3D" parent="Animations/xiaochuan"]
+
+position = Vector3(-15.6562791, 5.97277999, -17.0086491)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/china/xiaochuan_3.json"

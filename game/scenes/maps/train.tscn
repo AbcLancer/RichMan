@@ -1,0 +1,1241 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/original_mesh.gd" id="1_mesh"]
+
+[node name="OriginalScene" type="Node3D"]
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="Animations" type="Node3D" parent="."]
+
+[node name="Box01__0" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(15.3077698, 14.1551847, -6.525177)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/0.json"
+
+[node name="yiyuan__1" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-52.781044, 5.22030687, -29.5764523)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/1.json"
+
+[node name="Box01__2" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-106.9272, 5.03062248, -40.2801628)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/2.json"
+
+[node name="Box05__3" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-101.405685, 2.32277226, 19.3314362)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/3.json"
+
+[node name="Box01__4" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(12.4852085, 4.13324261, -13.8367214)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/4.json"
+
+[node name="Cylinder01__5" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(9.84338284, 7.47689676, 55.7972336)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/5.json"
+
+[node name="Box01__6" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(57.9178467, 3.49389696, -36.585022)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/6.json"
+
+[node name="Box01__7" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(56.0073814, 3.29813719, -21.4849415)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/7.json"
+
+[node name="Box01__8" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(9.13037491, 4.0583086, -35.4827576)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/8.json"
+
+[node name="Box01__9" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(24.8191338, 6.06851292, -35.4420547)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/9.json"
+
+[node name="Box02__10" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-47.1133194, 9.75828075, 108.057983)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/10.json"
+
+[node name="Box03__11" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-39.7186127, 3.25684786, -16.207428)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/11.json"
+
+[node name="Box06__12" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-58.0492935, 3.11916018, -97.0857697)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/12.json"
+
+[node name="gongchang01__13" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-45.0198441, 8.1707716, 38.8259277)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/13.json"
+
+[node name="Box07__14" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-217.449097, 3.11916614, 38.4578743)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/14.json"
+
+[node name="Box08__15" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-94.8406982, 3.11916637, 40.6576729)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/15.json"
+
+[node name="qiaofang__16" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(62.0077248, 2.45208931, 134.379318)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/16.json"
+
+[node name="牛圈__17" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(63.7939339, 2.11119437, 82.0166092)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/17.json"
+
+[node name="Box01__18" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(23.9800873, 1.6885289, -132.787354)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/18.json"
+
+[node name="Box04__19" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(37.3226624, 2.06664896, -132.759674)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/19.json"
+
+[node name="Box19__20" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(51.3877029, 1.58164918, -132.870102)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/20.json"
+
+[node name="Box23__21" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(64.7386856, 1.68852878, -134.523834)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/21.json"
+
+[node name="Box03__22" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(9.72376537, 2.23592305, -132.419464)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/22.json"
+
+[node name="Box27__23" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-471.642456, 5.03062916, 120.099182)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/23.json"
+
+[node name="Box28__24" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-432.979431, 5.03063107, 159.858612)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/24.json"
+
+[node name="Box31__25" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(25.5605659, 23.3169632, -178.651245)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/25.json"
+
+[node name="Box01__26" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-128.851471, 4.15606022, 67.5439911)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/26.json"
+
+[node name="Box01__27" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(63.5394592, 22.8693981, -144.570419)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/27.json"
+
+[node name="Box01__28" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(8.18916607, 23.8288307, -132.970917)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/28.json"
+
+[node name="Box34__29" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-52.7469368, 21.9279709, -189.611053)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/29.json"
+
+[node name="Box35__30" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-4.23863745, 21.9279728, -158.045349)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/30.json"
+
+[node name="Box36__31" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(61.1771049, 21.9279728, -166.737518)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/31.json"
+
+[node name="Box37__32" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(81.6638031, 21.9279747, -115.636124)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/32.json"
+
+[node name="Box39__33" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-201.323212, 3.11916924, 97.2429428)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/33.json"
+
+[node name="Box42__34" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-192.87999, 3.1191678, 75.8913269)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/34.json"
+
+[node name="Box43__35" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-419.962891, 4.73543406, 106.127792)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/35.json"
+
+[node name="Box44__36" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-62.3342171, 3.11917686, 278.135559)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/36.json"
+
+[node name="Box45__37" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-378.909912, 6.98409081, 340.584045)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/37.json"
+
+[node name="Box46__38" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-225.994949, 4.73544455, 336.671448)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/38.json"
+
+[node name="Box47__39" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-52.3958817, 4.73545027, 473.622314)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/39.json"
+
+[node name="Box48__40" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(199.258347, 4.73544455, 339.919739)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/40.json"
+
+[node name="Box50__41" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(298.895081, 4.73544264, 293.045837)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/41.json"
+
+[node name="Box51__42" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(250.68782, 4.73544312, 304.196533)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/42.json"
+
+[node name="Box52__43" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(278.87207, 4.73544073, 262.955078)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/43.json"
+
+[node name="Box53__44" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(350.822235, 4.27038193, 317.765381)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/44.json"
+
+[node name="Box54__45" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(283.726013, 4.27038097, 305.129639)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/45.json"
+
+[node name="Box55__46" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(448.432587, 5.63987827, 243.827118)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/46.json"
+
+[node name="Box56__47" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(348.799255, 5.63988352, 352.956299)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/47.json"
+
+[node name="Box57__48" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(330.921936, 4.73543787, 190.783142)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/48.json"
+
+[node name="Box58__49" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-71.5524979, 4.73541355, -370.528076)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/49.json"
+
+[node name="Box59__50" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-96.6412964, 4.73541546, -329.893127)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/50.json"
+
+[node name="Box60__51" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-48.7378693, 4.73540974, -462.710724)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/51.json"
+
+[node name="Box61__52" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-350.677887, 4.73541307, -384.183289)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/52.json"
+
+[node name="Box62__53" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-350.948975, 4.73541641, -301.735443)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/53.json"
+
+[node name="Box63__54" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-182.640182, 4.73540878, -470.074249)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/54.json"
+
+[node name="Box64__55" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-187.091003, 4.73541164, -416.5867)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/55.json"
+
+[node name="Box65__56" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-125.13797, 4.73541021, -447.196167)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/56.json"
+
+[node name="Box66__57" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-339.732971, 5.03060913, -345.85907)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/57.json"
+
+[node name="Box67__58" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-277.629669, 5.03060579, -418.747162)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/58.json"
+
+[node name="Box69__59" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-248.829437, 5.03060484, -446.688568)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/59.json"
+
+[node name="Box70__60" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-216.683167, 5.03060484, -444.075012)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/60.json"
+
+[node name="Box71__61" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-82.4285431, 22.6099358, -202.319733)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/61.json"
+
+[node name="Box74__62" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-64.3870392, 22.9667053, -197.517868)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/62.json"
+
+[node name="Box75__63" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-85.8158951, 3.11916256, -50.3383141)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/63.json"
+
+[node name="gongchang02__64" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-243.263763, 8.86175728, -29.7684078)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/64.json"
+
+[node name="Box80__65" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-198.812378, 3.27111459, 28.3548775)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/65.json"
+
+[node name="Box81__66" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-133.209244, 4.57331085, -2.80833578)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/66.json"
+
+[node name="Box82__67" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-96.9962234, 3.11916947, 113.234749)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/67.json"
+
+[node name="Box84__68" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-247.42514, 3.11917257, 183.578201)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/68.json"
+
+[node name="Box85__69" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-442.685974, 3.11917043, 133.567047)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/69.json"
+
+[node name="Box86__70" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-64.1076355, 3.27112341, 233.804092)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/70.json"
+
+[node name="Box87__71" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-94.2740021, 3.27112412, 248.644196)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/71.json"
+
+[node name="Box88__72" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(58.479538, 3.27113295, 447.562469)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/72.json"
+
+[node name="Box89__73" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(83.6600189, 3.27113342, 463.404541)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/73.json"
+
+[node name="Box92__74" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-263.124054, 4.15606785, 232.937225)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/74.json"
+
+[node name="Box93__75" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-274.82962, 4.57331944, 191.648376)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/75.json"
+
+[node name="Box97__76" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(301.507172, 5.03060675, -393.275696)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/76.json"
+
+[node name="Box99__77" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(383.507568, 9.75971889, -245.07901)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/77.json"
+
+[node name="Box100__78" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(410.159546, 9.75971699, -289.909088)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/78.json"
+
+[node name="Box101__79" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(451.010559, 6.02929497, -246.184326)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/79.json"
+
+[node name="Box102__80" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(180.162979, 4.73541021, -461.055115)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/80.json"
+
+[node name="Box103__81" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(199.007324, 4.73541451, -358.714294)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/81.json"
+
+[node name="Box104__82" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(403.115417, 4.7354188, -239.853516)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/82.json"
+
+[node name="Box105__83" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(410.360901, 4.73542166, -186.720276)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/83.json"
+
+[node name="Box106__84" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(477.512207, 4.73543262, 64.7539368)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/84.json"
+
+[node name="Box107__85" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(426.820709, 4.73543262, 50.5235481)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/85.json"
+
+[node name="Box108__86" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(489.083862, 4.73542786, -44.525238)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/86.json"
+
+[node name="Box109__87" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(453.612274, 4.73543358, 83.7014618)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/87.json"
+
+[node name="Box110__88" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(126.89991, 3.27112412, 248.602432)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/88.json"
+
+[node name="Box111__89" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(126.644173, 3.2711215, 182.15242)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/89.json"
+
+[node name="Box112__90" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(500.622192, 3.27111673, 89.1491623)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/90.json"
+
+[node name="Box113__91" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(488.922974, 3.27111411, 21.1987095)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/91.json"
+
+[node name="Box115__92" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(476.876251, 3.27111816, 107.960938)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/92.json"
+
+[node name="Box116__93" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(33.3406029, 4.73541689, -286.475586)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/93.json"
+
+[node name="Box120__94" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(22.0223389, 4.57333183, 484.731934)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/94.json"
+
+[node name="Box121__95" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-453.778351, 5.03063154, 168.899628)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/95.json"
+
+[node name="Box122__96" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-463.800964, 3.27110744, -133.188416)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/96.json"
+
+[node name="Box123__97" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-486.4599, 3.27110863, -107.445824)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/97.json"
+
+[node name="Box124__98" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-480.704041, 3.27110624, -154.451477)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/98.json"
+
+[node name="Box125__99" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-455.903809, 4.73542929, -6.73110485)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/99.json"
+
+[node name="Box126__100" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-410.570648, 4.73541975, -224.596252)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/100.json"
+
+[node name="Box127__101" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-282.256836, 4.7354393, 218.5867)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/101.json"
+
+[node name="Box131__102" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-414.480103, 3.1191709, 138.49147)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/102.json"
+
+[node name="shitou__103" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-89.4807739, 14.1422558, -485.069336)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/103.json"
+
+[node name="shitou01__104" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-383.119019, 12.727231, -295.914246)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/104.json"
+
+[node name="shitou02__105" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-182.674194, 12.7272472, 87.9462738)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/105.json"
+
+[node name="shitou03__106" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-431.273926, 12.7272539, 223.744247)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/106.json"
+
+[node name="shitou04__107" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-224.808807, 12.7272625, 428.155518)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/107.json"
+
+[node name="shitou05__108" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(273.250122, 12.7272606, 408.384583)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/108.json"
+
+[node name="shitou06__109" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(206.466125, 12.7272253, -432.462524)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/109.json"
+
+[node name="shitou07__110" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(175.104279, 12.7272625, 415.351959)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/110.json"
+
+[node name="shitou08__111" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(177.813019, 12.7272577, 319.793457)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/111.json"
+
+[node name="shitou09__112" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(10.9986973, 14.8564692, -192.962524)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/112.json"
+
+[node name="shitou10__113" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-79.2609863, 12.7272387, -119.826706)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/113.json"
+
+[node name="shitou11__114" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(183.46637, 56.2549171, -149.706345)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/114.json"
+
+[node name="shitou12__115" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(169.374817, 26.5857353, 70.020874)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/115.json"
+
+[node name="Box134__116" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(8.83548832, 4.73543692, 167.268616)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/116.json"
+
+[node name="Box135__117" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(41.4391174, 4.73544884, 425.051819)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/117.json"
+
+[node name="Box136__118" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-69.3186951, 3.27111244, -21.1783905)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/118.json"
+
+[node name="Box11__119" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(39.8912811, 0.13932991, -106.538177)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/119.json"
+
+[node name="Box143__120" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-231.195236, 4.73541737, -286.399841)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/120.json"
+
+[node name="Box144__121" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-0.873369694, 1.63730049, -128.896942)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/121.json"
+
+[node name="Box145__122" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-227.398773, 5.03064442, 456.652924)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/122.json"
+
+[node name="Box146__123" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-237.683075, 5.03064251, 403.449768)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/123.json"
+
+[node name="Box147__124" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-249.892334, 3.11918402, 436.302582)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/124.json"
+
+[node name="gongchang05__125" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(20.8711357, 7.36810303, -54.4558105)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/125.json"
+
+[node name="shitou13__126" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-204.215103, 4.06500149, 441.811554)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/126.json"
+
+[node name="Box09__127" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-443.71106, 1.30788374, 232.662903)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/127.json"
+
+[node name="shitou14__128" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-132.601852, 46.4851913, -118.438522)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/128.json"
+
+[node name="Box149__129" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-125.006683, 42.1509438, -126.58107)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/129.json"
+
+[node name="Box150__130" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(204.588043, 28.467144, -436.043732)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/130.json"
+
+[node name="Box151__131" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(58.6101608, 19.2273197, -179.761841)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/131.json"
+
+[node name="Box152__132" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(199.209335, 49.6583176, -180.363998)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/132.json"
+
+[node name="shitou15__133" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(205.585114, 48.1841583, -57.689209)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/133.json"
+
+[node name="Box153__134" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-219.200653, 4.11199236, 57.7304573)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/134.json"
+
+[node name="Box154__135" type="MeshInstance3D" parent="Environment"]
+
+position = Vector3(-109.866104, 4.05831957, 211.816772)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/135.json"
+
+[node name="diaoche" type="Node3D" parent="Animations"]
+
+position = Vector3(79.2656937, 2.21251535, 139.667297)
+
+[node name="diaoche_0__0" type="MeshInstance3D" parent="Animations/diaoche"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/diaoche_0.json"
+
+[node name="fengche" type="Node3D" parent="Animations"]
+
+position = Vector3(5.22062159, 8.87035656, 53.4048538)
+
+[node name="fengche_0__0" type="MeshInstance3D" parent="Animations/fengche"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/fengche_0.json"
+
+[node name="heshui" type="Node3D" parent="Animations"]
+
+position = Vector3(89.3726196, -8.52341652, -8.07359314)
+
+[node name="heshui_0__0" type="MeshInstance3D" parent="Animations/heshui"]
+
+position = Vector3(0, 0.170156479, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/heshui_0.json"
+
+[node name="heshui_1__1" type="MeshInstance3D" parent="Animations/heshui"]
+
+position = Vector3(0, -0.00100326538, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/heshui_1.json"
+
+[node name="heshui_2__2" type="MeshInstance3D" parent="Animations/heshui"]
+
+position = Vector3(0, -0.169153214, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/heshui_2.json"
+
+[node name="huoche" type="Node3D" parent="Animations"]
+
+position = Vector3(37.4305807, 1.8522613, -133.072083)
+
+[node name="huoche_0__0" type="MeshInstance3D" parent="Animations/huoche"]
+
+position = Vector3(-13.4504934, -0.163726807, 0.284729004)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/huoche_0.json"
+
+[node name="huoche_1__1" type="MeshInstance3D" parent="Animations/huoche"]
+
+position = Vector3(-0.107918358, 0.214393139, 0.312408447)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/huoche_1.json"
+
+[node name="huoche_2__2" type="MeshInstance3D" parent="Animations/huoche"]
+
+position = Vector3(13.9571222, -0.270606756, 0.20199585)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/huoche_2.json"
+
+[node name="huoche_3__3" type="MeshInstance3D" parent="Animations/huoche"]
+
+position = Vector3(27.3081049, -0.163726807, -1.45175171)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/huoche_3.json"
+
+[node name="huoche_4__4" type="MeshInstance3D" parent="Animations/huoche"]
+
+position = Vector3(-27.7068153, 0.383667231, 0.652618408)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/huoche_4.json"
+
+[node name="niu" type="Node3D" parent="Animations"]
+
+position = Vector3(68.1074915, 1.12560117, 82.7313557)
+
+[node name="niu_0__0" type="MeshInstance3D" parent="Animations/niu"]
+
+position = Vector3(7.56397152, -0.042173028, -5.19185829)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/niu_0.json"
+
+[node name="niu_1__1" type="MeshInstance3D" parent="Animations/niu"]
+
+position = Vector3(5.38793087, 0.0140551329, 2.73133659)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/niu_1.json"
+
+[node name="niu_2__2" type="MeshInstance3D" parent="Animations/niu"]
+
+position = Vector3(-7.80761433, 0.014059186, -6.91700935)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/niu_2.json"
+
+[node name="niu_3__3" type="MeshInstance3D" parent="Animations/niu"]
+
+position = Vector3(-5.14428806, 0.0140587091, 9.37753105)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/niu_3.json"
+
+[node name="sky" type="Node3D" parent="Animations"]
+
+position = Vector3(6.83105469, 82.340332, -6.03213501)
+
+[node name="sky_0__0" type="MeshInstance3D" parent="Animations/sky"]
+
+position = Vector3(0, 0, 0)
+
+script = ExtResource("1_mesh")
+
+definition_path = "res://assets/original/scenes/train/sky_0.json"

@@ -178,13 +178,16 @@ func route_position_3d(i: int, direction: int, progress: float) -> Vector3:
 
 
 ## Original block matrix maps grid CORNERS; the center adds half a cell.
-func plot_transform(i: int, footprint: int = 1) -> Transform3D:
+func plot_transform(i: int, footprint: int = 1, build_cell: int = -1) -> Transform3D:
 	var road: Dictionary = original_layout["roads"][posmod(i, tile_count())]
 	var block: Dictionary = original_layout["blocks"][int(road["block"])]
 	var w := int(block["width"])
 	var d := int(block["depth"])
 	var col := clampi(int(road["cell"]) % w, 0, maxi(0, w - footprint))
 	var row := clampi(int(road["cell"]) / w, 0, maxi(0, d - footprint))
+	if build_cell >= 0:
+		col = build_cell % w
+		row = build_cell / w
 	var ax := _pair(block["axes"][0])
 	var az := _pair(block["axes"][1])
 	var center := _pair(block["origin"]) + ax * (col + footprint * 0.5) + az * (row + footprint * 0.5)
