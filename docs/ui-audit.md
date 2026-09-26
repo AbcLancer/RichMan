@@ -354,7 +354,7 @@ offset 20 : 字形位图：65536 × ceil(px/8) × px 字节
 ```bash
 GODOT="D:/Godot/Godot_v4.7.2-stable_win64_console.exe"
 
-# ① 逻辑回归（必须 215/215）
+# ① 逻辑回归（必须 220/220）
 "$GODOT" --headless --path game -- --selftest
 
 # ①b 地图/路线对齐专项（必须打印 MAP ALIGNMENT PASS）
@@ -372,6 +372,7 @@ GODOT="D:/Godot/Godot_v4.7.2-stable_win64_console.exe"
 #   → ui_shot_cardshop.png  （卡片商店：8 格货架 + 「您有 N 点券」）
 #   → ui_shot_road.png      （全盘：事件格图标 + 路边物体）
 #   → ui_shot_roadnear.png  （近景：医院图标 / 四神的小神仙大图 / 路边物体）
+#   → ui_shot_shopconfirm.png（商店购买二次确认：**屏幕居中**，不再贴角色被压住）
 #   → ui_shot_pop.png        （掷骰子到空地，落点气泡「是│否」）
 #   → ui_shot_tired.png      （体力见底：GO 压暗 + 能量条掉下来）
 

@@ -494,6 +494,8 @@ func add_player(id: int, pname: String) -> Dictionary:
 		# 走满多少步给小神仙升级：原版 Initvar_r.txt「Pet_Upgrade_Steps = 300
 		# 宠物每走多少步（此值 × 级数）升级」
 		"pet_steps": 0,
+		# 是否在「本段行走」里已经被传送过（防传送门 A→B→A 原地打转）
+		"_teleported": false,
 		"tile": 0,
 		"progress": 0.0,
 		"dir": 1,
@@ -631,6 +633,14 @@ func _advance(p: Dictionary, dt: float) -> void:
 			var rob: Dictionary = road_objs[int(p["tile"])]
 			road_objs.erase(int(p["tile"]))
 			_pick_road_obj(p, str(rob["kind"]), int(p["tile"]))
+		# 踩到**传送平台**（原版 Roadevent 事件 1）：经过就传送，并结束本次移动。
+		# ⚠ 必须放在**逐格循环里**判 —— 原来只在 _arrive（停下那一刻）判，
+		#   于是「路过」不传送，玩家可以站在传送平台上；此时再掷 1 点走 1 格到
+		#   「另一处平台」，又被原样传回来 ⇒ 看起来「留在原地」（老板 2026-09-26 反馈）。
+		#   埃及的 2 格传送平台在路径上相邻、世界里却隔 13.9 单位（≈3 格），正是传送门的两端。
+		elif _event_key(int(p["tile"])) == "platform" \
+				and not bool(p.get("_teleported", false)):
+			_teleport_platform(p, int(p["tile"]))
 	if int(p["moving"]) <= 0:
 		p["moving"] = 0
 		p["progress"] = 0.0
@@ -638,6 +648,7 @@ func _advance(p: Dictionary, dt: float) -> void:
 		# 骰子在这一刻停住（音效 005「骰子滚动结束」的时机，老板试听确认）
 		_ev("roll_end", p)
 		_arrive(p)
+		p["_teleported"] = false       # 本次抵达结束 → 解除「本段行走已传送」保护
 
 func _tick_step_effects(p: Dictionary) -> void:
 	## 每走 1 格，把所有「多少步」类的状态各减 1
@@ -802,13 +813,11 @@ func _resolve_event(p: Dictionary, idx: int, t: Dictionary) -> void:
 			log_message.emit("%s 进入%s，住院 8 秒" % [p["name"], ename])
 			_ev("hospital", p, {"eid": eid})
 		"platform":
-			# 传送平台：挪到地图上另一处 platform（原版 Roadevent.txt 事件 1）
-			var dest := _other_platform(idx)
-			if dest >= 0:
-				p["tile"] = dest
-				p["progress"] = 0.0
-				log_message.emit("%s 踩上%s，被送到另一处平台" % [p["name"], ename])
-			_ev("platform", p, {"eid": eid, "to": dest})
+			# 传送平台（原版 Roadevent.txt 事件 1）。
+			# ⚠ 主体逻辑在 `_advance` 的逐格循环里（**经过就传送**），这里只是「刚好停在上面」的
+			#   兜底；本段行走已经传过就不再传（否则 A→B 再 B→A 会原地打转）。
+			if not bool(p.get("_teleported", false)) and _teleport_platform(p, idx) < 0:
+				log_message.emit("%s 站在传送平台上，但本图没有第二处平台" % p["name"])
 		"cardshop":
 			# 卡片商店：**用点券买卡**（Info.txt 41「卡片商店 您有<NUMBER>点券」/
 			# 42「您没有点券 不能进入卡片商店」）。这里是「开架」——
@@ -888,11 +897,50 @@ func _give_random_card(p: Dictionary, ename: String) -> void:
 	_ev("get_card", p, {"card": c, "name": cname})
 
 ## 地图上另一处 platform 格的索引（没有第二处就返回 -1）
+## 另一处**传送平台**格（本图没有就返回 -1）。
+##
+## ⚠ 必须跳过**路径索引相邻**的平台格：埃及的 2 格平台（索引 24 / 25）其实是
+##   **同一座传送门的两格** —— 它们在路径上前后脚，世界里却隔了 13.9 单位（≈3 格），
+##   也就是说「传送」这件事**已经体现在路径本身**了。
+##   若把它们当成互为目的地，玩家从 24 走 1 格到 25 就会被原样传回 24，
+##   看起来正是「掷 1 点留在原地」（老板 2026-09-26 反馈）。
 func _other_platform(idx: int) -> int:
-	for i in range(map.tile_count()):
-		if i != idx and str(map.tile(i).get("event", "")) == "platform":
-			return i
+	var n := map.tile_count()
+	for i in range(n):
+		if i == idx or str(map.tile(i).get("event", "")) != "platform":
+			continue
+		if _tile_distance(i, idx) <= 1:
+			continue                  # 相邻 → 同一座传送门的两格，不是「另一处」
+		return i
 	return -1
+
+
+## 某格的事件 key（`config/Roadevent.txt` 里的英文名：platform / cardshop / coupon20 …）
+func _event_key(idx: int) -> String:
+	if map == null or idx < 0 or idx >= map.tile_count():
+		return ""
+	return str(map.tile(idx).get("event", ""))
+
+
+## 传送到地图上另一处传送平台，返回目标格（-1 = 本图没有第二处）。
+##
+## ⚠ 由 `_advance` 的**逐格循环**调用 —— 也就是说「**经过**传送平台也会被传送」。
+##   原来的实现只在 `_arrive`（停下来那一刻）判，于是玩家可以「路过而停在」传送平台上；
+##   此时再掷 1 点走 1 格就正好到了传送门的**另一端**，又被原样传回来 ⇒
+##   看起来就是「掷 1 点留在原地」（老板 2026-09-26 反馈的现象）。
+##   旁证：埃及这 2 格传送平台在**路径索引上相邻**，世界里却隔了 **13.9 单位（≈3 格）**
+##   —— 正是「传送门的两端」该有的样子（`aiji_tilepos.json` 格 24 / 25）。
+func _teleport_platform(p: Dictionary, idx: int) -> int:
+	var dest := _other_platform(idx)
+	if dest < 0:
+		return -1
+	p["tile"] = dest
+	p["progress"] = 0.0
+	p["moving"] = 0                  # 传送结束本次移动（原版无明文依据，取更保守的行为）
+	p["_teleported"] = true          # 同一段行走内不再被传送（防 A→B→A 死循环）
+	log_message.emit("%s 踩上传送平台，被送到另一处" % p["name"])
+	_ev("platform", p, {"idx": idx, "to": dest})
+	return dest
 
 func _round100(v: int) -> int:
 	return int(round(float(v) / 100.0)) * 100

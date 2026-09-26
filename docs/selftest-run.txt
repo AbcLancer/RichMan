@@ -174,6 +174,12 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
   [PASS] 事件格图标覆盖了埃及的全部事件类型（coupon→credit 映射已处理） ["credit1", "credit10", "credit2", "credit20", "credit3", "credit30", "credit5", "credit50", "capital", "cardpt", "cardshop", "casino", "game_a", "game_b", "game_b_seen", "hospital", "labar", "pethouse", "tvnews"]
   [PASS] 路面物体清单 20 项（13 种随机 + 救护车/推土机/金币/点券/飞弹/核弹/降落伞 等演出） 20 项
   [PASS] 其中 9 个有静态网格（.pol → R6BM），其余原版只有 .cvd 动画（格式未逆） 9 个有模型
+[3g] 传送平台（原版 Roadevent 事件 1）
+  [PASS] 埃及有 2 格传送平台 [24, 25]
+  [PASS] 这 2 格在**世界坐标**上隔了 ≈3 格距（正常相邻格距 ~5）→ 同一座传送门的两格 index [24, 25] / 世界距离 13.90
+  [PASS] 相邻的两格平台**不互为目的地**（否则就会原地打转） _other_platform(24) = -1
+  [PASS] 站在传送平台上掷 1 点 → 走到另一格（不再「留在原地」） tile=25（期望 25）
+  [PASS] 从第二格再走 1 格 → 正常前进（没有反弹） tile=26（期望 26）
   [PASS] 抵达地产格 1 tile=1
   [PASS] 服务端标记可购买点（原版 id 91「是否购买」） last_plot=1 kind=buy
   [PASS] 购买成功 
@@ -253,7 +259,7 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
   [PASS] BGM 可停 
   [PASS] 环境底噪 95 已起且循环已开 
   [PASS] 环境底噪可停 
-通过 215 / 失败 0
+通过 220 / 失败 0
 ==============================
 WARNING: 16 ObjectDB instances were leaked at exit (run with `--verbose` for details).
    at: cleanup (core/object/object.cpp:2536)

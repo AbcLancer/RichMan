@@ -316,6 +316,11 @@ func _run_ui_shot(delta: float) -> void:
 				_sync_shop()
 				await get_tree().create_timer(0.25).timeout
 				await _capture("D:/Projects/RichMan/ui_shot_pethouse.png")
+				# 商店购买二次确认：验证它落在**面板下方居中**，而不是贴角色头顶被压住
+				_confirm_buy_pet("caishen")
+				await get_tree().create_timer(0.3).timeout
+				await _capture("D:/Projects/RichMan/ui_shot_shopconfirm.png")
+				_pop_cancel()
 				_shop_stock = _shop_stock_for_me()
 				_open_shop("cardshop")
 				_shop_sig = ""
@@ -1476,6 +1481,9 @@ func _build_action_entry() -> void:
 	# ---- 落点气泡 = 买 / 升级 / 放弃（是 / 否 用原版 yes_up/no_up 贴图）----
 	_pop = PanelContainer.new()
 	_pop.visible = false
+	# 层级：气泡要在**商店面板之上** —— 商店购买确认复用的就是它，
+	# 否则「是/否」会被面板压住，点不到（老板 2026-09-26 反馈）
+	_pop.z_index = 60
 	_pop.custom_minimum_size = Vector2(UI_POP_W * _ui_scale, UI_POP_H * _ui_scale)
 	_pop.add_theme_stylebox_override("panel", _sb_round(
 		Color8(255, 250, 236), Color8(206, 78, 92), int(round(8.0 * _ui_scale)),
@@ -1822,6 +1830,9 @@ func _sync_card_hand(me: Dictionary) -> void:
 			sig.append(Net.sim.card_usable(multiplayer.get_unique_id(), str(cid)))
 	else:
 		sig = cards.duplicate()
+	# ⚠ 别在这里加「商店开着就隐藏手牌条」：那会顺带清空 _card_slots，
+	#   把 --uishot 的卡片菜单/选目标两张连累拍不到。商店面板在手牌条之上，
+	#   二者本来就不重叠（老板截图里也是分开的）。
 	var want_visible: bool = _card_bar_open and not cards.is_empty()
 	if cards == _card_sig and sig == _card_sig_state and _card_bar.visible == want_visible:
 		return
@@ -2574,7 +2585,17 @@ func _sync_action_ui() -> void:
 		var anchor: Vector2 = get_viewport().get_visible_rect().size * GO_ANCHOR_NORM
 		_go_btn.position = anchor - _go_btn.size * 0.5
 	if _pop.visible:
-		_pop.position = sp - Vector2(_pop.size.x * 0.5, _pop.size.y + pad)
+		if _pop_mode == "shop" and _shop != null and _shop.visible:
+			# 商店购买确认：**屏幕居中**（模态对话框该在的位置）。
+			# ❌ 原来一律贴角色头顶 —— 商店面板在屏幕中间、角色在别处，确认框会落到
+			#    面板边缘甚至被压住，很难点（老板 2026-09-26 反馈）。
+			# ❌ 也别贴面板下缘：面板几乎占满屏高，下方就是手牌条。
+			var vp := get_viewport().get_visible_rect()
+			_pop.position = Vector2(
+				vp.position.x + (vp.size.x - _pop.size.x) * 0.5,
+				vp.position.y + vp.size.y * 0.56 - _pop.size.y * 0.5)
+		else:
+			_pop.position = sp - Vector2(_pop.size.x * 0.5, _pop.size.y + pad)
 
 	# 骰子数量选择器贴着 GO 圆钮的左边缘竖排（原版实机 08_牌桌_2.png 的位置）
 	var gp := _go_btn.position

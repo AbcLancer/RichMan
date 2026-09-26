@@ -30,6 +30,7 @@ func run() -> void:
 	_test_cards()
 	_test_pets()
 	_test_road_objs()
+	_test_platform()
 	_test_buy_and_rent()
 	_test_upgrade_chain()
 	_test_timers()
@@ -346,6 +347,58 @@ func _pet_world(pet_id: String) -> Sim:
 	sim.add_pet(p, pet_id)
 	sim.add_pet(q, "caishen")             # 小怪兽「PK技」要有目标
 	return sim
+
+
+# --------------------------------------------------- 3g. 传送平台（Roadevent 事件 1）
+
+func _test_platform() -> void:
+	_lines.append("[3g] 传送平台（原版 Roadevent 事件 1）")
+	var m := MapData.load_from("aiji")
+	var pf: Array = []
+	for i in range(m.tile_count()):
+		if str(m.tile(i).get("event", "")) == "platform":
+			pf.append(i)
+	_ok("埃及有 2 格传送平台", pf.size() == 2, str(pf))
+	var dw := 0.0
+	if pf.size() == 2:
+		dw = m.pos_of(int(pf[0])).distance_to(m.pos_of(int(pf[1])))
+	_ok("这 2 格在**世界坐标**上隔了 ≈3 格距（正常相邻格距 ~5）→ 同一座传送门的两格",
+		dw > 9.0, "index %s / 世界距离 %.2f" % [str(pf), dw])
+
+	var sim := Sim.new()
+	sim.setup(m, 999)
+	sim.add_player(1, "玩家一")
+	sim.add_player(2, "玩家二")
+	sim.running = true
+	var p: Dictionary = sim.players[1]
+	var a0 := int(pf[0])
+	var a1 := int(pf[1])
+	_ok("相邻的两格平台**不互为目的地**（否则就会原地打转）",
+		sim._other_platform(a0) == -1,
+		"_other_platform(%d) = %d" % [a0, sim._other_platform(a0)])
+
+	# 复现老板遇到的场景：已经停在传送平台上，再掷 1 点
+	p["tile"] = a0
+	p["dir"] = 1
+	p["moving"] = 1
+	p["progress"] = 0.0
+	for _i in range(200):
+		sim.step(0.05)
+		if int(p["moving"]) <= 0:
+			break
+	_ok("站在传送平台上掷 1 点 → 走到另一格（不再「留在原地」）",
+		int(p["tile"]) == a1, "tile=%d（期望 %d）" % [int(p["tile"]), a1])
+
+	# 再走一格必须继续前进，不能又被弹回去
+	p["moving"] = 1
+	p["progress"] = 0.0
+	for _j in range(200):
+		sim.step(0.05)
+		if int(p["moving"]) <= 0:
+			break
+	_ok("从第二格再走 1 格 → 正常前进（没有反弹）",
+		int(p["tile"]) == sim._wrap(a1 + 1),
+		"tile=%d（期望 %d）" % [int(p["tile"]), sim._wrap(a1 + 1)])
 
 
 # --------------------------------------------------- 3f. 路边物体（原版 roadobj）
