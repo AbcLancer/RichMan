@@ -140,6 +140,9 @@ const DIE_SEL_STEP := 26.0                     # 竖排步距（native）
 const DIE_SEL_DX := 2.6                        # 相对 GO 钮左上角（native）
 const DIE_SEL_DY := 14.7
 const DIE_FLY_SIZE := 46.0                     # 飞出的骰子显示尺寸（native）
+## 掷出去的骰子**先上抛再落下**的高度（native）。老板 2026-09-26：
+## 「骰子会有抛物线落下的感觉」—— 原来只是直线 lerp，没有弧。
+const DIE_FLY_ARC := 120.0
 
 ## GO 钮的**屏幕锚点**（视口比例，取的是圆钮中心）。
 ## 证据：原版实机 07/08/09_牌桌*.png + new_session_board.png **四张截图里
@@ -1684,7 +1687,11 @@ func _tick_dice(delta: float) -> void:
 			var t: TextureRect = _dice_fx[i]
 			if not is_instance_valid(t):
 				continue
-			t.position = (_dice_fx_from[i] as Vector2).lerp(_dice_fx_to[i], e)
+			# 抛物线：掷出去的骰子**先上抛再落下**（sin(k·π) 两端为 0、中间最高，
+			# 正好是一条弧）。老板 2026-09-26：「骰子会有抛物线落下的感觉」。
+			var arc := sin(k * PI) * DIE_FLY_ARC * _ui_scale
+			t.position = (_dice_fx_from[i] as Vector2).lerp(_dice_fx_to[i], e) \
+				+ Vector2(0.0, -arc)
 			t.rotation = TAU * 2.0 * e * (1.0 if i % 2 == 0 else -1.0)
 			if not _tex_spin.is_empty():
 				t.texture = _tex_spin[int(_dice_fx_t * DIE_SPIN_FPS) % _tex_spin.size()]
