@@ -1,7 +1,7 @@
 {
  "_source": "gamedata.pck scene/paris  (原版数据生成)",
  "name": "paris",
- "display_name": "巴黎",
+ "display_name": "法国",
  "camera": {
   "distance": 12.0,
   "yaw": 45.0
@@ -55,9 +55,9 @@
  ],
  "landmarks": {
   "hospital": [
-   418.0,
-   16.9,
-   -1512.0
+   406.0,
+   170.0,
+   1518.0
   ]
  },
  "streets": [
@@ -811,5 +811,51 @@
    "event": "capital",
    "name": "市政府"
   }
- ]
+ ],
+ "stamina": {
+  "step_cost": 20.0,
+  "regen_per_sec": 7.0,
+  "min_to_start": 240.0,
+  "max": 600.0
+ },
+ "road_items": {
+  "card": 7,
+  "crystal": 1,
+  "hanbao": 3,
+  "petegg": 2,
+  "robber": 2,
+  "bomb": 1,
+  "thief": 1,
+  "block": -1,
+  "mine": -1,
+  "caishen": 1,
+  "fushen": 1,
+  "shuaishen": 1,
+  "qiongshen": 1
+ },
+ "road_item_kinds": 13,
+ "mission": "欢迎来到风光明媚的法国巴黎，本关任务是发展商业，胜利条件是让所有对手破产，成为商业大亨。",
+ "scene_config": {
+  "_source": "docs/original-readable/installation/config/scene/paris/Paris.txt",
+  "build_flags_install": {
+   "industry": 0,
+   "shop": 1,
+   "uptown": 0
+  },
+  "build_flags_pack": {
+   "industry": 0,
+   "shop": 1,
+   "uptown": 0
+  },
+  "camera": {
+   "yaw": 1140.0,
+   "height": 55.0,
+   "distance": 3200.0
+  },
+  "hospital": [
+   406.0,
+   170.0,
+   1518.0
+  ]
+ }
 }

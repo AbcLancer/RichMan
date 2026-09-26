@@ -20,6 +20,8 @@ const DEFAULT_PORT := 27060
 const MAX_PLAYERS := 4
 const TICK_RATE := 20.0          # 服务端逻辑帧率
 const SNAPSHOT_RATE := 10.0      # 状态广播频率
+const SNAPSHOT_UDP_BUDGET := 1200 # 留出 RPC/ENet 头部；超限则走可靠通道
+const SNAPSHOT_MAX_RAW := 1000000
 
 # ---- 本地 AI（权威服务端直接模拟，不走网络）----
 # 名字与颜色按原版 Role.txt 的角色顺序对齐（洋红=钱夫人 / 土黄=阿土伯 / 蓝=宫本宝藏 …）
@@ -44,6 +46,8 @@ var players_info: Dictionary = {}   # peer_id -> String(name)
 var _tick_acc: float = 0.0
 var _snap_acc: float = 0.0
 var _pending_seed: int = 0
+var _snap_seq: int = 0
+var _last_remote_seq: int = -1
 
 func _ready() -> void:
 	multiplayer.peer_connected.connect(_on_peer_connected)
@@ -95,6 +99,8 @@ func leave() -> void:
 	players_info.clear()
 	ai_ids.clear()
 	_ai_next.clear()
+	_snap_seq = 0
+	_last_remote_seq = -1
 	set_process(false)
 	disconnected.emit()
 
@@ -129,16 +135,18 @@ func _drive_ai() -> void:
 		_ai_think(id, p)
 
 func _ai_think(id: int, p: Dictionary) -> void:
-	## 极简 AI：能买就买 / 自己的地就升级 / 否则掷骰。
+	## 极简 AI：能用本次抵达的机会就用，用不上就掷骰。
+	## 「机会」= 走到空地可买 / 走到自己的地可升一级（原版一次一格只给一次机会）。
 	## 后续 P1 会按原版 Role.txt 的三项性格权重（害人/股票/买地）重写。
-	if int(p["last_plot"]) >= 0:
-		sim.act_buy(id)
-		return
-	var t: int = int(p["tile"])
-	if sim.plots.has(t) and int(sim.plots[t]["owner"]) == id:
-		if int(sim.plots[t]["level"]) < Sim.MAX_BUILD_LEVEL and int(p["money"]) > 120000:
-			sim.act_upgrade(id)
+	var kind := str(p.get("last_plot_kind", ""))
+	if kind == "buy":
+		if sim.act_buy(id):
 			return
+		sim.act_pass(id)          # 钱不够就放弃，别攥着令牌不动
+	elif kind == "upgrade":
+		if int(p["money"]) > 120000 and sim.act_upgrade(id):
+			return
+		sim.act_pass(id)
 	sim.act_roll(id)
 
 # ------------------------------------------------------------ 连接事件回调
@@ -165,7 +173,6 @@ func _on_connect_fail() -> void:
 	leave()
 
 func _on_server_disconnected() -> void:
-	disconnected.emit()
 	leave()
 
 # ---------------------------------------------------------------- 大厅同步
@@ -214,6 +221,8 @@ func _internal_start(m: String, seed_val: int) -> void:
 		push_error("Net: 地图加载失败 %s" % m)
 		return
 	sim = Sim.new()
+	_snap_seq = 0
+	_last_remote_seq = -1
 	sim.setup(md, seed_val)
 	sim.log_message.connect(func(t): log_received.emit(t))
 	for id in players_info.keys():
@@ -242,14 +251,36 @@ func _apply_action(who: int, action: String, args: Array) -> void:
 		return
 	match action:
 		"roll":
-			sim.act_roll(who)
+			# args[0] 可选：一次掷几颗骰子（原版 GO 钮左侧的骰子选择器，见 Sim.DICE_PER_ROLL_MAX）
+			sim.act_roll(who, int(args[0]) if args.size() > 0 else 1)
 		"buy":
 			sim.act_buy(who)
+		"pass":
+			sim.act_pass(who)
 		"upgrade":
-			sim.act_upgrade(who)
+			# args[0] 可选：空地首次建设时要选的房型（原版 id 92「选择房屋」）
+			sim.act_upgrade(who, str(args[0]) if args.size() > 0 else "")
 		"card":
+			# args[0] = 卡 id；args[1] 可选 = 需要点选对手时的目标玩家 id
 			if args.size() > 0:
-				sim.act_use_card(who, str(args[0]))
+				sim.act_use_card(who, str(args[0]),
+					int(args[1]) if args.size() > 1 else -1)
+		"discard":
+			# 卡片菜单 id 3「丢弃」
+			if args.size() > 0:
+				sim.act_discard_card(who, str(args[0]))
+		"walk":
+			# 骰子卡：玩家自选前进步数（1..6）
+			if args.size() > 0:
+				sim.act_walk(who, int(args[0]))
+		"buy_pet":
+			# 精灵屋：用点券请一位小神仙（Info.txt 203）
+			if args.size() > 0:
+				sim.act_buy_pet(who, str(args[0]))
+		"buy_card":
+			# 卡片商店：用点券买一张卡（Info.txt 41/42）
+			if args.size() > 0:
+				sim.act_buy_card(who, str(args[0]))
 	# 动作产生的结果立即回灌，降低主观延迟
 	_broadcast_state()
 
@@ -276,10 +307,41 @@ func _broadcast_state() -> void:
 		return
 	var snap := sim.to_dict()
 	state_received.emit(snap)          # 房主本地直接用
-	_rpc_state.rpc(snap)
+	var raw := var_to_bytes(snap)
+	var packed := raw.compress(FileAccess.COMPRESSION_ZSTD)
+	if packed.is_empty():
+		push_warning("Net: 状态快照压缩失败")
+		return
+	_snap_seq += 1
+	if packed.size() <= SNAPSHOT_UDP_BUDGET:
+		_rpc_state.rpc(packed, raw.size(), _snap_seq)
+	else:
+		_rpc_state_large.rpc(packed, raw.size(), _snap_seq)
 
-@rpc("authority", "call_remote", "unreliable")
-func _rpc_state(snap: Dictionary) -> void:
+@rpc("authority", "call_remote", "unreliable_ordered")
+func _rpc_state(packed: PackedByteArray, raw_size: int, seq: int) -> void:
 	if is_host:
 		return
+	_accept_state(packed, raw_size, seq)
+
+
+@rpc("authority", "call_remote", "reliable")
+func _rpc_state_large(packed: PackedByteArray, raw_size: int, seq: int) -> void:
+	if is_host:
+		return
+	_accept_state(packed, raw_size, seq)
+
+
+func _accept_state(packed: PackedByteArray, raw_size: int, seq: int) -> void:
+	if seq <= _last_remote_seq or raw_size <= 0 or raw_size > SNAPSHOT_MAX_RAW:
+		return
+	var raw := packed.decompress(raw_size, FileAccess.COMPRESSION_ZSTD)
+	if raw.size() != raw_size:
+		push_warning("Net: 状态快照解压失败")
+		return
+	var snap: Variant = bytes_to_var(raw)
+	if snap is not Dictionary:
+		push_warning("Net: 状态快照格式错误")
+		return
+	_last_remote_seq = seq
 	state_received.emit(snap)

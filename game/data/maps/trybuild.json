@@ -1,7 +1,7 @@
 {
  "_source": "gamedata.pck scene/trybuild  (原版数据生成)",
  "name": "trybuild",
- "display_name": "测试",
+ "display_name": "程序上小学时代",
  "camera": {
   "distance": 12.0,
   "yaw": 45.0
@@ -231,5 +231,33 @@
    "event": "cardpt",
    "name": "卡片点"
   }
- ]
+ ],
+ "stamina": {
+  "step_cost": 20.0,
+  "regen_per_sec": 6.0,
+  "min_to_start": 240.0,
+  "max": 600.0
+ },
+ "road_items": {},
+ "road_item_kinds": 0,
+ "mission": "本关是专门用来测试的,不会出现在正式版,请大家放心:-)",
+ "scene_config": {
+  "_source": "docs/original-readable/installation/config/scene/trybuild/Trybuild.txt",
+  "build_flags_install": {
+   "industry": 1,
+   "shop": 1,
+   "uptown": 1
+  },
+  "build_flags_pack": {},
+  "camera": {
+   "yaw": 45.0,
+   "height": 20.0,
+   "distance": 1000.0
+  },
+  "hospital": [
+   0.0,
+   100.0,
+   0.0
+  ]
+ }
 }

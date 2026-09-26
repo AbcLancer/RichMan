@@ -1,0 +1,274 @@
+{
+  "_source": "F:\\游戏\\Rich6\\config\\Pet.txt（9 只 × 4 级：即时制秒数 / 回合制次数 / 消耗点数）+ config\\String.txt 2201..2209（技能名）+ config\\Info.txt 202（持有上限 5 位）",
+  "_columns": "seconds / turn_times / points 都是**4 个等级**的值，下标 0 = 1 级。即时制用 seconds。",
+  "_inferred": {
+    "buy_price": "Info.txt 203「<BABYNAME>价格<NUMBER>点券」没给具体值 → 取 Pet.txt『消耗点数』第 1 级值（唯一可用数字）。属推断。",
+    "effect": "原版只有中文技能名，`effect` 是按技能名 + Info.txt 191..196 的受害者文案对上来的映射，属推断。",
+    "seconds_semantics": "解释为『特技持续 / 冷却秒数』：发动后该小神仙要等seconds[level-1] 秒才能再发动。"
+  },
+  "max_owned": 5,
+  "max_owned_source": "Info.txt 202「您已拥有5位小神仙，此时不能请神！」",
+  "pets": [
+    {
+      "id": "qiongshen",
+      "name": "小穷神",
+      "dir": "qiongshen",
+      "skill_id": 2201,
+      "skill": "穷神技",
+      "skill_desc": "罚金加倍",
+      "skill_raw": "穷神技  罚金加倍",
+      "effect": "curse_rent_double",
+      "seconds": [
+        15,
+        20,
+        25,
+        30
+      ],
+      "turn_times": [
+        15,
+        20,
+        25,
+        30
+      ],
+      "points": [
+        5,
+        6,
+        7,
+        8
+      ],
+      "buy_price": 5
+    },
+    {
+      "id": "hutu",
+      "name": "糊涂鬼",
+      "dir": "hutu",
+      "skill_id": 2202,
+      "skill": "梦游技",
+      "skill_desc": "强迫梦游",
+      "skill_raw": "梦游技  强迫梦游",
+      "effect": "sleep_nearby",
+      "seconds": [
+        15,
+        20,
+        25,
+        30
+      ],
+      "turn_times": [
+        15,
+        20,
+        25,
+        30
+      ],
+      "points": [
+        7,
+        8,
+        9,
+        10
+      ],
+      "buy_price": 7
+    },
+    {
+      "id": "emo",
+      "name": "小恶魔",
+      "dir": "emo",
+      "skill_id": 2203,
+      "skill": "拆除技",
+      "skill_desc": "拆除房屋",
+      "skill_raw": "拆除技  拆除房屋",
+      "effect": "demolish_enemy",
+      "seconds": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "turn_times": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "points": [
+        5,
+        6,
+        7,
+        8
+      ],
+      "buy_price": 5
+    },
+    {
+      "id": "caishen",
+      "name": "小财神",
+      "dir": "caishen",
+      "skill_id": 2204,
+      "skill": "免费技",
+      "skill_desc": "免付房租",
+      "skill_raw": "免费技  免付房租",
+      "effect": "free_rent",
+      "seconds": [
+        15,
+        20,
+        25,
+        30
+      ],
+      "turn_times": [
+        15,
+        20,
+        25,
+        30
+      ],
+      "points": [
+        5,
+        6,
+        7,
+        8
+      ],
+      "buy_price": 5
+    },
+    {
+      "id": "tushen",
+      "name": "小土神",
+      "dir": "tushen",
+      "skill_id": 2205,
+      "skill": "土神技",
+      "skill_desc": "强制占地",
+      "skill_raw": "土神技  强制占地",
+      "effect": "seize_enemy_plot",
+      "seconds": [
+        1,
+        1,
+        1,
+        3
+      ],
+      "turn_times": [
+        1,
+        1,
+        1,
+        3
+      ],
+      "points": [
+        18,
+        14,
+        12,
+        18
+      ],
+      "buy_price": 18
+    },
+    {
+      "id": "jingling",
+      "name": "雪精灵",
+      "dir": "jingling",
+      "skill_id": 2206,
+      "skill": "加盖技",
+      "skill_desc": "升级房屋",
+      "skill_raw": "加盖技  升级房屋",
+      "effect": "free_upgrade",
+      "seconds": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "turn_times": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "points": [
+        5,
+        7,
+        9,
+        11
+      ],
+      "buy_price": 5
+    },
+    {
+      "id": "huaxian",
+      "name": "花仙子",
+      "dir": "huaxian",
+      "skill_id": 2207,
+      "skill": "无敌技",
+      "skill_desc": "无敌状态",
+      "skill_raw": "无敌技  无敌状态",
+      "effect": "invincible",
+      "seconds": [
+        50,
+        60,
+        70,
+        80
+      ],
+      "turn_times": [
+        120,
+        144,
+        168,
+        192
+      ],
+      "points": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "buy_price": 6
+    },
+    {
+      "id": "dushen",
+      "name": "小赌神",
+      "dir": "dushen",
+      "skill_id": 2208,
+      "skill": "骰子技",
+      "skill_desc": "遥控骰子",
+      "skill_raw": "骰子技  遥控骰子",
+      "effect": "max_dice",
+      "seconds": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "turn_times": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "points": [
+        5,
+        4,
+        3,
+        2
+      ],
+      "buy_price": 5
+    },
+    {
+      "id": "guaishou",
+      "name": "小怪兽",
+      "dir": "guaishou",
+      "skill_id": 2209,
+      "skill": "PK技",
+      "skill_desc": "攻击小神仙",
+      "skill_raw": "PK技  攻击小神仙",
+      "effect": "attack_pet",
+      "seconds": [
+        70,
+        80,
+        90,
+        100
+      ],
+      "turn_times": [
+        70,
+        80,
+        90,
+        100
+      ],
+      "points": [
+        5,
+        5,
+        5,
+        6
+      ],
+      "buy_price": 5
+    }
+  ]
+}

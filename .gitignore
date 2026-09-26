@@ -3,6 +3,25 @@ samples/
 out/
 exports/
 
+# 由 tools/build_game_assets.py 从原版素材转出来的运行时素材（38 MB，含原版贴图/音效）
+# 版权属软星，同样不提交；本地跑 `python tools/build_game_assets.py` 重新生成即可
+game/assets/
+
+# 工作区内部产物：除了 memory/ 之外全部忽略（venv / 临时诊断图 / 解包中间件）
+.workbuddy/*
+!.workbuddy/memory/
+.workbuddy/memory/*
+!.workbuddy/memory/*.md
+
+# 原版解包产物（提取资源，版权属软星，与 samples/ 同性质，勿提交）
+# 需要时自己重跑：tools/r6pck.py、tools/r6_unpack_logic.py、tools/r6s_nodes.py
+docs/original-readable/
+docs/orig-logic/
+docs/orig-scene/
+
+# 对齐 / 渲染过程截图（约 74 MB，可由 tools/ 重新生成）
+docs/screenshots/
+
 # Godot
 game/.godot/
 game/.import/
@@ -15,6 +34,7 @@ assets_extracted/
 .tools/
 
 # 演示/验证模式产出的临时截图与日志
+ui_shot_*.png
 demo_shot_*.png
 menu_shot.png
 demo_out.txt
@@ -22,6 +42,10 @@ selftest_out.txt
 ms.txt
 solo.txt
 menushot_out.txt
+
+# Python
+__pycache__/
+*.pyc
 
 # 系统
 Thumbs.db

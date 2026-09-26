@@ -81,8 +81,13 @@
     "memory_game_credit_max": 50
   },
 
+  "_cards_source": "F:\\游戏\\Rich6\\config\\Card.txt（42 张卡的名称与顺序）+ Initvar_r.txt（每张卡的参数 Card_*）",
+  "_houses_source": "F:\\游戏\\Rich6\\config\\House.txt（房屋等级表，见 houses.json）",
+
   "cards": [
-    {"id": "caishen",        "name": "财神卡", "effect": "gain_money",        "min": 10000, "max": 50000},
+    {"id": "caishen",        "name": "财神卡", "effect": "gain_money",        "min": 10000, "max": 50000,
+     "no_rent_steps": 30,
+     "_source": "Card_CaiShen_MinMoney / Card_CaiShen_MaxMoney / Card_CaiShen_Steps（『多少步内免付房租』）"},
     {"id": "fushen",         "name": "福神卡", "effect": "free_upgrade",      "steps": 30, "cards_gained": 5},
     {"id": "qiongshen",      "name": "穷神卡", "effect": "rent_double",       "steps": 30, "target_lose_min": 10000, "target_lose_max": 30000},
     {"id": "shuaishen",      "name": "衰神卡", "effect": "no_upgrade",        "steps": 30},

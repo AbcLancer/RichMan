@@ -801,5 +801,51 @@
    "event": "capital",
    "name": "市政府"
   }
- ]
+ ],
+ "stamina": {
+  "step_cost": 20.0,
+  "regen_per_sec": 7.0,
+  "min_to_start": 240.0,
+  "max": 600.0
+ },
+ "road_items": {
+  "card": 6,
+  "crystal": 1,
+  "hanbao": 3,
+  "petegg": 2,
+  "robber": 1,
+  "bomb": 1,
+  "thief": 1,
+  "block": -1,
+  "mine": -1,
+  "caishen": 2,
+  "fushen": 1,
+  "shuaishen": 1,
+  "qiongshen": 1
+ },
+ "road_item_kinds": 13,
+ "mission": "美丽富饶的中华锦绣河山，本关可建设所有产业，胜利条件是让所有对手破产，成为中华大富翁。",
+ "scene_config": {
+  "_source": "docs/original-readable/installation/config/scene/china/china.txt",
+  "build_flags_install": {
+   "industry": 1,
+   "shop": 1,
+   "uptown": 1
+  },
+  "build_flags_pack": {
+   "industry": 1,
+   "shop": 1,
+   "uptown": 1
+  },
+  "camera": {
+   "yaw": 28.0,
+   "height": 43.0,
+   "distance": 2800.0
+  },
+  "hospital": [
+   -1270.8,
+   100.0,
+   -509.3
+  ]
+ }
 }

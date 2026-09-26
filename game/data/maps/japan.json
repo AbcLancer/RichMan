@@ -56,7 +56,7 @@
  "landmarks": {
   "hospital": [
    1696.0,
-   149.0,
+   349.0,
    -2745.0
   ]
  },
@@ -616,5 +616,51 @@
    "event": "cardshop",
    "name": "卡片商店"
   }
- ]
+ ],
+ "stamina": {
+  "step_cost": 20.0,
+  "regen_per_sec": 7.0,
+  "min_to_start": 240.0,
+  "max": 600.0
+ },
+ "road_items": {
+  "card": 6,
+  "crystal": 1,
+  "hanbao": 3,
+  "petegg": 2,
+  "robber": 1,
+  "bomb": 1,
+  "thief": 2,
+  "block": -1,
+  "mine": -1,
+  "caishen": 1,
+  "fushen": 1,
+  "shuaishen": 1,
+  "qiongshen": 2
+ },
+ "road_item_kinds": 13,
+ "mission": "高度现代化的岛国日本，本关可以建设所有产业，胜利条件是让所有对手破产，成为日本大富翁。",
+ "scene_config": {
+  "_source": "docs/original-readable/installation/config/scene/japan/Japan.txt",
+  "build_flags_install": {
+   "industry": 1,
+   "shop": 1,
+   "uptown": 1
+  },
+  "build_flags_pack": {
+   "industry": 1,
+   "shop": 1,
+   "uptown": 1
+  },
+  "camera": {
+   "yaw": 0.0,
+   "height": 43.5,
+   "distance": 2800.0
+  },
+  "hospital": [
+   1696.0,
+   349.0,
+   -2745.0
+  ]
+ }
 }

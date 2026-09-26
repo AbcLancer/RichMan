@@ -9,10 +9,12 @@
   - F:/游戏/Rich6/config/Roadevent.txt  16 种事件点定义
   - F:/游戏/Rich6/config/House.txt      建筑类型与尺寸
 
-棋盘构造规则（P0 简化版）:
+棋盘构造规则:
   tile 0 = 起点
-  其后循环: [该街道的 4 个地产格] + [1 个事件格]
-  → 19 街道 × 4 + 19 事件 + 1 起点 = 96 格
+  其后循环: [该街道的 4 个地产格] (+ 该街之后可能有 1 个事件格)
+  事件格数量按图配置，见 `EVENTS_OVERRIDE`：
+    - aiji（埃及）：22 街 × 4 + 5 事件 + 1 起点 = **94 格**（原版 `aiji.r6m` ΣA = 94）
+    - 其余地图：每街 1 个事件格（无原版格数证据，沿用历史规则）
 
 用法: python tools/build_map.py
 输出: game/data/maps/*.json
@@ -36,6 +38,17 @@ ROAD_EVENTS = [
 ]
 
 PLOTS_PER_STREET = 4
+
+# 逐图覆盖「全图事件格数」。
+#   默认 None = 每条街后放 1 个事件格（历史规则，街头数即事件数）。
+#   aiji 有原版权威格数：`aiji.r6m` 里 20 个街区各声明「宽 A 格」，**ΣA = 94 格**
+#   （见 docs/orig-logic/aiji/r6m_blocks.*）。街道名表也是原版的 22 条
+#   （`aiji.r6m` offset 148 = 22，152 起 22×16B 定长名字），于是
+#       1 起点 + 22 街 × 4 地产 + 5 事件 = 94  ✔
+#   5 个事件格均摊落到第 0/4/9/13/18 条街之后。
+#   ⚠️ 原版数据里没有「每条街几个地产格」这个字段，94 与 22×4 的组合是本工程的选择，
+#      若要改成别的分配（例如加事件格、减地产格），只改这张表。
+EVENTS_OVERRIDE = {"aiji": 5}
 
 MAP_CN = {
     "aiji": "埃及", "china": "中国", "island": "岛屿", "japan": "日本",
@@ -114,6 +127,15 @@ def build_map(name):
     info = parse_map_txt(mapdir, name)
     cam = parse_camera(mapdir, name)
 
+    n_ev = EVENTS_OVERRIDE.get(name)
+    if n_ev is None:
+        ev_slots = set(range(len(streets)))          # 历史规则：每条街后 1 个
+    else:
+        # 把 n_ev 个事件格**均摊**到各街之后（含第 0 街）
+        ev_slots = set()
+        for k in range(max(1, n_ev)):
+            ev_slots.add(min(len(streets) - 1, int(round(k * len(streets) / float(n_ev)))))
+
     tiles = [{"i": 0, "kind": "start", "name": "起点"}]
     i = 1
     ev = 0
@@ -125,7 +147,8 @@ def build_map(name):
                 "plot_key": "%02d%02d" % (si, pi),
             })
             i += 1
-        # 每条街后放一个事件格
+        if si not in ev_slots:
+            continue
         eid, ename = ROAD_EVENTS[ev % len(ROAD_EVENTS)]
         t = {"i": i, "kind": "event", "event": eid, "name": ename}
         if ename in info["landmarks"]:
@@ -158,6 +181,15 @@ def main():
         d = os.path.join(SAMPLES, name)
         if not os.path.isdir(d):
             continue
+        # Verified original road records supersede the historical synthetic layout.
+        if name == "aiji":
+            dst = os.path.join(OUT, "aiji.json")
+            if os.path.isfile(dst):
+                with open(dst, encoding="utf-8") as existing:
+                    verified = json.load(existing)
+                if "Original R6MP records" in verified.get("_source", ""):
+                    print("aiji: 保留已恢复的原版 144 格；重建请用 tools/r6_map_verified.py")
+                    continue
         m = build_map(name)
         dst = os.path.join(OUT, "%s.json" % name)
         with open(dst, "w", encoding="utf-8") as f:

@@ -1,7 +1,7 @@
 {
  "_source": "gamedata.pck scene/train  (原版数据生成)",
  "name": "train",
- "display_name": "火车",
+ "display_name": "美国",
  "camera": {
   "distance": 12.0,
   "yaw": 30.0
@@ -450,5 +450,47 @@
    "event": "game_b",
    "name": "游戏点B"
   }
- ]
+ ],
+ "stamina": {
+  "step_cost": 20.0,
+  "regen_per_sec": 7.0,
+  "min_to_start": 240.0,
+  "max": 600.0
+ },
+ "road_items": {
+  "card": 6,
+  "crystal": 1,
+  "hanbao": 3,
+  "petegg": 2,
+  "robber": 1,
+  "bomb": 1,
+  "thief": 1,
+  "block": -1,
+  "mine": -1,
+  "caishen": 1,
+  "fushen": 1,
+  "shuaishen": 2,
+  "qiongshen": 1
+ },
+ "road_item_kinds": 13,
+ "mission": "美国西部拓荒时代，本关可发展所有产业，胜利条件是让对手破产，成为西部大亨。",
+ "scene_config": {
+  "_source": "docs/original-readable/installation/config/scene/train/Train.txt",
+  "build_flags_install": {
+   "industry": 1,
+   "shop": 1,
+   "uptown": 1
+  },
+  "build_flags_pack": {},
+  "camera": {
+   "yaw": 58.0,
+   "height": 35.0,
+   "distance": 2800.0
+  },
+  "hospital": [
+   -694.3,
+   206.98,
+   -363.24
+  ]
+ }
 }

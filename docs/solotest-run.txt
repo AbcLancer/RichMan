@@ -2,6 +2,7 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 OpenGL API 3.3.0 NVIDIA 616.64 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 5070 Ti
 
 [Rules] 已载入 42 张卡牌定义
+[Rules] 已载入 6 个房屋主题 / 45 个等级（House.txt）
 ========== 单人练习冒烟测试 ==========
   sim 存在   : true
   逻辑运行中 : true
@@ -10,7 +11,7 @@ OpenGL API 3.3.0 NVIDIA 616.64 - Compatibility - Using Device: NVIDIA - NVIDIA G
   地图       : china  (期望 china)
     - 老板               资金  500000  位置 0
     - 电脑·阿土伯           资金  500000  位置 4
-    - 电脑·宫本宝藏          资金  498000  位置 2
-    - 电脑·乌咪            资金  500000  位置 2
+    - 电脑·宫本宝藏          资金  500000  位置 4
+    - 电脑·乌咪            资金  500000  位置 4
 结果: PASS
 =====================================

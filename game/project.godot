@@ -15,6 +15,7 @@ boot_splash/show_image=false
 [autoload]
 
 Rules="*res://scripts/core/rules.gd"
+Audio="*res://scripts/core/audio.gd"
 Net="*res://scripts/net/net.gd"
 
 [display]

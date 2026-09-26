@@ -1,7 +1,7 @@
 {
  "_source": "gamedata.pck scene/space  (原版数据生成)",
  "name": "space",
- "display_name": "太空",
+ "display_name": "宇宙空间站",
  "camera": {
   "distance": 12.0,
   "yaw": 45.0
@@ -68,5 +68,51 @@
    "event": "platform",
    "name": "传送平台"
   }
- ]
+ ],
+ "stamina": {
+  "step_cost": 0.0,
+  "regen_per_sec": 0.0,
+  "min_to_start": 10.0,
+  "max": 5000.0
+ },
+ "road_items": {
+  "card": 6,
+  "crystal": -1,
+  "hanbao": 3,
+  "petegg": -1,
+  "robber": -1,
+  "bomb": -1,
+  "thief": -1,
+  "block": -1,
+  "mine": 3,
+  "caishen": -1,
+  "fushen": -1,
+  "shuaishen": -1,
+  "qiongshen": -1
+ },
+ "road_item_kinds": 13,
+ "mission": "未来世界空前激烈的星际大战，本关任务是利用飞弹、地雷等武器疯狂攻击对手，胜利条件是打败其他对手。",
+ "scene_config": {
+  "_source": "docs/original-readable/installation/config/scene/space/Space.txt",
+  "build_flags_install": {
+   "industry": 0,
+   "shop": 0,
+   "uptown": 0
+  },
+  "build_flags_pack": {
+   "industry": 0,
+   "shop": 0,
+   "uptown": 0
+  },
+  "camera": {
+   "yaw": 310.0,
+   "height": 45.0,
+   "distance": 3400.0
+  },
+  "hospital": [
+   0.0,
+   100.0,
+   0.0
+  ]
+ }
 }

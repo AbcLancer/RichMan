@@ -1,0 +1,9 @@
+start
+22 click:265,572,c
+5 click:290,580,c
+3 click:925,674,p,c
+3 click:925,674,m,c
+3 click:925,674,l,c
+3 click:925,674,s,c
+3 click:925,674,d,c
+3 shot:_final
