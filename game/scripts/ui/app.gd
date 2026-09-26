@@ -372,6 +372,12 @@ func _run_ui_shot(delta: float) -> void:
 						_board.set_overview(false)
 						await get_tree().create_timer(3.0).timeout   # 相机跟随有平滑，等它追过去
 					await _capture("D:/Projects/RichMan/ui_shot_roadnear.png")
+					# 股票买进对话框：验证「滑动条是唯一输入点、每跳 100」
+					if _stock != null and Net.sim != null and not Net.sim.stock_names().is_empty():
+						_stock.open_trade(str(Net.sim.stock_names()[0]), true)
+						await get_tree().create_timer(0.3).timeout
+						await _capture("D:/Projects/RichMan/ui_shot_stock.png")
+						_stock.close_all()
 				_ui_shot_confirm_active = false
 			if not _ui_shot_confirm_active:
 				# 顺带验收「骰子数量选择」：切到 2 颗再掷（选择器第 1/2 颗亮、第 2 颗灰）
@@ -446,7 +452,7 @@ func _run_ui_shot(delta: float) -> void:
 	# 四张都拍齐 → 收工；或 90 秒兜底
 	if _ui_shot_tired_done and _ui_shot_t - _ui_shot_tired_t > 0.8:
 		get_tree().quit(0)
-	if _ui_shot_t > 130.0:
+	if _ui_shot_t > 170.0:
 		if not _ui_shot_pop_done:
 			push_warning("[uishot] 90 秒内没等到落点气泡（一直没落到空地）")
 		if not _ui_shot_tired_done:
@@ -1822,6 +1828,14 @@ func _on_stock_action(kind: String, comp: String, shares: int) -> void:
 		"trend":
 			if Net.sim != null:
 				_toast("%s 当前涨跌 %+d%%（走势图待做）" % [comp, Net.sim.stock_change(comp)])
+		"pick":
+			# 红卡 / 黑卡：在行情面板上选中了公司 → 正式用卡（第 3 个参数 = 公司名）
+			var cid := _card_pending
+			_card_pending = ""
+			if _card_hint != null:
+				_card_hint.visible = false
+			if cid != "":
+				Net.send_action("card", [cid, -1, comp])
 
 
 func _build_pet_strip() -> void:
@@ -2177,6 +2191,15 @@ func _on_card_menu(which: String) -> void:
 			elif Net.sim.card_needs_player(cid):
 				# 需要点对手的卡 → 先进「选目标」模式（原版 String.txt 1101「请选择对手」）
 				_set_card_target_mode(cid)
+			elif Net.sim.card_target(cid) == "stock":
+				# 红卡 / 黑卡要**选一种股票**（CARD_TARGET 里就是 "stock"）→
+				# 让右下角行情面板进入「请选择」模式，点一行完成
+				_card_pending = cid
+				var tip := "%s  →  %s" % [Rules.card_name(cid), "请选择一种股票"]
+				_card_hint.text = tip
+				_card_hint.visible = true
+				if _stock != null:
+					_stock.begin_pick(tip)
 			else:
 				Net.send_action("card", [cid])
 		"lock":
@@ -3121,6 +3144,11 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 			_ev_sfx(Audio.SFX_COIN_SCATTER, data, pos)
 			_toast("卖出 %s %d 股（得 %d 元）" % [str(data.get("company", "")),
 				int(data.get("shares", 0)), int(data.get("gain", 0))])
+		"stock_shift":
+			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
+			_toast("%s 股价 %.1f → %.1f（%+.0f%%）" % [str(data.get("company", "")),
+				float(data.get("from", 0.0)), float(data.get("to", 0.0)),
+				float(data.get("ratio", 0.0)) * 100.0])
 		"chairman":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():

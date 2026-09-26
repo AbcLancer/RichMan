@@ -37,7 +37,12 @@ var _dlg_amount: Label
 var _dlg_ok: Button
 var _dlg_pass: Button
 var _dlg_buy := true
+var _dlg_num: Label                       # 股数（只读显示，输入只走滑动条）
+var _dlg_slider: HSlider
 var _sig := ""
+
+## 「请选择一种股票」模式（红卡 / 黑卡用）：点一行 = 选它
+var _pick_mode := false
 
 signal act_requested(kind: String, company: String, shares: int)
 
@@ -192,12 +197,15 @@ func _build_dialog() -> void:
 	_dlg_title.add_theme_font_size_override("font_size", maxi(10, int(round(_px(14.0)))))
 	_dlg_title.add_theme_color_override("font_color", Color8(120, 40, 40))
 	top.add_child(_dlg_title)
-	_dlg_input = LineEdit.new()
-	_dlg_input.custom_minimum_size = Vector2(_px(80.0), _px(24.0))
-	_dlg_input.alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_dlg_input.add_theme_font_size_override("font_size", maxi(10, int(round(_px(14.0)))))
-	_dlg_input.text_changed.connect(func(_t: String): _refresh_amount())
-	top.add_child(_dlg_input)
+	# ⚠ 老板 2026-09-26：「他这个面板**没有手动输入框**，滑动条是唯一的输入点，每跳 100」
+	#   → 用 HSlider（步长 100）当**唯一**输入，股数只做只读显示，不要 LineEdit。
+	_dlg_num = Label.new()
+	_dlg_num.custom_minimum_size = Vector2(_px(80.0), _px(24.0))
+	_dlg_num.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_dlg_num.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_dlg_num.add_theme_font_size_override("font_size", maxi(10, int(round(_px(14.0)))))
+	_dlg_num.add_theme_color_override("font_color", Color8(40, 60, 120))
+	top.add_child(_dlg_num)
 
 	_dlg_amount = Label.new()
 	_dlg_amount.custom_minimum_size = Vector2(_px(150.0), _px(34.0))
@@ -210,6 +218,15 @@ func _build_dialog() -> void:
 	asb.set_corner_radius_all(int(round(_px(4.0))))
 	_dlg_amount.add_theme_stylebox_override("normal", asb)
 	col.add_child(_dlg_amount)
+
+	# 滑动条（原版就是靠它选股数，步长 100，范围 0 ~ 本次能动的最大股数）
+	_dlg_slider = HSlider.new()
+	_dlg_slider.min_value = 0.0
+	_dlg_slider.max_value = 10000.0
+	_dlg_slider.step = 100.0
+	_dlg_slider.custom_minimum_size = Vector2(_px(170.0), _px(18.0))
+	_dlg_slider.value_changed.connect(func(_v: float): _refresh_amount())
+	col.add_child(_dlg_slider)
 
 	var btns := HBoxContainer.new()
 	btns.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -364,6 +381,11 @@ func _on_row_clicked(r: int) -> void:
 	if comp == "":
 		return
 	_sel = comp
+	if _pick_mode:
+		# 「请选择一种股票」模式（红卡 / 黑卡）：点一行就是选中它，交给上层去用卡
+		_pick_mode = false
+		act_requested.emit("pick", comp, 0)
+		return
 	_menu.visible = true
 	_sync_layout()
 
@@ -377,7 +399,16 @@ func _on_menu(which: String) -> void:
 			_dlg_buy = which == "buy"
 			_dlg_title.text = "买进" if _dlg_buy else "卖出"
 			var hold := Net.sim.holding_of(multiplayer.get_unique_id(), _sel)
-			_dlg_input.text = "100" if _dlg_buy else str(maxi(hold, 0))
+			# 滑动条范围：买进 = 现金买得起的股数；卖出 = 手里的股数（都按 100 取整）
+			var me2: Dictionary = Net.sim.players.get(multiplayer.get_unique_id(), {})
+			var cap := 0.0
+			if _dlg_buy:
+				cap = floor(float(me2.get("money", 0))
+					/ maxf(Net.sim.stock_price(_sel), 0.01) / 100.0) * 100.0
+			else:
+				cap = floor(float(maxi(hold, 0)) / 100.0) * 100.0
+			_dlg_slider.max_value = maxf(cap, 100.0)
+			_dlg_slider.value = minf(100.0, _dlg_slider.max_value)
 			_dlg.visible = true
 			_refresh_amount()
 			_sync_layout()
@@ -390,22 +421,53 @@ func _on_menu(which: String) -> void:
 func _refresh_amount() -> void:
 	if Net.sim == null:
 		return
-	var n := int(_dlg_input.text) if _dlg_input.text.is_valid_int() else 0
-	n = maxi(n, 0)
+	var n := int(_dlg_slider.value)
+	_dlg_num.text = "%d" % n
 	var price := Net.sim.stock_price(_sel)
 	var total := int(round(price * float(n)))
 	_dlg_amount.text = "%d" % total
+	# 买进时钱不够 → 金额变红（原版没这提示，但很有用；不影响价格计算）
+	var me: Dictionary = Net.sim.players.get(multiplayer.get_unique_id(), {})
+	var over: bool = _dlg_buy and total > int(me.get("money", 0))
+	_dlg_amount.add_theme_color_override("font_color",
+		Color8(200, 40, 40) if over else Color8(30, 60, 120))
 
 
 func _confirm_dialog(ok: bool) -> void:
 	_dlg.visible = false
 	if not ok or Net.sim == null:
 		return
-	var n := int(_dlg_input.text) if _dlg_input.text.is_valid_int() else 0
+	var n := int(_dlg_slider.value)
 	if n <= 0:
 		return
 	act_requested.emit("buy" if _dlg_buy else "sell", _sel, n)
 	_sig = ""
+
+
+## 进入「请选择一种股票」模式（红卡 / 黑卡）：点一行 = 选中它
+func begin_pick(prompt: String) -> void:
+	_pick_mode = true
+	_hint.text = prompt
+	_dlg.visible = false
+	_menu.visible = false
+	_sig = ""
+	_sync_layout()
+
+
+func end_pick() -> void:
+	_pick_mode = false
+	_hint.text = "共 %d 家 ▲▼ 翻页 ｜ 点一行操作" % (Net.sim.stock_names().size()
+		if Net.sim != null else 0)
+
+
+func pick_mode() -> bool:
+	return _pick_mode
+
+
+## 直接打开某家公司的买进/卖出对话框（`--uishot` 验收用 / 也可给快捷键调）
+func open_trade(comp: String, buy: bool) -> void:
+	_sel = comp
+	_on_menu("buy" if buy else "sell")
 
 
 func close_all() -> void:

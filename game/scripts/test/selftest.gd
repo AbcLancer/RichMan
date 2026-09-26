@@ -521,6 +521,36 @@ func _test_stock() -> void:
 	_ok("涨跌是**整数**百分数（原版截图里就是 +7 / +3 / 0 / -1）",
 		typeof(sim2.stock_change(c2)) == TYPE_INT, str(sim2.stock_change(c2)))
 
+	# ---- 红卡 / 黑卡（`String.txt` 9029/9030；幅度 `Card_HongKa/HeiKa_Price` = 20%）----
+	_ok("红卡 / 黑卡已从 CARD_UNSUPPORTED 里解开（现在只剩「复制卡」）",
+		not Sim.CARD_UNSUPPORTED.has("redcard")
+		and not Sim.CARD_UNSUPPORTED.has("blackcard")
+		and Sim.CARD_UNSUPPORTED.has("copy"), str(Sim.CARD_UNSUPPORTED))
+	_ok("红卡 / 黑卡的目标类型 = stock（要玩家选一种股票）",
+		sim.card_target("redcard") == "stock" and sim.card_target("blackcard") == "stock",
+		"%s / %s" % [sim.card_target("redcard"), sim.card_target("blackcard")])
+
+	var s3 := _fresh_sim()
+	var c3 := str(s3.players[1].get("company", ""))
+	(s3.players[1]["cards"] as Array).append("redcard")
+	var pr3 := s3.stock_price(c3)
+	_ok("红卡：把选中的公司股价抬高 20%",
+		s3.act_use_card(1, "redcard", -1, c3)
+		and absf(s3.stock_price(c3) - pr3 * 1.20) < 0.02,
+		"%.2f → %.2f" % [pr3, s3.stock_price(c3)])
+	(s3.players[1]["cards"] as Array).append("blackcard")
+	var pr4 := s3.stock_price(c3)
+	_ok("黑卡：把选中的公司股价压低 20%",
+		s3.act_use_card(1, "blackcard", -1, c3)
+		and absf(s3.stock_price(c3) - pr4 * 0.80) < 0.02,
+		"%.2f → %.2f" % [pr4, s3.stock_price(c3)])
+	(s3.players[1]["cards"] as Array).append("redcard")
+	var n_before := (s3.players[1]["cards"] as Array).size()
+	_ok("公司名给错时红卡不生效、**卡片保留**（不白扔）",
+		not s3.act_use_card(1, "redcard", -1, "不存在的公司")
+		and (s3.players[1]["cards"] as Array).size() == n_before,
+		"%d 张" % (s3.players[1]["cards"] as Array).size())
+
 
 # --------------------------------------------------- 3g. 传送平台（Roadevent 事件 1）
 
@@ -943,8 +973,12 @@ func _test_cards() -> void:
 		var p: Dictionary = sim.players[1]
 		(p["cards"] as Array).append(cid)
 		var target := 2 if sim.card_needs_player(cid) else -1
+		# 红卡 / 黑卡要指定「哪一种股票」（第 3 个参数 = 公司名）
+		var tname := ""
+		if sim.card_target(cid) == "stock" and not sim.stock_names().is_empty():
+			tname = str(sim.stock_names()[0])
 		var before := str(sim.to_dict())
-		var used := sim.act_use_card(1, cid, target)
+		var used := sim.act_use_card(1, cid, target, tname)
 		if Sim.CARD_UNSUPPORTED.has(cid):
 			if used:
 				refused.append("未实现却执行成功:" + cid)
@@ -954,7 +988,7 @@ func _test_cards() -> void:
 		elif str(sim.to_dict()) == before:
 			silent.append(cid)
 	var n_ok := cs.size() - Sim.CARD_UNSUPPORTED.size()
-	_ok("除股票/组合 %d 张外的 %d 张卡都能用" % [Sim.CARD_UNSUPPORTED.size(), n_ok],
+	_ok("除未实现子系统（复制卡）外的 %d 张卡都能用" % n_ok,
 		refused.is_empty(), str(refused))
 	_ok("每张卡都真的改变了状态（没有空转的）", silent.is_empty(), str(silent))
 	_ok("未实现的卡不消耗（股票/组合）", not Sim.CARD_UNSUPPORTED.is_empty(),

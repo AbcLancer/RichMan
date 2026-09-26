@@ -72,8 +72,9 @@ func card_target(card_id: String) -> String:
 func card_needs_player(card_id: String) -> bool:
 	return card_target(card_id) == "player"
 
-## 这几个子系统没做 → 对应的卡**不消耗**（宁可留着，也别让玩家白扔一张卡）
-const CARD_UNSUPPORTED := ["redcard", "blackcard", "copy"]
+## 还没做的子系统对应的卡 → **不消耗**（宁可留着，也别让玩家白扔一张卡）。
+## ✅ **红卡 / 黑卡在股票系统落地后就解开了**（2026-09-26）—— 现在只剩「复制卡」。
+const CARD_UNSUPPORTED := ["copy"]
 
 ## 「按步数」计的效果（原版 Initvar_r.txt 里写「多少步」的项）。
 ## 每前进 1 格消耗 1 —— 与「按绝对时刻」的 invincible_until / sleep_until 严格区分。
@@ -686,6 +687,23 @@ func stock_names() -> Array:
 	own.sort()
 	virt.sort()
 	return own + virt
+
+
+## 红卡 / 黑卡：把**某一种股票**的价格抬 / 压 `ratio`（原版 = ±20%）。
+## 返回 false = 没生效（公司名不认识）→ 卡片保留、不消耗。
+func _shift_stock(comp: String, ratio: float, p: Dictionary, card_id: String) -> bool:
+	if comp == "" or not stocks.has(comp):
+		return false
+	var s: Dictionary = stocks[comp]
+	var old := float(s["price"])
+	var now := maxf(0.1, old * (1.0 + ratio))
+	s["price"] = now
+	s["prev"] = old                  # 让面板上的「%」立刻反映这次操作
+	log_message.emit("%s 用「%s」把 %s 的股价 %.1f → %.1f（%+.0f%%）" % [
+		p["name"], Rules.card_name(card_id), comp, old, now, ratio * 100.0])
+	_ev("stock_shift", p, {"company": comp, "from": old, "to": now,
+		"ratio": ratio, "card": card_id})
+	return true
 
 
 ## 某公司属于哪个玩家（虚拟公司返回 -1）
@@ -1601,8 +1619,15 @@ func card_usable(id: int, card_id: String) -> int:
 	if bool(p.get("pending_steps", false)):
 		return 61
 	if CARD_UNSUPPORTED.has(card_id):
-		return 67 if card_id == "copy" else 61
+		return 67
 	var eff := str(Rules.card_by_id(card_id).get("effect", ""))
+	# 红卡 / 黑卡：要有股票可动（本图得有上市公司）
+	if eff == "stock_up" or eff == "stock_down":
+		if stocks.is_empty():
+			return 61
+	# 点选类目标是否给得起（红黑卡要选一种股票）
+	if card_target(card_id) == "stock" and stocks.is_empty():
+		return 61
 	var here := int(p["tile"])
 	var owned := plots.has(here)
 	var enemy_here := owned and int(plots[here]["owner"]) != id
@@ -1667,9 +1692,11 @@ func _has_obstacle_ahead(p: Dictionary, n: int) -> bool:
 	return false
 
 
-func act_use_card(id: int, card_id: String, target: int = -1) -> bool:
+func act_use_card(id: int, card_id: String, target: int = -1,
+		target_name: String = "") -> bool:
 	## 使用一张手牌。
 	## target = 需要「点选对手」时的目标玩家 id（其余卡忽略；见 CARD_TARGET）。
+	## target_name = 需要「点选一种股票」时的目标**公司名**（红卡 / 黑卡）。
 	## 返回 false 一律**不消耗**卡片 —— 条件不满足时把卡留着，别让玩家白扔。
 	var p: Dictionary = players.get(id, {})
 	if p.is_empty() or not p["alive"]:
@@ -1705,7 +1732,7 @@ func act_use_card(id: int, card_id: String, target: int = -1) -> bool:
 			return false
 
 	var c := Rules.card_by_id(card_id)
-	if not _apply_card(p, card_id, c, p["effects"], target):
+	if not _apply_card(p, card_id, c, p["effects"], target, target_name):
 		# 门禁过了但效果没生效（典型：对手身上没东西可抢）→ 也要给反馈，不静默
 		_ev("card_unavailable", p, {"card": card_id, "name": cname, "code": 61})
 		return false
@@ -1797,11 +1824,20 @@ func act_walk(id: int, steps: int) -> bool:
 
 ## 真正执行卡的效果。返回 false = 没生效（卡片保留）。
 func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
-		target: int) -> bool:
+		target: int, target_name: String = "") -> bool:
 	var pid := int(p["id"])
 	var here := int(p["tile"])
 	var street := map.street_of(here)
 	var eff := str(c.get("effect", ""))
+	# ---- 红卡 / 黑卡（String.txt 9029「使一种股票价格上涨」/ 9030「下跌」）----
+	# 目标 = 玩家点选的那一种股票（`CARD_TARGET` 里就是 `"stock"`）；
+	# 幅度 = `Card_HongKa_Price` / `Card_HeiKa_Price`（Initvar_r.txt 都是 0.20）
+	if eff == "stock_up" or eff == "stock_down":
+		var ratio := float(Rules.get_val(
+			"card.hongka_price" if eff == "stock_up" else "card.heika_price", 0.20))
+		if eff == "stock_down":
+			ratio = -ratio
+		return _shift_stock(target_name, ratio, p, card_id)
 
 	match eff:
 		# ---------------- 自身状态 ----------------

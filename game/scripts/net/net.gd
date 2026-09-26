@@ -264,7 +264,8 @@ func _apply_action(who: int, action: String, args: Array) -> void:
 			# args[0] = 卡 id；args[1] 可选 = 需要点选对手时的目标玩家 id
 			if args.size() > 0:
 				sim.act_use_card(who, str(args[0]),
-					int(args[1]) if args.size() > 1 else -1)
+					int(args[1]) if args.size() > 1 else -1,
+					str(args[2]) if args.size() > 2 else "")
 		"discard":
 			# 卡片菜单 id 3「丢弃」
 			if args.size() > 0:

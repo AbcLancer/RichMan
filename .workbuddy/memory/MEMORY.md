@@ -215,3 +215,16 @@
     素材 `uitex/buystock/`）。⚠️ 原版右下角**只有**行情面板，小地图是按 `MAP` 开的。
 60. **`Role.txt` 是三个东西的权威**：① 角色名/模型目录（**只有 role1..9 + rolea/b/c**）
     ② **AI 三项性格权重**（害人 / 买卖股票 / 买地）③ **缺省公司**（股票系统的公司名）。
+
+61. **红卡/黑卡（2026-09-26 解开）**：`CARD_TARGET` 里目标类型早就是 `"stock"`（选一种股票）；
+    幅度 = `card.hongka_price` / `card.heika_price` = **0.20**（`Initvar_r.txt` 的
+    `Card_HongKa_Price`/`HeiKa_Price`）。`act_use_card(id, card, target, target_name)` ——
+    **第 4 个参数是公司名**（`net` 的 `card` 动作带 args[2]）。实现 = `Sim._shift_stock()`
+    （同时把 `prev` 设成旧价，面板的 % 立刻反映）。
+    UI：用卡时若 `card_target == "stock"` → 行情面板进 `begin_pick()`，点一行 = 选中公司。
+    ⚠️ **`realtime.json` 的 `card` 段原来整个是空的**（25 个 `Card_*` 参数从未进管线）→ 已补 23 项。
+    ✅ 现在只剩「复制卡」在 `CARD_UNSUPPORTED`。
+62. **买股票对话框：滑动条是唯一输入点**（`HSlider`，**step = 100**），**没有手动输入框**；
+    范围 = 买进「现金/股价」、卖出「手里的股数」（都按 100 取整）。原版截图里那个 1900 就是拖出来的。
+63. **股票面板的公司名单**：**玩家公司在前、虚拟公司在后**（老板新截图证实：四位玩家的缺省公司
+    之后跟着地图虚拟公司「阿里巴巴」）。

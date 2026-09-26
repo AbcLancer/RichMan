@@ -453,5 +453,30 @@
    "god_seconds = 30（踩到财神/福神/衰神/穷神后的附身时长；原版该值在运行时数据段，静态读不出。衰神/福神复用了卡片的 30 步）"
   ],
   "god_seconds": 30.0
+ },
+ "card": {
+  "hongka_price": 0.2,
+  "heika_price": 0.2,
+  "caishen_steps": 30,
+  "fushen_steps": 30,
+  "qiongshen_steps": 30,
+  "shuaishen_steps": 30,
+  "zhangjia_price": 5,
+  "jiangjia_price": 5,
+  "mianfei_steps": 20,
+  "wudi_seconds": 72,
+  "feidan_range": 5,
+  "feidan_max_dec_hp": 700,
+  "dongmian_seconds": 10,
+  "hanbao_inc_hp": 500,
+  "chafeng_days": 5,
+  "chashui_min": 0.05,
+  "chashui_max": 0.1,
+  "junfu_range": 2,
+  "yinbing_seconds": 72,
+  "hedan_range": 5,
+  "hedan_dec_hp": 1000,
+  "fushen_numcard": 5,
+  "_source": "config/Initvar_r.txt 的 Card_* 段（25 项）；红黑卡是 Card_HongKa_Price / Card_HeiKa_Price"
  }
 }
