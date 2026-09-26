@@ -1949,9 +1949,14 @@ func _pop_confirm() -> void:
 	if _pop_mode == "buy":
 		Net.send_action("buy")
 	elif _pop_mode == "upgrade":
-		var t: Variant = _btn_bldtype.get_item_metadata(_btn_bldtype.selected) \
-			if _btn_bldtype.visible and _btn_bldtype.item_count > 0 else null
-		Net.send_action("upgrade", [str(t)] if t != null else [])
+		# ⚠️ 老板 2026-09-27：「建造的时候建筑物选择界面应该是**横排的卡片**，
+		#   不是现在那种下拉框」→ 空地首次建设时弹 `_open_house_picker()`，
+		#   选完把房型随 `upgrade` 一起发出去（`net.gd` 的 `upgrade` 分支已经支持 args[0]）。
+		if _btn_bldtype != null and _btn_bldtype.visible and _btn_bldtype.item_count > 0:
+			_pop_cancel()
+			_open_house_picker({"options": Net.sim.buildable_types()})
+		else:
+			Net.send_action("upgrade")
 	elif _pop_mode == "card":
 		var cid := _card_confirm_id
 		_close_card_confirm()
@@ -3261,6 +3266,95 @@ func _build_news_popup() -> void:
 	col.add_child(_news_text)
 
 
+## 「选房屋」（原版 `Info.txt` id 92 / `House.txt` 的三种主类型）——
+## **横排的卡片列表**（老板 2026-09-27 的原版实机截图：
+## 每张卡 = 房屋缩略图 + 类型名 + 「造价:xxxx」）。
+##
+## ⚠️ 原来这块是个**下拉框**，不是原版的样子，已换成卡片。
+## 缩略图用 `uitex/house/<House.txt 的一级文件>.png`（住宅 a0101 / 商业 b0101 / 工业 c0101）。
+var _house_pick: Control = null
+
+
+func _open_house_picker(data: Dictionary) -> void:
+	_close_house_picker()
+	if _hud == null:
+		return
+	var types: Array = data.get("options", [])
+	if types.is_empty():
+		return
+	var pc := PanelContainer.new()
+	pc.z_index = 72
+	pc.add_theme_stylebox_override("panel", _sb_round(Color8(24, 46, 100, 246),
+		Color8(255, 236, 150), int(round(8.0 * _ui_scale)),
+		maxi(2, int(round(4.0 * _ui_scale))), maxf(2.0, 3.0 * _ui_scale)))
+	_hud.add_child(pc)
+	_house_pick = pc
+
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", maxi(2, int(round(6.0 * _ui_scale))))
+	pc.add_child(col)
+
+	var title := Label.new()
+	title.text = "请选择要盖的房屋"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", maxi(10, int(round(14.0 * _ui_scale))))
+	title.add_theme_color_override("font_color", Color8(255, 244, 190))
+	col.add_child(title)
+
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", maxi(3, int(round(8.0 * _ui_scale))))
+	col.add_child(row)
+
+	for t in types:
+		var tid := str(t)
+		var b := Button.new()
+		var idx := int(data.get("idx", -1))
+		var pid := int(data.get("pid", multiplayer.get_unique_id()))
+		var plan := PlotAssembly.plan(_board.map, _snapshot.get("plots", {}), pid, idx, tid)
+		var level := int(plan.get("level", 1))
+		var free := bool(data.get("free", false))
+		b.disabled = plan.is_empty()
+		# 卡面：上面是房屋缩略图，下面是「名字 + 造价」（原版截图就是这个版式）
+		b.icon = _tex_or_null("res://assets/uitex/house/%s.png"
+			% Rules.house_file(tid, level))
+		b.expand_icon = true
+		b.text = "%s\n%d 联地 · 造价:%d" % [str(plan.get("name", Rules.house_type_cn(tid))),
+			(plan.get("members", []) as Array).size(), 0 if free else int(plan.get("cost", 0))]
+		b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+		b.custom_minimum_size = Vector2(96.0 * _ui_scale, 118.0 * _ui_scale)
+		b.focus_mode = Control.FOCUS_NONE
+		b.add_theme_font_size_override("font_size", maxi(9, int(round(12.0 * _ui_scale))))
+		b.add_theme_color_override("font_color", Color8(250, 248, 235))
+		b.add_theme_color_override("font_outline_color", Color8(30, 26, 60))
+		b.add_theme_constant_override("outline_size", 4)
+		b.add_theme_stylebox_override("normal", _sb_round(Color8(40, 78, 146),
+			Color8(140, 190, 250), int(round(6.0 * _ui_scale)),
+			maxi(1, int(round(2.0 * _ui_scale))), 0.0))
+		b.add_theme_stylebox_override("hover", _sb_round(Color8(70, 130, 210),
+			Color8(255, 246, 120), int(round(6.0 * _ui_scale)),
+			maxi(2, int(round(3.0 * _ui_scale))), 0.0))
+		b.add_theme_stylebox_override("pressed", _sb_round(Color8(30, 60, 120),
+			Color8(255, 246, 120), int(round(6.0 * _ui_scale)),
+			maxi(2, int(round(3.0 * _ui_scale))), 0.0))
+		var tt := tid
+		b.pressed.connect(func():
+			Audio.play_sfx(Audio.SFX_UI_CONFIRM)
+			Net.send_action("upgrade", [tt])      # 带上房型 → Sim 里就不用再问了
+			_close_house_picker())
+		row.add_child(b)
+
+	var sz := pc.get_combined_minimum_size()
+	pc.size = sz
+	var vp := get_viewport().get_visible_rect()
+	pc.position = Vector2((vp.size.x - sz.x) * 0.5, (vp.size.y - sz.y) * 0.30)
+
+
+func _close_house_picker() -> void:
+	if _house_pick != null:
+		_house_pick.queue_free()
+		_house_pick = null
+
+
 func _toggle_fullscreen() -> void:
 	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
@@ -3461,6 +3555,11 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)  # 19 禁止操作的音效
 			if kind == "upgrade_blocked":
 				_say(role, Audio.V_LIGHT_PUNISH, pos)    # 衰神附身：投资失败（id 1053）
+			# 「选房屋」（原版 Info.txt id 92 / String.txt 2010）——
+			# ⚠️ 老板 2026-09-27：「建造的时候建筑物选择界面应该是**横排的卡片**，
+			#   不是现在那种下拉框」→ 弹一排可选的房屋。
+			if kind == "need_house_type" and int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_open_house_picker(data)
 		"use_card", "get_card":
 			match effect:
 				"upgrade_building":
