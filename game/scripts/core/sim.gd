@@ -41,6 +41,12 @@ const STAMINA_MAX := 600.0          # 上限
 ## 从未出现第 3 颗 → 上限 = 2，默认掷 1 颗。
 const DICE_PER_ROLL_MAX := 2
 
+## 掷骰动画时长：点数定下后，**先播「骰子抛出 → 抛物线落下 → 定格点数」**，
+## 这段时间角色**站着不动**，动画完了才起步 —— 这就是原版的节奏。
+## ⚠️ 我们原来是把 `moving` 一设就走、骰子只是「同时」显示数字，节奏是错的
+##    （老板 2026-09-26 反馈）。这个值要和表现层的 `DIE_FLY_TIME` 对齐。
+const ROLL_ANIM_SECONDS := 1.15
+
 ## ---- 卡片目标类型 ----
 ## 提示文案来自原版 `config/String.txt` 1101..1106（Rules.card_target_prompt）。
 ## ⚠ 这张「哪张卡点谁」的映射是**推导**出来的（依据每张卡的说明文字 + 作用对象），
@@ -244,9 +250,40 @@ func add_pet(p: Dictionary, pet_id: String) -> int:
 		log_message.emit("%s 已经拥有 %d 位小神仙，不能再请了" % [p["name"], max_pets()])
 		return 1
 	(p["pets"] as Array).append({"id": pet_id, "level": 1, "cool": 0.0})
+	if str(p.get("pet_active", "")) == "":
+		p["pet_active"] = pet_id        # 第一只自动「出战」（显示在角色面板的精灵栏位）
 	log_message.emit("%s 得到小神仙「%s」" % [p["name"], pet_name(pet_id)])
 	_ev("get_pet", p, {"pet": pet_id, "name": pet_name(pet_id)})
 	return 0
+
+
+## 设「出战」的小神仙（原版：点角色面板的精灵栏位打开**仓库**，在里面选一只使用）。
+##
+## ⚠ 「出战」的**玩法含义**没有明文依据 —— 原版截图只能看出「可以选择要使用的精灵」。
+##   这里取最保守的做法：只影响**角色面板精灵栏位显示哪一只**，特技仍然是全部生效。
+##   登记在 `docs/alignment-gap.md`。
+func act_set_active_pet(id: int, pet_id: String) -> bool:
+	var p: Dictionary = players.get(id, {})
+	if p.is_empty():
+		return false
+	if pet_record(pet_id).is_empty() or pet_index_of(p, pet_id) < 0:
+		return false
+	p["pet_active"] = pet_id
+	log_message.emit("%s 把「%s」设为出战" % [p["name"], pet_name(pet_id)])
+	_ev("pet_active", p, {"pet": pet_id, "name": pet_name(pet_id)})
+	return true
+
+
+## 当前出战的小神仙（没设过就取第一只；一只都没有返回空字典）
+func active_pet(p: Dictionary) -> Dictionary:
+	var pets: Array = p.get("pets", [])
+	if pets.is_empty():
+		return {}
+	var want := str(p.get("pet_active", ""))
+	for e in pets:
+		if str((e as Dictionary).get("id", "")) == want:
+			return e
+	return pets[0]
 
 
 ## 精灵屋购买（Info.txt 203：「<BABYNAME>价格<NUMBER>点券 确认要购买吗？」）
@@ -496,6 +533,10 @@ func add_player(id: int, pname: String) -> Dictionary:
 		"pet_steps": 0,
 		# 是否在「本段行走」里已经被传送过（防传送门 A→B→A 原地打转）
 		"_teleported": false,
+		# 掷骰动画播完之前不许起步（原版节奏：抛骰子 → 定格 → 才走）
+		"move_after": 0.0,
+		# 「出战」的小神仙（角色面板的精灵栏位显示它；原版可点开仓库切换）
+		"pet_active": "",
 		"tile": 0,
 		"progress": 0.0,
 		"dir": 1,
@@ -553,6 +594,7 @@ func player_ids() -> Array:
 func step(dt: float) -> void:
 	if not running or map == null:
 		return
+	var t_before := time
 	time += dt
 	tick_count += 1
 
@@ -584,7 +626,11 @@ func step(dt: float) -> void:
 			continue
 
 		if p["moving"] > 0:
-			_advance(p, dt)
+			# 掷骰动画还没播完就先站着（原版：抛骰子 → 定格点数 → 才起步）。
+			# ⚠️ 只走「本帧里动画终点之后」的那一段 —— 否则等待的时间会被算进移动距离
+			var seg: float = time - maxf(t_before, float(p.get("move_after", 0.0)))
+			if seg > 0.0:
+				_advance(p, seg)
 		else:
 			p["idle"] = float(p["idle"]) + dt
 			if float(p["idle"]) >= IDLE_SLEEP_SECONDS:
@@ -1018,6 +1064,9 @@ func act_roll(id: int, dice_count: int = 1) -> bool:
 		_ev("pet_dice", p, {"n": n, "faces": faces})
 	p["moving"] = n
 	p["idle"] = 0.0
+	# 先播掷骰动画（抛出 → 抛物线落下 → 定格），这段时间角色站着不动；
+	# step() 里按这个时刻放行。原版就是这个节奏（老板 2026-09-26 反馈）
+	p["move_after"] = time + ROLL_ANIM_SECONDS
 	p["last_roll"] = n
 	p["last_faces"] = faces          # 每颗骰子各自的点数（GO 钮逐颗亮出来）
 	if d > 1:
@@ -1445,6 +1494,7 @@ func act_walk(id: int, steps: int) -> bool:
 	var n := clampi(steps, 1, 6)
 	p["moving"] = n
 	p["idle"] = 0.0
+	p["move_after"] = time + ROLL_ANIM_SECONDS   # 同掷骰：先把骰子抛出来定格再走
 	p["last_roll"] = n
 	p["last_faces"] = [n]
 	log_message.emit("%s 用骰子卡前进 %d 步" % [p["name"], n])

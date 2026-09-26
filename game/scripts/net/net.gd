@@ -281,6 +281,10 @@ func _apply_action(who: int, action: String, args: Array) -> void:
 			# 精灵屋：用点券请一位小神仙（Info.txt 203）
 			if args.size() > 0:
 				sim.act_buy_pet(who, str(args[0]))
+		"set_pet":
+			# 精灵仓库：选一只设为「出战」
+			if args.size() > 0:
+				sim.act_set_active_pet(who, str(args[0]))
 		"buy_card":
 			# 卡片商店：用点券买一张卡（Info.txt 41/42）
 			if args.size() > 0:

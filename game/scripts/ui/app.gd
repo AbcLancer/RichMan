@@ -129,7 +129,9 @@ var _tex_spin: Array = []                      # 16 帧翻滚（懒加载）
 var _tex_face: Array = []                      # 6 个面（懒加载）
 
 const DIE_PX := 32.0                           # 素材单帧 32×32
-const DIE_FLY_TIME := 0.55                     # 掷出飞行时长（秒）
+const DIE_FLY_TIME := 1.15                     # 掷出飞行时长（秒）
+## ⚠ 必须与 `Sim.ROLL_ANIM_SECONDS` 对齐：这段时间服务端也**不让角色起步**，
+##   动画播完（骰子定格）角色才走 —— 原版节奏（老板 2026-09-26 反馈）。
 const DIE_HOLD_TIME := 1.9                     # 定格展示点数时长
 const DIE_SPIN_FPS := 26.0                     # 飞行中的翻滚速度（帧/秒）
 const DIE_IDLE_FPS := 3.5                      # 待机慢转（一眼能看出在转，又不吵）
@@ -283,9 +285,12 @@ func _run_ui_shot(delta: float) -> void:
 		if _go_btn != null and _go_btn.visible:
 			_ui_shot_idle_done = true
 			await _capture("D:/Projects/RichMan/ui_shot_idle.png")
-		elif _ui_shot_t > 8.0:
+		elif _ui_shot_t > 12.0:
+			# ⚠ 这里必须真的拍一张 —— 原来只 push_warning 没 await _capture，
+			#   于是「GO 钮没出现」时 idle 那张会**整个丢掉**（掷骰节奏变长后暴露出来）
 			_ui_shot_idle_done = true
-			push_warning("[uishot] 8 秒内 GO 钮一直没出现（仍在入场？），照拍一张")
+			push_warning("[uishot] 12 秒内 GO 钮一直没出现（仍在入场/掷骰动画？），照拍一张")
+			await _capture("D:/Projects/RichMan/ui_shot_idle.png")
 			await _capture("D:/Projects/RichMan/ui_shot_idle.png")
 		if _ui_shot_idle_done:
 			# 顺带验收「卡片二次确认」：此刻角色是**待机**的，确认框才不会被
@@ -333,6 +338,13 @@ func _run_ui_shot(delta: float) -> void:
 				_sync_shop()
 				await get_tree().create_timer(0.25).timeout
 				await _capture("D:/Projects/RichMan/ui_shot_cardshop.png")
+				_close_shop()
+				# 精灵仓库（角色面板的精灵栏位点开）：验证「可以选择要使用的精灵」
+				_open_pet_warehouse()
+				_shop_sig = ""
+				_sync_shop()
+				await get_tree().create_timer(0.25).timeout
+				await _capture("D:/Projects/RichMan/ui_shot_warehouse.png")
 				_close_shop()
 				# 路边物体（roadobj）：把时间快进 12 天，让它们按原版权重表**真的生成**出来，
 				# 再切全盘视角，一次看全棋盘上的事件格图标与路边物体
@@ -428,7 +440,7 @@ func _run_ui_shot(delta: float) -> void:
 	# 四张都拍齐 → 收工；或 90 秒兜底
 	if _ui_shot_tired_done and _ui_shot_t - _ui_shot_tired_t > 0.8:
 		get_tree().quit(0)
-	if _ui_shot_t > 90.0:
+	if _ui_shot_t > 130.0:
 		if not _ui_shot_pop_done:
 			push_warning("[uishot] 90 秒内没等到落点气泡（一直没落到空地）")
 		if not _ui_shot_tired_done:
@@ -986,8 +998,10 @@ const UI_GO_SIZE := 78.0                     # GO 钮 = 原版 labar/背景.png(
 ## 名字 Label3D 在 1.50、骰子在 1.85（见 board_view 里的角色构建）。
 ## 取 2.0 → 气泡稳定压在它们之上；锚世界点再投影，自动随相机远近缩放。
 const UI_HEAD_UP := 2.0
-const UI_POP_W := 150.0                      # 落点气泡目标宽
-const UI_POP_H := 68.0
+const UI_POP_W := 330.0                      # 落点气泡 / 确认框目标宽
+## 尺寸按原版那个 `infobk` 对话框来（老板 2026-09-26 反馈「二次确认框没有现在这么小」：
+## 原版 records/小神仙商店购买确认.png 里的框约占 1024 宽屏的 1/3）
+const UI_POP_H := 160.0
 
 
 
@@ -1298,6 +1312,21 @@ func _build_character_panel() -> void:
 	_char_info.add_theme_color_override("font_color", Color8(28, 46, 92))
 	_char_info.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_char_panel.add_child(_char_info)
+	# 这块就是**精灵栏位** —— 点一下打开**精灵仓库**（选一只出战）。
+	# 老板 2026-09-26：「左下角角色右侧这个头像应该是精灵的栏位，点开之后是精灵的
+	# 仓库，可以选择要使用的精灵」。
+	var pbtn := Button.new()
+	pbtn.flat = true
+	pbtn.focus_mode = Control.FOCUS_NONE
+	pbtn.tooltip_text = "小神仙仓库（选一只出战）"
+	pbtn.position = inf.position
+	pbtn.size = inf.size
+	pbtn.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
+	pbtn.add_theme_stylebox_override("pressed", StyleBoxEmpty.new())
+	pbtn.add_theme_stylebox_override("hover", _sb_round(Color8(255, 255, 255, 70),
+		Color8(255, 226, 130), int(round(5.0 * _ui_scale)), 0, maxf(1.0, 1.5 * _ui_scale)))
+	pbtn.pressed.connect(func(): _open_pet_warehouse())
+	_char_panel.add_child(pbtn)
 
 	# 名字（左 navy 胶囊）
 	var nm := _slot(ATB_NAME, k)
@@ -2302,6 +2331,19 @@ func _open_shop(mode: String) -> void:
 	_hide_card_menu()
 
 
+## 精灵仓库（角色面板的精灵栏位点开）：列出**持有**的小神仙，点一只设为出战。
+## 底图用 `uitex/pethouse/精灵屋.tga`（标题就是「小神仙」）。
+func _open_pet_warehouse() -> void:
+	if Net.sim == null:
+		return
+	var me: Dictionary = Net.sim.players.get(multiplayer.get_unique_id(), {})
+	if (me.get("pets", []) as Array).is_empty():
+		_toast("还没有小神仙 —— 到精灵屋请一位吧")
+		return
+	_shop_stock = []
+	_open_shop("warehouse")
+
+
 func _close_shop() -> void:
 	if _shop == null:
 		return
@@ -2348,10 +2390,17 @@ func _render_shop(me: Dictionary, credit: int, owned: Array) -> void:
 	var x0 := (vp.x - total) * 0.5
 	var y0 := (vp.y - side) * 0.5 - 14.0 * _ui_scale
 
-	# 只有一块底图：小神仙商店 / 卡片商店（两张都是原版图）
+	# 只有一块底图：小神仙商店 / 卡片商店 / **精灵仓库**（三张都是原版图）
+	# ⚠️ 「持有 → 选择使用哪只」的界面就是 `uitex/pethouse/精灵屋.tga`（标题「小神仙」），
+	#   由**角色面板的精灵栏位**点开 —— 老板 2026-09-26：「应该是精灵的栏位，
+	#   点开之后是精灵的仓库，可以选择要使用的精灵」。
 	_shop_panel.visible = false
-	_shop_bg.texture = _tex_or_null(Rules.shop_ui_path(
-		"pethouse_shop.png" if two else "cardshop.png"))
+	var bg_name := "cardshop.png"
+	if _shop_mode == "pethouse":
+		bg_name = "pethouse_shop.png"
+	elif _shop_mode == "warehouse":
+		bg_name = "pethouse_panel.png"
+	_shop_bg.texture = _tex_or_null(Rules.shop_ui_path(bg_name))
 	_shop_bg.position = Vector2(x0, y0)
 	_shop_bg.size = Vector2(side, side)
 
@@ -2372,7 +2421,13 @@ func _render_shop(me: Dictionary, credit: int, owned: Array) -> void:
 	if slots == null:
 		return
 
-	if two:
+	if _shop_mode == "warehouse":
+		# 精灵仓库：列出**持有**的小神仙，点一只 → 设为「出战」
+		_shop_credit.visible = false          # 这张底图自带「小神仙」标题
+		_place_owned_pets(shop_x, shop_y, owned)
+		_shop_hint.text = "点一只小神仙设为出战 ｜ 右键 / ESC 关闭"
+	elif two:
+		_shop_credit.visible = true
 		_shop_stock = _pet_shop_stock()
 		var list: Array = slots
 		for i in range(mini(list.size(), _shop_stock.size())):
@@ -2380,6 +2435,7 @@ func _render_shop(me: Dictionary, credit: int, owned: Array) -> void:
 			_add_pet_slot(shop_x, shop_y, s, str(_shop_stock[i]), credit)
 		_shop_hint.text = "%s ｜ 右键 / ESC 关闭" % Rules.info_string(202).replace("\n", "")
 	else:
+		_shop_credit.visible = true
 		if _shop_stock.is_empty() or _shop_stock.size() != Sim.CARD_SHOP_SLOTS:
 			_shop_stock = _shop_stock_for_me()
 		var d: Dictionary = slots
@@ -2466,7 +2522,7 @@ func _add_card_slot(ox: float, oy: float, slot: Dictionary, card_id: String, cre
 
 ## 货架上的一格：透明按钮 + 居中文字（贴在原版底图的标签条上）
 func _slot_button(ox: float, oy: float, rect: Array, text: String, afford: bool,
-		cb: Callable, align: int = HORIZONTAL_ALIGNMENT_CENTER) -> Button:
+		cb: Callable, align: int = HORIZONTAL_ALIGNMENT_CENTER, fs: float = 0.0) -> Button:
 	var b := Button.new()
 	b.flat = true
 	b.focus_mode = Control.FOCUS_NONE
@@ -2474,7 +2530,7 @@ func _slot_button(ox: float, oy: float, rect: Array, text: String, afford: bool,
 	b.alignment = align
 	b.clip_text = true
 	b.add_theme_font_size_override("font_size",
-		maxi(9, int(round(13.0 * _shop_base))))       # 原版槽位里那行字约 13 native
+		maxi(9, int(round((fs if fs > 0.0 else 13.0) * _shop_base))))   # 原版槽位里那行字约 13 native
 	b.add_theme_color_override("font_color",
 		Color8(40, 30, 60) if afford else Color8(150, 140, 150))
 	b.add_theme_color_override("font_pressed_color", Color8(200, 60, 90))
@@ -2498,6 +2554,12 @@ func _place_owned_pets(ox: float, oy: float, owned: Array) -> void:
 	if slots == null:
 		return
 	var list: Array = slots
+	# 当前「出战」的那只标个 ▶（原版：仓库里选一只使用）
+	var me: Dictionary = (_snapshot.get("players", {}) as Dictionary).get(
+		multiplayer.get_unique_id(), {})
+	var act_id := ""
+	if Net.sim != null:
+		act_id = str(Net.sim.active_pet(me).get("id", ""))
 	for i in range(mini(list.size(), owned.size())):
 		var e: Dictionary = owned[i]
 		var pid := str(e.get("id", ""))
@@ -2526,9 +2588,18 @@ func _place_owned_pets(ox: float, oy: float, owned: Array) -> void:
 		st.size = Vector2(16.0 * _shop_base, 16.0 * _shop_base)
 		_shop.add_child(st)
 		_shop_nodes.append(st)
-		var nm := pet_label(pid, lv)
-		_shop_nodes.append(_slot_button(ox, oy, bar, nm, true, func() -> void:
-			_show_pet_skill(pid, lv)))
+		var nm := ("▶ " if pid == act_id else "") + pet_label(pid, lv)
+		# 仓库模式下点这一格 = 把它设为「出战」（原版「可以选择要使用的精灵」）；
+		# 别的场合沿用「点一下看技能说明」
+		var in_wh := _shop_mode == "warehouse"
+		var cb := func() -> void:
+			if in_wh:
+				Net.send_action("set_pet", [pid])
+			else:
+				_show_pet_skill(pid, lv)
+		# 槽位只有 80 native 宽 → 字号收一点，否则「小财神 Lv1」会被裁掉尾巴
+		_shop_nodes.append(_slot_button(ox, oy, bar, nm, true, cb,
+			HORIZONTAL_ALIGNMENT_CENTER, 10.5))
 
 
 func pet_label(pet_id: String, lv: int) -> String:
@@ -3175,11 +3246,19 @@ func _sync_char_panel(me: Dictionary, players: Dictionary, plots: Dictionary,
 	var t: Dictionary = {}
 	if _board != null and _board.map != null:
 		t = _board.map.tile(int(me["tile"]))
-	var desc := str(t.get("street", t.get("name", "")))
-	if plots.has(int(me["tile"])):
-		desc += "\n%s %d 级" % [_owner_name(players, plots[int(me["tile"])]["owner"]),
-			int(plots[int(me["tile"])]["level"])]
-	_char_info.text = desc
+	# 这块是**精灵栏位**：显示出战的小神仙（点一下 → 精灵仓库）。
+	# ⚠️ 原来这里显示「所在地块的名字 + 等级」，老板 2026-09-26 反馈「很奇怪」。
+	var ap: Dictionary = {}
+	if Net.sim != null:
+		ap = Net.sim.active_pet(me)
+	if ap.is_empty():
+		_char_info.text = "精灵栏位\n（暂无）"
+	else:
+		var pid2 := str(ap.get("id", ""))
+		var nm2 := pid2
+		if Net.sim != null:
+			nm2 = Net.sim.pet_name(pid2)
+		_char_info.text = "精灵栏位\n%s Lv%d" % [nm2, int(ap.get("level", 1))]
 
 
 ## 动作入口：GO 圆钮（掷骰子）+ 落点气泡（买 / 升级 / 放弃）

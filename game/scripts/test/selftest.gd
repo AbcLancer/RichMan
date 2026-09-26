@@ -172,8 +172,14 @@ func _test_movement() -> void:
 	var target: int = int(p["moving"])
 	_ok("掷骰得到 1~6 点", target >= 1 and target <= 6, "点数 %d" % target)
 
-	# 走 0.25 秒，速度 2 格/秒 → 格内进度应为 0.5（尚未换格）
-	sim.step(0.25)
+	# 掷骰动画期间角色**不动**（原版节奏：抛骰子 → 抛物线落下 → 定格点数 → 才起步）
+	sim.step(Sim.ROLL_ANIM_SECONDS * 0.5)
+	_ok("掷骰动画没播完之前角色不动（原版节奏，老板 2026-09-26 反馈）",
+		int(p["tile"]) == 0 and _near(float(p["progress"]), 0.0),
+		"tile=%d progress=%.3f" % [int(p["tile"]), float(p["progress"])])
+
+	# 动画播完才开始走：再走 0.25 秒，速度 2 格/秒 → 格内进度应为 0.5（尚未换格）
+	sim.step(Sim.ROLL_ANIM_SECONDS * 0.5 + 0.25)
 	_ok("0.25s 后仍在原地格", int(p["tile"]) == 0, "tile=%d" % int(p["tile"]))
 	_ok("格内进度 = 0.5（连续移动）", _near(float(p["progress"]), 0.5),
 		"progress=%.3f" % float(p["progress"]))

@@ -68,6 +68,7 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
   [PASS] 医院坐标取自原版 
   [PASS] 相机俯角 30° (原 .r6m) 
   [PASS] 掷骰得到 1~6 点 点数 3
+  [PASS] 掷骰动画没播完之前角色不动（原版节奏，老板 2026-09-26 反馈） tile=0 progress=0.000
   [PASS] 0.25s 后仍在原地格 tile=0
   [PASS] 格内进度 = 0.5（连续移动） progress=0.500
   [PASS] 0.5s 后前进 1 格 tile=1
@@ -82,8 +83,8 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
   [PASS] 骰子数量上夹到 2 颗（点数 ≤ 12） 点数 5
   [PASS] 夹取后逐颗点数也只有 2 个 
   [PASS] 下限：传 0 颗也至少掷 1 颗 
-  [PASS] 走 5 格体力下降（≥15n 且 ≤20n） 降了 86.0
-  [PASS] 静止 10 秒恢复 +70（每秒 7） 实际 584.0
+  [PASS] 走 5 格体力下降（≥15n 且 ≤20n） 降了 85.6
+  [PASS] 静止 10 秒恢复 +70（每秒 7） 实际 584.4
   [PASS] 体力 100 < 240 → 不许出发 体力 100
   [PASS] 被拒时没有发车 
   [PASS] 体力 300 ≥ 240 → 可以出发 
@@ -266,7 +267,7 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
   [PASS] BGM 可停 
   [PASS] 环境底噪 95 已起且循环已开 
   [PASS] 环境底噪可停 
-通过 226 / 失败 0
+通过 227 / 失败 0
 ==============================
 WARNING: 16 ObjectDB instances were leaked at exit (run with `--verbose` for details).
    at: cleanup (core/object/object.cpp:2536)
