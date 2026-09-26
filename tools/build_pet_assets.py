@@ -78,6 +78,24 @@ UI_FILES = {
     "stock_ok_2.png": os.path.join(ROOT, "samples", "uitex", "buystock", "ok_2.tga"),
     "stock_pass_1.png": os.path.join(ROOT, "samples", "uitex", "buystock", "pass_1.tga"),
     "stock_pass_2.png": os.path.join(ROOT, "samples", "uitex", "buystock", "pass_2.tga"),
+    # 拉霸 / 老虎机（`uitex/casino/`）—— 老板原版截图 records/老虎机.png 里那台：
+    #   背景 = 粉色拱形面板、姑娘1..3 = 兔子女郎、pull_1/2 = 拉杆、
+    #   add1..3 = +1000/+5000/+10000 三档下注、7/苹果/香蕉/财神 = 滚轮符号
+    "casino_bg.png": os.path.join(ROOT, "samples", "uitex", "casino", "背景.tga"),
+    "casino_girl1.png": os.path.join(ROOT, "samples", "uitex", "casino", "姑娘1.tga"),
+    "casino_girl2.png": os.path.join(ROOT, "samples", "uitex", "casino", "姑娘2.tga"),
+    "casino_girl3.png": os.path.join(ROOT, "samples", "uitex", "casino", "姑娘3.tga"),
+    "casino_pull1.png": os.path.join(ROOT, "samples", "uitex", "casino", "pull_1.tga"),
+    "casino_pull2.png": os.path.join(ROOT, "samples", "uitex", "casino", "pull_2.tga"),
+    "casino_add1.png": os.path.join(ROOT, "samples", "uitex", "casino", "add1.tga"),
+    "casino_add2.png": os.path.join(ROOT, "samples", "uitex", "casino", "add2.tga"),
+    "casino_add3.png": os.path.join(ROOT, "samples", "uitex", "casino", "add3.tga"),
+    "casino_exit.png": os.path.join(ROOT, "samples", "uitex", "casino", "exit.tga"),
+    "casino_btn.png": os.path.join(ROOT, "samples", "uitex", "casino", "按钮.tga"),
+    "casino_sym7.png": os.path.join(ROOT, "samples", "uitex", "casino", "7.tga"),
+    "casino_sym_apple.png": os.path.join(ROOT, "samples", "uitex", "casino", "苹果.tga"),
+    "casino_sym_banana.png": os.path.join(ROOT, "samples", "uitex", "casino", "香蕉.tga"),
+    "casino_sym_god.png": os.path.join(ROOT, "samples", "uitex", "casino", "财神.tga"),
 }
 
 # ---- 槽位（native 256×256 底图坐标；x, y, w, h）----

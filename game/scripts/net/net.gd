@@ -292,6 +292,13 @@ func _apply_action(who: int, action: String, args: Array) -> void:
 				sim.act_chat(who, str(args[0]),
 					int(args[1]) if args.size() > 1 else -1,
 					str(args[2]) if args.size() > 2 else "公共")
+		"casino_bet":
+			# 拉霸：加注（原版三档 +1000 / +5000 / +10000）
+			if args.size() > 0:
+				sim.act_casino_bet(who, int(args[0]))
+		"casino_pull":
+			# 拉霸：拉杆
+			sim.act_casino_pull(who)
 		"walk":
 			# 骰子卡：玩家自选前进步数（1..6）
 			if args.size() > 0:

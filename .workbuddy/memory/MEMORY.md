@@ -240,3 +240,15 @@
     由 `StockPanel.set_embed_rect(rect, on)` 接 app 每帧传的 rect。
 66. **聊天**：`Sim.act_chat(id, text, to, channel)` —— 公共=广播、私聊=只发双方、限长 60 字；
     `net` 动作 `chat`（args = 文本/目标id/频道名）。
+
+67. **⭐ 拉霸（老虎机）素材在 `uitex/casino/`，不在 `labar/`**（我曾把 `labar` 误当拉霸，已纠）：
+    `labar/` = **掷骰**素材（`go`/`go_dn` GO 钮、`anim` 16 帧骰子、`骰子` 6 面、`背景` 蓝球）；
+    拉霸 = `casino/背景.tga`(粉色拱形面板) + `姑娘1..3`(兔子女郎) + `pull_1/2`(拉杆) +
+    `add1..3`(`+1000/+5000/+10000`) + `7/苹果/香蕉/财神`(滚轮符号) + `exit`。
+    赔率只给了 `events.casino_top_rate`(1.0)/`casino_middle_rate`(0.3) → 三同/两同算法是**推断**。
+68. **全局新闻**：文案 = `Info.txt` **甲1..甲14 = id 3001..3014**（标签 `NEWS`）；
+    效果参数 = `realtime.json` 的 `news` 段 14 项（`Initvar_r.txt` 的 `XinWen1..14`）。
+    插画 = `samples/news/01..38.tga`（256²）→ `assets/news/`（`tools/build_news_assets.py`）。
+    ⚠️ 触发频率与「哪张插画配哪条新闻」**都无依据**（按序号取，已登记）。
+69. **42 张卡全部可用**（2026-09-26）：红卡/黑卡（股票）+ 复制卡（`copy`，复制手里另一张卡）
+    都已实现 → `CARD_UNSUPPORTED` **已清空**。

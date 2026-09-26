@@ -99,6 +99,13 @@ var _chat_ch_idx := 0
 ## ① 日志页 ④ 聊天记录页 —— 都占右下角功能区**同一块地方**，与其他页互斥
 var _br_log_page: Control = null
 var _br_chat_page: Control = null
+## 全局事件**全屏插画**（原版截图 `records/全局事件.png`：浅黄绿描边的插画 + 一行文案）
+var _news_pop: Control = null
+var _news_art: TextureRect = null
+var _news_text: Label = null
+var _news_left := 0.0
+## 拉霸（老虎机）面板（原版 `uitex/casino/`；老板截图 records/老虎机.png）
+var _casino: CasinoPanel = null
 var _log_panel: PanelContainer
 
 # 左下角色面板（版式 = 原版 uitex/other/atb.png）
@@ -656,6 +663,15 @@ func _process(delta: float) -> void:
 			_toast_t -= delta
 			if _toast_t <= 0.0 and _toast_lbl != null:
 				_toast_lbl.visible = false
+		# 全局新闻插画：展示 4 秒后自动收起
+		if _news_left > 0.0:
+			_news_left -= delta
+			if _news_left <= 0.0 and _news_pop != null:
+				_news_pop.visible = false
+		# 拉霸面板：滚轮动画 + 下注额刷新
+		if _casino != null and _casino.visible and Net.sim != null:
+			var st: Dictionary = Net.sim._casino_of(multiplayer.get_unique_id())
+			_casino.tick(delta, int(st.get("bet", 0)), st.get("reels", []))
 
 	if _menu_shot:
 		_menu_shot_t += delta
@@ -1054,6 +1070,11 @@ func _build_hud() -> void:
 	_hud.add_child(_stock)
 	_stock.setup(_ui_scale)
 	_stock.act_requested.connect(_on_stock_action)
+	# 拉霸（老虎机）面板 —— 素材 uitex/casino/，走到「拉霸」格时打开
+	_casino = CasinoPanel.new()
+	_hud.add_child(_casino)
+	_casino.setup(_ui_scale)
+	_casino.act.connect(_on_casino_action)
 	_build_shop()
 	_build_toast()
 
@@ -3063,6 +3084,65 @@ func _chat_append(who: String, text: String) -> void:
 		_chat_log.text = "\n".join(_chat_lines.slice(maxi(0, _chat_lines.size() - 3)))
 
 
+## 拉霸面板的按钮回调（下注 / 拉杆 / 离开）
+func _on_casino_action(kind: String, amount: int) -> void:
+	match kind:
+		"bet":
+			Net.send_action("casino_bet", [amount])
+		"pull":
+			Net.send_action("casino_pull", [])
+		"exit":
+			if _casino != null:
+				_casino.close()
+
+
+## 全局新闻的全屏插画（`assets/news/01..37.png` = 原版 `samples/news/*.tga`）
+func _show_global_news(idx: int, text: String, art: int) -> void:
+	if _news_pop == null:
+		_build_news_popup()
+	var n := ((maxi(art, 1) - 1) % 37) + 1        # 37 张插画，按事件序号取（无力据，见 alignment-gap）
+	_news_art.texture = _tex_or_null("res://assets/news/%02d.png" % n)
+	_news_text.text = text.replace("\n", " ")
+	_news_pop.visible = true
+	_news_left = 4.0
+	var vp := get_viewport().get_visible_rect()
+	var w := minf(vp.size.x * 0.42, 430.0 * _ui_scale)
+	var h := minf(vp.size.y * 0.62, 430.0 * _ui_scale)
+	_news_pop.size = Vector2(w, h)
+	_news_pop.position = Vector2((vp.size.x - w) * 0.5, (vp.size.y - h) * 0.5)
+
+
+func _build_news_popup() -> void:
+	_news_pop = Control.new()
+	_news_pop.visible = false
+	_news_pop.z_index = 80
+	_news_pop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_hud.add_child(_news_pop)
+	var pc := PanelContainer.new()
+	pc.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	pc.add_theme_stylebox_override("panel", _sb_round(
+		Color8(246, 250, 226, 248), Color8(150, 190, 60), int(round(10.0 * _ui_scale)),
+		maxi(3, int(round(6.0 * _ui_scale))), maxf(2.0, 3.0 * _ui_scale)))
+	_news_pop.add_child(pc)
+	var col := VBoxContainer.new()
+	col.alignment = BoxContainer.ALIGNMENT_CENTER
+	col.add_theme_constant_override("separation", maxi(3, int(round(8.0 * _ui_scale))))
+	pc.add_child(col)
+	_news_art = TextureRect.new()
+	_news_art.custom_minimum_size = Vector2(230.0 * _ui_scale, 230.0 * _ui_scale)
+	_news_art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_news_art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_news_art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	col.add_child(_news_art)
+	_news_text = Label.new()
+	_news_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_news_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_news_text.add_theme_font_size_override("font_size", maxi(11, int(round(17.0 * _ui_scale))))
+	_news_text.add_theme_color_override("font_color", Color8(40, 60, 20))
+	_news_text.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	col.add_child(_news_text)
+
+
 func _toggle_fullscreen() -> void:
 	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
@@ -3374,6 +3454,29 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 				_toast("你被 %s 挤到了下一格" % str(data.get("name", "")))
 		"chat":
 			_chat_append(str(data.get("name", "")), str(data.get("text", "")))
+		"global_news":
+			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
+			_show_global_news(int(data.get("idx", 1)), str(data.get("text", "")),
+				int(data.get("art", 1)))
+		"casino_open":
+			# 走到「拉霸」格 → 打开老虎机面板（自己下注）
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id() and _casino != null:
+				_casino.open()
+		"casino_bet":
+			_ev_sfx(Audio.SFX_UI_CLICK, data, pos)
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast("加注 %d（本局共 %d）" % [int(data.get("amount", 0)),
+					int(data.get("bet", 0))])
+		"casino_result":
+			_ev_sfx(Audio.SFX_COIN_DROP if int(data.get("win", 0)) > 0
+				else Audio.SFX_ACTION_DENIED, data, pos)
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast("拉霸结果：%s" % ("赢 %d 元" % int(data.get("win", 0))
+					if int(data.get("win", 0)) > 0 else "没中"))
+		"casino_need_bet":
+			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast("请先投注")
 		"chairman":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():

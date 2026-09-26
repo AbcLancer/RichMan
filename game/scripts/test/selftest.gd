@@ -552,6 +552,29 @@ func _test_stock() -> void:
 		and (s3.players[1]["cards"] as Array).size() == n_before,
 		"%d 张" % (s3.players[1]["cards"] as Array).size())
 
+	# ---- 拉霸（老虎机，`uitex/casino/`；老板截图 records/老虎机.png）----
+	var s4 := _fresh_sim()
+	var p4: Dictionary = s4.players[1]
+	p4["money"] = 100000
+	_ok("拉霸：先投注（原版三档 +1000 / +5000 / +10000）",
+		s4.act_casino_bet(1, 1000) and int(s4._casino_of(1)["bet"]) == 1000,
+		"注额 %d" % int(s4._casino_of(1)["bet"]))
+	_ok("拉霸：没投注就拉杆会被拒", not s4.act_casino_pull(2), "")
+	_ok("拉霸：拉杆 → 出三个滚轮符号并结算",
+		s4.act_casino_pull(1) and (s4._casino_of(1)["reels"] as Array).size() == 3,
+		str(s4._casino_of(1)["reels"]))
+	_ok("拉霸：拉杆后投注额清零", int(s4._casino_of(1)["bet"]) == 0, "")
+
+	# ---- 全局新闻（Info.txt 3001..3014 + realtime.json 的 news 段）----
+	var s5 := _fresh_sim()
+	var c5 := str(s5.players[1].get("company", ""))
+	var pr5 := s5.stock_price(c5)
+	s5._fire_global_news(2)              # 甲2「股市气势如虹，全面上涨」
+	_ok("全局新闻「股市全面上涨」→ 所有股价上涨",
+		s5.stock_price(c5) > pr5, "%.2f → %.2f" % [pr5, s5.stock_price(c5)])
+	_ok("新闻文案取自原版 Info.txt（3001..3014）",
+		Rules.info_string(3002).contains("股市"), Rules.info_string(3002))
+
 
 # ------------------------------------ 3k. 同格挤人（原版不允许多人站在同一格）
 

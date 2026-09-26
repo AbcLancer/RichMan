@@ -823,6 +823,151 @@ func act_chat(id: int, text: String, to: int, channel: String) -> bool:
 	return true
 
 
+## 全局新闻（`Info.txt` 甲1..甲14 = id 3001..3014，标签 `"NEWS"`；
+## 效果参数 = `realtime.json` 的 `news` 段 14 项，出自 `Initvar_r.txt` 的 `XinWen1..14`）。
+##
+## ⚠️ **触发频率原版没写**（`tvnews` 事件格是「踩到才播」）；这里取「每 12~20 天一次」，登记为推断。
+##
+## ⚠️ 插画（`samples/news/01..38.tga`）与事件的**对应关系也没有依据** → 按序号取图。
+var news_day := 0
+
+
+func _maybe_global_news() -> void:
+	var period := rng.randi_range(12, 20)
+	if road_day < news_day + period:
+		return
+	news_day = road_day
+	_fire_global_news(rng.randi_range(1, 14))
+
+
+func _news_cfg(key: String, dflt):
+	return Rules.get_val("news." + key, dflt)
+
+
+func _fire_global_news(idx: int) -> void:
+	var art := idx                       # 插画序号（无力据，按事件序号取）
+	match idx:
+		1:   # 股市低迷不振，重挫崩盘
+			_news_all_stocks(-float(_news_cfg("stock_down", 1.0)))
+		2:   # 股市气势如虹，全面上涨
+			_news_all_stocks(float(_news_cfg("stock_up", 0.5)))
+		8:   # 外来投资增加，地价上涨 N%
+			_news_all_plots(1.0 + float((_news_cfg("all_price_up", [0.1, 0.3]) as Array)[0]))
+		9:   # 经济萧条，所有房租下降 N%
+			_news_all_plots(1.0 - float((_news_cfg("all_price_down", [0.1, 0.2]) as Array)[1]))
+		10:  # 政府向每位市民发放一张卡片
+			for pid in player_ids():
+				_push_card(players[pid], _random_card())
+		11:  # 卡片商店赠送 N 张
+			var lo1: Array = _news_cfg("gift_cards", [1, 3]) as Array
+			for pid in player_ids():
+				for _i in range(rng.randi_range(int(lo1[0]), int(lo1[1]))):
+					_push_card(players[pid], _random_card())
+		12:  # 卡片商店散落 N 张（撒到棋盘上）
+			var lo2: Array = _news_cfg("scatter_cards", [1, 9]) as Array
+			for _i in range(rng.randi_range(int(lo2[0]), int(lo2[1]))):
+				_spawn_road_obj("card")
+		13:  # 强盗遗失宝箱
+			for _i in range(rng.randi_range(1, 3)):
+				_spawn_road_obj("robber")
+		14:  # 精灵遗失魔戒
+			for _i in range(rng.randi_range(1, 3)):
+				_spawn_road_obj("crystal")
+		_:
+			pass                          # 3/4/5/6/7：景气 / 停牌 / 利息 —— 只播新闻（效果待做）
+	var msg := Rules.info_string(3000 + idx)
+	log_message.emit("[新闻] %s" % msg.replace("\n", ""))
+	_ev("global_news", null, {"idx": idx, "text": msg, "art": art,
+		"info_id": 3000 + idx})
+
+
+## 新闻「所有股票一起涨 / 跌」
+func _news_all_stocks(ratio: float) -> void:
+	for nm in stocks.keys():
+		var s: Dictionary = stocks[nm]
+		var old := float(s["price"])
+		s["price"] = maxf(0.1, old * (1.0 + ratio))
+		s["prev"] = old
+
+
+## 新闻「所有地价 / 房租一起变」—— 直接按倍率调地块的地价系数
+func _news_all_plots(mul: float) -> void:
+	for k in plots.keys():
+		var pl: Dictionary = plots[k]
+		var v := float(pl.get("price_mul", 1.0)) * mul
+		pl["price_mul"] = clampf(v, 0.3, 3.0)
+
+
+# ------------------------------------------------------------ 拉霸（老虎机）
+
+## 原版「拉霸」= 老虎机（`Info.txt` 66「请投注」；素材 `uitex/casino/`：
+## 拱形面板底图 / 兔子女郎 / 拉杆 / `+1000`·`+5000`·`+10000` 三档下注 /
+## 滚轮符号 `7`·苹果·香蕉·财神）。
+## 参数 = `realtime.json` 的 `events.casino_fee` / `casino_top_rate` / `casino_middle_rate`。
+##
+## ⚠️ **赔率算法原版没写**（只给了 top / middle 两个倍率）→ 取
+##    「三同 = 注额 ×(1+top)；两同 = 注额 ×(1+middle)；否则输掉注额」，登记为推断。
+const CASINO_SYMBOLS := ["sym7", "sym_apple", "sym_banana", "sym_god"]
+
+var casino: Dictionary = {}          # {pid: {bet, reels, last}}
+
+
+func _casino_of(pid: int) -> Dictionary:
+	if not casino.has(pid):
+		casino[pid] = {"bet": 0, "reels": [], "last": ""}
+	return casino[pid]
+
+
+## 加注（原版那三个 `+1000` / `+5000` / `+10000` 按钮）
+func act_casino_bet(id: int, amount: int) -> bool:
+	var p: Dictionary = players.get(id, {})
+	if p.is_empty() or amount <= 0 or not bool(p["alive"]):
+		return false
+	if int(p["money"]) < amount:
+		_ev("insufficient_money", p, {"need": amount, "have": int(p["money"])})
+		return false
+	p["money"] = int(p["money"]) - amount
+	var st := _casino_of(id)
+	st["bet"] = int(st["bet"]) + amount
+	_ev("casino_bet", p, {"amount": amount, "bet": int(st["bet"])})
+	return true
+
+
+## 拉杆：转三个滚轮并结算
+func act_casino_pull(id: int) -> bool:
+	var p: Dictionary = players.get(id, {})
+	if p.is_empty():
+		return false
+	var st := _casino_of(id)
+	if int(st["bet"]) <= 0:
+		_ev("casino_need_bet", p, {})
+		return false
+	var reels: Array = []
+	for _i in range(3):
+		reels.append(CASINO_SYMBOLS[rng.randi_range(0, CASINO_SYMBOLS.size() - 1)])
+	st["reels"] = reels
+	var bet := int(st["bet"])
+	st["bet"] = 0
+	var same := 0
+	if reels[0] == reels[1] and reels[1] == reels[2]:
+		same = 3
+	elif reels[0] == reels[1] or reels[1] == reels[2] or reels[0] == reels[2]:
+		same = 2
+	var win := 0
+	if same == 3:
+		win = int(round(float(bet) * (1.0 + float(Rules.get_val("events.casino_top_rate", 1.0)))))
+	elif same == 2:
+		win = int(round(float(bet)
+			* (1.0 + float(Rules.get_val("events.casino_middle_rate", 0.3)))))
+	if win > 0:
+		p["money"] = int(p["money"]) + win
+	st["last"] = "赢 %d" % win if win > 0 else "没中"
+	_ev("casino_result", p, {"reels": reels, "bet": bet, "win": win, "same": same})
+	log_message.emit("%s 拉霸：%s → %s" % [p["name"], str(reels),
+		("赢 %d 元" % win) if win > 0 else "没中"])
+	return true
+
+
 ## 某公司属于哪个玩家（虚拟公司返回 -1）
 func company_owner(comp: String) -> int:
 	return int((stocks.get(comp, {}) as Dictionary).get("owner", -1))
@@ -948,6 +1093,7 @@ func step(dt: float) -> void:
 		road_day += 1
 		_spawn_road_obj()
 		_tick_stocks()              # 每天开盘：股价按 Stock_OpenPrice_Min/Max 波动
+		_maybe_global_news()        # 全局新闻（甲1..甲14）
 		if road_day % MONTH_DAYS == 0:
 			_pay_dividends()        # 每 30 天（一个月）分红一次
 
@@ -1308,10 +1454,10 @@ func _resolve_event(p: Dictionary, idx: int, t: Dictionary) -> void:
 			log_message.emit("%s 在%s玩了一把，赢得 %d 点券" % [p["name"], ename, g])
 			_ev("credit", p, {"eid": eid, "amount": g})
 		"casino":
-			var fee := int(Rules.get_val("events.casino_fee", 2500))
-			_transfer(p, null, fee, "乐透")
-			log_message.emit("%s 在%s花费 %d 元" % [p["name"], ename, fee])
-			_ev("casino", p, {"eid": eid, "fee": fee})
+			# 拉霸（老虎机）：**打开面板让玩家自己下注**
+			# （原版截图 records/老虎机.png：从左侧滑出 + 三档下注 + 拉杆）
+			# ⚠️ 原来的实现是「到了就直接扣 casino_fee」，那是没界面时的简化版
+			_ev("casino_open", p, {"eid": eid})
 		_:
 			log_message.emit("%s 抵达 %s" % [p["name"], ename])
 			_ev("event", p, {"eid": eid, "ename": ename})
@@ -2397,10 +2543,10 @@ func _random_free_tile() -> int:
 
 
 ## 每天一次：按地图的「路面物体出现几率」在棋盘上撒一个路边物体
-func _spawn_road_obj() -> void:
+func _spawn_road_obj(force_kind: String = "") -> void:
 	if map == null or road_objs.size() >= ROAD_MAX_ON_BOARD:
 		return
-	var kind: String = _roll_road_kind()
+	var kind: String = force_kind if force_kind != "" else _roll_road_kind()
 	if kind == "":
 		return
 	var idx: int = _random_free_tile()
