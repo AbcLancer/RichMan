@@ -323,6 +323,26 @@ func _run_ui_shot(delta: float) -> void:
 				await get_tree().create_timer(0.25).timeout
 				await _capture("D:/Projects/RichMan/ui_shot_cardshop.png")
 				_close_shop()
+				# 路边物体（roadobj）：把时间快进 12 天，让它们按原版权重表**真的生成**出来，
+				# 再切全盘视角，一次看全棋盘上的事件格图标与路边物体
+				if Net.sim != null:
+					Net.sim.time += Rules.seconds_per_day() * 12.0
+					await get_tree().create_timer(0.4).timeout
+					# 把角色挪到第一个路边物体前一格，近景才看得到实物（只为截图摆位）
+					if Net.sim.road_objs.size() > 0:
+						var first := int(Net.sim.road_objs.keys()[0])
+						var me2: Dictionary = Net.sim.players.get(multiplayer.get_unique_id(), {})
+						if not me2.is_empty():
+							me2["tile"] = Net.sim._wrap(first - 1)
+							me2["progress"] = 0.0
+					if _board != null:
+						_board.set_overview(true)
+						await get_tree().create_timer(0.35).timeout
+					await _capture("D:/Projects/RichMan/ui_shot_road.png")
+					if _board != null:
+						_board.set_overview(false)
+						await get_tree().create_timer(3.0).timeout   # 相机跟随有平滑，等它追过去
+					await _capture("D:/Projects/RichMan/ui_shot_roadnear.png")
 				_ui_shot_confirm_active = false
 			if not _ui_shot_confirm_active:
 				# 顺带验收「骰子数量选择」：切到 2 颗再掷（选择器第 1/2 颗亮、第 2 颗灰）
@@ -2869,6 +2889,30 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 		"mine":
 			_ev_sfx(Audio.SFX_PAY_DEDUCT, data, pos)
 			_say(role, Audio.V_LIGHT_PUNISH, pos)
+		# ---- 路边物体（原版 roadobj）—— 文案取 config/Info.txt 71..78 ----
+		"road_crystal":
+			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
+			if bool(data.get("leveled", false)):
+				_toast(_info_disp(78, "得到魔戒 小神仙等级上升！"))
+			else:
+				_toast(_info_disp(71, "得到魔戒 什么也没发生"))
+		"road_hanbao":
+			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
+			_toast(_info_disp(74, "吃到汉堡 体力上升"))
+		"road_chest":
+			_ev_sfx(Audio.SFX_COIN_DROP, data, pos)
+			_toast(_info_disp(72, "强盗遗失宝箱 获得{NUMBER}元",
+				{"NUMBER": str(int(data.get("gain", 0)))}))
+		"road_bomb":
+			_ev_sfx(Audio.SFX_PAY_DEDUCT, data, pos)
+			_toast(_info_disp(76, "遇到炸弹鬼 体力受损"))
+		"road_thief":
+			_ev_sfx(Audio.SFX_PAY_DEDUCT, data, pos)
+			_toast(_info_disp(77, "遇到小偷 遗失{NUMBER}元",
+				{"NUMBER": str(int(data.get("loss", 0)))}))
+		"road_god":
+			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
+			_toast(_info_disp(0, "%s附身" % str(data.get("god_cn", ""))))
 		"roadblock":
 			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
 		"blast":

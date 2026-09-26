@@ -1379,3 +1379,123 @@ meta 层的 `"\n"` 会被解释成真换行，写进文件后就成了「字符�
 GDScript 居然能编译过（所以自检一开始没报错），但代码已经变形了。
 本轮因此破坏了 4 处字符串，事后靠「统计每行引号个数是否为奇数」找回来。
 → **要写转义就用 Write/Edit 工具直接写文件**。
+
+---
+
+# 17. 2026-09-26（下午五轮）路边物体（roadobj）—— 顺带把原版这段逻辑反汇编出来了
+
+老板：*"先把需要提交的都提交吧，我来 push。然后接着推进下一步吧"*
+→ 按 `docs/alignment-gap.md §5` 的 P1 做「路面物体 + NPC」。
+
+## 17.1 ⭐ 反汇编复现：原版的路面物体注册表
+
+`tools/r6_re.py` 在 exe 里翻到一串**相邻**的字符串，正是 13 个路面物体的名字：
+
+```
+0x0049e667 @shuaishen   0x0049e684 mine      0x0049e69c bomb      0x0049e6b4 hanbao
+0x0049e674 fushen       0x0049e68c block     0x0049e6a4 robber    0x0049e6bc crystal
+0x0049e67c caishen      0x0049e694 thief     0x0049e6ac petegg    0x0049e6c4 card
+0x0049cce4 qiongshen
+```
+
+xref `0x49d02c`（`LoadSceneOnCL: roadobjmgr init`）定位到初始化函数，再顺着往下看
+`0x431690` 这个函数的开头 —— 它**把这 13 个名字按顺序压栈**：
+
+```asm
+0x004316a0  mov dword ptr [esp + 0x44], 0x49e6c4   ; card
+0x004316a8  mov dword ptr [esp + 0x48], 0x49e6bc   ; crystal
+0x004316b0  mov dword ptr [esp + 0x4c], 0x49e6b4   ; hanbao
+0x004316b8  mov dword ptr [esp + 0x50], 0x49e6ac   ; petegg
+0x004316c0  mov dword ptr [esp + 0x54], 0x49e6a4   ; robber
+0x004316c8  mov dword ptr [esp + 0x58], 0x49e69c   ; bomb
+0x004316d0  mov dword ptr [esp + 0x5c], 0x49e694   ; thief
+0x004316d8  mov dword ptr [esp + 0x60], 0x49e68c   ; block
+0x004316e0  mov dword ptr [esp + 0x64], 0x49e684   ; mine
+0x004316e8  mov dword ptr [esp + 0x68], 0x49e67c   ; caishen
+0x004316f0  mov dword ptr [esp + 0x6c], 0x49e674   ; fushen
+0x004316f8  mov dword ptr [esp + 0x70], 0x49e668   ; shuaishen（跳过 @ 前缀）
+0x00431700  mov dword ptr [esp + 0x74], 0x49cce4   ; qiongshen
+```
+
+**这个顺序与 `config/scene/aiji/Aiji.txt` 的「路面物体出现几率」注释顺序逐项一致**
+（卡片/戒指/汉堡/神仙蛋/强盗/炸弹人/小偷/隔毁/地雷/财神/福神/衰神/穷神），
+紧随其后是 **13 个效果回调的函数指针**（`0x431120` 起）：
+
+| 名字 | 回调 | 挖到什么 |
+|---|---|---|
+| card | `0x431120` | — |
+| crystal | `0x431170` | `push 0xff` 取小神仙槽位；无神 → 消息 **71**；有神且 `cmp [esi+0x30], 4` 未达上限 → 消息 **78**；← **等级上限 4** 就是这个 `4`（与 `Pet.txt` 的 4 级吻合） |
+| hanbao | `0x4311f0` | — |
+| petegg | `0x431210` | — |
+| robber | `0x431220` | 遍历存活玩家累加现金 → `rand(10,20)` → `idiv 人数` → 乘 → 魔数 `0x51EB851F` + `sar 5` = **除以 100** ⇒ **宝箱 = rand(10..20)% × 全体平均现金**，后面还有 `cmp edi, 0x3e8`（1000 下限） |
+| bomb | `0x431300`/`0x431340` | 先判无敌（`push 1` / `push 0xb` 两次），未无敌则 `push 0x4c`（= **76**）→ 扣 `[0x508f28]` 的体力。⚠ 该变量在 `.bss`，**静态读不出值** |
+| thief | `0x4313d0` | `rand(1,10)` × 现金 → 魔数除法 ⇒ **小偷 = 现金的 rand(1..10)%** |
+| block/mine/caishen/fushen/shuaishen/qiongshen | `0x431480` 起 | — |
+
+🔴 **回调里 `push` 的消息号 71 / 76 / 77 / 78 与 `config/Info.txt` 的 71/76/77/78 逐条对应**
+（拾到水晶－无神 / 遇到炸弹鬼 / 遇到小偷 / 拾到水晶－有神）—— **两条独立来源互为交叉验证**。
+
+## 17.2 数据层其实早就录好了，缺的是「用起来」
+
+- `config/scene/<map>/<map>.txt` 的「路面物体出现几率」段 **7 张图全有**，
+  早在做体力参数时就被 `tools/build_scene_config.py` 一并解析进 `game/data/maps/*.json`
+  的 `road_items`（埃及 13 项：card 6 / crystal 2 / hanbao 3 / petegg 2 / robber 1 /
+  bomb 1 / thief 2 / **block -1** / **mine -1** / caishen 2 / fushen 2 / shuaishen 2 / qiongshen 2）。
+  ⚠️ **但这张表此前零引用** —— 顺带发现 `map_data.gd` 读进来了，`sim.gd` 从来没看过它。
+- `realtime.json` 里 `pet.birth.*_days` / `hp.hamburger_heal` / `hp.mine_damage` 也早就录了。
+- 太空关是唯一一个 `mine = 3` 的图（别的图地雷都不随机生成）。
+
+## 17.3 实现
+
+**规则表**：`realtime.json` 新增 `road` 段（含 `_disasm_source` / `_disasm_notes` / `_inferred`），
+把上面挖到的公式与常量固化，并**逐条标注哪几个是推断**（`bomb_hp_dec`、`god_seconds`、
+`max_on_board`）。
+
+**素材**（新工具 `tools/build_road_assets.py`）：
+- `samples/event/*.tga`（19 个 64×64）→ `assets/roadobj/event/`，**事件格的棋盘图标**；
+- `samples/roadobj/<id>/*.tga` → `assets/roadobj/tex/<id>/`（31 张，都是**模型的 UV 图集**不是图标）；
+- `samples/roadobj/<id>/model.pol` → `<id>.r6m`（**9 个**静态网格，套用已有的 R6BM 管线）；
+  其余 11 个原版只有 `.cvd`（带动画的模型，格式**未逆**）→ 留替代表现。
+
+**Sim（`sim.gd`）**：新增 `road_objs: {tile: {kind, born}}` 与 `_spawn_road_obj()` ——
+每过 1 天按地图权重 roll 一种、随机撒在空格上（周期项按 `*_Born_Days` 节流：水晶 3 天 /
+宝箱 5 天 / 蛋 1 天）；踩到即触发 `_pick_road_obj()`，8 种拾取 + 4 种附身全部实现。
+
+**表现层（`board_view.gd`）**：
+- **事件格图标**：`_build_event_icons()` 把原版图标平贴在地毯上（`coupon<N>` → `credit<N>`）；
+  ⚠️ **顺手修掉一个遮挡 bug**：原先事件格上那块黄圆盘（`y = DECAL_LIFT+0.06`）比图标
+  （`+0.03`）高，会把图标整个盖住 → 改成「有原版图标就不放圆盘」，只有 `platform`
+  （原版没画图标）退回圆盘。
+- **路边物体**：有 `.pol` 的用真模型（新写的 `_r6bm()` 直接解析 R6BM）；
+  四神（财神/福神/衰神/穷神）用 `assets/pets/<id>/70.png` 的小神仙大图（准确）；
+  其余用发光球 + 名字（清楚、不误导）。
+
+## 17.4 顺手修掉的两个真 bug
+
+1. **地雷只扣 300 体力** —— `_advance()` 里硬编码 `300.0`，而规则表 `hp.mine_damage` 一直是 1000。
+   已改为读规则值。（体力上限 600 < 1000，所以踩雷必然见底。）
+2. **小神仙只会靠「重复购买」升级** —— `Initvar_r.txt` 的 `Pet_Upgrade_Steps = 300`
+   写的是「宠物每走多少步（**此值 × 级数**）升级」。已补 `pet_steps` 累加 + `_try_pet_levelup()`，
+   与购买升级并行。
+
+## 17.5 没做的：乞丐
+
+`Info.txt` 101 有文案「遇到乞丐 施舍<NUMBER>元」，但**找不到它的生成依据**：
+13 种路面物体里没有乞丐（`roadobj/` 也没有对应目录），`Initvar_r.txt` 里也没有乞丐参数。
+→ **不猜**。登记为待做，等有依据（或定点逆向找到触发点）再补。
+
+## 17.6 回归
+
+| 检查 | 结果 |
+|------|------|
+| `--selftest` | **215 / 0**（上轮 187，新增路边物体段 28 条） |
+| `map_alignment.gd` | `MAP ALIGNMENT PASS` |
+| `--uishot` | **12 张**（新增 `ui_shot_road.png` 全盘 / `ui_shot_roadnear.png` 近景） |
+| `--demo` | 6 张 OK |
+
+新增断言覆盖：权重表 13 项与 scene 配置逐条一致、`mine/block` 在埃及是 -1、
+跑 12.5 天真的生成、生成种类不含 -1 的、不撒在起点/地产/陷阱上、
+戒指（无神/有神/满级）三种分支、汉堡 +1000 且不破上限、宝箱落在平均现金 10~20%、
+小偷落在 1~10%、炸弹鬼扣 `bomb_hp_dec`、卡片 +1、神仙蛋 +1 且满 5 位不再给、
+四神附身各自的状态字段、隔毁挡人、地雷按规则扣到见底、走满 300×级数 步升级、
+事件图标 19 个 + 覆盖埃及全部事件类型、路面物体清单 20 项其中 9 个有静态网格。

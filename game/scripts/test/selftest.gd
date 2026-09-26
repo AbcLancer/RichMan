@@ -29,6 +29,7 @@ func run() -> void:
 	_test_road_events()
 	_test_cards()
 	_test_pets()
+	_test_road_objs()
 	_test_buy_and_rent()
 	_test_upgrade_chain()
 	_test_timers()
@@ -345,6 +346,214 @@ func _pet_world(pet_id: String) -> Sim:
 	sim.add_pet(p, pet_id)
 	sim.add_pet(q, "caishen")             # 小怪兽「PK技」要有目标
 	return sim
+
+
+# --------------------------------------------------- 3f. 路边物体（原版 roadobj）
+
+## 直接触发一次「踩到某路边物体」的结算（比摆到棋盘再走一格更好控）
+func _discover_road(sim: Sim, kind: String) -> void:
+	sim._pick_road_obj(sim.players[1], kind, int(sim.players[1]["tile"]))
+
+
+func _test_road_objs() -> void:
+	_lines.append("[3f] 路边物体（roadobj：权重表 / 拾取 / 四神 / 小神仙按步数升级）")
+
+	var sim := _fresh_sim()
+	var m: MapData = sim.map
+	# ---- 权重表来自 config/scene/<map>/<map>.txt 的「路面物体出现几率」段 ----
+	_ok("地图带路面物体权重表（13 种，与 Roadevent 的「种类数」一致）",
+		m.road_items.size() == 13, "%d 种：%s" % [m.road_items.size(), str(m.road_items)])
+	var ma := MapData.load_from("aiji")
+	_ok("埃及的权重逐条对得上（card=6 / crystal=2 / hanbao=3 / petegg=2）",
+		int(ma.road_items.get("card", -9)) == 6 and int(ma.road_items.get("crystal", -9)) == 2
+		and int(ma.road_items.get("hanbao", -9)) == 3 and int(ma.road_items.get("petegg", -9)) == 2,
+		str(ma.road_items))
+	_ok("地雷 / 隔毁在埃及是 -1（不随机生成，只能由卡片放）",
+		int(ma.road_items.get("mine", 0)) == -1 and int(ma.road_items.get("block", 0)) == -1,
+		"mine=%d block=%d" % [int(ma.road_items.get("mine", 0)), int(ma.road_items.get("block", 0))])
+
+	# ---- 生成 ----
+	var spawned := {}
+	for _i in range(300):                       # 1 秒 = 1/24 天 → 跑 12.5 天
+		sim.step(1.0)
+		for k in sim.road_objs.keys():
+			spawned[str(sim.road_objs[k]["kind"])] = true
+	_ok("过了 12.5 天棋盘上真的出现了路边物体", sim.road_objs.size() > 0,
+		"%d 个" % sim.road_objs.size())
+	var bad: Array = []
+	for k in spawned.keys():
+		if int(m.road_items.get(k, -1)) <= 0:
+			bad.append(k)
+	_ok("生成过的种类都在本图权重表里（不会出现 -1 的）", spawned.size() > 0 and bad.is_empty(),
+		"生成过 %s；越界 %s" % [str(spawned.keys()), str(bad)])
+	_ok("不会撒在起点格上", not sim.road_objs.has(0), str(sim.road_objs.keys()))
+	var overlap: Array = []
+	for k in sim.road_objs.keys():
+		if sim.plots.has(int(k)) or not sim._obstacle_at(int(k)).is_empty():
+			overlap.append(k)
+	_ok("不会撒在已有地产 / 已有陷阱的格上", overlap.is_empty(), str(overlap))
+
+	# ---- 逐种效果 ----
+	# 71 / 78 戒指：无神 → 什么也没发生；有神 → 升一级；满级 → 不升
+	var s2 := _fresh_sim()
+	_discover_road(s2, "crystal")
+	_ok("戒指（身上没有小神仙）= 什么也没发生",
+		(s2.players[1]["pets"] as Array).is_empty(), str(s2.players[1]["pets"]))
+	var s3 := _pet_world("caishen")
+	_discover_road(s3, "crystal")
+	_ok("戒指（有小神仙）= 等级 +1", int(s3.players[1]["pets"][0]["level"]) == 2,
+		"level=%d" % int(s3.players[1]["pets"][0]["level"]))
+	var s4 := _pet_world("caishen")
+	s4.players[1]["pets"][0]["level"] = 4
+	_discover_road(s4, "crystal")
+	_ok("戒指不能把满级小神仙顶过上限（4 级，逆向自 0x431170）",
+		int(s4.players[1]["pets"][0]["level"]) == 4,
+		"level=%d" % int(s4.players[1]["pets"][0]["level"]))
+
+	# 74 汉堡：+1000 HP（HanBao_Inc_HP），受体力上限约束
+	var s5 := _fresh_sim()
+	var max5 := s5.stamina_max()
+	var want_heal := float(Rules.get_val("hp.hamburger_heal", 1000))
+	s5.players[1]["stamina"] = 100.0
+	_discover_road(s5, "hanbao")
+	var exp5 := 100.0 + minf(want_heal, max5 - 100.0)
+	_ok("汉堡回复体力 = HanBao_Inc_HP（1000，顶到上限就停）",
+		absf(float(s5.players[1]["stamina"]) - exp5) < 0.01,
+		"100 → %.0f（期望 %.0f；上限 %.0f）" % [
+			float(s5.players[1]["stamina"]), exp5, max5])
+	s5.players[1]["stamina"] = max5
+	_discover_road(s5, "hanbao")
+	_ok("汉堡不会顶破体力上限", float(s5.players[1]["stamina"]) <= max5 + 0.01,
+		"%.0f / %.0f" % [float(s5.players[1]["stamina"]), max5])
+
+	# 72 宝箱：rand(10..20)% × 全体平均现金，下限 1000（逆向自 0x431220）
+	var s6 := _fresh_sim()
+	for id in [1, 2]:
+		s6.players[id]["money"] = 100000
+	var before6 := int(s6.players[1]["money"])
+	_discover_road(s6, "robber")
+	var gained := int(s6.players[1]["money"]) - before6
+	_ok("宝箱金额落在「平均现金的 10%~20%」区间且不低于下限 1000",
+		gained >= 1000 and gained <= int(100000 * 0.2) + 1,
+		"得到 %d（平均现金 100000 → 期望 10000~20000）" % gained)
+
+	# 77 小偷：现金的 rand(1..10)%（逆向自 0x4313d0）
+	var s7 := _fresh_sim()
+	s7.players[1]["money"] = 200000
+	_discover_road(s7, "thief")
+	var lost7 := 200000 - int(s7.players[1]["money"])
+	_ok("小偷损失落在「现金的 1%~10%」区间",
+		lost7 >= 2000 and lost7 <= 20000, "损失 %d" % lost7)
+
+	# 76 炸弹鬼：扣体力（原值在运行时数据段，取 road.bomb_hp_dec）
+	var s8 := _fresh_sim()
+	s8.players[1]["stamina"] = s8.stamina_max()
+	_discover_road(s8, "bomb")
+	var dec8 := float(Rules.get_val("road.bomb_hp_dec", 500))
+	_ok("炸弹鬼扣体力 = road.bomb_hp_dec",
+		absf((s8.stamina_max() - float(s8.players[1]["stamina"])) - dec8) < 0.01,
+		"扣了 %.0f 期望 %.0f" % [s8.stamina_max() - float(s8.players[1]["stamina"]), dec8])
+
+	# 73 卡片
+	var s9 := _fresh_sim()
+	var n9 := (s9.players[1]["cards"] as Array).size()
+	_discover_road(s9, "card")
+	_ok("卡片格给一张卡", (s9.players[1]["cards"] as Array).size() == n9 + 1,
+		"%d → %d" % [n9, (s9.players[1]["cards"] as Array).size()])
+
+	# 75 神仙蛋：得到一只小神仙
+	var s10 := _fresh_sim()
+	_discover_road(s10, "petegg")
+	_ok("神仙蛋孵出一只小神仙", (s10.players[1]["pets"] as Array).size() == 1,
+		str(s10.players[1]["pets"]))
+	# 满了就别再给
+	var s11 := _fresh_sim()
+	var cat: Array = s11.pet_catalog()
+	for i in range(5):
+		s11.add_pet(s11.players[1], str((cat[i % cat.size()] as Dictionary)["id"]))
+	var n11 := (s11.players[1]["pets"] as Array).size()
+	_discover_road(s11, "petegg")
+	_ok("带满 5 位小神仙时神仙蛋不再给（Info.txt 202 上限 5 位）",
+		(s11.players[1]["pets"] as Array).size() == n11, "%d → %d" % [
+			n11, (s11.players[1]["pets"] as Array).size()])
+
+	# 财神 / 福神 / 衰神 / 穷神：附身到踩到的人身上
+	var god_eff := {
+		"caishen": "no_rent_until", "qiongshen": "rent_pay_double_until",
+		"shuaishen": "no_upgrade_steps", "fushen": "free_upgrade_steps",
+	}
+	var gods_ok := true
+	var gods_detail: Array = []
+	for g in god_eff.keys():
+		var sg := _fresh_sim()
+		_discover_road(sg, str(g))
+		var v: Variant = sg.players[1]["effects"][str(god_eff[g])]
+		var grew: bool = (float(v) > 0.0) if v is float else (int(v) > 0)
+		if not grew:
+			gods_ok = false
+			gods_detail.append("%s 没生效" % g)
+	_ok("踩到四神（财神/福神/衰神/穷神）会附身并改变状态", gods_ok, str(gods_detail))
+
+	# 隔毁：挡一下
+	var s12 := _fresh_sim()
+	s12.players[1]["moving"] = 3
+	_discover_road(s12, "block")
+	_ok("隔毁会把角色挡下来", int(s12.players[1]["moving"]) == 0,
+		"moving=%d" % int(s12.players[1]["moving"]))
+
+	# ---- 地雷伤害走规则表（原来硬编码 300，是 bug）----
+	_ok("地雷伤害 = hp.mine_damage（1000，不是硬编码的 300）",
+		int(Rules.get_val("hp.mine_damage", 0)) == 1000,
+		"规则值 %d" % int(Rules.get_val("hp.mine_damage", 0)))
+	var s13 := _fresh_sim()
+	var p13: Dictionary = s13.players[1]
+	var max13 := s13.stamina_max()
+	p13["stamina"] = max13
+	p13["tile"] = 5
+	s13._add_obstacle(6, "mine", 2)
+	p13["moving"] = 1
+	p13["progress"] = 0.99
+	s13.step(0.02)
+	# 埃及/中国的体力上限是 600 < 1000 → 踩雷必然见底（这正是「原来只扣 300」看不出来的原因）
+	_ok("踩到地雷按规则表扣（Mine_Exp_HPDec = 1000，600 上限会直接见底）",
+		absf(float(p13["stamina"])) < 1.0,
+		"%.0f → %.0f（上限 %.0f，规则 1000）" % [
+			max13, float(p13["stamina"]), max13])
+
+	# ---- 小神仙按步数升级（Pet_Upgrade_Steps = 300）----
+	var s14 := _pet_world("caishen")
+	var lv14 := int(s14.players[1]["pets"][0]["level"])
+	s14.players[1]["pet_steps"] = 0
+	s14._try_pet_levelup(s14.players[1])
+	_ok("走够步数之前不升级", int(s14.players[1]["pets"][0]["level"]) == lv14, "")
+	var need14 := int(Rules.get_val("pet.upgrade_steps_per_level", 300)) * lv14
+	s14.players[1]["pet_steps"] = need14
+	s14._try_pet_levelup(s14.players[1])
+	_ok("走满 Pet_Upgrade_Steps × 级数 步后升一级（小神仙的第二个升级途径）",
+		int(s14.players[1]["pets"][0]["level"]) == lv14 + 1,
+		"level %d → %d（门槛 %d 步）" % [lv14, int(s14.players[1]["pets"][0]["level"]), need14])
+
+	# ---- 素材：事件格图标 + 路面物体清单 ----
+	var idx_txt := ""
+	if FileAccess.file_exists("res://assets/roadobj/index.json"):
+		idx_txt = FileAccess.open("res://assets/roadobj/index.json", FileAccess.READ).get_as_text()
+	var idx: Variant = JSON.parse_string(idx_txt)
+	var icons: Dictionary = (idx as Dictionary).get("event_icons", {}) if idx is Dictionary else {}
+	_ok("原版事件格图标已入库（19 个）", icons.size() == 19, "%d 个" % icons.size())
+	_ok("事件格图标覆盖了埃及的全部事件类型（coupon→credit 映射已处理）",
+		icons.has("credit20") and icons.has("cardpt") and icons.has("cardshop")
+		and icons.has("hospital") and icons.has("labar") and icons.has("casino"),
+		str(icons.keys()))
+	var items: Dictionary = (idx as Dictionary).get("items", {}) if idx is Dictionary else {}
+	_ok("路面物体清单 20 项（13 种随机 + 救护车/推土机/金币/点券/飞弹/核弹/降落伞 等演出）",
+		items.size() == 20, "%d 项" % items.size())
+	var with_model := 0
+	for k in items.keys():
+		var mv2: Variant = (items[k] as Dictionary).get("model")
+		if mv2 is String and str(mv2) != "":
+			with_model += 1
+	_ok("其中 9 个有静态网格（.pol → R6BM），其余原版只有 .cvd 动画（格式未逆）",
+		with_model == 9, "%d 个有模型" % with_model)
 
 
 func _test_pets() -> void:

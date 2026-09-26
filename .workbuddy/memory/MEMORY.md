@@ -140,3 +140,17 @@
 
 **老板定的三项优先级（2026-09-25）**：① 对齐 UI（**已完成**）→ ② 放真实角色模型（`actor/roleN/`，
 另有高清 `actor_h/`）→ ③ 接卡牌系统（**已落地成可玩版**，39/42 生效）。
+
+48. **⭐ 路边物体（roadobj）**：权重表 = `config/scene/<map>/<map>.txt` 的「路面物体出现几率」段
+    （13 种，`-1` = 不随机生成；**埃及 mine/block = -1，只有太空 mine = 3**），早已进
+    `game/data/maps/*.json` 的 `road_items`（此前**零引用**）。素材 `samples/roadobj/<id>/`；
+    ⚠️ **`*.tga` 是模型 UV 图集、不是道具图标**；9 个有 `model.pol` → R6BM，11 个只有 `.cvd`（**未逆**）。
+    **事件格图标 = `samples/event/*.tga`（19 个 64×64）** → `assets/roadobj/event/`；
+    地图 key 是 `coupon<N>` 而图标名是 `credit<N>`；`platform` 原版无图标。
+    ⚠️ 事件格**别**再放黄圆盘（会盖住图标）；`tools/build_road_assets.py` 出素材。
+49. **⭐ 路面物体数值已反汇编**（`tools/r6_re.py`，`decision-log.md §17`）：注册表在 **`0x431690`**
+    （13 个名字压栈，**顺序 = Aiji.txt 注释顺序**），紧跟 **13 个效果回调**（`0x431120` 起）。
+    **小偷 = 现金 rand(1..10)%**（`0x4313d0`）· **宝箱 = rand(10..20)% × 全体平均现金、下限 1000**
+    （`0x431220`）· **戒指只在小神仙 < 4 级时升级**（`0x431170` 的 `cmp [esi+0x30],4` = 等级上限）。
+    回调 push 的消息号 71/76/77/78 与 `config/Info.txt` **逐条对应**（交叉验证）。
+    → 数值进 `rules/realtime.json` 的 `road` 段（`_disasm_notes` 记地址、`_inferred` 记推断项）。

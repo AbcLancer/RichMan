@@ -354,7 +354,7 @@ offset 20 : 字形位图：65536 × ceil(px/8) × px 字节
 ```bash
 GODOT="D:/Godot/Godot_v4.7.2-stable_win64_console.exe"
 
-# ① 逻辑回归（必须 187/187）
+# ① 逻辑回归（必须 215/215）
 "$GODOT" --headless --path game -- --selftest
 
 # ①b 地图/路线对齐专项（必须打印 MAP ALIGNMENT PASS）
@@ -370,6 +370,8 @@ GODOT="D:/Godot/Godot_v4.7.2-stable_win64_console.exe"
 #   → ui_shot_cardconfirm.png（购地卡二次确认「是│否」，原版 yes/no 贴图）
 #   → ui_shot_pethouse.png  （精灵屋：持有面板 + 小神仙商店，**原版两块底图**）
 #   → ui_shot_cardshop.png  （卡片商店：8 格货架 + 「您有 N 点券」）
+#   → ui_shot_road.png      （全盘：事件格图标 + 路边物体）
+#   → ui_shot_roadnear.png  （近景：医院图标 / 四神的小神仙大图 / 路边物体）
 #   → ui_shot_pop.png        （掷骰子到空地，落点气泡「是│否」）
 #   → ui_shot_tired.png      （体力见底：GO 压暗 + 能量条掉下来）
 
@@ -555,3 +557,26 @@ GODOT="D:/Godot/Godot_v4.7.2-stable_win64_console.exe"
 文案 100% 取 `config/Info.txt`：41 / 42 / 201 / 202 / 203（新增 `info_strings.json`，1236 条）。
 ⚠️ **Info.txt 的 id 空间与 String.txt 完全独立**（String.txt 63 = 卡片原因码，
 Info.txt 63 = 乐透开奖）。
+
+### 14. 事件格图标 + 路边物体（2026-09-26 下午新增 ✅）
+
+**事件格图标**：原版 `samples/event/*.tga` 有 **19 个 64×64 的棋盘图标**
+（点券球 1/2/3/5/10/20/30/50 + 市政府/卡片点/卡片商店/乐透/游戏点A/B/医院/拉霸/精灵屋/电视台）。
+已入库 `assets/roadobj/event/`，由 `BoardView::_build_event_icons()` **平贴在地毯上**、
+与地毯同朝向（`rug × 0.66`）。
+
+⚠️ 地图数据里的 key 是 `coupon<N>`，图标文件名按面额写成 `credit<N>` → 有一张别名表。
+⚠️ **`platform`（传送平台）原版没画图标** → 退回一块黄圆盘（原来的做法）。
+⚠️ **顺手修掉一个遮挡 bug**：原先事件格上那块黄圆盘（`y = DECAL_LIFT+0.06`）比图标（`+0.03`）高，
+会把图标整个盖住 —— 改成「有原版图标就不放圆盘」。
+
+**路边物体（roadobj）**：
+
+| 表现 | 用在哪 | 依据 |
+|---|---|---|
+| **真 3D 模型**（`.pol` → R6BM） | 9 个：救护车 / 隔毁 / 炸弹人 / 推土机 / 金币 / 地雷 / 飞弹 / 核弹 / 神仙蛋 | `samples/roadobj/<id>/model.pol` |
+| **小神仙大图**（`Sprite3D`） | 财神 / 福神 / 衰神 / 穷神 | `assets/pets/<id>/70.png`（四神本来就是小神仙） |
+| **发光球 + 名字**（`Label3D`） | 其余 11 个（原版只有 `.cvd`：卡片/戒指/汉堡/强盗/小偷/降落伞/点券） | ⚠️ `.cvd` 格式**未逆** → 替代表现，不冒充原版 |
+
+⚠️ `roadobj/*.tga` 是**模型的 UV 图集**（不是道具图标），不能直接当贴图用 ——
+所以没有模型的那些只能走上面的替代表现。

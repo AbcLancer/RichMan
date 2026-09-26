@@ -97,6 +97,29 @@ var street_seal: Dictionary = {}
 ## 路面道具（地雷卡 / 路障卡）→ [{idx, kind, owner}]
 var obstacles: Array = []
 
+## ---- 路边物体（原版 roadobj）----
+## 与上面的 `obstacles` 分开：`obstacles` 是**玩家用卡放的陷阱**（有 owner、会挡路），
+## 这里是**系统按天数随机撒的道具**（踩到即触发）。
+##
+## 权威依据两条：
+##   ① `config/scene/<map>/<map>.txt` 的「路面物体出现几率」段（13 种，逐图权重不同，
+##      -1 = 本图不随机生成）—— 各图**注释顺序完全一致**，已进 `game/data/maps/*.json`；
+##   ② `config/Initvar_r.txt` 的 Crystal_Born_Days / Box_Born_Days / PetEgg_Born_Days。
+##
+## 效果数值来自**定点逆向** `tools/r6_re.py`（2026-09-26）：
+##   路面物体的注册表就在 `0x431690` 这个函数里 —— 13 个名字的压栈顺序与 Aiji.txt 的
+##   注释顺序**逐项一致**，紧跟其后是 13 个效果回调的函数指针（0x431120 起）。
+##   已还原的公式（见 `game/data/rules/realtime.json` 的 `road` 段）：
+##     · 小偷 = rand(1..10)% 现金           （0x4313d0）
+##     · 宝箱 = rand(10..20)% × 全体平均现金，下限 1000（0x431220）
+##     · 戒指 = 有小神仙且等级 < 4 → 升一级；否则「什么也没发生」（0x431170）
+var road_objs: Dictionary = {}           # tile_index -> {"kind": String, "born": int}
+var road_day: int = 0                    # 已经过的整天数
+var _road_last_day: Dictionary = {}      # kind -> 上次生成它的天数（用于周期节流）
+
+## 棋盘上同时存在的路边物体上限。原版没有这一项 —— 我们加的，免得撒满整盘。
+const ROAD_MAX_ON_BOARD := 12
+
 var rng := RandomNumberGenerator.new()
 
 func setup(m: MapData, seed_val: int = 0) -> void:
@@ -468,6 +491,9 @@ func add_player(id: int, pname: String) -> Dictionary:
 		"stamina": stamina_max(),
 		# 小神仙（精灵屋请来的）。每项 = {"id","level","cool"}，见 Pet.txt / pets.json
 		"pets": [],
+		# 走满多少步给小神仙升级：原版 Initvar_r.txt「Pet_Upgrade_Steps = 300
+		# 宠物每走多少步（此值 × 级数）升级」
+		"pet_steps": 0,
 		"tile": 0,
 		"progress": 0.0,
 		"dir": 1,
@@ -528,6 +554,14 @@ func step(dt: float) -> void:
 	time += dt
 	tick_count += 1
 
+	# 天数推进 → 路边物体生成。
+	# 节奏是**推断**：原版权重表只写了各类型的相对几率，没写判定频率；这里取「每天 roll 一次」，
+	# 并对三种有 `*_Born_Days` 的（水晶 3 天 / 宝箱 5 天 / 神仙蛋 1 天）按周期节流。
+	var now_day := int(time / Rules.seconds_per_day())
+	while road_day < now_day:
+		road_day += 1
+		_spawn_road_obj()
+
 	for id in player_ids():
 		var p: Dictionary = players[id]
 		if not p["alive"]:
@@ -572,13 +606,16 @@ func _advance(p: Dictionary, dt: float) -> void:
 		# 暴走卡（9015「不消耗体力疯狂前进」）期间不扣。
 		if float(p["effects"]["rush_until"]) <= time:
 			p["stamina"] = maxf(0.0, float(p.get("stamina", 0.0)) - stamina_step_cost())
-		# 踩到路面道具（地雷卡 / 路障卡）
+		# 踩到**玩家放的陷阱**（地雷卡 / 路障卡）
 		var ob := _obstacle_at(int(p["tile"]))
 		if not ob.is_empty():
 			_remove_obstacle(int(ob["idx"]))
 			if str(ob["kind"]) == "mine":
 				if float(p["effects"]["invincible_until"]) <= time:
-					p["stamina"] = maxf(0.0, float(p.get("stamina", 0.0)) - 300.0)
+					# ⚠ 伤害值取规则表（Initvar_r.txt 的 Mine_Exp_HPDec = 1000），
+					#   不要再写死常量 —— 这里原来硬编码 300，是 bug。
+					p["stamina"] = maxf(0.0, float(p.get("stamina", 0.0))
+						- float(Rules.get_val("hp.mine_damage", 1000)))
 					p["effects"]["sleep_until"] = time + 3.0
 					log_message.emit("%s 踩到地雷，损失体力并停留 3 秒" % p["name"])
 					_ev("mine", p, {"idx": int(p["tile"]), "owner": int(ob["owner"])})
@@ -589,6 +626,11 @@ func _advance(p: Dictionary, dt: float) -> void:
 				p["progress"] = 0.0
 				log_message.emit("%s 被路障挡住" % p["name"])
 				_ev("roadblock", p, {"idx": int(p["tile"]), "owner": int(ob["owner"])})
+		# 踩到**路边物体**（原版 roadobj）：踩到即触发，随即从棋盘上消失
+		elif road_objs.has(int(p["tile"])):
+			var rob: Dictionary = road_objs[int(p["tile"])]
+			road_objs.erase(int(p["tile"]))
+			_pick_road_obj(p, str(rob["kind"]), int(p["tile"]))
 	if int(p["moving"]) <= 0:
 		p["moving"] = 0
 		p["progress"] = 0.0
@@ -604,6 +646,33 @@ func _tick_step_effects(p: Dictionary) -> void:
 	for k in STEP_EFFECTS:
 		if int(e[k]) > 0:
 			e[k] = int(e[k]) - 1
+	# 小神仙也按**步数**升级（原版 Initvar_r.txt「Pet_Upgrade_Steps = 300
+	# 宠物每走多少步（此值 × 级数）升级」）—— 与「在精灵屋重复购买升级」是两条并行途径
+	p["pet_steps"] = int(p.get("pet_steps", 0)) + 1
+	_try_pet_levelup(p)
+
+
+## 走够步数就把一只小神仙升一级。门槛 = Pet_Upgrade_Steps × 当前等级。
+func _try_pet_levelup(p: Dictionary) -> void:
+	var pets: Array = p["pets"]
+	if pets.is_empty():
+		p["pet_steps"] = 0
+		return
+	var base: int = int(Rules.get_val("pet.upgrade_steps_per_level", 300))
+	var cap: int = int(Rules.get_val("road.crystal_max_pet_level", 4))   # 上限 4 级（Pet.txt）
+	var steps: int = int(p.get("pet_steps", 0))
+	for pet in pets:
+		var lv: int = int(pet["level"])
+		if lv >= cap:
+			continue
+		if steps >= base * lv:
+			pet["level"] = lv + 1
+			p["pet_steps"] = 0
+			log_message.emit("%s 的「%s」走满 %d 步，升到 %d 级" % [
+				p["name"], pet_name(str(pet["id"])), base * lv, lv + 1])
+			_ev("pet_levelup", p, {"pet": str(pet["id"]), "level": lv + 1,
+				"steps": base * lv})
+			return
 
 func _wrap(i: int) -> int:
 	var n := map.tile_count()
@@ -1602,6 +1671,216 @@ func _tile_distance(a: int, b: int) -> int:
 	var d := absi(a - b)
 	return mini(d, n - d)
 
+# ------------------------------------------------- 路边物体（原版 roadobj）
+
+## 本图的「路面物体出现几率」权重（`config/scene/<map>/<map>.txt`，-1 = 不随机生成）
+func road_weight(kind: String) -> int:
+	if map == null:
+		return 0
+	return int((map.road_items as Dictionary).get(kind, 0))
+
+
+## 这种物体隔多少天才能再出一次（Initvar_r.txt 的 `*_Born_Days`；没有的按 1 天）
+func _road_cycle_days(kind: String) -> int:
+	match kind:
+		"crystal":
+			return int(Rules.get_val("road.birth.crystal_days", 3))
+		"robber":
+			return int(Rules.get_val("road.birth.chest_days", 5))   # 宝箱由「强盗」承载
+		"petegg":
+			return int(Rules.get_val("road.birth.egg_days", 1))
+	return 1
+
+
+## 按权重抽一个能生成的路边物体；抽不到返回 ""
+func _roll_road_kind() -> String:
+	var kinds: Array = []
+	var total: int = 0
+	var items: Dictionary = map.road_items if map != null else {}
+	for k in items.keys():
+		var w: int = int(items[k])
+		if w <= 0:
+			continue                                # -1 = 本图不随机生成
+		var cyc: int = _road_cycle_days(str(k))
+		if cyc > 1 and road_day - int(_road_last_day.get(str(k), -9999)) < cyc:
+			continue                                # 还在出生周期内
+		kinds.append(str(k))
+		total += w
+	if total <= 0:
+		return ""
+	var r: int = rng.randi_range(1, total)
+	var acc: int = 0
+	for k2 in kinds:
+		acc += int(items[k2])
+		if r <= acc:
+			return str(k2)
+	return str(kinds[kinds.size() - 1])
+
+
+## 找一格空位：不占起点格、不覆盖已有的地产 / 路边物体 / 陷阱
+func _random_free_tile() -> int:
+	var n: int = map.tile_count()
+	if n <= 1:
+		return -1
+	for _try in range(24):
+		var i: int = rng.randi_range(1, n - 1)      # 0 是起点格
+		if plots.has(i) or road_objs.has(i):
+			continue
+		if str(map.tile(i).get("kind", "")) == "start":
+			continue
+		if not _obstacle_at(i).is_empty():
+			continue
+		return i
+	return -1
+
+
+## 每天一次：按地图的「路面物体出现几率」在棋盘上撒一个路边物体
+func _spawn_road_obj() -> void:
+	if map == null or road_objs.size() >= ROAD_MAX_ON_BOARD:
+		return
+	var kind: String = _roll_road_kind()
+	if kind == "":
+		return
+	var idx: int = _random_free_tile()
+	if idx < 0:
+		return
+	road_objs[idx] = {"kind": kind, "born": road_day}
+	_road_last_day[kind] = road_day
+	_ev("road_spawn", null, {"idx": idx, "kind": kind})
+
+
+## 宝箱金额。**定点逆向**自 0x431220：
+##   rand(10..20) × 全体存活玩家平均现金 / 100，并有 1000 的下限。
+func _chest_gain() -> int:
+	var total: int = 0
+	var n: int = 0
+	for id in player_ids():
+		var q: Dictionary = players[id]
+		if not bool(q["alive"]):
+			continue
+		total += int(q["money"])
+		n += 1
+	if n <= 0:
+		return 0
+	var pct: Array = Rules.get_val("road.chest_gain_pct", [10, 20]) as Array
+	var r: int = rng.randi_range(int(pct[0]), int(pct[1]))
+	var gain: int = int(float(total / n) * float(r) / 100.0)
+	return maxi(gain, int(Rules.get_val("road.chest_gain_min", 1000)))
+
+
+## 四神附身（踩到财神 / 福神 / 衰神 / 穷神）。
+## 复用卡片那套 effect 字段：财神=按秒的免租、穷神=按秒的罚金加倍、
+## 衰神=按步数的不能升级、福神=按步数的免费加盖（原版这两项的步数就是 30）。
+func _attach_god(p: Dictionary, kind: String) -> void:
+	var secs: float = float(Rules.get_val("road.god_seconds", 30.0))
+	var e: Dictionary = p["effects"]
+	match kind:
+		"caishen":
+			e["no_rent_until"] = maxf(float(e.get("no_rent_until", 0.0)), time + secs)
+		"qiongshen":
+			e["rent_pay_double_until"] = maxf(
+				float(e.get("rent_pay_double_until", 0.0)), time + secs)
+		"shuaishen":
+			e["no_upgrade_steps"] = maxi(int(e.get("no_upgrade_steps", 0)), 30)
+		"fushen":
+			e["free_upgrade_steps"] = maxi(int(e.get("free_upgrade_steps", 0)), 30)
+	log_message.emit("%s 被%s附身" % [p["name"], god_cn(kind)])
+	_ev("road_god", p, {"idx": int(p["tile"]), "god": kind, "god_cn": god_cn(kind),
+		"seconds": secs})
+
+
+func god_cn(kind: String) -> String:
+	match kind:
+		"caishen":
+			return "财神"
+		"fushen":
+			return "福神"
+		"shuaishen":
+			return "衰神"
+		"qiongshen":
+			return "穷神"
+	return kind
+
+
+## 踩到路边物体 → 结算。文案全部取原版 `config/Info.txt` 71..78。
+func _pick_road_obj(p: Dictionary, kind: String, idx: int) -> void:
+	match kind:
+		# 73 拾到卡片 → 得到<CARDNAME>
+		"card":
+			_give_random_card(p, "")
+		# 71 / 78 魔戒：身上有小神仙才能升一级，上限 4 级（逆向自 0x431170）
+		"crystal":
+			var pets: Array = p["pets"]
+			if pets.is_empty():
+				log_message.emit("%s 得到魔戒，但身上没有小神仙" % p["name"])
+				_ev("road_crystal", p, {"idx": idx, "leveled": false})
+				return
+			var pi: int = rng.randi_range(0, pets.size() - 1)
+			var lv: int = int(pets[pi]["level"])
+			var cap: int = int(Rules.get_val("road.crystal_max_pet_level", 4))
+			if lv >= cap:
+				log_message.emit("%s 得到魔戒，但小神仙已是最高等级" % p["name"])
+				_ev("road_crystal", p, {"idx": idx, "leveled": false, "level": lv})
+				return
+			pets[pi]["level"] = lv + 1
+			log_message.emit("%s 得到魔戒：%s 升到 %d 级" % [
+				p["name"], pet_name(str(pets[pi]["id"])), lv + 1])
+			_ev("road_crystal", p, {"idx": idx, "leveled": true, "level": lv + 1,
+				"pet": str(pets[pi]["id"])})
+		# 74 吃到汉堡 体力上升（HanBao_Inc_HP = 1000）
+		"hanbao":
+			var heal: float = float(Rules.get_val("hp.hamburger_heal", 1000))
+			p["stamina"] = minf(stamina_max(), float(p.get("stamina", 0.0)) + heal)
+			log_message.emit("%s 吃到汉堡，体力 +%.0f" % [p["name"], heal])
+			_ev("road_hanbao", p, {"idx": idx, "heal": int(heal)})
+		# 75 神仙蛋 得到<BABYNAME>
+		"petegg":
+			var cat: Array = pet_catalog()
+			if cat.is_empty():
+				return
+			var newpet: String = str(
+				(cat[rng.randi_range(0, cat.size() - 1)] as Dictionary).get("id", ""))
+			if add_pet(p, newpet) != 0:
+				log_message.emit("%s 捡到神仙蛋，但已经带满小神仙了" % p["name"])
+				_ev("pet_full", p, {"pet": newpet})
+				return
+			log_message.emit("%s 的神仙蛋孵出了「%s」" % [p["name"], pet_name(newpet)])
+			_ev("get_pet", p, {"pet": newpet, "from_egg": true})
+		# 72 强盗遗失宝箱 获得<NUMBER>元（公式见 _chest_gain）
+		"robber":
+			var gain: int = _chest_gain()
+			p["money"] = int(p["money"]) + gain
+			log_message.emit("%s 捡到强盗遗失的宝箱，得到 %d 元" % [p["name"], gain])
+			_ev("road_chest", p, {"idx": idx, "gain": gain})
+		# 76 遇到炸弹鬼 体力受损
+		"bomb":
+			if float(p["effects"]["invincible_until"]) > time:
+				return
+			var dec: float = float(Rules.get_val("road.bomb_hp_dec", 500))
+			p["stamina"] = maxf(0.0, float(p.get("stamina", 0.0)) - dec)
+			log_message.emit("%s 遇到炸弹鬼，体力 -%.0f" % [p["name"], dec])
+			_ev("road_bomb", p, {"idx": idx, "dec": int(dec)})
+		# 77 遇到小偷 遗失<NUMBER>元（逆向自 0x4313d0：现金的 rand(1..10)%）
+		"thief":
+			var pct: Array = Rules.get_val("road.thief_loss_pct", [1, 10]) as Array
+			var r: int = rng.randi_range(int(pct[0]), int(pct[1]))
+			var loss: int = mini(int(float(p["money"]) * float(r) / 100.0), int(p["money"]))
+			p["money"] = int(p["money"]) - loss
+			log_message.emit("%s 遇到小偷，损失 %d 元（现金的 %d%%）" % [p["name"], loss, r])
+			_ev("road_thief", p, {"idx": idx, "loss": loss, "pct": r})
+		# 财神 / 福神 / 衰神 / 穷神：附身
+		"caishen", "fushen", "shuaishen", "qiongshen":
+			_attach_god(p, kind)
+		# 隔毁：挡一下
+		"block":
+			p["moving"] = 0
+			p["progress"] = 0.0
+			log_message.emit("%s 被路面障碍挡住" % p["name"])
+			_ev("roadblock", p, {"idx": idx, "owner": 0})
+		_:
+			pass
+
+
 func _obstacle_at(idx: int) -> Dictionary:
 	for o in obstacles:
 		if int((o as Dictionary).get("idx", -1)) == idx:
@@ -1662,6 +1941,8 @@ func to_dict() -> Dictionary:
 		"street_index": street_index.duplicate(true),
 		"street_seal": street_seal.duplicate(true),
 		"obstacles": obstacles.duplicate(true),
+		"road_objs": road_objs.duplicate(true),
+		"road_day": road_day,
 	}
 
 func apply_dict(d: Dictionary) -> void:
@@ -1677,3 +1958,8 @@ func apply_dict(d: Dictionary) -> void:
 	for k in d.get("plots", {}).keys():
 		fixed[int(k)] = d["plots"][k]
 	plots = fixed
+	var rf := {}
+	for k in d.get("road_objs", {}).keys():
+		rf[int(k)] = d["road_objs"][k]
+	road_objs = rf
+	road_day = int(d.get("road_day", road_day))

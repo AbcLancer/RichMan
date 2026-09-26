@@ -95,6 +95,7 @@ func build(m: MapData) -> void:
 	_tile_spacing = _measure_spacing()
 	_build_ground()
 	_build_tiles()
+	_build_event_icons()
 	_place_camera()
 
 
@@ -301,8 +302,10 @@ func _build_tiles() -> void:
 				c.position = pos + w + Vector3(0, DECAL_LIFT + 0.02, 0)
 				add_child(c)
 
-		# 起点 / 事件点：额外放一个彩色圆盘，便于远距离辨认
-		if kind == "start" or kind == "event":
+		# 起点：额外放一个彩色圆盘，便于远距离辨认。
+		# ⚠ 事件格**不**放圆盘 —— 它有自己的原版图标（由 _build_event_icons 平贴在地毯上），
+		#   原先那块黄圆盘（y 更高）会把图标整个盖住。
+		if kind == "start":
 			var disc := MeshInstance3D.new()
 			var cyl := CylinderMesh.new()
 			cyl.top_radius = MARKER_R
@@ -337,6 +340,263 @@ func _build_tiles() -> void:
 			lab.outline_modulate = Color(0.06, 0.06, 0.10, 0.85)
 			lab.position = pos + Vector3(0, 1.35, 0)
 			add_child(lab)
+
+
+# ------------------------------------- 事件格图标 / 路边物体（原版 roadobj）
+
+## 原版事件格的棋盘图标（`samples/event/*.tga` 19 个 64×64）→ `assets/roadobj/event/`。
+## 地图数据里的 key 是 `coupon<N>`，图标文件名按面额写成 `credit<N>`。
+const EVENT_ICON_ALIAS := {
+	"coupon1": "credit1", "coupon2": "credit2", "coupon3": "credit3",
+	"coupon5": "credit5", "coupon10": "credit10", "coupon20": "credit20",
+	"coupon30": "credit30", "coupon50": "credit50",
+}
+## 原版没给图标的事件格：传送平台（`samples/event/` 里没有 platform）
+const EVENT_NO_ICON := ["platform"]
+
+const ROAD_ASSET_DIR := "res://assets/roadobj/"
+## 路面物体的模型缩放 = 地毯边长 × 这个值
+const ROAD_OBJ_SCALE := 0.82
+
+var _road_index: Dictionary = {}      # assets/roadobj/index.json
+var _event_nodes: Dictionary = {}     # tile:int -> MeshInstance3D
+var _road_nodes: Dictionary = {}      # tile:int -> Node3D
+var _tex_cache: Dictionary = {}       # res 路径 -> Texture2D
+var _r6bm_cache: Dictionary = {}      # res 路径 -> ArrayMesh
+
+
+func _load_road_index() -> Dictionary:
+	if not _road_index.is_empty():
+		return _road_index
+	var p := ROAD_ASSET_DIR + "index.json"
+	if FileAccess.file_exists(p):
+		var f := FileAccess.open(p, FileAccess.READ)
+		var parsed: Variant = JSON.parse_string(f.get_as_text())
+		if parsed is Dictionary:
+			_road_index = parsed
+	return _road_index
+
+
+func _tex(path: String) -> Texture2D:
+	if path == "":
+		return null
+	if _tex_cache.has(path):
+		return _tex_cache[path]
+	var res: Resource = load(path) if ResourceLoader.exists(path) else null
+	var t: Texture2D = res if res is Texture2D else null
+	_tex_cache[path] = t
+	return t
+
+
+## 事件格图标：平贴在地毯上、与地毯同朝向（原先事件格只有一块黄圆盘 + 文字）
+func _build_event_icons() -> void:
+	var idx := _load_road_index()
+	var icons: Dictionary = idx.get("event_icons", {})
+	if icons.is_empty() or map == null:
+		return
+	var rug := _rug_size()
+	for i in range(mini(map.tile_count(), _tile_pos.size())):
+		var t: Dictionary = map.tile(i)
+		if str(t.get("kind", "")) != "event":
+			continue
+		var key: String = str(t.get("event", ""))
+		var icon_name: String = str(EVENT_ICON_ALIAS.get(key, key))
+		var tex: Texture2D = null
+		if not EVENT_NO_ICON.has(key) and icons.has(icon_name):
+			tex = _tex(ROAD_ASSET_DIR + str(icons[icon_name]))
+		if tex == null:
+			# 原版没给这个事件格画图标（例如传送平台）→ 退回原来的黄圆盘
+			_event_disc(i)
+			continue
+		var mat := StandardMaterial3D.new()
+		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		mat.albedo_texture = tex
+		var mi := MeshInstance3D.new()
+		var pm := PlaneMesh.new()
+		pm.size = Vector2(rug * 0.66, rug * 0.66)
+		mi.mesh = pm
+		mi.material_override = mat
+		var dir := _dir_at(i)
+		mi.position = _tile_pos[i] + Vector3(0, DECAL_LIFT + 0.03, 0)
+		mi.rotation = Vector3(0, atan2(dir.x, dir.y), 0)
+		mi.name = "EvIcon%d" % i
+		add_child(mi)
+		_event_nodes[i] = mi
+
+
+## 没有原版图标的事件格 → 退回一块黄圆盘（原来的做法）
+func _event_disc(i: int) -> void:
+	var disc := MeshInstance3D.new()
+	var cyl := CylinderMesh.new()
+	cyl.top_radius = MARKER_R
+	cyl.bottom_radius = MARKER_R
+	cyl.height = 0.12
+	disc.mesh = cyl
+	var dm := StandardMaterial3D.new()
+	dm.albedo_color = C_EVENT
+	dm.emission_enabled = true
+	dm.emission = dm.albedo_color * 0.4
+	disc.material_override = dm
+	disc.position = _tile_pos[i] + Vector3(0, DECAL_LIFT + 0.06, 0)
+	disc.name = "EvDisc%d" % i
+	add_child(disc)
+	_event_nodes[i] = disc
+
+
+## 读 R6BM（建筑与路面物体共用同一格式，见 tools/pol2obj.py / build_road_assets.py）
+func _r6bm(path: String) -> ArrayMesh:
+	if _r6bm_cache.has(path):
+		return _r6bm_cache[path]
+	var out: ArrayMesh = null
+	if FileAccess.file_exists(path):
+		var f := FileAccess.open(path, FileAccess.READ)
+		if f.get_buffer(4) == "R6BM".to_ascii_buffer():
+			f.get_32()                                   # 版本
+			var nv: int = f.get_32()
+			var nt: int = f.get_32()
+			for _i in 6:                                 # size(3) + offset(3)
+				f.get_float()
+			var pos := PackedVector3Array()
+			pos.resize(nv)
+			for i in nv:
+				pos[i] = Vector3(f.get_float(), f.get_float(), f.get_float())
+			var uvs := PackedVector2Array()
+			uvs.resize(nv)
+			for i in nv:
+				uvs[i] = Vector2(f.get_float(), f.get_float())
+			var tri := PackedInt32Array()
+			tri.resize(nt * 3)
+			for i in nt * 3:
+				tri[i] = f.get_32()
+			var arrays := []
+			arrays.resize(Mesh.ARRAY_MAX)
+			arrays[Mesh.ARRAY_VERTEX] = pos
+			arrays[Mesh.ARRAY_TEX_UV] = uvs
+			arrays[Mesh.ARRAY_INDEX] = tri
+			var am := ArrayMesh.new()
+			am.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+			out = am
+	_r6bm_cache[path] = out
+	return out
+
+
+## 把权威状态里的路边物体画出来。
+## 有 `.pol` 静态网格的用真模型；其余（原版只有 `.cvd` 动画、格式未逆）用替代表现：
+## 四神直接用宠物大图（准确），别的用发光球 + 名字（清楚、不误导）。
+func _sync_road(objs: Dictionary) -> void:
+	var known := {}
+	for k in objs.keys():
+		var ti := int(k)
+		if ti < 0 or ti >= _tile_pos.size():
+			continue
+		var kind := str((objs[k] as Dictionary).get("kind", ""))
+		known[ti] = true
+		if _road_nodes.has(ti) and str((_road_nodes[ti] as Node3D).get_meta("kind", "")) == kind:
+			(_road_nodes[ti] as Node3D).visible = true
+			continue
+		if _road_nodes.has(ti):
+			(_road_nodes[ti] as Node3D).queue_free()
+		_road_nodes[ti] = _make_road_node(ti, kind)
+	for ti in _road_nodes.keys():
+		if not known.has(ti):
+			(_road_nodes[ti] as Node3D).visible = false
+
+
+func _make_road_node(tile: int, kind: String) -> Node3D:
+	var root := Node3D.new()
+	root.name = "Road%d" % tile
+	root.set_meta("kind", kind)
+	root.position = _tile_pos[tile]
+	add_child(root)
+	var rug := _rug_size()
+	var idx := _load_road_index()
+	var items: Dictionary = idx.get("items", {})
+	var rec: Dictionary = items.get(kind, {})
+
+	# ⚠ index.json 里没有模型的项是 JSON `null`，`str(null)` 会得到 "<null>" → 显式判类型
+	var mv: Variant = rec.get("model", null)
+	var model: String = mv if mv is String else ""
+	if model != "":
+		var mesh := _r6bm(ROAD_ASSET_DIR + model)
+		if mesh != null:
+			var mi := MeshInstance3D.new()
+			mi.mesh = mesh
+			var mat := StandardMaterial3D.new()
+			var tex := _tex(ROAD_ASSET_DIR + str(rec.get("model_tex", "")))
+			if tex != null:
+				mat.albedo_texture = tex
+			mat.roughness = 0.9
+			mi.material_override = mat
+			var s := rug * ROAD_OBJ_SCALE
+			mi.scale = Vector3(s, s, s)
+			mi.position = Vector3(0, DECAL_LIFT + 0.04, 0)
+			root.add_child(mi)
+			return root
+
+	# ---- 替代表现 ----
+	var cn := str(rec.get("cn", kind))
+	if kind in ["caishen", "fushen", "qiongshen", "shuaishen"]:
+		var ptex := _tex("res://assets/pets/%s/70.png" % kind)
+		if ptex != null:
+			var sp := Sprite3D.new()
+			sp.texture = ptex
+			sp.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+			sp.pixel_size = rug * 0.55 / 128.0
+			sp.position = Vector3(0, rug * 0.30, 0)
+			root.add_child(sp)
+			return root
+
+	var col := _road_color(kind)
+	var ball := MeshInstance3D.new()
+	var sm := SphereMesh.new()
+	sm.radius = rug * 0.20
+	sm.height = rug * 0.40
+	ball.mesh = sm
+	var dm := StandardMaterial3D.new()
+	dm.albedo_color = col
+	dm.emission_enabled = true
+	dm.emission = col * 0.45
+	ball.material_override = dm
+	ball.position = Vector3(0, DECAL_LIFT + rug * 0.20, 0)
+	root.add_child(ball)
+
+	var lab := Label3D.new()
+	lab.text = cn
+	lab.font_size = 64
+	lab.pixel_size = 0.006
+	lab.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	lab.no_depth_test = true
+	lab.outline_size = 10
+	lab.modulate = Color(1.0, 0.98, 0.9)
+	lab.outline_modulate = Color(0.06, 0.06, 0.10, 0.85)
+	lab.position = Vector3(0, rug * 0.62, 0)
+	root.add_child(lab)
+	return root
+
+
+func _road_color(kind: String) -> Color:
+	match kind:
+		"card":
+			return Color(0.95, 0.42, 0.78)
+		"crystal":
+			return Color(0.62, 0.86, 1.00)
+		"hanbao":
+			return Color(0.95, 0.70, 0.30)
+		"petegg":
+			return Color(1.00, 0.88, 0.52)
+		"robber":
+			return Color(0.80, 0.60, 0.25)
+		"bomb":
+			return Color(0.35, 0.35, 0.40)
+		"thief":
+			return Color(0.28, 0.30, 0.42)
+		"dianjuan":
+			return Color(0.55, 0.90, 0.55)
+		"san":
+			return Color(0.90, 0.90, 0.95)
+	return Color(0.85, 0.85, 0.85)
 
 
 func _rug_size() -> float:
@@ -557,6 +817,7 @@ func sync(snap: Dictionary) -> void:
 
 	_sync_plot_platforms(plots, players)
 	_sync_buildings(plots)
+	_sync_road(snap.get("road_objs", {}))
 
 	# 角色
 	for id in players.keys():
