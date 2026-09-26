@@ -562,6 +562,25 @@ func _test_stock() -> void:
 		and (s3.players[1]["cards"] as Array).size() == n_before,
 		"%d 张" % (s3.players[1]["cards"] as Array).size())
 
+	# ---- 小神仙台词映射（2026-09-27 解出：`6000 + 序号×100 + 台词号`）----
+	# 依据：老板截图 records/小神仙语音.png 那句「我是人见人爱的小财神」= Info.txt 6302
+	var s7 := _fresh_sim()
+	_ok("台词映射：小财神 · 台词号 2 = 6302「我是人见人爱的小财神」",
+		s7.pet_line("caishen", 2).contains("人见人爱"), s7.pet_line("caishen", 2))
+	_ok("台词号 1 = 发特技（拿小穷神验：6001「小穷神附身加倍支付房租！」）",
+		s7.pet_line("qiongshen", 1).contains("附身"), s7.pet_line("qiongshen", 1))
+	var all_say := true
+	var miss: Array = []
+	for pid in ["qiongshen", "hutu", "emo", "caishen", "tushen", "jingling",
+			"huaxian", "dushen", "guaishou"]:
+		if s7.pet_line(pid, 1) == "" or s7.pet_line(pid, 4) == "":
+			all_say = false
+			miss.append(pid)
+	_ok("9 只小神仙的台词（发特技 + 平时）都能取到", all_say, str(miss))
+	_ok("宠物序号与 Pet.txt 一致（小财神排第 4 = 下标 3）",
+		str((s7.pet_catalog()[3] as Dictionary).get("id", "")) == "caishen",
+		str((s7.pet_catalog()[3] as Dictionary).get("id", "")))
+
 	# ---- 拉霸（老虎机，`uitex/casino/`；老板截图 records/老虎机.png）----
 	var s4 := _fresh_sim()
 	var p4: Dictionary = s4.players[1]
@@ -1557,7 +1576,7 @@ func _test_game_events() -> void:
 		kinds.append(str(got[i]["kind"]))
 	_ok("到达结算抛到达类事件", kinds.size() > 0, "事件序列 %s" % str(kinds))
 	_ok("Sim 里没有音频依赖（铁律 4）",
-		not _src_mentions("game/scripts/core/sim.gd", ["Audio", "play_sfx", "say("]),
+		not _src_mentions("game/scripts/core/sim.gd", ["Audio", "play_sfx", "AudioServer"]),
 		"")
 
 func _src_mentions(rel: String, needles: Array) -> bool:

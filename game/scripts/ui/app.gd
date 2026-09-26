@@ -695,6 +695,13 @@ func _process(delta: float) -> void:
 		if _casino != null and _casino.visible and Net.sim != null:
 			var st: Dictionary = Net.sim._casino_of(multiplayer.get_unique_id())
 			_casino.tick(delta, int(st.get("bet", 0)), st.get("reels", []))
+		# 台词气泡：跟人走 + 到点收
+		if _say_t > 0.0:
+			_say_t -= delta
+			if _say_t <= 0.0 and _say_bubble != null:
+				_say_bubble.visible = false
+			else:
+				_sync_say_bubble()
 		# 「请选择对手」：每帧算鼠标指到了谁 → 脚下圆盘绿/红
 		if _card_pending != "" and Net.sim != null \
 				and Net.sim.card_target(_card_pending) == "player":
@@ -3243,6 +3250,69 @@ func _on_casino_action(kind: String, amount: int) -> void:
 				_casino.close()
 
 
+## 台词气泡（原版 `uitex/other/saybk.png` 做底；老板截图 `records/小神仙语音.png`）。
+##
+## ⭐ 文案来源 = `Info.txt` 的 `PETSAY` 段，编号规律是
+##   `6000 + 宠物序号 × 100 + 台词号`（见 `Net.sim.pet_line()` 的注释）。
+## 触发点：小神仙发动特技（台词号 1）/ 刚得到它（台词号 2「平时」）。
+var _say_bubble: Control = null
+var _say_lbl: Label = null
+var _say_t := 0.0
+var _say_who := -1
+
+
+func _ensure_say_bubble() -> void:
+	if _say_bubble != null:
+		return
+	_say_bubble = Control.new()
+	_say_bubble.visible = false
+	_say_bubble.z_index = 66
+	_say_bubble.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_hud.add_child(_say_bubble)
+	var bg := TextureRect.new()
+	bg.texture = _tex_or_null("res://assets/uitex/other/saybk.png")
+	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	bg.stretch_mode = TextureRect.STRETCH_SCALE
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bg.size = Vector2(150.0 * _ui_scale, 46.0 * _ui_scale)
+	_say_bubble.add_child(bg)
+	_say_lbl = Label.new()
+	_say_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_say_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_say_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_say_lbl.add_theme_font_size_override("font_size", maxi(9, int(round(11.0 * _ui_scale))))
+	_say_lbl.add_theme_color_override("font_color", Color8(60, 30, 20))
+	_say_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_say_lbl.position = Vector2(10.0 * _ui_scale, 5.0 * _ui_scale)
+	_say_lbl.size = Vector2(130.0 * _ui_scale, 36.0 * _ui_scale)
+	_say_bubble.add_child(_say_lbl)
+	_say_bubble.size = Vector2(150.0 * _ui_scale, 46.0 * _ui_scale)
+
+
+## 说一句（`who` = 玩家 id，气泡贴在他头顶）
+func _show_say(text: String, who: int) -> void:
+	if text == "":
+		return
+	_ensure_say_bubble()
+	_say_lbl.text = text
+	_say_who = who
+	_say_t = 2.6
+	_say_bubble.visible = true
+	_sync_say_bubble()
+
+
+func _sync_say_bubble() -> void:
+	if _say_bubble == null or not _say_bubble.visible or _board == null:
+		return
+	var pos: Dictionary = _board.player_screen_positions()
+	if not pos.has(_say_who):
+		_say_bubble.visible = false
+		return
+	var p: Vector2 = pos[_say_who]
+	_say_bubble.position = Vector2(p.x - _say_bubble.size.x * 0.5,
+		p.y - _say_bubble.size.y - 26.0 * _ui_scale)
+
+
 ## 全局新闻的全屏插画（`assets/news/01..37.png` = 原版 `samples/news/*.tga`）
 func _show_global_news(idx: int, text: String, art: int) -> void:
 	if _news_pop == null:
@@ -3693,6 +3763,17 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
 				_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
 				_toast("你被 %s 挤到了下一格" % str(data.get("name", "")))
+		"pet_skill":
+			# 小神仙发动特技 → 冒一句台词（`PETSAY` 台词号 1 = 发特技）
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				var pn := str(data.get("pet", ""))
+				_show_say(Net.sim.pet_line(pn, 1), int(data.get("pid", -1)))
+		"get_pet":
+			# 刚得到小神仙 → 「平时」那句（台词号 2）。
+			# 例：小财神 = 6302「我是人见人爱的小财神」（就是老板截图里那句）
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_show_say(Net.sim.pet_line(str(data.get("pet", "")), 2),
+					int(data.get("pid", -1)))
 		"chat":
 			_chat_append(str(data.get("name", "")), str(data.get("text", "")))
 		"global_news":

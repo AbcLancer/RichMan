@@ -1091,6 +1091,28 @@ func _lotto_draw() -> void:
 	lotto_numbers.clear()
 
 
+## 小神仙台词（原版 `Info.txt` 的 `PETSAY` 段）。
+##
+## ⭐ **编号规律**（2026-09-27 解出，这就是之前一直缺的那张映射表）：
+##     `id = 6000 + 数组下标(0..8) × 100 + 台词号(1..9)`
+##   小穷神 6001..6009 / 糊涂鬼 6101..6109 / 小恶魔 6201..6209 / **小财神 6301..6309** /
+##   小土神 6401..6409 / 雪精灵 6501..6509 / 花仙子 6601..6609 / 小赌神 6701..6709 /
+##   小怪兽 6801..6809 —— 序号就是 `Pet.txt` 里的顺序。
+##
+##   台词号 1..9 = **发特技 / 平时×3 / 悲伤 / 被PK / 濒临逃离 / PK逃离 / HP逃离**，
+##   与 `voice_map.json` 里 `pets[].lines` 的场景名**逐条对得上**。
+##   例：老板截图那句「我是人见人爱的小财神」= **6302**（小财神 · 台词号 2「平时」）✅
+func pet_line(pet_id: String, line_key: int) -> String:
+	if line_key < 1:
+		return ""
+	var arr: Array = pets_data.get("pets", [])
+	for i in range(arr.size()):
+		if str((arr[i] as Dictionary).get("id", "")) != pet_id:
+			continue
+		return Rules.info_string(6000 + i * 100 + line_key)
+	return ""
+
+
 ## 某公司属于哪个玩家（虚拟公司返回 -1）
 func company_owner(comp: String) -> int:
 	return int((stocks.get(comp, {}) as Dictionary).get("owner", -1))
