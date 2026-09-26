@@ -188,6 +188,14 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
   [PASS] 小神仙满级时喂食被拒（不浪费卡） 手牌 1 张
   [PASS] 商店槽位表齐备（持有 panel / 小神仙货架 shop / 卡片商店 cardshop） ["panel", "shop", "cardshop"]
   [PASS] 卡片商店槽位是 {x,y,w,h} 的 8 格（原版量出来的，每格 95×30） 8 格，首格宽 95
+[3i] 卡片栏（上限 5 / 同种叠加 / 顶最前方 / 锁定保护）
+  [PASS] 卡片栏上限 = 5 HAND_MAX = 5
+  [PASS] 5 张不同的卡占 5 个栏位 5 栏 / 5 张
+  [PASS] 同种卡叠加 → 只多一张、栏位数不变 5 栏 / 6 张
+  [PASS] 满栏时新卡顶掉**最前方**那张 顶掉 caishen
+  [PASS] 锁定状态记在**权威 Sim** 里（满栏顶卡判定要用） 
+  [PASS] 锁定的卡不会被顶掉（跳过它、顶下一张） 顶掉 qiongshen；fushen 仍在
+  [PASS] 全部锁定时新卡进不来（reason = all_locked） reason=all_locked
   [PASS] 抵达地产格 1 tile=1
   [PASS] 服务端标记可购买点（原版 id 91「是否购买」） last_plot=1 kind=buy
   [PASS] 购买成功 
@@ -267,7 +275,7 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
   [PASS] BGM 可停 
   [PASS] 环境底噪 95 已起且循环已开 
   [PASS] 环境底噪可停 
-通过 227 / 失败 0
+通过 234 / 失败 0
 ==============================
 WARNING: 16 ObjectDB instances were leaked at exit (run with `--verbose` for details).
    at: cleanup (core/object/object.cpp:2536)

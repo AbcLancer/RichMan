@@ -273,6 +273,10 @@ func _apply_action(who: int, action: String, args: Array) -> void:
 			# 卡片菜单 id 4「喂食」（原版菜单第三项）
 			if args.size() > 0:
 				sim.act_feed_card(who, str(args[0]))
+		"lock_card":
+			# 卡片菜单 id 2「锁定」：锁着的卡不会被新卡顶掉
+			if args.size() > 0:
+				sim.act_lock_card(who, str(args[0]))
 		"walk":
 			# 骰子卡：玩家自选前进步数（1..6）
 			if args.size() > 0:

@@ -32,6 +32,7 @@ func run() -> void:
 	_test_road_objs()
 	_test_platform()
 	_test_card_menu_feed()
+	_test_hand()
 	_test_buy_and_rent()
 	_test_upgrade_chain()
 	_test_timers()
@@ -411,6 +412,54 @@ func _test_card_menu_feed() -> void:
 		w0 = float((sl0[0] as Dictionary).get("w", 0.0))
 	_ok("卡片商店槽位是 {x,y,w,h} 的 8 格（原版量出来的，每格 95×30）",
 		sl0.size() == 8 and w0 == 95.0, "%d 格，首格宽 %.0f" % [sl0.size(), w0])
+
+
+# ------------------------------------ 3i. 卡片栏规则（上限 5 / 叠加 / 顶卡 / 锁定保护）
+
+func _test_hand() -> void:
+	_lines.append("[3i] 卡片栏（上限 5 / 同种叠加 / 顶最前方 / 锁定保护）")
+	# 依据 = 老板 2026-09-26 的原版实机规则（`Initvar_r.txt` 里没有手牌上限这一项）
+	_ok("卡片栏上限 = 5", Sim.HAND_MAX == 5, "HAND_MAX = %d" % Sim.HAND_MAX)
+
+	var ids := ["caishen", "fushen", "qiongshen", "shuaishen", "tianshi", "emo", "step3"]
+	var sim := _fresh_sim()
+	var p: Dictionary = sim.players[1]
+	for i in range(5):
+		sim._push_card(p, str(ids[i]))
+	_ok("5 张不同的卡占 5 个栏位",
+		sim.hand_slots(p) == 5 and (p["cards"] as Array).size() == 5,
+		"%d 栏 / %d 张" % [sim.hand_slots(p), (p["cards"] as Array).size()])
+
+	sim._push_card(p, str(ids[0]))
+	_ok("同种卡叠加 → 只多一张、栏位数不变",
+		sim.hand_slots(p) == 5 and (p["cards"] as Array).size() == 6,
+		"%d 栏 / %d 张" % [sim.hand_slots(p), (p["cards"] as Array).size()])
+
+	var res := sim._push_card(p, str(ids[5]))
+	_ok("满栏时新卡顶掉**最前方**那张",
+		bool(res["added"]) and str(res["dropped"]) == str(ids[0])
+		and not (p["cards"] as Array).has(str(ids[0])),
+		"顶掉 %s" % str(res["dropped"]))
+
+	# 锁定保护：把当前最前方的锁上，再塞新卡 → 必须跳过它
+	var head := str(ids[1])
+	sim.act_lock_card(1, head)
+	_ok("锁定状态记在**权威 Sim** 里（满栏顶卡判定要用）", sim.card_locked(p, head), "")
+	var res2 := sim._push_card(p, str(ids[6]))
+	_ok("锁定的卡不会被顶掉（跳过它、顶下一张）",
+		bool(res2["added"]) and str(res2["dropped"]) != head
+		and (p["cards"] as Array).has(head),
+		"顶掉 %s；%s 仍在" % [str(res2["dropped"]), head])
+
+	var sim2 := _fresh_sim()
+	var q: Dictionary = sim2.players[1]
+	for i in range(5):
+		sim2._push_card(q, str(ids[i]))
+		sim2.act_lock_card(1, str(ids[i]))
+	var res3 := sim2._push_card(q, "step3")
+	_ok("全部锁定时新卡进不来（reason = all_locked）",
+		not bool(res3["added"]) and str(res3["reason"]) == "all_locked",
+		"reason=%s" % str(res3["reason"]))
 
 
 # --------------------------------------------------- 3g. 传送平台（Roadevent 事件 1）

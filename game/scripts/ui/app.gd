@@ -51,7 +51,8 @@ var _card_slots: Array = []                    # [{box, img, btn, cnt}]
 var _card_ids: Array = []                      # 每个槽位的卡 id（与 _card_slots 一一对应）
 var _card_sig: Array = []                      # 手牌原始列表（排序后，用于变化检测）
 var _card_sig_state: Array = []                # 每张卡的可用性原因码（0=能用），同用于变化检测
-var _card_locked: Dictionary = {}              # 锁定的卡（本地，对应菜单 id 2「锁定」）
+## 锁定状态**不在这里**（在权威 Sim 的 `p["card_locks"]`，见 `_card_is_locked()`）——
+## 满栏顶卡时要跳过锁定的卡，那个判定必须服务端做。
 var _card_menu: PanelContainer                 # 点卡片后的菜单
 var _card_menu_at: int = -1                    # 菜单当前针对的 slot 下标
 var _card_menu_btns: Array = []
@@ -388,8 +389,8 @@ func _run_ui_shot(delta: float) -> void:
 		if _ui_shot_cards_t == 0.0:
 			# 末尾故意混一张**此刻用不了**的卡（购地卡要「脚下是对手的地」）
 			# → 用来验收「用不了的卡会压暗 + 点它会说出原因」。
-			_dev_give_cards(["caishen", "step3", "dice", "hamburger", "monster",
-				"qiongshen", "buyland"])
+			# 手牌上限 5（老板 2026-09-26 的规则）→ 这里就给 5 种
+			_dev_give_cards(["qiongshen", "step3", "hamburger", "monster", "caishen"])
 			_ui_shot_cards_t = _ui_shot_t
 		elif _ui_shot_t - _ui_shot_cards_t > 0.4:
 			_ui_shot_cards_done = true
@@ -664,7 +665,7 @@ func _process(delta: float) -> void:
 	if not _demo_cards_done and _demo_time >= 1.5:
 		_demo_cards_done = true
 		# 给演示玩家几张卡，让手牌条在截图里可见（真实获得路径见 --selftest）
-		_dev_give_cards(["caishen", "step3", "dice", "hamburger", "monster", "stay"])
+		_dev_give_cards(["caishen", "step3", "dice", "hamburger", "stay"])
 	if _demo_time >= _demo_next_act:
 		_demo_next_act += 1.1
 		Net.send_action("buy")
@@ -1926,11 +1927,20 @@ func _build_card_hand() -> void:
 
 
 ## 手牌同步：按当前玩家的 cards 重建（只在变化时重建，避免每帧抖动）
+## 这张卡是不是被玩家锁定着。锁定状态在**权威 Sim** 里（`p["card_locks"]`），
+## 因为满栏顶卡时要跳过它 —— 那个判定在服务端。
+func _card_is_locked(cid: String) -> bool:
+	var me: Dictionary = (_snapshot.get("players", {}) as Dictionary).get(
+		multiplayer.get_unique_id(), {})
+	return bool((me.get("card_locks", {}) as Dictionary).get(cid, false))
+
+
 func _sync_card_hand(me: Dictionary) -> void:
 	if _card_bar == null:
 		return
+	# ⚠ **不要 sort**！手牌的「获得顺序」是有意义的 —— 满栏时被顶掉的是**最前方**那张
+	#   （老板 2026-09-26 的原版规则）。同种的卡由下面的「按首次出现去重」合并成 ×N。
 	var cards: Array = (me.get("cards", []) as Array).duplicate()
-	cards.sort()                                   # 同种卡聚在一起
 	# 可用性（亮/暗）会随「站到哪一格 / 钱够不够 / 有没有目标」而变，
 	# 所以必须一并纳入变化检测，否则走过去之后卡片还停在上一帧的明暗状态。
 	var sig: Array = []
@@ -1958,14 +1968,19 @@ func _sync_card_hand(me: Dictionary) -> void:
 	if not want_visible:
 		return
 
-	# 同种卡合并成一张 + 数量角标
+	# 同种卡合并成一张 + 数量角标。
+	# ⚠️ 必须按**首次出现顺序**去重（不能用「相邻相同才合并」）—— 手牌不再排序了，
+	#    同种的卡可能不相邻；而栏位顺序 = 获得顺序（满栏顶卡看的就是它）。
 	var groups: Array = []                          # [{id, n}]
+	var gidx: Dictionary = {}                       # 卡 id -> groups 下标
 	for cid in cards:
-		var last: Dictionary = groups[groups.size() - 1] if not groups.is_empty() else {}
-		if not last.is_empty() and str(last["id"]) == str(cid):
-			last["n"] = int(last["n"]) + 1
+		var key := str(cid)
+		if gidx.has(key):
+			var g0: Dictionary = groups[int(gidx[key])]
+			g0["n"] = int(g0["n"]) + 1
 		else:
-			groups.append({"id": str(cid), "n": 1})
+			gidx[key] = groups.size()
+			groups.append({"id": key, "n": 1})
 
 	var shown: int = mini(groups.size(), CARD_SHOW_MAX)
 	# 卡面边长：默认 CARD_PX（100 native），但**一排要放得进**
@@ -2040,7 +2055,7 @@ func _sync_card_hand(me: Dictionary) -> void:
 
 		# 压暗的两种情况（前者优先）：玩家自己「锁定」了这张卡（菜单 id 2）、
 		# 或者这张卡此刻条件不满足。
-		if bool(_card_locked.get(cid, false)):
+		if bool((me.get("card_locks", {}) as Dictionary).get(cid, false)):
 			img.modulate = Color(0.55, 0.55, 0.6, 0.9)
 		elif code != 0:
 			img.modulate = Color(0.62, 0.62, 0.68, 0.72)
@@ -2074,7 +2089,7 @@ func _on_card_clicked(slot: int) -> void:
 	var labels := [Rules.card_menu_label("lock"), Rules.card_menu_label("use"),
 		Rules.card_menu_label("feed")]
 	var cid := str(_card_ids[slot]) if slot < _card_ids.size() else ""
-	var locked := bool(_card_locked.get(cid, false))
+	var locked := _card_is_locked(cid)
 	var code := int((_card_slots[slot] as Dictionary).get("code", 0))
 	# 用不了的卡：当场把原版原因说出来（String.txt 61..70），
 	# 而不是让玩家对着「点了没反应」发呆（老板 2026-09-26 反馈）
@@ -2131,11 +2146,11 @@ func _on_card_menu(which: String) -> void:
 			else:
 				Net.send_action("card", [cid])
 		"lock":
+			# 锁定状态放在**权威 Sim** 里（`p["card_locks"]`）—— 满栏顶卡时要跳过锁定的卡，
+			# 那个判定在服务端做，不能再放本地字典（老板 2026-09-26 的卡片栏规则）
 			Audio.play_sfx(Audio.SFX_UI_CLICK)
-			_card_locked[cid] = not bool(_card_locked.get(cid, false))
+			Net.send_action("lock_card", [cid])
 			_card_sig.clear()        # 强制重建以刷新压暗
-			_toast("「%s」已%s" % [Rules.card_name(cid),
-				"解锁" if not bool(_card_locked[cid]) else "锁定"])
 		"discard":
 			Audio.play_sfx(Audio.SFX_UI_CLICK)
 			Net.send_action("discard", [cid])
@@ -2215,9 +2230,9 @@ func _dev_give_cards(ids: Array) -> void:
 	var my := multiplayer.get_unique_id()
 	if not Net.sim.players.has(my):
 		return
-	var arr: Array = Net.sim.players[my]["cards"]
+	var p: Dictionary = Net.sim.players[my]
 	for c in ids:
-		arr.append(str(c))
+		Net.sim._push_card(p, str(c))       # 走正规发卡（受 5 栏上限约束）
 	_card_sig.clear()
 
 

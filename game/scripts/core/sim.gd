@@ -352,7 +352,15 @@ func act_buy_card(id: int, card_id: String) -> bool:
 			p["name"], int(p["credit"]), price, Rules.card_name(card_id)])
 		return false
 	p["credit"] = int(p["credit"]) - price
-	(p["cards"] as Array).append(card_id)
+	var res := _push_card(p, card_id)
+	if not bool(res["added"]):
+		# 全锁着 → 买不进来，钱退回去
+		p["credit"] = int(p["credit"]) + price
+		_ev("hand_full", p, {"card": card_id})
+		log_message.emit("%s 的卡片栏满了（全锁着），买不下「%s」" % [
+			p["name"], Rules.card_name(card_id)])
+		return false
+	_report_card_push(p, res, Rules.card_name(card_id))
 	log_message.emit("%s 花 %d 点券买下「%s」" % [p["name"], price, Rules.card_name(card_id)])
 	_ev("buy_card", p, {"card": card_id, "name": Rules.card_name(card_id), "price": price})
 	return true
@@ -546,6 +554,8 @@ func add_player(id: int, pname: String) -> Dictionary:
 		"idle": 0.0,
 		"color": PLAYER_COLORS[idx % PLAYER_COLORS.size()].to_html(false),
 		"cards": [],
+		# 锁定的卡（key = 卡 id）。锁着的卡不会被新卡顶掉（原版菜单 id 2「锁定」）
+		"card_locks": {},
 		"effects": {
 			"invincible_until": 0.0,      # 绝对时刻（秒）
 			"sleep_until": 0.0,           # 绝对时刻（秒）
@@ -935,10 +945,95 @@ func _resolve_event(p: Dictionary, idx: int, t: Dictionary) -> void:
 			_ev("event", p, {"eid": eid, "ename": ename})
 
 ## 给玩家一张随机卡（卡片商店 / 卡片点共用）
+# ------------------------------------------------------------ 手牌（卡片栏）
+
+## 卡片栏**最多 5 张**；**同种卡叠加、只占一个栏位**；满栏时新卡把
+## **最前方（最早获得、且未锁定）** 的那张顶掉；锁定的卡不会被顶。
+##
+## ⚠ 依据 = **老板 2026-09-26 的原版实机观察**。
+##   `Initvar_r.txt` 里**没有**手牌上限这一项（整表只有 25 个 Card_* 效果参数），
+##   只有 `Card_FuShen_NumCard = 5`「福神卡得到 5 张卡片」→ 至少能一次拿 5 张，与上限 5 自洽。
+const HAND_MAX := 5
+
+
+## 手牌里占几个栏位（同种只算一个）
+func hand_slots(p: Dictionary) -> int:
+	var seen := {}
+	for c in (p.get("cards", []) as Array):
+		seen[str(c)] = true
+	return seen.size()
+
+
+## 往手牌加一张卡。返回 `{added: bool, dropped: String, reason: String}`。
+##   · 同种已有 → 直接叠上去（不占新栏位）
+##   · 是新种类且栏位已满 → 顶掉**最前方未锁定**的那张
+##   · 全部锁着 → 加不进来（reason = all_locked）
+func _push_card(p: Dictionary, card_id: String) -> Dictionary:
+	var cards: Array = p["cards"]
+	if cards.has(card_id):
+		cards.append(card_id)
+		return {"added": true, "dropped": "", "reason": ""}
+	var locks: Dictionary = p.get("card_locks", {})
+	# 「最前方」= 获得顺序里的第一个（cards 本来就是 append 出来的，天然有时序）
+	var uniq: Array = []
+	for c in cards:
+		if not uniq.has(c):
+			uniq.append(c)
+	var dropped := ""
+	if uniq.size() >= HAND_MAX:
+		var victim := ""
+		for c in uniq:                       # 从最前方往后找第一张没锁的
+			if not bool(locks.get(str(c), false)):
+				victim = str(c)
+				break
+		if victim == "":
+			return {"added": false, "dropped": "", "reason": "all_locked"}
+		var keep: Array = []
+		for c in cards:
+			if str(c) != victim:
+				keep.append(c)
+		p["cards"] = keep
+		dropped = victim
+	(p["cards"] as Array).append(card_id)
+	return {"added": true, "dropped": dropped, "reason": ""}
+
+
+## 锁定 / 解锁一张卡（卡片菜单 id 2「锁定」）。锁定的卡不会被新卡顶掉。
+func act_lock_card(id: int, card_id: String) -> bool:
+	var p: Dictionary = players.get(id, {})
+	if p.is_empty() or not (p["cards"] as Array).has(card_id):
+		return false
+	var locks: Dictionary = p.get("card_locks", {})
+	locks[card_id] = not bool(locks.get(card_id, false))
+	p["card_locks"] = locks
+	log_message.emit("%s %s了「%s」" % [p["name"],
+		"锁定" if bool(locks[card_id]) else "解锁", Rules.card_name(card_id)])
+	_ev("card_lock", p, {"card": card_id, "locked": bool(locks[card_id])})
+	return true
+
+
+## 手牌是不是锁着的
+func card_locked(p: Dictionary, card_id: String) -> bool:
+	return bool((p.get("card_locks", {}) as Dictionary).get(card_id, false))
+
+
+## 给卡时的统一日志/事件（满栏顶卡、全锁定拿不到）
+func _report_card_push(p: Dictionary, res: Dictionary, cname: String) -> void:
+	var drop := str(res.get("dropped", ""))
+	if drop != "":
+		log_message.emit("卡片栏已满，顶掉最前方的「%s」" % Rules.card_name(drop))
+		_ev("card_dropped", p, {"card": drop, "name": Rules.card_name(drop)})
+
+
 func _give_random_card(p: Dictionary, ename: String) -> void:
 	var c := _random_card()
-	(p["cards"] as Array).append(c)
 	var cname := str(Rules.card_by_id(c).get("name", c))
+	var res := _push_card(p, c)
+	if not bool(res["added"]):
+		log_message.emit("%s 的卡片栏满了（全锁着），「%s」没拿到" % [p["name"], cname])
+		_ev("hand_full", p, {"card": c, "name": cname})
+		return
+	_report_card_push(p, res, cname)
 	log_message.emit("%s 在%s获得卡片「%s」" % [p["name"], ename, cname])
 	_ev("get_card", p, {"card": c, "name": cname})
 
@@ -1596,7 +1691,13 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 			var ci := rng.randi_range(0, tc.size() - 1)
 			var stolen: String = str(tc[ci])
 			tc.remove_at(ci)
-			(p["cards"] as Array).append(stolen)
+			var res := _push_card(p, stolen)
+			if not bool(res["added"]):
+				log_message.emit("%s 的卡片栏满了（全锁着），抢来的「%s」没放下" % [
+					p["name"], Rules.card_name(stolen)])
+				_ev("hand_full", p, {"card": stolen})
+				return false
+			_report_card_push(p, res, Rules.card_name(stolen))
 			log_message.emit("%s 抢走了 %s 的「%s」" % [
 				p["name"], t4["name"], Rules.card_name(stolen)])
 			_ev("get_card", p, {"card": stolen, "from": target})
@@ -1691,7 +1792,10 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 			e["free_upgrade_steps"] = int(c.get("steps", 30))
 			var n := int(c.get("cards_gained", 0))
 			for _i in range(n):
-				(p["cards"] as Array).append(_random_card())
+				var res := _push_card(p, _random_card())
+				if not bool(res["added"]):
+					break                      # 全锁着就不硬塞了
+				_report_card_push(p, res, "")
 			log_message.emit("%s 福神附身：%d 步内免费加盖，得 %d 张卡" % [
 				p["name"], int(e["free_upgrade_steps"]), n])
 		"auto_upgrade":
