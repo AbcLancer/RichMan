@@ -82,6 +82,20 @@ var _topbar: PanelContainer
 var _pause_overlay: TextureRect
 var _paused: bool = false
 var _minimap: Minimap
+## 右下角功能区（原版「最下一栏是功能切换按钮」）：
+##   ① 新闻 → 日志页 ② 股票 → 股票页 ③ 地图 → 小地图（**默认页**）
+##   ④ 聊天区 → 聊天记录页 ⑤ 聊天 → 额外弹出聊天栏 ⑥ 最右下角 → 收起 / 展开
+var _br_box: Control = null
+var _br_map_panel: Control = null
+var _br_page := 2                     # 0=日志 1=股票 2=地图 3=聊天记录
+var _br_collapsed := false
+var _chat_bar: Control = null
+var _chat_ch: Button = null
+var _chat_input: LineEdit = null
+var _chat_log: Label = null
+var _chat_lines: Array = []
+var _chat_channels: Array = []
+var _chat_ch_idx := 0
 var _log_panel: PanelContainer
 
 # 左下角色面板（版式 = 原版 uitex/other/atb.png）
@@ -1409,28 +1423,28 @@ func _slot_bar(r: Rect2, k: float, fill: Color) -> ProgressBar:
 ## 右下：小地图框（原版配色：圆角 + 浅蓝白描边 + 深蓝底）+ 图标按钮条
 func _build_bottom_right() -> void:
 	var w := UI_BR_W * _ui_scale
-	var box := VBoxContainer.new()
-	box.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	box.add_theme_constant_override("separation", int(round(UI_BR_GAP * _ui_scale)))
-	box.position = Vector2(
+	_br_box = VBoxContainer.new()
+	_br_box.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	_br_box.add_theme_constant_override("separation", int(round(UI_BR_GAP * _ui_scale)))
+	_br_box.position = Vector2(
 		-(w + UI_BR_MARGIN * _ui_scale),
 		-(UI_BR_MAP_H + UI_BR_BAR_H + UI_BR_GAP + UI_BR_MARGIN) * _ui_scale)
-	box.custom_minimum_size = Vector2(w, 0)
-	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_hud.add_child(box)
+	_br_box.custom_minimum_size = Vector2(w, 0)
+	_br_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_hud.add_child(_br_box)
 
 	var mp := PanelContainer.new()
 	mp.custom_minimum_size = Vector2(w, UI_BR_MAP_H * _ui_scale)
 	mp.add_theme_stylebox_override("panel", _sb_round(
 		Color8(22, 62, 122), Color8(170, 232, 250), int(round(9.0 * _ui_scale)),
 		maxi(2, int(round(4.0 * _ui_scale))), maxf(2.0, 3.0 * _ui_scale)))
-	box.add_child(mp)
-
+	_br_map_panel = mp
+	_br_box.add_child(mp)
 	_minimap = Minimap.new()
 	mp.add_child(_minimap)
 
 	_icon_bar = _make_icon_bar(w)
-	box.add_child(_icon_bar)
+	_br_box.add_child(_icon_bar)
 
 
 ## 图标按钮条：底 = 浅薄荷青圆角条 + 蓝描边；6 个图标全部用原版 uitex/subc/*.png
@@ -1466,19 +1480,53 @@ func _make_icon_bar(w: float) -> Control:
 ## 我们只接已实现的功能，其余给一条提示，别假装能用。
 func _on_icon(i: int) -> void:
 	match i:
-		0:                      # 角色情报
-			_toggle_log()
-		1:                      # 股价行情
-			_toast("股价系统未实现（议题 12）")
-		2:                      # 地图 MAP
-			if _board != null and _board.map != null:
-				_board.set_overview(not _board.is_overview())
-		3:                      # 聊天
-			_toast("聊天未实现")
-		4:                      # 话筒 → 音效开关
-			_toggle_sfx()
-		5:                      # 播放 → 全屏
-			_toggle_fullscreen()
+		0:                      # ① 新闻 → 面板切成「日志」（记录买卖股票 / 土地等行为）
+			_set_br_page(0)
+		1:                      # ② 股票 → 面板切成「股票页」
+			_set_br_page(1)
+		2:                      # ③ 地图 → 面板切成「小地图」（默认页）
+			_set_br_page(2)
+		3:                      # ④ 聊天区 → 面板切成「聊天记录」
+			_set_br_page(3)
+		4:                      # ⑤ 聊天 → **额外**弹出聊天栏（不占用功能区小面板）
+			_toggle_chat_bar()
+		5:                      # ⑥ 最右下角 → 收起 / 展开整个功能区
+			_toggle_br()
+
+
+## 切换右下角功能区的页
+func _set_br_page(n: int) -> void:
+	_br_page = n
+	_br_collapsed = false
+	if _br_box != null:
+		_br_box.visible = true
+	if n == 0:
+		_toast("日志页：现有日志还在右上角那块，下轮嵌进功能区")
+	elif n == 3:
+		_toast("聊天记录页待做（聊天栏已可用）")
+	_sync_br_pages()
+
+
+## 右下角功能区：地图页 / 股票页**互斥**显示（同一块地方）
+func _sync_br_pages() -> void:
+	var on := not _br_collapsed
+	if _br_map_panel != null:
+		_br_map_panel.visible = on and _br_page == 2
+	if _stock != null:
+		var r := Rect2()
+		if _br_map_panel != null:
+			r = Rect2(_br_map_panel.global_position, _br_map_panel.size)
+		_stock.set_embed_rect(r, on and _br_page == 1)
+
+
+## ⑥ 收起 / 展开整个右下角功能区
+func _toggle_br() -> void:
+	_br_collapsed = not _br_collapsed
+	if _br_box != null:
+		_br_box.visible = not _br_collapsed
+	if _br_collapsed and _chat_bar != null:
+		_chat_bar.visible = false
+	_sync_br_pages()
 
 
 ## ---------------------------------------------------------------- 动作入口
@@ -2845,6 +2893,132 @@ func _toggle_log() -> void:
 		_log_panel.visible = not _log_panel.visible
 
 
+## ⑤ 聊天栏 —— **额外**弹出，**不占用**右下角功能区的小面板
+## （老板原版截图里它就在小面板上方，带频道/私聊头像 + 输入框 + Send）。
+func _toggle_chat_bar() -> void:
+	if _chat_bar == null:
+		_build_chat_bar()
+	if _chat_bar == null:
+		return
+	_chat_bar.visible = not _chat_bar.visible
+	if _chat_bar.visible:
+		_sync_chat_bar()
+
+
+func _build_chat_bar() -> void:
+	_chat_bar = PanelContainer.new()
+	_chat_bar.visible = false
+	_chat_bar.z_index = 30
+	_chat_bar.add_theme_stylebox_override("panel", _sb_round(
+		Color8(18, 38, 92, 240), Color8(120, 190, 250), int(round(6.0 * _ui_scale)),
+		maxi(2, int(round(3.0 * _ui_scale))), maxf(1.5, 2.0 * _ui_scale)))
+	_hud.add_child(_chat_bar)
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", maxi(1, int(round(3.0 * _ui_scale))))
+	_chat_bar.add_child(vb)
+
+	# 顶部一行：[公共/私聊] 切频道 · 输入框 · Send
+	var hb := HBoxContainer.new()
+	hb.add_theme_constant_override("separation", maxi(2, int(round(4.0 * _ui_scale))))
+	vb.add_child(hb)
+	_chat_ch = Button.new()
+	_chat_ch.focus_mode = Control.FOCUS_NONE
+	_chat_ch.custom_minimum_size = Vector2(46.0 * _ui_scale, 20.0 * _ui_scale)
+	_chat_ch.add_theme_font_size_override("font_size", maxi(9, int(round(11.0 * _ui_scale))))
+	_chat_ch.pressed.connect(func(): _chat_cycle_channel())
+	hb.add_child(_chat_ch)
+	_chat_input = LineEdit.new()
+	_chat_input.custom_minimum_size = Vector2(150.0 * _ui_scale, 20.0 * _ui_scale)
+	_chat_input.placeholder_text = "说点什么…"
+	_chat_input.add_theme_font_size_override("font_size", maxi(9, int(round(11.0 * _ui_scale))))
+	_chat_input.text_submitted.connect(func(_t: String): _chat_send())
+	hb.add_child(_chat_input)
+	var sb := Button.new()
+	sb.text = "Send"
+	sb.focus_mode = Control.FOCUS_NONE
+	sb.custom_minimum_size = Vector2(52.0 * _ui_scale, 20.0 * _ui_scale)
+	sb.add_theme_font_size_override("font_size", maxi(9, int(round(11.0 * _ui_scale))))
+	sb.add_theme_color_override("font_color", Color8(230, 245, 255))
+	sb.add_theme_stylebox_override("normal", _sb_round(Color8(60, 110, 200),
+		Color8(150, 210, 255), int(round(6.0 * _ui_scale)),
+		maxi(1, int(round(2.0 * _ui_scale))), 0.0))
+	sb.pressed.connect(func(): _chat_send())
+	hb.add_child(sb)
+
+	# 下面几行聊天记录
+	vb.add_child(_chat_view_box())
+	_chat_channels = ["公共"]
+	var me: Dictionary = _snapshot.get("players", {}).get(multiplayer.get_unique_id(), {})
+	for pid in _snapshot.get("players", {}).keys():
+		if int(pid) != multiplayer.get_unique_id():
+			var nm := str((_snapshot["players"][pid] as Dictionary).get("name", str(pid)))
+			_chat_channels.append("私聊:" + nm)
+	_chat_cycle_channel()
+
+
+func _chat_view_box() -> Control:
+	var p := PanelContainer.new()
+	p.custom_minimum_size = Vector2(250.0 * _ui_scale, 52.0 * _ui_scale)
+	p.add_theme_stylebox_override("panel", _sb_round(Color8(10, 22, 60, 220),
+		Color8(70, 120, 200), int(round(4.0 * _ui_scale)),
+		maxi(1, int(round(2.0 * _ui_scale))), 0.0))
+	_chat_log = Label.new()
+	_chat_log.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_chat_log.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	_chat_log.add_theme_font_size_override("font_size", maxi(9, int(round(11.0 * _ui_scale))))
+	_chat_log.add_theme_color_override("font_color", Color8(226, 240, 255))
+	_chat_log.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	p.add_child(_chat_log)
+	return p
+
+
+func _chat_cycle_channel() -> void:
+	if _chat_channels.is_empty():
+		_chat_channels = ["公共"]
+	_chat_ch_idx = (_chat_ch_idx + 1) % _chat_channels.size()
+	_chat_ch.text = str(_chat_channels[_chat_ch_idx])
+
+
+func _chat_send() -> void:
+	if _chat_input == null:
+		return
+	var txt := _chat_input.text.strip_edges()
+	if txt == "":
+		return
+	_chat_input.text = ""
+	var ch := str(_chat_channels[_chat_ch_idx]) if _chat_ch_idx < _chat_channels.size() \
+		else "公共"
+	var to := -1
+	if ch.begins_with("私聊:"):
+		var who := ch.substr(3)
+		for pid in _snapshot.get("players", {}).keys():
+			if str((_snapshot["players"][pid] as Dictionary).get("name", "")) == who:
+				to = int(pid)
+				break
+	Net.send_action("chat", [txt, to, ch])
+
+
+func _sync_chat_bar() -> void:
+	if _chat_bar == null:
+		return
+	var vp := get_viewport().get_visible_rect()
+	var sz := _chat_bar.get_combined_minimum_size()
+	# 贴在右下角功能区的**正上方**（原版截图里聊天栏就在小面板上面）
+	var bw := (UI_BR_W + UI_BR_MARGIN) * _ui_scale
+	var by := (UI_BR_MAP_H + UI_BR_BAR_H + UI_BR_GAP + UI_BR_MARGIN) * _ui_scale
+	_chat_bar.position = Vector2(vp.size.x - bw, vp.size.y - by - sz.y - 2.0 * _ui_scale)
+	_chat_bar.size = Vector2(maxf(sz.x, bw), sz.y)
+
+
+## 往聊天记录里追加一行
+func _chat_append(who: String, text: String) -> void:
+	_chat_lines.append("%s: %s" % [who, text])
+	if _chat_lines.size() > 50:
+		_chat_lines = _chat_lines.slice(_chat_lines.size() - 50)
+	if _chat_log != null:
+		_chat_log.text = "\n".join(_chat_lines.slice(maxi(0, _chat_lines.size() - 3)))
+
+
 func _toggle_fullscreen() -> void:
 	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
@@ -3149,6 +3323,13 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 			_toast("%s 股价 %.1f → %.1f（%+.0f%%）" % [str(data.get("company", "")),
 				float(data.get("from", 0.0)), float(data.get("to", 0.0)),
 				float(data.get("ratio", 0.0)) * 100.0])
+		"push_away":
+			# 被挤：对方占了你的格子，把你挤到下一格（可能因此付房租）
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
+				_toast("你被 %s 挤到了下一格" % str(data.get("name", "")))
+		"chat":
+			_chat_append(str(data.get("name", "")), str(data.get("text", "")))
 		"chairman":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
@@ -3238,6 +3419,10 @@ func _hud_refresh(snap: Dictionary) -> void:
 		_sync_pet_strip(me)
 		if _stock != null:
 			_stock._sync(0.0, str(int(me.get("id", 0))))
+		# 右下角功能区：地图页 / 股票页互斥 + 聊天栏贴在其上方
+		_sync_br_pages()
+		if _chat_bar != null and _chat_bar.visible:
+			_sync_chat_bar()
 		_sync_shop()
 		# 骰子卡的步数选择器只在「待选步数」时出现
 		if _step_picker != null:

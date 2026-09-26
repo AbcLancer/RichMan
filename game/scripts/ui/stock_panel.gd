@@ -43,6 +43,9 @@ var _sig := ""
 
 ## 「请选择一种股票」模式（红卡 / 黑卡用）：点一行 = 选它
 var _pick_mode := false
+## 由 app 指定的「嵌入位置 + 尺寸」= 右下角功能区那一块（与小地图**互斥**显示）。
+## 老板 2026-09-26：「实际上应该点击『股票』按钮之后，把小地图的界面切换成股票页」。
+var _embed := Rect2()
 
 signal act_requested(kind: String, company: String, shares: int)
 
@@ -338,14 +341,31 @@ func _sync(_delta: float, me_id: String) -> void:
 	_sync_layout()
 
 
+## app 每帧把「右下角功能区那一块地方」的 rect 传进来，并告诉它现在是不是股票页。
+## （地图页与股票页**互斥**显示在同一块地方 —— 老板 2026-09-26 的原版说明）
+func set_embed_rect(r: Rect2, on: bool) -> void:
+	_embed = r
+	if visible != on:
+		visible = on
+		if not on:
+			_menu.visible = false
+			_dlg.visible = false
+	_sync_layout()
+
+
 func _sync_layout() -> void:
 	var vp := get_viewport().get_visible_rect()
-	var sz := _bg.get_combined_minimum_size()
-	# 贴在**右下角**（原版就在这里）；上方留出 HUD 的工具栏与顶栏
-	# ⚠ 底边必须让开右下角的**小地图 + 工具栏**（app.gd 的 `UI_BR_MAP_H` 156.7 +
-	#   `UI_BR_BAR_H` 36.7 + 边距 ≈ 200 native），否则行情面板会压在小地图上。
-	_bg.position = Vector2(vp.size.x - sz.x - _px(6.0), vp.size.y - sz.y - _px(200.0))
-	_bg.size = sz
+	if _embed.size.x > 1.0:
+		# 嵌在右下角功能区里（与小地图**同一块地方**，互斥显示）——
+		# 老板 2026-09-26：「点『股票』按钮之后把小地图的界面切换成股票页」
+		_bg.position = _embed.position
+		_bg.size = Vector2(_embed.size.x,
+			maxf(_embed.size.y, _bg.get_combined_minimum_size().y))
+	else:
+		var sz0 := _bg.get_combined_minimum_size()
+		_bg.position = Vector2(vp.size.x - sz0.x - _px(6.0),
+			vp.size.y - sz0.y - _px(200.0))
+		_bg.size = sz0
 	if _menu.visible:
 		var ms := _menu.get_combined_minimum_size()
 		_menu.position = Vector2(_bg.position.x - ms.x - _px(2.0), _bg.position.y)

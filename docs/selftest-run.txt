@@ -218,6 +218,10 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
   [PASS] 红卡：把选中的公司股价抬高 20% 50.00 → 60.00
   [PASS] 黑卡：把选中的公司股价压低 20% 60.00 → 48.00
   [PASS] 公司名给错时红卡不生效、**卡片保留**（不白扔） 1 张
+[3k] 同格挤人（原版不允许多人站在同一格）
+  [PASS] 后到的人把先到的人**往前挤一格** p 在 2（期望 2）
+  [PASS] 挤人**不触发**地面事件 / 买地 / 升级（被挤的人拿不到一次性机会） last_plot=-1
+  [PASS] 被挤到**别人的地产**上时要付房租 500000 → 495500
   [PASS] 抵达地产格 1 tile=1
   [PASS] 服务端标记可购买点（原版 id 91「是否购买」） last_plot=1 kind=buy
   [PASS] 购买成功 
@@ -297,5 +301,9 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
   [PASS] BGM 可停 
   [PASS] 环境底噪 95 已起且循环已开 
   [PASS] 环境底噪可停 
-通过 254 / 失败 0
+通过 257 / 失败 0
 ==============================
+WARNING: 16 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 8 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

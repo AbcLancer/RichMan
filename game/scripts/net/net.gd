@@ -286,6 +286,12 @@ func _apply_action(who: int, action: String, args: Array) -> void:
 			# args[0] = 公司名，args[1] = 股数
 			if args.size() > 1:
 				sim.act_sell_stock(who, str(args[0]), int(args[1]))
+		"chat":
+			# args[0] = 文本，args[1] = 私聊目标玩家 id（-1 = 公共），args[2] = 频道名
+			if args.size() > 0:
+				sim.act_chat(who, str(args[0]),
+					int(args[1]) if args.size() > 1 else -1,
+					str(args[2]) if args.size() > 2 else "公共")
 		"walk":
 			# 骰子卡：玩家自选前进步数（1..6）
 			if args.size() > 0:

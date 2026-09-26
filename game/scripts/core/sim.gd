@@ -706,6 +706,30 @@ func _shift_stock(comp: String, ratio: float, p: Dictionary, card_id: String) ->
 	return true
 
 
+## 聊天（原版右下角「聊天」按钮弹出的那个栏：含**公共**频道与**私聊**）
+func act_chat(id: int, text: String, to: int, channel: String) -> bool:
+	var p: Dictionary = players.get(id, {})
+	if p.is_empty():
+		return false
+	var txt := text.strip_edges()
+	if txt == "":
+		return false
+	txt = txt.substr(0, 60)                      # 限长，防刷屏
+	var payload := {"from": int(id), "name": str(p["name"]), "text": txt,
+		"channel": channel, "to": to}
+	if to >= 0 and players.has(to) and to != id:
+		# 私聊：只发给双方
+		_ev("chat", players[to], payload)
+		_ev("chat", p, payload)
+	else:
+		payload["channel"] = "公共"
+		payload["to"] = -1
+		for pid in player_ids():
+			_ev("chat", players[pid], payload)
+	log_message.emit("[聊天] %s: %s" % [p["name"], txt])
+	return true
+
+
 ## 某公司属于哪个玩家（虚拟公司返回 -1）
 func company_owner(comp: String) -> int:
 	return int((stocks.get(comp, {}) as Dictionary).get("owner", -1))
@@ -963,9 +987,46 @@ func _wrap(i: int) -> int:
 
 # --------------------------------------------------------------- 到达格结算
 
+## 同一格上已经有人 → 把 TA **往前挤一格**（老板 2026-09-26 的原版观察：
+## 原版**不允许多人站在同一个位置**）。
+##
+## 「挤」= 一种搞怪：
+##   · 被挤的人**要付房租**（落点若踩在别人的地产上）—— 走一遍 `_resolve_plot`
+##   · 但**不触发**地面事件 / 买地 / 升级 —— 结算完立刻 `_clear_chance()` 把机会作废
+##
+## ⚠️ 只挤「**站着不动**」的人（`moving == 0`）；正在走的人不挤（他马上会离开这格）。
+func _push_away_occupants(p: Dictionary) -> void:
+	if map == null:
+		return
+	var here := int(p["tile"])
+	for oid in player_ids():
+		if int(oid) == int(p["id"]):
+			continue
+		var o: Dictionary = players[oid]
+		if not bool(o["alive"]) or int(o["moving"]) > 0:
+			continue
+		if int(o["tile"]) != here:
+			continue
+		var dest := _wrap(here + 1)
+		o["tile"] = dest
+		o["progress"] = 0.0
+		o["idle"] = 0.0
+		log_message.emit("%s 站在 %d 格，被 %s 挤到了 %d 格" % [
+			o["name"], here, p["name"], dest])
+		_ev("push_away", o, {"by": int(p["id"]), "name": str(p["name"]),
+			"from": here, "tile": dest})
+		var t: Dictionary = map.tile(dest)
+		if str(t.get("kind", "")) == "plot":
+			_resolve_plot(o, dest, t)   # 会付房租（如果那是别人的地）
+			_clear_chance(o)            # 买地 / 升级的机会当场作废
+
+
 func _arrive(p: Dictionary) -> void:
 	var idx: int = int(p["tile"])
 	var t: Dictionary = map.tile(idx)
+	# 原版**不允许多人站在同一格** —— 后到的人把先到的人往前挤一格。
+	# 必须在「本次抵达结算」之前做，否则被挤的人会先吃到本格的结算。
+	_push_away_occupants(p)
 	# 上一次抵达留下的「一次性机会」作废 —— 想再动这块地，必须再走回来
 	# （原版 Info.txt id 93：升级是抵达时的一次询问，不是随时可点）
 	_clear_chance(p)

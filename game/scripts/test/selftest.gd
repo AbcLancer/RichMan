@@ -34,6 +34,7 @@ func run() -> void:
 	_test_card_menu_feed()
 	_test_hand()
 	_test_stock()
+	_test_push_away()
 	_test_buy_and_rent()
 	_test_upgrade_chain()
 	_test_timers()
@@ -550,6 +551,55 @@ func _test_stock() -> void:
 		not s3.act_use_card(1, "redcard", -1, "不存在的公司")
 		and (s3.players[1]["cards"] as Array).size() == n_before,
 		"%d 张" % (s3.players[1]["cards"] as Array).size())
+
+
+# ------------------------------------ 3k. 同格挤人（原版不允许多人站在同一格）
+
+func _test_push_away() -> void:
+	_lines.append("[3k] 同格挤人（原版不允许多人站在同一格）")
+	var sim := _fresh_sim()
+	var p: Dictionary = sim.players[1]          # 先到的
+	var q: Dictionary = sim.players[2]          # 后到的
+	var at := -1
+	for i in range(1, sim.map.tile_count() - 1):
+		if str(sim.map.tile(i).get("kind", "")) == "plot":
+			at = i
+			break
+	p["tile"] = at
+	p["moving"] = 0
+	p["progress"] = 0.0
+	q["tile"] = at
+	q["moving"] = 0
+	q["progress"] = 0.0
+	var before_money := int(p["money"])
+	sim._arrive(q)                                # q 抵达 → 把 p 挤走
+	_ok("后到的人把先到的人**往前挤一格**",
+		int(p["tile"]) == sim._wrap(at + 1),
+		"p 在 %d（期望 %d）" % [int(p["tile"]), sim._wrap(at + 1)])
+	_ok("挤人**不触发**地面事件 / 买地 / 升级（被挤的人拿不到一次性机会）",
+		int(p.get("last_plot", -1)) < 0, "last_plot=%d" % int(p.get("last_plot", -1)))
+
+	# 被挤到**别人的地产**上 → 要付房租
+	var sim2 := _fresh_sim()
+	var a: Dictionary = sim2.players[1]
+	var b: Dictionary = sim2.players[2]
+	var own := -1
+	for i in range(1, sim2.map.tile_count() - 1):
+		if str(sim2.map.tile(i).get("kind", "")) == "plot":
+			own = i
+			break
+	var dest := sim2._wrap(own + 1)
+	sim2.plots[dest] = {"owner": 2, "level": 3, "type": "residence"}
+	a["tile"] = own
+	a["moving"] = 0
+	a["progress"] = 0.0
+	b["tile"] = own
+	b["moving"] = 0
+	b["progress"] = 0.0
+	var before2 := int(a["money"])
+	sim2._arrive(b)
+	_ok("被挤到**别人的地产**上时要付房租",
+		int(a["money"]) < before2, "%d → %d" % [before2, int(a["money"])])
 
 
 # --------------------------------------------------- 3g. 传送平台（Roadevent 事件 1）
