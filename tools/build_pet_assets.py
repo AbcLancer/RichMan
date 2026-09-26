@@ -61,6 +61,15 @@ UI_FILES = {
     "pethouse_bar.png": os.path.join(HOUSE_SRC, "浮动条.tga"),
     "cardshop.png": os.path.join(OTHER_SRC, "cardshop.tga"),
     "cardshop_bar.png": os.path.join(OTHER_SRC, "cardshop1.tga"),
+    # 原版通用对话框素材（`uitex/other/`）：
+    #   infobk = 灰白圆角信息框 → 商店/卡片购买的**二次确认框**底图
+    #            （对得上老板原版截图 docs/screenshots/orig/records/小神仙商店购买确认.png）
+    #   saybk  = 说话气泡（角色/小神仙台词）
+    #   msgbox / hint = 小消息框 / 提示条
+    "infobk.png": os.path.join(OTHER_SRC, "infobk.tga"),
+    "saybk.png": os.path.join(OTHER_SRC, "saybk.tga"),
+    "msgbox.png": os.path.join(OTHER_SRC, "msgbox.tga"),
+    "hint.png": os.path.join(OTHER_SRC, "hint.tga"),
 }
 
 # ---- 槽位（native 256×256 底图坐标；x, y, w, h）----

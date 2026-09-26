@@ -85,6 +85,12 @@ var _log_panel: PanelContainer
 
 # 左下角色面板（版式 = 原版 uitex/other/atb.png）
 var _char_panel: Control
+## 左下角角色面板**右侧**那一排：持有的小神仙（原版就在这里显示 —— 见
+## `docs/screenshots/orig/records/使用卡片.png`，「钱夫人」右边就是「小财神」）。
+## ⚠️ 原版**没有**「持有小神仙」的独立面板；我们原来在精灵屋左边放的那块是多余的（已去掉）。
+var _pet_strip: Control = null
+var _pet_strip_nodes: Array = []
+const PET_STRIP_PX := 44.0             # 每只小神仙图标的边长（native）
 var _char_avatar: TextureRect
 var _char_info: Label
 var _char_name: Label
@@ -999,6 +1005,7 @@ func _build_hud() -> void:
 	_build_bottom_right()
 	_build_action_entry()
 	_build_card_hand()
+	_build_pet_strip()
 	_build_shop()
 	_build_toast()
 
@@ -1485,9 +1492,26 @@ func _build_action_entry() -> void:
 	# 否则「是/否」会被面板压住，点不到（老板 2026-09-26 反馈）
 	_pop.z_index = 60
 	_pop.custom_minimum_size = Vector2(UI_POP_W * _ui_scale, UI_POP_H * _ui_scale)
-	_pop.add_theme_stylebox_override("panel", _sb_round(
-		Color8(255, 250, 236), Color8(206, 78, 92), int(round(8.0 * _ui_scale)),
-		maxi(3, int(round(5.0 * _ui_scale))), maxf(1.5, 2.0 * _ui_scale)))
+	# 底图 = 原版 `uitex/other/infobk.tga`（灰白圆角 + 蓝底边）——
+	# 就是老板原版截图里那个「小财神价格100点券 确认要购买吗？」的对话框
+	var fb := StyleBoxTexture.new()
+	var ftex := _tex_or_null("res://assets/ui/shop/infobk.png")
+	if ftex != null:
+		fb.texture = ftex
+		var m := int(round(26.0 * _ui_scale))
+		fb.texture_margin_left = m
+		fb.texture_margin_right = m
+		fb.texture_margin_top = m
+		fb.texture_margin_bottom = int(round(34.0 * _ui_scale))
+		fb.content_margin_left = 16.0 * _ui_scale
+		fb.content_margin_right = 16.0 * _ui_scale
+		fb.content_margin_top = 10.0 * _ui_scale
+		fb.content_margin_bottom = 6.0 * _ui_scale
+		_pop.add_theme_stylebox_override("panel", fb)
+	else:
+		_pop.add_theme_stylebox_override("panel", _sb_round(
+			Color8(255, 250, 236), Color8(206, 78, 92), int(round(8.0 * _ui_scale)),
+			maxi(3, int(round(5.0 * _ui_scale))), maxf(1.5, 2.0 * _ui_scale)))
 	_hud.add_child(_pop)
 
 	var pv := VBoxContainer.new()
@@ -1498,6 +1522,8 @@ func _build_action_entry() -> void:
 	_pop_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_pop_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_pop_text.add_theme_font_size_override("font_size", maxi(10, int(round(12.0 * _ui_scale))))
+	# 原版对话框的文字是**深色**（白底黑字），别用默认浅色
+	_pop_text.add_theme_color_override("font_color", Color8(38, 58, 108))
 	_pop_text.add_theme_color_override("font_color", Color8(44, 34, 66))
 	pv.add_child(_pop_text)
 
@@ -1725,6 +1751,51 @@ func _pop_buy_confirm() -> void:
 ##   · 点卡片 → 弹原版卡片菜单（String.txt 1/2/3 = 使用 / 锁定 / 丢弃）
 ##   · 需要点对手的卡（String.txt 1101）→ 进入选目标模式，点亮右侧头像列
 ##   · 悬停 → 原版卡面说明（String.txt 9001..9042）
+## 小神仙条（角色面板右侧）。原版把持有的小神仙画在角色面板旁边，
+## 而没有单独的「持有」面板 —— 所以精灵屋那边只显示商店。
+func _build_pet_strip() -> void:
+	_pet_strip = Control.new()
+	_pet_strip.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	_pet_strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_hud.add_child(_pet_strip)
+	for _i in range(5):                        # Info.txt 202：最多 5 位
+		var t := TextureRect.new()
+		t.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		t.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		t.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		t.visible = false
+		_pet_strip.add_child(t)
+		_pet_strip_nodes.append(t)
+
+
+func _sync_pet_strip(me: Dictionary) -> void:
+	if _pet_strip == null or _char_panel == null:
+		return
+	var ps: Array = me.get("pets", [])
+	var px := PET_STRIP_PX * _ui_scale
+	var gap := 3.0 * _ui_scale
+	for i in range(_pet_strip_nodes.size()):
+		var t: TextureRect = _pet_strip_nodes[i]
+		if i >= ps.size():
+			t.visible = false
+			continue
+		var e: Dictionary = ps[i]
+		var pid := str(e.get("id", ""))
+		var lv := int(e.get("level", 1))
+		t.texture = _tex_or_null(Rules.pet_art(pid, "face", lv))
+		t.visible = t.texture != null
+		t.size = Vector2(px, px)
+		t.position = Vector2(float(i) * (px + gap), 0.0)
+		var pname := pid
+		if Net.sim != null:
+			pname = Net.sim.pet_name(pid)
+		t.tooltip_text = "%s Lv%d" % [pname, lv]
+	# 整条贴在角色面板**右边**（锚点同 _char_panel）
+	_pet_strip.position = Vector2(
+		_char_panel.position.x + _char_panel.size.x + 4.0 * _ui_scale,
+		_char_panel.position.y)
+
+
 func _build_card_hand() -> void:
 	# ---- 卡片夹开关：原版 uitex/other/clamp.png（String.txt id 2010「卡片夹子」）----
 	_clamp_btn = TextureButton.new()
@@ -1760,7 +1831,9 @@ func _build_card_hand() -> void:
 	mv.add_theme_constant_override("separation", maxi(1, int(round(2.0 * _ui_scale))))
 	_card_menu.add_child(mv)
 	_card_menu_btns = []
-	for which in ["use", "lock", "discard"]:
+	# 菜单项与顺序都对齐原版：老板原版截图（records/喂食功能.png）里是
+	# **「锁定 / 使用 / 喂食」**三项 —— 没有「丢弃」。
+	for which in ["lock", "use", "feed"]:
 		var b := Button.new()
 		b.flat = true
 		b.focus_mode = Control.FOCUS_NONE
@@ -1962,8 +2035,8 @@ func _on_card_clicked(slot: int) -> void:
 		return
 	_card_menu_at = slot
 	var box: Control = (_card_slots[slot] as Dictionary)["box"]
-	var labels := [Rules.card_menu_label("use"), Rules.card_menu_label("lock"),
-		Rules.card_menu_label("discard")]
+	var labels := [Rules.card_menu_label("lock"), Rules.card_menu_label("use"),
+		Rules.card_menu_label("feed")]
 	var cid := str(_card_ids[slot]) if slot < _card_ids.size() else ""
 	var locked := bool(_card_locked.get(cid, false))
 	var code := int((_card_slots[slot] as Dictionary).get("code", 0))
@@ -1971,11 +2044,12 @@ func _on_card_clicked(slot: int) -> void:
 	# 而不是让玩家对着「点了没反应」发呆（老板 2026-09-26 反馈）
 	if code != 0 and not locked:
 		_toast("「%s」用不了：%s" % [Rules.card_name(cid), Rules.ui_string(code)])
+	var blocked := locked or code != 0
 	for i in range(_card_menu_btns.size()):
 		var b: Button = _card_menu_btns[i]
 		b.text = labels[i]
-		# 「使用」在锁定 / 条件不满足时禁用；锁定 / 丢弃仍然可用
-		b.disabled = (i == 0 and (locked or code != 0))
+		# 「锁定」永远可用；「使用」「喂食」在锁定 / 条件不满足时禁用
+		b.disabled = blocked and i != 0
 	var mh := _card_menu.get_combined_minimum_size().y
 	if mh <= 0.0:
 		mh = 84.0 * _ui_scale
@@ -2029,6 +2103,10 @@ func _on_card_menu(which: String) -> void:
 		"discard":
 			Audio.play_sfx(Audio.SFX_UI_CLICK)
 			Net.send_action("discard", [cid])
+		"feed":
+			# 「喂食」：把卡片喂给小神仙（原版卡片菜单第三项，String.txt 4 = 喂食）
+			Audio.play_sfx(Audio.SFX_UI_CONFIRM)
+			Net.send_action("feed", [cid])
 		_:
 			pass
 
@@ -2256,41 +2334,36 @@ func _render_shop(me: Dictionary, credit: int, owned: Array) -> void:
 
 	var vp := get_viewport().get_visible_rect().size
 	var two := _shop_mode == "pethouse"
-	var cols := 2 if two else 1
-	# 底图缩放：保证两块并排（或一块大图）放得下
-	var fit := (vp.x * 0.94 - 24.0 * _ui_scale * float(cols - 1)) / (float(cols) * SHOP_NATIVE)
-	_shop_base = minf(SHOP_BASE_MAX if two else SHOP_BASE_MAX_ONE,
-		fit / maxf(_ui_scale, 0.001)) * _ui_scale
+	# 原版**一次只显示一张面板**（老板的原版截图
+	# docs/screenshots/orig/records/小神仙商店.png：屏幕上就只有「小神仙商店」一块）。
+	# ⚠️ 原来我把「持有栏 + 商店」两块并排显示 —— 原版**没有**那个持有栏；
+	#   已持有的小神仙改为显示在**左下角角色面板旁边**（同原版截图）。
+	var cols := 1
+	var fit := (vp.x * 0.94) / float(cols * SHOP_NATIVE)
+	_shop_base = minf(SHOP_BASE_MAX_ONE, fit / maxf(_ui_scale, 0.001)) * _ui_scale
 	# 同时别把底下的手牌条压住（原版底图 256 高，留 150 native 给 HUD）
 	_shop_base = minf(_shop_base, (vp.y - 150.0 * _ui_scale) / SHOP_NATIVE)
 	var side := SHOP_NATIVE * _shop_base
-	var total := side * float(cols) + 24.0 * _ui_scale * float(cols - 1)
+	var total := side * float(cols)
 	var x0 := (vp.x - total) * 0.5
 	var y0 := (vp.y - side) * 0.5 - 14.0 * _ui_scale
 
-	# 持有面板（左）+ 商店（右）——两张都是原版底图
-	if two:
-		_shop_panel.texture = _tex_or_null(Rules.shop_ui_path("pethouse_panel.png"))
-		_shop_panel.visible = true
-		_shop_panel.position = Vector2(x0, y0)
-		_shop_panel.size = Vector2(side, side)
-		_place_owned_pets(x0, y0, owned)
-		_shop_bg.texture = _tex_or_null(Rules.shop_ui_path("pethouse_shop.png"))
-		_shop_bg.position = Vector2(x0 + side + 24.0 * _ui_scale, y0)
-		_shop_bg.size = Vector2(side, side)
-	else:
-		_shop_panel.visible = false
-		_shop_bg.texture = _tex_or_null(Rules.shop_ui_path("cardshop.png"))
-		_shop_bg.position = Vector2(x0, y0)
-		_shop_bg.size = Vector2(side, side)
+	# 只有一块底图：小神仙商店 / 卡片商店（两张都是原版图）
+	_shop_panel.visible = false
+	_shop_bg.texture = _tex_or_null(Rules.shop_ui_path(
+		"pethouse_shop.png" if two else "cardshop.png"))
+	_shop_bg.position = Vector2(x0, y0)
+	_shop_bg.size = Vector2(side, side)
 
 	var shop_x := _shop_bg.position.x
 	var shop_y := _shop_bg.position.y
 
 	# 顶部浮动条上的「您有 N 点券」——位置就是原版底图上那个深色条
 	var cr: Array = SHOP_CREDIT_RECT["pethouse" if two else "cardshop"]
+	# 顶部那条深色条：**原版只显示点券数字**（截图里就是「135」/「50」，没有文字）
+	_shop_credit.text = "%d" % credit
 	_shop_credit.add_theme_font_size_override("font_size",
-		maxi(10, int(round(12.0 * _shop_base))))
+		maxi(10, int(round(20.0 * _shop_base))))
 	_shop_credit.size = Vector2(float(cr[2]) * _shop_base, float(cr[3]) * _shop_base)
 	_shop_credit.position = Vector2(shop_x + float(cr[0]) * _shop_base,
 		shop_y + float(cr[1]) * _shop_base)
@@ -2300,8 +2373,6 @@ func _render_shop(me: Dictionary, credit: int, owned: Array) -> void:
 		return
 
 	if two:
-		# 货架顶部那条深色条：显示点券数（Info.txt 201「精灵屋 请选购小神仙」走 toast）
-		_shop_credit.text = "点券 %d" % credit
 		_shop_stock = _pet_shop_stock()
 		var list: Array = slots
 		for i in range(mini(list.size(), _shop_stock.size())):
@@ -2309,15 +2380,13 @@ func _render_shop(me: Dictionary, credit: int, owned: Array) -> void:
 			_add_pet_slot(shop_x, shop_y, s, str(_shop_stock[i]), credit)
 		_shop_hint.text = "%s ｜ 右键 / ESC 关闭" % Rules.info_string(202).replace("\n", "")
 	else:
-		_shop_credit.text = Rules.info_fill(41, {"number": str(credit)},
-			"卡片商店\n您有%d点券" % credit).replace("\n", " ")
 		if _shop_stock.is_empty() or _shop_stock.size() != Sim.CARD_SHOP_SLOTS:
 			_shop_stock = _shop_stock_for_me()
 		var d: Dictionary = slots
 		var arr: Array = d.get("slots", [])
 		for i in range(mini(arr.size(), _shop_stock.size())):
 			_add_card_slot(shop_x, shop_y, arr[i], str(_shop_stock[i]), credit)
-		_shop_hint.text = "点券 %d ｜ 右键 / ESC 关闭" % credit
+		_shop_hint.text = "右键 / ESC 关闭"
 
 	_shop_hint.add_theme_font_size_override("font_size", maxi(10, int(round(12.0 * _ui_scale))))
 	_shop_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
@@ -2366,7 +2435,8 @@ func _add_pet_slot(ox: float, oy: float, slot: Dictionary, pet_id: String, credi
 	_shop.add_child(art)
 	_shop_nodes.append(art)
 
-	var txt := "%s  %d 点券" % [str(r.get("name", pet_id)), price]
+	# 原版标签条 = 「名字  价格」（价格就是数字，**没有「点券」二字**）
+	var txt := "%s  %d" % [str(r.get("name", pet_id)), price]
 	var owned_lv := 0
 	var me: Dictionary = (_snapshot.get("players", {}) as Dictionary).get(
 		multiplayer.get_unique_id(), {})
@@ -2374,43 +2444,24 @@ func _add_pet_slot(ox: float, oy: float, slot: Dictionary, pet_id: String, credi
 		if str((e as Dictionary).get("id", "")) == pet_id:
 			owned_lv = int((e as Dictionary).get("level", 1))
 	if owned_lv > 0:
-		txt = "%s  Lv%d → %d 点券" % [str(r.get("name", pet_id)), owned_lv, price]
+		txt = "%s  Lv%d → %d" % [str(r.get("name", pet_id)), owned_lv, price]
 	_shop_nodes.append(_slot_button(ox, oy, bar, txt, credit >= price, func() -> void:
 		_confirm_buy_pet(pet_id)))
 
 
+## 卡片商店的槽位。
+## ⚠️ **原版这里没有卡面**，就是一行文字「卡名-价格」（见
+## `docs/screenshots/orig/records/卡片商店.png`：「冬眠卡-30」「汉堡卡-40」「2步卡-40」…）。
+## 我们原来塞了「卡面 + 文字」，而槽位只有 95×30 native → 卡面把文字压住，
+## 老板 2026-09-26 反馈「文本和价格几乎看不清」。现在改成纯文字、居中。
 func _add_card_slot(ox: float, oy: float, slot: Dictionary, card_id: String, credit: int) -> void:
 	var price := Net.sim.card_price(card_id) if Net.sim != null else 0
-	var face := TextureRect.new()
-	face.texture = _card_face(card_id)
-	face.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	face.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	face.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var h := float(slot.get("h", 30))
-	var s := h * _shop_base
-	face.position = Vector2(ox + float(slot.get("x", 0)) * _shop_base + 2.0 * _shop_base,
-		oy + float(slot.get("y", 0)) * _shop_base + 1.0 * _shop_base)
-	face.size = Vector2(s, s)
-	_shop.add_child(face)
-	_shop_nodes.append(face)
-
-	var own := 0
-	var me: Dictionary = (_snapshot.get("players", {}) as Dictionary).get(
-		multiplayer.get_unique_id(), {})
-	for c in me.get("cards", []):
-		if str(c) == card_id:
-			own += 1
-	var txt := "%s  %d 点券%s" % [Rules.card_name(card_id), price,
-		"  (有%d)" % own if own > 0 else ""]
 	# ⚠ 卡片商店的槽位是 {x,y,w,h} 字典（不是 [x,y,w,h] 数组）→ 转一下再交给 _slot_button
-	# 卡面占左边 s×s，文字放在右边剩下的空档里（左对齐，否则会压在卡面上）
-	var sx := float(slot.get("x", 0))
-	var sy := float(slot.get("y", 0))
-	var sw := float(slot.get("w", 0))
-	var sh := float(slot.get("h", 0))
-	var rect: Array = [sx + h + 1.0, sy, sw - h - 2.0, sh]
+	var rect: Array = [float(slot.get("x", 0)), float(slot.get("y", 0)),
+		float(slot.get("w", 0)), float(slot.get("h", 0))]
+	var txt := "%s-%d" % [Rules.card_name(card_id), price]
 	_shop_nodes.append(_slot_button(ox, oy, rect, txt, credit >= price, func() -> void:
-		_confirm_buy_card(card_id), HORIZONTAL_ALIGNMENT_LEFT))
+		_confirm_buy_card(card_id)))
 
 
 ## 货架上的一格：透明按钮 + 居中文字（贴在原版底图的标签条上）
@@ -2423,7 +2474,7 @@ func _slot_button(ox: float, oy: float, rect: Array, text: String, afford: bool,
 	b.alignment = align
 	b.clip_text = true
 	b.add_theme_font_size_override("font_size",
-		maxi(9, int(round(10.0 * _shop_base))))
+		maxi(9, int(round(13.0 * _shop_base))))       # 原版槽位里那行字约 13 native
 	b.add_theme_color_override("font_color",
 		Color8(40, 30, 60) if afford else Color8(150, 140, 150))
 	b.add_theme_color_override("font_pressed_color", Color8(200, 60, 90))
@@ -3010,6 +3061,7 @@ func _hud_refresh(snap: Dictionary) -> void:
 		_sync_char_panel(me, players, plots, ids, my_id)
 		_sync_action_entry(me, plots, my_id)
 		_sync_card_hand(me)
+		_sync_pet_strip(me)
 		_sync_shop()
 		# 骰子卡的步数选择器只在「待选步数」时出现
 		if _step_picker != null:

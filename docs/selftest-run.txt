@@ -180,6 +180,13 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
   [PASS] 相邻的两格平台**不互为目的地**（否则就会原地打转） _other_platform(24) = -1
   [PASS] 站在传送平台上掷 1 点 → 走到另一格（不再「留在原地」） tile=25（期望 25）
   [PASS] 从第二格再走 1 格 → 正常前进（没有反弹） tile=26（期望 26）
+[3h] 卡片菜单（锁定 / 使用 / 喂食）+ 喂食效果
+  [PASS] 卡片菜单文案 = 锁定 / 使用 / 喂食（String.txt 1/2/4） 锁定 / 使用 / 喂食
+  [PASS] 喂食：消耗一张卡 + 小神仙升 1 级 level 1→2，手牌 1→0
+  [PASS] 身上没有小神仙时喂食被拒（且**不消耗**卡） 手牌 1 张
+  [PASS] 小神仙满级时喂食被拒（不浪费卡） 手牌 1 张
+  [PASS] 商店槽位表齐备（持有 panel / 小神仙货架 shop / 卡片商店 cardshop） ["panel", "shop", "cardshop"]
+  [PASS] 卡片商店槽位是 {x,y,w,h} 的 8 格（原版量出来的，每格 95×30） 8 格，首格宽 95
   [PASS] 抵达地产格 1 tile=1
   [PASS] 服务端标记可购买点（原版 id 91「是否购买」） last_plot=1 kind=buy
   [PASS] 购买成功 
@@ -259,7 +266,7 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
   [PASS] BGM 可停 
   [PASS] 环境底噪 95 已起且循环已开 
   [PASS] 环境底噪可停 
-通过 220 / 失败 0
+通过 226 / 失败 0
 ==============================
 WARNING: 16 ObjectDB instances were leaked at exit (run with `--verbose` for details).
    at: cleanup (core/object/object.cpp:2536)

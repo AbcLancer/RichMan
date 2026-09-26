@@ -1389,6 +1389,51 @@ func act_discard_card(id: int, card_id: String) -> bool:
 	return true
 
 
+## 「喂食」：把一张卡喂给小神仙（原版卡片菜单第三项，`String.txt` 4 = 喂食）。
+##
+## ⚠ 效果**没有明文依据** —— `Info.txt` 里没有「喂食」相关的文案，`Initvar_r.txt` 也没有对应
+##   参数。这里取**最保守**的实现：消耗卡片 → 让**等级最低**的一只小神仙升 1 级
+##   （与「魔戒」同效果，只是来源不同）。登记在 `docs/alignment-gap.md`。
+func act_feed_card(id: int, card_id: String) -> bool:
+	var p: Dictionary = players.get(id, {})
+	if p.is_empty() or not bool(p["alive"]):
+		return false
+	var pets: Array = p["pets"]
+	if pets.is_empty():
+		_feed_refuse(p, "身上没有小神仙")
+		return false
+	var at: int = (p["cards"] as Array).find(card_id)
+	if at < 0:
+		return false
+	var cap: int = int(Rules.get_val("road.crystal_max_pet_level", 4))
+	# 挑等级最低的那只喂；全都满级就不喂，别浪费卡
+	var best: int = -1
+	var best_lv: int = cap + 1
+	for i in range(pets.size()):
+		var lv: int = int((pets[i] as Dictionary)["level"])
+		if lv >= cap:
+			continue                  # 满级的不能再喂（否则会顶破 4 级上限）
+		if lv < best_lv:
+			best_lv = lv
+			best = i
+	if best < 0:
+		_feed_refuse(p, "小神仙都满级了")
+		return false
+	(p["cards"] as Array).remove_at(at)
+	(pets[best] as Dictionary)["level"] = best_lv + 1
+	log_message.emit("%s 把「%s」喂给 %s，升到 %d 级" % [
+		p["name"], Rules.card_name(card_id),
+		pet_name(str((pets[best] as Dictionary)["id"])), best_lv + 1])
+	_ev("feed_card", p, {"card": card_id,
+		"pet": str((pets[best] as Dictionary)["id"]), "level": best_lv + 1})
+	return true
+
+
+func _feed_refuse(p: Dictionary, why: String) -> void:
+	log_message.emit("%s 喂不了卡：%s" % [p["name"], why])
+	_ev("feed_refused", p, {"why": why})
+
+
 ## 骰子卡：自选步数（String.txt 9016「自由选择前进的步数」）
 func act_walk(id: int, steps: int) -> bool:
 	var p: Dictionary = players.get(id, {})

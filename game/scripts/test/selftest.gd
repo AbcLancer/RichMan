@@ -31,6 +31,7 @@ func run() -> void:
 	_test_pets()
 	_test_road_objs()
 	_test_platform()
+	_test_card_menu_feed()
 	_test_buy_and_rent()
 	_test_upgrade_chain()
 	_test_timers()
@@ -347,6 +348,63 @@ func _pet_world(pet_id: String) -> Sim:
 	sim.add_pet(p, pet_id)
 	sim.add_pet(q, "caishen")             # 小怪兽「PK技」要有目标
 	return sim
+
+
+# -------------------------------------------- 3h. 卡片菜单 + 喂食（对齐原版实机截图）
+
+func _test_card_menu_feed() -> void:
+	_lines.append("[3h] 卡片菜单（锁定 / 使用 / 喂食）+ 喂食效果")
+	# 老板的原版实机截图（docs/screenshots/orig/records/喂食功能.png）里菜单就是
+	# **锁定 / 使用 / 喂食** 三项 —— 没有「丢弃」
+	_ok("卡片菜单文案 = 锁定 / 使用 / 喂食（String.txt 1/2/4）",
+		Rules.card_menu_label("lock") == "锁定" and Rules.card_menu_label("use") == "使用"
+		and Rules.card_menu_label("feed") == "喂食",
+		"%s / %s / %s" % [Rules.card_menu_label("lock"), Rules.card_menu_label("use"),
+			Rules.card_menu_label("feed")])
+
+	var sim := _pet_world("caishen")
+	var p: Dictionary = sim.players[1]
+	(p["cards"] as Array).append("step3")
+	var lv0 := int(p["pets"][0]["level"])
+	var n0 := (p["cards"] as Array).size()
+	var ok_feed := sim.act_feed_card(1, "step3")
+	_ok("喂食：消耗一张卡 + 小神仙升 1 级", ok_feed
+		and int(p["pets"][0]["level"]) == lv0 + 1
+		and (p["cards"] as Array).size() == n0 - 1,
+		"level %d→%d，手牌 %d→%d" % [lv0, int(p["pets"][0]["level"]), n0,
+			(p["cards"] as Array).size()])
+
+	var s2 := _fresh_sim()
+	(s2.players[1]["cards"] as Array).append("step3")
+	_ok("身上没有小神仙时喂食被拒（且**不消耗**卡）",
+		not s2.act_feed_card(1, "step3")
+		and (s2.players[1]["cards"] as Array).size() == 1,
+		"手牌 %d 张" % (s2.players[1]["cards"] as Array).size())
+
+	var s3 := _pet_world("caishen")
+	s3.players[1]["pets"][0]["level"] = 4
+	(s3.players[1]["cards"] as Array).append("step3")
+	_ok("小神仙满级时喂食被拒（不浪费卡）",
+		not s3.act_feed_card(1, "step3")
+		and (s3.players[1]["cards"] as Array).size() == 1,
+		"手牌 %d 张" % (s3.players[1]["cards"] as Array).size())
+
+	# 商店面板：原版一次只显示一张（老板的原版截图里没有「持有栏」）
+	var idx_txt := ""
+	if FileAccess.file_exists("res://assets/pets/index.json"):
+		idx_txt = FileAccess.open("res://assets/pets/index.json", FileAccess.READ).get_as_text()
+	var idx: Variant = JSON.parse_string(idx_txt)
+	var slots: Dictionary = (idx as Dictionary).get("slot", {}) if idx is Dictionary else {}
+	_ok("商店槽位表齐备（持有 panel / 小神仙货架 shop / 卡片商店 cardshop）",
+		slots.has("shop") and slots.has("cardshop"),
+		str(slots.keys()))
+	var cs: Dictionary = slots.get("cardshop", {})
+	var sl0: Array = cs.get("slots", [])
+	var w0 := 0.0
+	if sl0.size() > 0:
+		w0 = float((sl0[0] as Dictionary).get("w", 0.0))
+	_ok("卡片商店槽位是 {x,y,w,h} 的 8 格（原版量出来的，每格 95×30）",
+		sl0.size() == 8 and w0 == 95.0, "%d 格，首格宽 %.0f" % [sl0.size(), w0])
 
 
 # --------------------------------------------------- 3g. 传送平台（Roadevent 事件 1）
