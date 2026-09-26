@@ -142,8 +142,17 @@ func _pair(value: Array) -> Vector2:
 
 ## rich6.exe 0x42bc40: advance by stored segment lengths, then evaluate Bezier.
 func route_position(i: int, direction: int, progress: float) -> Vector2:
+	var p := route_position_3d(i, direction, progress)
+	return Vector2(p.x, p.z)
+
+func _knot_point(knot: Dictionary, key: String, height_index: int) -> Vector3:
+	var p := _pair(knot[key])
+	return Vector3(p.x, float(knot.get("height", [0, 0, 0])[height_index]), p.y)
+
+func route_position_3d(i: int, direction: int, progress: float) -> Vector3:
 	if original_layout.is_empty():
-		return pos_of(i).lerp(pos_of(i + direction), progress)
+		var p := pos_of(i).lerp(pos_of(i + direction), progress)
+		return Vector3(p.x, 0, p.y)
 	var roads: Array = original_layout["roads"]
 	var knots: Array = original_layout["knots"]
 	var idx := posmod(i if direction > 0 else i - 1, roads.size())
@@ -165,7 +174,7 @@ func route_position(i: int, direction: int, progress: float) -> Vector2:
 	var f := parameter - floorf(parameter)
 	var a: Dictionary = knots[k]
 	var b: Dictionary = knots[(k + 1) % knots.size()]
-	return _pair(a["point"]).bezier_interpolate(_pair(a["outgoing"]), _pair(b["incoming"]), _pair(b["point"]), f)
+	return _knot_point(a, "point", 2).bezier_interpolate(_knot_point(a, "outgoing", 1), _knot_point(b, "incoming", 0), _knot_point(b, "point", 2), f)
 
 
 ## Original block matrix maps grid CORNERS; the center adds half a cell.
@@ -180,7 +189,7 @@ func plot_transform(i: int, footprint: int = 1) -> Transform3D:
 	var az := _pair(block["axes"][1])
 	var center := _pair(block["origin"]) + ax * (col + footprint * 0.5) + az * (row + footprint * 0.5)
 	return Transform3D(Basis(Vector3(ax.x, 0, ax.y), Vector3.UP * sqrt(ax.length() * az.length()),
-		Vector3(az.x, 0, az.y)), Vector3(center.x, 0, center.y))
+		Vector3(az.x, 0, az.y)), Vector3(center.x, float(block.get("height", 0.0)), center.y))
 
 
 func minimap_uv(i: int, direction: int = 1, progress: float = 0.0) -> Vector2:

@@ -143,6 +143,7 @@ GODOT="D:/Godot/Godot_v4.7.2-stable_win64_console.exe"   # 本项目统一用这
 | `ui_shot_road.png` | **全盘视角**：每个事件格都贴上了原版图标，棋盘上散落着路边物体 |
 | `ui_shot_roadnear.png` | **近景**：医院图标 / 四神的小神仙大图 / 路边物体（真 3D 模型 + 替代表现） |
 | `ui_shot_stock.png` | **股票买进对话框**：滑动条是唯一输入点（每跳 100）+ 金额实时算 |
+| `ui_shot_stockpage.png` | **股票页**：盯「切到股票后功能区 6 个按钮是否还在」（曾因 VBox 重排被盖住） |
 | `ui_shot_shopconfirm.png` | 商店购买 → **二次确认「是│否」**（屏幕居中，不会被面板压住） |
 | `ui_shot_warehouse.png` | 角色面板**精灵栏位**点开 → **精灵仓库**（选一只出战，原版 `精灵屋.tga`） |
 | `ui_shot_cardtarget.png` | 穷神卡 → 顶部「**请选择对手**」+ 右侧头像列全亮粉（String.txt 1101） |

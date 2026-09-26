@@ -1,5 +1,5 @@
 {
- "_source": "gamedata.pck scene/space  (原版数据生成)",
+ "_source": "Original R6MP records + executable Bezier evaluation",
  "name": "space",
  "display_name": "宇宙空间站",
  "camera": {
@@ -22,48 +22,580 @@
  "streets": [
   "火星"
  ],
- "tile_count": 6,
- "plots_per_street": 4,
+ "tile_count": 64,
  "tiles": [
   {
    "i": 0,
-   "kind": "start",
-   "name": "起点"
+   "original_kind": 1,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "platform",
+   "name": "传送平台"
   },
   {
    "i": 1,
-   "kind": "plot",
-   "street": "火星",
-   "street_index": 0,
-   "plot_in_street": 0,
-   "plot_key": "0000"
+   "original_kind": 2,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardshop",
+   "name": "卡片商店"
   },
   {
    "i": 2,
-   "kind": "plot",
-   "street": "火星",
-   "street_index": 0,
-   "plot_in_street": 1,
-   "plot_key": "0001"
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
   },
   {
    "i": 3,
-   "kind": "plot",
-   "street": "火星",
-   "street_index": 0,
-   "plot_in_street": 2,
-   "plot_key": "0002"
+   "original_kind": 14,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon30",
+   "name": "点券30"
   },
   {
    "i": 4,
-   "kind": "plot",
-   "street": "火星",
-   "street_index": 0,
-   "plot_in_street": 3,
-   "plot_key": "0003"
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
   },
   {
    "i": 5,
+   "original_kind": 4,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardpt",
+   "name": "卡片点"
+  },
+  {
+   "i": 6,
+   "original_kind": 13,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon20",
+   "name": "点券20"
+  },
+  {
+   "i": 7,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 8,
+   "original_kind": 13,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon20",
+   "name": "点券20"
+  },
+  {
+   "i": 9,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 10,
+   "original_kind": 2,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardshop",
+   "name": "卡片商店"
+  },
+  {
+   "i": 11,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 12,
+   "original_kind": 4,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardpt",
+   "name": "卡片点"
+  },
+  {
+   "i": 13,
+   "original_kind": 15,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon50",
+   "name": "点券50"
+  },
+  {
+   "i": 14,
+   "original_kind": 2,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardshop",
+   "name": "卡片商店"
+  },
+  {
+   "i": 15,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 16,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 17,
+   "original_kind": 13,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon20",
+   "name": "点券20"
+  },
+  {
+   "i": 18,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 19,
+   "original_kind": 4,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardpt",
+   "name": "卡片点"
+  },
+  {
+   "i": 20,
+   "original_kind": 13,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon20",
+   "name": "点券20"
+  },
+  {
+   "i": 21,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 22,
+   "original_kind": 14,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon30",
+   "name": "点券30"
+  },
+  {
+   "i": 23,
+   "original_kind": 2,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardshop",
+   "name": "卡片商店"
+  },
+  {
+   "i": 24,
+   "original_kind": 1,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "platform",
+   "name": "传送平台"
+  },
+  {
+   "i": 25,
+   "original_kind": 1,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "platform",
+   "name": "传送平台"
+  },
+  {
+   "i": 26,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 27,
+   "original_kind": 14,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon30",
+   "name": "点券30"
+  },
+  {
+   "i": 28,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 29,
+   "original_kind": 4,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardpt",
+   "name": "卡片点"
+  },
+  {
+   "i": 30,
+   "original_kind": 13,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon20",
+   "name": "点券20"
+  },
+  {
+   "i": 31,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 32,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 33,
+   "original_kind": 1,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "platform",
+   "name": "传送平台"
+  },
+  {
+   "i": 34,
+   "original_kind": 1,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "platform",
+   "name": "传送平台"
+  },
+  {
+   "i": 35,
+   "original_kind": 2,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardshop",
+   "name": "卡片商店"
+  },
+  {
+   "i": 36,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 37,
+   "original_kind": 13,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon20",
+   "name": "点券20"
+  },
+  {
+   "i": 38,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 39,
+   "original_kind": 4,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardpt",
+   "name": "卡片点"
+  },
+  {
+   "i": 40,
+   "original_kind": 13,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon20",
+   "name": "点券20"
+  },
+  {
+   "i": 41,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 42,
+   "original_kind": 13,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon20",
+   "name": "点券20"
+  },
+  {
+   "i": 43,
+   "original_kind": 2,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardshop",
+   "name": "卡片商店"
+  },
+  {
+   "i": 44,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 45,
+   "original_kind": 2,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardshop",
+   "name": "卡片商店"
+  },
+  {
+   "i": 46,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 47,
+   "original_kind": 14,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon30",
+   "name": "点券30"
+  },
+  {
+   "i": 48,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 49,
+   "original_kind": 4,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardpt",
+   "name": "卡片点"
+  },
+  {
+   "i": 50,
+   "original_kind": 13,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon20",
+   "name": "点券20"
+  },
+  {
+   "i": 51,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 52,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 53,
+   "original_kind": 2,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardshop",
+   "name": "卡片商店"
+  },
+  {
+   "i": 54,
+   "original_kind": 1,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "platform",
+   "name": "传送平台"
+  },
+  {
+   "i": 55,
+   "original_kind": 1,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "platform",
+   "name": "传送平台"
+  },
+  {
+   "i": 56,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 57,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 58,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 59,
+   "original_kind": 4,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardpt",
+   "name": "卡片点"
+  },
+  {
+   "i": 60,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 61,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 62,
+   "original_kind": 13,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon20",
+   "name": "点券20"
+  },
+  {
+   "i": 63,
+   "original_kind": 1,
+   "original_block": -1,
+   "original_cell": -1,
    "kind": "event",
    "event": "platform",
    "name": "传送平台"

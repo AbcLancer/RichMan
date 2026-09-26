@@ -2161,3 +2161,61 @@ rect 传进去，股票页与地图页**互斥**显示在同一块地方（原�
 | `map_alignment.gd` | `MAP ALIGNMENT PASS` |
 | `--uishot` | 15 张、**0 错误** |
 | `--demo` | 6 张 OK |
+
+---
+
+# 26. 2026-09-26（下午十四轮）修 bug：切到股票页后功能区按钮「消失」
+
+老板：
+
+> "右下角我切成股票之后其他的按钮就都隐藏掉了，导致我再也切不回其他的功能了。"
+
+## 26.1 根因：**VBoxContainer 重新布局把按钮条顶上去了**
+
+右下角功能区是个 `VBoxContainer`（`_br_box`）：
+
+```
+_br_box (VBoxContainer)
+├── mp            ← 地图面板（小地图在里面）
+└── _icon_bar     ← 6 个功能按钮
+```
+
+`_sync_br_pages()` 里我原来写的是：
+
+```gdscript
+_br_map_panel.visible = on and _br_page == 2      # ❌ 非地图页就把整个面板隐藏
+```
+
+**面板一隐藏，VBox 立刻重新布局** → `_icon_bar` **上移到原来 `mp` 的位置** ——
+而那一块地方正是**股票页浮着的地方**，于是按钮条被股票面板整个盖住 → 「按钮都没了」。
+
+（`mousedown` 也点不到：股票面板的表格行是可以点的，等于把按钮的点击一起吃了。
+「再也切不回去」就是这么来的。）
+
+## 26.2 修法：面板**始终占位**，只把「内容 + 底框」换掉
+
+```gdscript
+_br_map_panel.visible = on                       # ✅ 永远可见（占住 VBox 里的位置）
+var on_map := on and _br_page == 2
+_minimap.visible = on_map                        # 只藏里面的小地图
+_br_map_panel.add_theme_stylebox_override("panel",
+    _br_map_sb if on_map else StyleBoxEmpty.new())   # 别的页就把底框透明化，别露出深蓝底
+```
+
+另外两道保险：
+- `_hud.move_child(_stock, 0)` —— 把股票面板压到**最底层**，保证按钮条永远在它上面
+- `StockPanel._bg` 的 `mouse_filter` 本来就是 `IGNORE`（只有表格行吃点击）
+
+## 26.3 验收
+
+新增一张专门盯这个 bug 的截图 **`ui_shot_stockpage.png`**（先把功能区切到股票页再拍）：
+图里股票表格下方 **6 个按钮（头像 / 折线图 / MAP / 聊天区 / 聊天 / 收起）全部可见可点**。
+
+| 检查 | 结果 |
+|------|------|
+| `--selftest` | 263 / 0 |
+| `--uishot` | **16 张**（新增 `ui_shot_stockpage.png`）、0 错误 |
+
+⚠️ 另记：`--uishot` 张数**偶尔会波动**（同一命令有时 11 张、有时 16 张）——
+是 `_process` 协程与帧回调的竞态（老问题，见铁律里那条「`_process` 是协程，await 期间会再起一次」）。
+**重跑即可**，不是代码坏了。

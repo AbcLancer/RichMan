@@ -182,14 +182,13 @@ def main():
         if not os.path.isdir(d):
             continue
         # Verified original road records supersede the historical synthetic layout.
-        if name == "aiji":
-            dst = os.path.join(OUT, "aiji.json")
-            if os.path.isfile(dst):
-                with open(dst, encoding="utf-8") as existing:
-                    verified = json.load(existing)
-                if "Original R6MP records" in verified.get("_source", ""):
-                    print("aiji: 保留已恢复的原版 144 格；重建请用 tools/r6_map_verified.py")
-                    continue
+        dst = os.path.join(OUT, name + ".json")
+        if os.path.isfile(dst):
+            with open(dst, encoding="utf-8") as existing:
+                verified = json.load(existing)
+            if "Original R6MP records" in verified.get("_source", ""):
+                print(name + ": 保留原版道路；重建请用 tools/build_original_scenes.py")
+                continue
         m = build_map(name)
         dst = os.path.join(OUT, "%s.json" % name)
         with open(dst, "w", encoding="utf-8") as f:

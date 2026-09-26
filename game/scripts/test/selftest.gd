@@ -158,7 +158,7 @@ func _test_map() -> void:
 	if m == null:
 		return
 	_ok("街道 19 条", m.streets.size() == 19, "实际 %d" % m.streets.size())
-	_ok("格子 96 格", m.tile_count() == 96, "实际 %d" % m.tile_count())
+	_ok("原版中国地图 98 格", m.tile_count() == 98, "实际 %d" % m.tile_count())
 	_ok("首街道 = 少林路", str(m.streets[0]) == "少林路", str(m.streets[0]))
 	_ok("虚拟公司 6 家", m.virtual_companies.size() == 6)
 	_ok("首公司 = 武当派", str(m.virtual_companies[0]["name"]) == "武当派")
@@ -307,7 +307,10 @@ func _test_road_events() -> void:
 	# ---- 逐类跑一遍：每一类都必须**真的产生了后果**，不能只打日志 ----
 	# 「后果」有两类：① 改了状态（钱/点券/手牌/小神仙/沉睡）
 	#                 ② 发了语义事件（卡片商店 / 精灵屋是「开店」，本身不改状态）
-	var sim := _fresh_sim()
+	var sim := Sim.new()
+	sim.setup(m, 12345)
+	sim.add_player(1, "玩家一")
+	sim.running = true
 	var p: Dictionary = sim.players[1]
 	var kinds: Array = []
 	sim.game_event.connect(func(k: String, _d: Dictionary) -> void: kinds.append(k))
@@ -315,6 +318,8 @@ func _test_road_events() -> void:
 	for e in counts.keys():          # 只遍历埃及地图上**真有的**类型
 		var n0 := kinds.size()
 		var res: Dictionary = _fire_event(sim, p, str(e))
+		if e == "platform" and sim._other_platform(24) < 0:
+			continue # 相邻入口/出口的位移由道路本身完成；见 _test_platform。
 		if not bool(res.get("changed", false)) and kinds.size() == n0:
 			silent.append(e)
 	_ok("埃及真有的 %d 类事件全部产生后果（改状态 或 发事件）" % counts.size(),
@@ -328,8 +333,7 @@ func _test_road_events() -> void:
 	_ok("精灵屋是「开店」不再是白送（发 pethouse_open）",
 		kinds.has("pethouse_open"), str(kinds))
 	_ok("点券格加点券", int(p["credit"]) > 0, "点券 %d" % int(p["credit"]))
-	_ok("传送平台真的挪了位置（tile 变了）", p.has("_ev_platform_moved"),
-		str(p.get("_ev_platform_moved", "")))
+	_ok("相邻入口出口不触发重复传送", not p.has("_ev_platform_moved"))
 
 # ------------------------------------------- 3e. 小神仙（精灵屋）+ 卡片商店
 

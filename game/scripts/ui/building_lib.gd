@@ -15,18 +15,8 @@ class_name BuildingLib
 ##   f32[2*n_vert] UV        （Godot 约定：v=0 在贴图顶部）
 ##   u32[3*n_tri]  三角索引
 ##
-## 模型来自原版 R6HS(.pol)；UV 取顶点记录的 (f4, f5)，导出时翻转 v 到 Godot 坐标。
-## 字段语义已用**几何硬判据**定死（tools/pol_struct.py，2026-09-26）：
-##   位置 = (f1,f2,f3)  法线 = (f0,f6,f7)——三者的取值几乎只有 {0,±1}   UV = (f4,f5)
-##   索引块 / 顶点步长 32 / 材质块 76 字节 全部验证正确（0 退化面、无未使用顶点）。
-## ⚠️ 但 (f4,f5) 是**盒投影**（模型名 `Box02` = 3ds Max 的 UVW Map(Box) gizmo），
-##    u 只随 (x,z)、v 只随 y 变；而原版图集是一张「房子墙纸」（草皮/白墙/窗门/屋顶分区）。
-##    盒投影把整张墙纸投到每一面 → 呈现「大体对、局部错」（屋顶/墙/草皮位置基本对，
-##    但个别面抓到墙纸里错误的矩形块）。**每个面该取哪一块，很可能不在 .pol 里。**
-## 已排除的假设：u/v 翻转或交换、`.max` 里有 UV、材质块里有第二套 UV、头部有 UV 字段、
-##    索引块扫错、`pol2obj.snap_uv_to_content/bleed_atlas` 破坏贴图（对照表见
-##    tools/bld_sheet.py 与 .workbuddy/bld_sheet.png）。完整清单见 docs/decision-log.md §8.4。
-## 逐栋核对工具：`Godot… -- --probe=<type>:<level>` → docs/screenshots/v3/probe_*.png。
+## R6HS v100 顶点从文件偏移 128 开始：UV2 + normal3 + position3。
+## 旧版偏移 144 导致 UV 读到下一顶点；不是盒投影缺陷。参见 scene-recovery 报告。
 
 const DIR := "res://assets/buildings/"
 

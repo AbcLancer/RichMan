@@ -14,15 +14,8 @@ r6pol.py —— 《大富翁6》R6HS (.pol) 网格解析器
     108     f32[3]      包围盒中心 (cx, cy, cz)
     120     f32         包围半径 r
     124     u32         顶点数 nv
-    144     record[nv]  顶点记录，**步长 32 字节**：
-                           +0  f32    未定（多数为 0）
-                           +4  f32[3] 位置 (x, y, z)
-                           +16 f32[3] 法线 (nx, ny, nz)
-                           +28 f32    未定（0 或 ±1）
-    144+32n ???         材质块：起始固定 12 字节
-                           (D3DCOLOR 0xff0b0b0b, D3DCOLOR 0xff000000, f32 32.0)
-                           之后是**变长**的字符串 / 参数表（贴图名、refractionMap 等），
-                           长度不固定 ⇒ 索引块位置不能写死。
+    128     record[nv]  顶点记录，步长 32：UV2 + normal3 + position3。
+    128+32n u32          材质数；各材质 flag4 + 参数20 + 纹理名64 + 索引四叉树。
      ?      u32         三角形数 tc
      ?+4    u16[3*tc]   索引（三角形列表）
 
@@ -41,10 +34,10 @@ import os
 import struct
 import sys
 
-HEADER = 144
+HEADER = 128
 STRIDE = 32
-POS_OFF = 4
-NRM_OFF = 16
+POS_OFF = 20
+NRM_OFF = 8
 
 
 def f32(b, o):

@@ -1,5 +1,5 @@
 {
- "_source": "gamedata.pck scene/island  (原版数据生成)",
+ "_source": "Original R6MP records + executable Bezier evaluation",
  "name": "island",
  "display_name": "未来人工岛",
  "camera": {
@@ -53,431 +53,983 @@
   "红宝石路",
   "绿宝石路"
  ],
- "tile_count": 56,
- "plots_per_street": 4,
+ "tile_count": 96,
  "tiles": [
   {
    "i": 0,
-   "kind": "start",
-   "name": "起点"
-  },
-  {
-   "i": 1,
-   "kind": "plot",
-   "street": "孔雀路",
-   "street_index": 0,
-   "plot_in_street": 0,
-   "plot_key": "0000"
-  },
-  {
-   "i": 2,
-   "kind": "plot",
-   "street": "孔雀路",
-   "street_index": 0,
-   "plot_in_street": 1,
-   "plot_key": "0001"
-  },
-  {
-   "i": 3,
-   "kind": "plot",
-   "street": "孔雀路",
-   "street_index": 0,
-   "plot_in_street": 2,
-   "plot_key": "0002"
-  },
-  {
-   "i": 4,
-   "kind": "plot",
-   "street": "孔雀路",
-   "street_index": 0,
-   "plot_in_street": 3,
-   "plot_key": "0003"
-  },
-  {
-   "i": 5,
-   "kind": "event",
-   "event": "platform",
-   "name": "传送平台"
-  },
-  {
-   "i": 6,
-   "kind": "plot",
-   "street": "琥珀路",
-   "street_index": 1,
-   "plot_in_street": 0,
-   "plot_key": "0100"
-  },
-  {
-   "i": 7,
-   "kind": "plot",
-   "street": "琥珀路",
-   "street_index": 1,
-   "plot_in_street": 1,
-   "plot_key": "0101"
-  },
-  {
-   "i": 8,
-   "kind": "plot",
-   "street": "琥珀路",
-   "street_index": 1,
-   "plot_in_street": 2,
-   "plot_key": "0102"
-  },
-  {
-   "i": 9,
-   "kind": "plot",
-   "street": "琥珀路",
-   "street_index": 1,
-   "plot_in_street": 3,
-   "plot_key": "0103"
-  },
-  {
-   "i": 10,
-   "kind": "event",
-   "event": "cardshop",
-   "name": "卡片商店"
-  },
-  {
-   "i": 11,
-   "kind": "plot",
-   "street": "女皇路",
-   "street_index": 2,
-   "plot_in_street": 0,
-   "plot_key": "0200"
-  },
-  {
-   "i": 12,
-   "kind": "plot",
-   "street": "女皇路",
-   "street_index": 2,
-   "plot_in_street": 1,
-   "plot_key": "0201"
-  },
-  {
-   "i": 13,
-   "kind": "plot",
-   "street": "女皇路",
-   "street_index": 2,
-   "plot_in_street": 2,
-   "plot_key": "0202"
-  },
-  {
-   "i": 14,
-   "kind": "plot",
-   "street": "女皇路",
-   "street_index": 2,
-   "plot_in_street": 3,
-   "plot_key": "0203"
-  },
-  {
-   "i": 15,
-   "kind": "event",
-   "event": "hospital",
-   "name": "医院"
-  },
-  {
-   "i": 16,
-   "kind": "plot",
-   "street": "珍珠路",
-   "street_index": 3,
-   "plot_in_street": 0,
-   "plot_key": "0300"
-  },
-  {
-   "i": 17,
-   "kind": "plot",
-   "street": "珍珠路",
-   "street_index": 3,
-   "plot_in_street": 1,
-   "plot_key": "0301"
-  },
-  {
-   "i": 18,
-   "kind": "plot",
-   "street": "珍珠路",
-   "street_index": 3,
-   "plot_in_street": 2,
-   "plot_key": "0302"
-  },
-  {
-   "i": 19,
-   "kind": "plot",
-   "street": "珍珠路",
-   "street_index": 3,
-   "plot_in_street": 3,
-   "plot_key": "0303"
-  },
-  {
-   "i": 20,
+   "original_kind": 4,
+   "original_block": -1,
+   "original_cell": -1,
    "kind": "event",
    "event": "cardpt",
    "name": "卡片点"
   },
   {
-   "i": 21,
-   "kind": "plot",
-   "street": "黄金路",
-   "street_index": 4,
-   "plot_in_street": 0,
-   "plot_key": "0400"
+   "i": 1,
+   "original_kind": 15,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon50",
+   "name": "点券50"
   },
   {
-   "i": 22,
-   "kind": "plot",
-   "street": "黄金路",
-   "street_index": 4,
-   "plot_in_street": 1,
-   "plot_key": "0401"
+   "i": 2,
+   "original_kind": 14,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon30",
+   "name": "点券30"
   },
   {
-   "i": 23,
-   "kind": "plot",
-   "street": "黄金路",
-   "street_index": 4,
-   "plot_in_street": 2,
-   "plot_key": "0402"
-  },
-  {
-   "i": 24,
-   "kind": "plot",
-   "street": "黄金路",
-   "street_index": 4,
-   "plot_in_street": 3,
-   "plot_key": "0403"
-  },
-  {
-   "i": 25,
+   "i": 3,
+   "original_kind": 5,
+   "original_block": -1,
+   "original_cell": -1,
    "kind": "event",
    "event": "tvnews",
    "name": "电视台"
   },
   {
-   "i": 26,
-   "kind": "plot",
-   "street": "狮子路",
-   "street_index": 5,
-   "plot_in_street": 0,
-   "plot_key": "0500"
-  },
-  {
-   "i": 27,
-   "kind": "plot",
-   "street": "狮子路",
-   "street_index": 5,
-   "plot_in_street": 1,
-   "plot_key": "0501"
-  },
-  {
-   "i": 28,
-   "kind": "plot",
-   "street": "狮子路",
-   "street_index": 5,
-   "plot_in_street": 2,
-   "plot_key": "0502"
-  },
-  {
-   "i": 29,
-   "kind": "plot",
-   "street": "狮子路",
-   "street_index": 5,
-   "plot_in_street": 3,
-   "plot_key": "0503"
-  },
-  {
-   "i": 30,
+   "i": 4,
+   "original_kind": 5,
+   "original_block": -1,
+   "original_cell": -1,
    "kind": "event",
-   "event": "labar",
-   "name": "拉霸"
+   "event": "tvnews",
+   "name": "电视台"
   },
   {
-   "i": 31,
-   "kind": "plot",
-   "street": "大象路",
-   "street_index": 6,
-   "plot_in_street": 0,
-   "plot_key": "0600"
-  },
-  {
-   "i": 32,
-   "kind": "plot",
-   "street": "大象路",
-   "street_index": 6,
-   "plot_in_street": 1,
-   "plot_key": "0601"
-  },
-  {
-   "i": 33,
-   "kind": "plot",
-   "street": "大象路",
-   "street_index": 6,
-   "plot_in_street": 2,
-   "plot_key": "0602"
-  },
-  {
-   "i": 34,
-   "kind": "plot",
-   "street": "大象路",
-   "street_index": 6,
-   "plot_in_street": 3,
-   "plot_key": "0603"
-  },
-  {
-   "i": 35,
+   "i": 5,
+   "original_kind": 5,
+   "original_block": -1,
+   "original_cell": -1,
    "kind": "event",
-   "event": "capital",
-   "name": "市政府"
+   "event": "tvnews",
+   "name": "电视台"
   },
   {
-   "i": 36,
-   "kind": "plot",
-   "street": "玫瑰路",
-   "street_index": 7,
-   "plot_in_street": 0,
-   "plot_key": "0700"
+   "i": 6,
+   "original_kind": 5,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "tvnews",
+   "name": "电视台"
   },
   {
-   "i": 37,
-   "kind": "plot",
-   "street": "玫瑰路",
-   "street_index": 7,
-   "plot_in_street": 1,
-   "plot_key": "0701"
+   "i": 7,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
   },
   {
-   "i": 38,
-   "kind": "plot",
-   "street": "玫瑰路",
-   "street_index": 7,
-   "plot_in_street": 2,
-   "plot_key": "0702"
+   "i": 8,
+   "original_kind": 13,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon20",
+   "name": "点券20"
   },
   {
-   "i": 39,
-   "kind": "plot",
-   "street": "玫瑰路",
-   "street_index": 7,
-   "plot_in_street": 3,
-   "plot_key": "0703"
+   "i": 9,
+   "original_kind": 2,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardshop",
+   "name": "卡片商店"
   },
   {
-   "i": 40,
+   "i": 10,
+   "original_kind": 8,
+   "original_block": -1,
+   "original_cell": -1,
    "kind": "event",
    "event": "pethouse",
    "name": "精灵屋"
   },
   {
-   "i": 41,
-   "kind": "plot",
-   "street": "蓝宝石路",
-   "street_index": 8,
-   "plot_in_street": 0,
-   "plot_key": "0800"
-  },
-  {
-   "i": 42,
-   "kind": "plot",
-   "street": "蓝宝石路",
-   "street_index": 8,
-   "plot_in_street": 1,
-   "plot_key": "0801"
-  },
-  {
-   "i": 43,
-   "kind": "plot",
-   "street": "蓝宝石路",
-   "street_index": 8,
-   "plot_in_street": 2,
-   "plot_key": "0802"
-  },
-  {
-   "i": 44,
-   "kind": "plot",
-   "street": "蓝宝石路",
-   "street_index": 8,
-   "plot_in_street": 3,
-   "plot_key": "0803"
-  },
-  {
-   "i": 45,
-   "kind": "event",
-   "event": "game_a",
-   "name": "游戏点A"
-  },
-  {
-   "i": 46,
-   "kind": "plot",
-   "street": "红宝石路",
-   "street_index": 9,
-   "plot_in_street": 0,
-   "plot_key": "0900"
-  },
-  {
-   "i": 47,
-   "kind": "plot",
-   "street": "红宝石路",
-   "street_index": 9,
-   "plot_in_street": 1,
-   "plot_key": "0901"
-  },
-  {
-   "i": 48,
-   "kind": "plot",
-   "street": "红宝石路",
-   "street_index": 9,
-   "plot_in_street": 2,
-   "plot_key": "0902"
-  },
-  {
-   "i": 49,
-   "kind": "plot",
-   "street": "红宝石路",
-   "street_index": 9,
-   "plot_in_street": 3,
-   "plot_key": "0903"
-  },
-  {
-   "i": 50,
+   "i": 11,
+   "original_kind": 10,
+   "original_block": -1,
+   "original_cell": -1,
    "kind": "event",
    "event": "game_b",
    "name": "游戏点B"
   },
   {
+   "i": 12,
+   "original_kind": 9,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "game_a",
+   "name": "游戏点A"
+  },
+  {
+   "i": 13,
+   "original_kind": 4,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardpt",
+   "name": "卡片点"
+  },
+  {
+   "i": 14,
+   "original_kind": 0,
+   "original_block": 7,
+   "original_cell": 0,
+   "kind": "plot",
+   "street": "女皇路",
+   "street_index": 2,
+   "plot_in_street": 0,
+   "plot_key": "7:0"
+  },
+  {
+   "i": 15,
+   "original_kind": 0,
+   "original_block": 7,
+   "original_cell": 1,
+   "kind": "plot",
+   "street": "女皇路",
+   "street_index": 2,
+   "plot_in_street": 1,
+   "plot_key": "7:1"
+  },
+  {
+   "i": 16,
+   "original_kind": 0,
+   "original_block": 7,
+   "original_cell": 2,
+   "kind": "plot",
+   "street": "女皇路",
+   "street_index": 2,
+   "plot_in_street": 2,
+   "plot_key": "7:2"
+  },
+  {
+   "i": 17,
+   "original_kind": 0,
+   "original_block": 7,
+   "original_cell": 3,
+   "kind": "plot",
+   "street": "女皇路",
+   "street_index": 2,
+   "plot_in_street": 3,
+   "plot_key": "7:3"
+  },
+  {
+   "i": 18,
+   "original_kind": 0,
+   "original_block": 7,
+   "original_cell": 4,
+   "kind": "plot",
+   "street": "女皇路",
+   "street_index": 2,
+   "plot_in_street": 4,
+   "plot_key": "7:4"
+  },
+  {
+   "i": 19,
+   "original_kind": 0,
+   "original_block": 7,
+   "original_cell": 5,
+   "kind": "plot",
+   "street": "女皇路",
+   "street_index": 2,
+   "plot_in_street": 5,
+   "plot_key": "7:5"
+  },
+  {
+   "i": 20,
+   "original_kind": 0,
+   "original_block": 7,
+   "original_cell": 6,
+   "kind": "plot",
+   "street": "女皇路",
+   "street_index": 2,
+   "plot_in_street": 6,
+   "plot_key": "7:6"
+  },
+  {
+   "i": 21,
+   "original_kind": 0,
+   "original_block": 7,
+   "original_cell": 7,
+   "kind": "plot",
+   "street": "女皇路",
+   "street_index": 2,
+   "plot_in_street": 7,
+   "plot_key": "7:7"
+  },
+  {
+   "i": 22,
+   "original_kind": 0,
+   "original_block": 7,
+   "original_cell": 8,
+   "kind": "plot",
+   "street": "女皇路",
+   "street_index": 2,
+   "plot_in_street": 8,
+   "plot_key": "7:8"
+  },
+  {
+   "i": 23,
+   "original_kind": 0,
+   "original_block": 7,
+   "original_cell": 9,
+   "kind": "plot",
+   "street": "女皇路",
+   "street_index": 2,
+   "plot_in_street": 9,
+   "plot_key": "7:9"
+  },
+  {
+   "i": 24,
+   "original_kind": 0,
+   "original_block": 7,
+   "original_cell": 10,
+   "kind": "plot",
+   "street": "女皇路",
+   "street_index": 2,
+   "plot_in_street": 10,
+   "plot_key": "7:10"
+  },
+  {
+   "i": 25,
+   "original_kind": 4,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardpt",
+   "name": "卡片点"
+  },
+  {
+   "i": 26,
+   "original_kind": 2,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardshop",
+   "name": "卡片商店"
+  },
+  {
+   "i": 27,
+   "original_kind": 8,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "pethouse",
+   "name": "精灵屋"
+  },
+  {
+   "i": 28,
+   "original_kind": 6,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "labar",
+   "name": "拉霸"
+  },
+  {
+   "i": 29,
+   "original_kind": 6,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "labar",
+   "name": "拉霸"
+  },
+  {
+   "i": 30,
+   "original_kind": 12,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon10",
+   "name": "点券10"
+  },
+  {
+   "i": 31,
+   "original_kind": 13,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon20",
+   "name": "点券20"
+  },
+  {
+   "i": 32,
+   "original_kind": 5,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "tvnews",
+   "name": "电视台"
+  },
+  {
+   "i": 33,
+   "original_kind": 5,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "tvnews",
+   "name": "电视台"
+  },
+  {
+   "i": 34,
+   "original_kind": 5,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "tvnews",
+   "name": "电视台"
+  },
+  {
+   "i": 35,
+   "original_kind": 5,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "tvnews",
+   "name": "电视台"
+  },
+  {
+   "i": 36,
+   "original_kind": 15,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon50",
+   "name": "点券50"
+  },
+  {
+   "i": 37,
+   "original_kind": 14,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "coupon30",
+   "name": "点券30"
+  },
+  {
+   "i": 38,
+   "original_kind": 4,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardpt",
+   "name": "卡片点"
+  },
+  {
+   "i": 39,
+   "original_kind": 9,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "game_a",
+   "name": "游戏点A"
+  },
+  {
+   "i": 40,
+   "original_kind": 0,
+   "original_block": 5,
+   "original_cell": 0,
+   "kind": "plot",
+   "street": "玫瑰路",
+   "street_index": 7,
+   "plot_in_street": 0,
+   "plot_key": "5:0"
+  },
+  {
+   "i": 41,
+   "original_kind": 0,
+   "original_block": 5,
+   "original_cell": 1,
+   "kind": "plot",
+   "street": "玫瑰路",
+   "street_index": 7,
+   "plot_in_street": 1,
+   "plot_key": "5:1"
+  },
+  {
+   "i": 42,
+   "original_kind": 0,
+   "original_block": 5,
+   "original_cell": 2,
+   "kind": "plot",
+   "street": "玫瑰路",
+   "street_index": 7,
+   "plot_in_street": 2,
+   "plot_key": "5:2"
+  },
+  {
+   "i": 43,
+   "original_kind": 16,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "casino",
+   "name": "乐透"
+  },
+  {
+   "i": 44,
+   "original_kind": 0,
+   "original_block": 5,
+   "original_cell": 4,
+   "kind": "plot",
+   "street": "玫瑰路",
+   "street_index": 7,
+   "plot_in_street": 3,
+   "plot_key": "5:4"
+  },
+  {
+   "i": 45,
+   "original_kind": 0,
+   "original_block": 5,
+   "original_cell": 5,
+   "kind": "plot",
+   "street": "玫瑰路",
+   "street_index": 7,
+   "plot_in_street": 4,
+   "plot_key": "5:5"
+  },
+  {
+   "i": 46,
+   "original_kind": 0,
+   "original_block": 5,
+   "original_cell": 6,
+   "kind": "plot",
+   "street": "玫瑰路",
+   "street_index": 7,
+   "plot_in_street": 5,
+   "plot_key": "5:6"
+  },
+  {
+   "i": 47,
+   "original_kind": 2,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardshop",
+   "name": "卡片商店"
+  },
+  {
+   "i": 48,
+   "original_kind": 0,
+   "original_block": 1,
+   "original_cell": 6,
+   "kind": "plot",
+   "street": "红宝石路",
+   "street_index": 9,
+   "plot_in_street": 0,
+   "plot_key": "1:6"
+  },
+  {
+   "i": 49,
+   "original_kind": 0,
+   "original_block": 1,
+   "original_cell": 5,
+   "kind": "plot",
+   "street": "红宝石路",
+   "street_index": 9,
+   "plot_in_street": 1,
+   "plot_key": "1:5"
+  },
+  {
+   "i": 50,
+   "original_kind": 0,
+   "original_block": 1,
+   "original_cell": 4,
+   "kind": "plot",
+   "street": "红宝石路",
+   "street_index": 9,
+   "plot_in_street": 2,
+   "plot_key": "1:4"
+  },
+  {
    "i": 51,
+   "original_kind": 0,
+   "original_block": 1,
+   "original_cell": 3,
+   "kind": "plot",
+   "street": "红宝石路",
+   "street_index": 9,
+   "plot_in_street": 3,
+   "plot_key": "1:3"
+  },
+  {
+   "i": 52,
+   "original_kind": 0,
+   "original_block": 1,
+   "original_cell": 2,
+   "kind": "plot",
+   "street": "红宝石路",
+   "street_index": 9,
+   "plot_in_street": 4,
+   "plot_key": "1:2"
+  },
+  {
+   "i": 53,
+   "original_kind": 0,
+   "original_block": 1,
+   "original_cell": 1,
+   "kind": "plot",
+   "street": "红宝石路",
+   "street_index": 9,
+   "plot_in_street": 5,
+   "plot_key": "1:1"
+  },
+  {
+   "i": 54,
+   "original_kind": 0,
+   "original_block": 1,
+   "original_cell": 0,
+   "kind": "plot",
+   "street": "红宝石路",
+   "street_index": 9,
+   "plot_in_street": 6,
+   "plot_key": "1:0"
+  },
+  {
+   "i": 55,
+   "original_kind": 4,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardpt",
+   "name": "卡片点"
+  },
+  {
+   "i": 56,
+   "original_kind": 0,
+   "original_block": 0,
+   "original_cell": 6,
+   "kind": "plot",
+   "street": "黄金路",
+   "street_index": 4,
+   "plot_in_street": 0,
+   "plot_key": "0:6"
+  },
+  {
+   "i": 57,
+   "original_kind": 0,
+   "original_block": 0,
+   "original_cell": 5,
+   "kind": "plot",
+   "street": "珍珠路",
+   "street_index": 3,
+   "plot_in_street": 0,
+   "plot_key": "0:5"
+  },
+  {
+   "i": 58,
+   "original_kind": 0,
+   "original_block": 0,
+   "original_cell": 4,
+   "kind": "plot",
+   "street": "黄金路",
+   "street_index": 4,
+   "plot_in_street": 1,
+   "plot_key": "0:4"
+  },
+  {
+   "i": 59,
+   "original_kind": 6,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "labar",
+   "name": "拉霸"
+  },
+  {
+   "i": 60,
+   "original_kind": 0,
+   "original_block": 0,
+   "original_cell": 2,
+   "kind": "plot",
+   "street": "黄金路",
+   "street_index": 4,
+   "plot_in_street": 2,
+   "plot_key": "0:2"
+  },
+  {
+   "i": 61,
+   "original_kind": 0,
+   "original_block": 0,
+   "original_cell": 1,
+   "kind": "plot",
+   "street": "黄金路",
+   "street_index": 4,
+   "plot_in_street": 3,
+   "plot_key": "0:1"
+  },
+  {
+   "i": 62,
+   "original_kind": 0,
+   "original_block": 0,
+   "original_cell": 0,
+   "kind": "plot",
+   "street": "黄金路",
+   "street_index": 4,
+   "plot_in_street": 4,
+   "plot_key": "0:0"
+  },
+  {
+   "i": 63,
+   "original_kind": 2,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardshop",
+   "name": "卡片商店"
+  },
+  {
+   "i": 64,
+   "original_kind": 0,
+   "original_block": 4,
+   "original_cell": 6,
+   "kind": "plot",
+   "street": "蓝宝石路",
+   "street_index": 8,
+   "plot_in_street": 0,
+   "plot_key": "4:6"
+  },
+  {
+   "i": 65,
+   "original_kind": 0,
+   "original_block": 4,
+   "original_cell": 5,
+   "kind": "plot",
+   "street": "蓝宝石路",
+   "street_index": 8,
+   "plot_in_street": 1,
+   "plot_key": "4:5"
+  },
+  {
+   "i": 66,
+   "original_kind": 0,
+   "original_block": 4,
+   "original_cell": 4,
+   "kind": "plot",
+   "street": "蓝宝石路",
+   "street_index": 8,
+   "plot_in_street": 2,
+   "plot_key": "4:4"
+  },
+  {
+   "i": 67,
+   "original_kind": 0,
+   "original_block": 4,
+   "original_cell": 3,
+   "kind": "plot",
+   "street": "蓝宝石路",
+   "street_index": 8,
+   "plot_in_street": 3,
+   "plot_key": "4:3"
+  },
+  {
+   "i": 68,
+   "original_kind": 0,
+   "original_block": 4,
+   "original_cell": 2,
+   "kind": "plot",
+   "street": "蓝宝石路",
+   "street_index": 8,
+   "plot_in_street": 4,
+   "plot_key": "4:2"
+  },
+  {
+   "i": 69,
+   "original_kind": 0,
+   "original_block": 4,
+   "original_cell": 1,
+   "kind": "plot",
+   "street": "蓝宝石路",
+   "street_index": 8,
+   "plot_in_street": 5,
+   "plot_key": "4:1"
+  },
+  {
+   "i": 70,
+   "original_kind": 0,
+   "original_block": 4,
+   "original_cell": 0,
+   "kind": "plot",
+   "street": "蓝宝石路",
+   "street_index": 8,
+   "plot_in_street": 6,
+   "plot_key": "4:0"
+  },
+  {
+   "i": 71,
+   "original_kind": 2,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardshop",
+   "name": "卡片商店"
+  },
+  {
+   "i": 72,
+   "original_kind": 0,
+   "original_block": 6,
+   "original_cell": 6,
+   "kind": "plot",
+   "street": "珍珠路",
+   "street_index": 3,
+   "plot_in_street": 1,
+   "plot_key": "6:6"
+  },
+  {
+   "i": 73,
+   "original_kind": 0,
+   "original_block": 6,
+   "original_cell": 5,
+   "kind": "plot",
+   "street": "珍珠路",
+   "street_index": 3,
+   "plot_in_street": 2,
+   "plot_key": "6:5"
+  },
+  {
+   "i": 74,
+   "original_kind": 0,
+   "original_block": 6,
+   "original_cell": 4,
+   "kind": "plot",
+   "street": "珍珠路",
+   "street_index": 3,
+   "plot_in_street": 3,
+   "plot_key": "6:4"
+  },
+  {
+   "i": 75,
+   "original_kind": 3,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "hospital",
+   "name": "医院"
+  },
+  {
+   "i": 76,
+   "original_kind": 0,
+   "original_block": 6,
+   "original_cell": 2,
+   "kind": "plot",
+   "street": "珍珠路",
+   "street_index": 3,
+   "plot_in_street": 4,
+   "plot_key": "6:2"
+  },
+  {
+   "i": 77,
+   "original_kind": 0,
+   "original_block": 6,
+   "original_cell": 1,
+   "kind": "plot",
+   "street": "珍珠路",
+   "street_index": 3,
+   "plot_in_street": 5,
+   "plot_key": "6:1"
+  },
+  {
+   "i": 78,
+   "original_kind": 0,
+   "original_block": 6,
+   "original_cell": 0,
+   "kind": "plot",
+   "street": "珍珠路",
+   "street_index": 3,
+   "plot_in_street": 6,
+   "plot_key": "6:0"
+  },
+  {
+   "i": 79,
+   "original_kind": 4,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "cardpt",
+   "name": "卡片点"
+  },
+  {
+   "i": 80,
+   "original_kind": 0,
+   "original_block": 3,
+   "original_cell": 0,
    "kind": "plot",
    "street": "绿宝石路",
    "street_index": 10,
    "plot_in_street": 0,
-   "plot_key": "1000"
+   "plot_key": "3:0"
   },
   {
-   "i": 52,
+   "i": 81,
+   "original_kind": 0,
+   "original_block": 3,
+   "original_cell": 1,
    "kind": "plot",
    "street": "绿宝石路",
    "street_index": 10,
    "plot_in_street": 1,
-   "plot_key": "1001"
+   "plot_key": "3:1"
   },
   {
-   "i": 53,
+   "i": 82,
+   "original_kind": 0,
+   "original_block": 3,
+   "original_cell": 2,
    "kind": "plot",
    "street": "绿宝石路",
    "street_index": 10,
    "plot_in_street": 2,
-   "plot_key": "1002"
+   "plot_key": "3:2"
   },
   {
-   "i": 54,
+   "i": 83,
+   "original_kind": 0,
+   "original_block": 3,
+   "original_cell": 3,
    "kind": "plot",
    "street": "绿宝石路",
    "street_index": 10,
    "plot_in_street": 3,
-   "plot_key": "1003"
+   "plot_key": "3:3"
   },
   {
-   "i": 55,
+   "i": 84,
+   "original_kind": 0,
+   "original_block": 3,
+   "original_cell": 4,
+   "kind": "plot",
+   "street": "绿宝石路",
+   "street_index": 10,
+   "plot_in_street": 4,
+   "plot_key": "3:4"
+  },
+  {
+   "i": 85,
+   "original_kind": 0,
+   "original_block": 3,
+   "original_cell": 5,
+   "kind": "plot",
+   "street": "绿宝石路",
+   "street_index": 10,
+   "plot_in_street": 5,
+   "plot_key": "3:5"
+  },
+  {
+   "i": 86,
+   "original_kind": 0,
+   "original_block": 3,
+   "original_cell": 6,
+   "kind": "plot",
+   "street": "红宝石路",
+   "street_index": 9,
+   "plot_in_street": 7,
+   "plot_key": "3:6"
+  },
+  {
+   "i": 87,
+   "original_kind": 2,
+   "original_block": -1,
+   "original_cell": -1,
    "kind": "event",
-   "event": "credit",
-   "name": "点券"
+   "event": "cardshop",
+   "name": "卡片商店"
+  },
+  {
+   "i": 88,
+   "original_kind": 0,
+   "original_block": 2,
+   "original_cell": 0,
+   "kind": "plot",
+   "street": "琥珀路",
+   "street_index": 1,
+   "plot_in_street": 0,
+   "plot_key": "2:0"
+  },
+  {
+   "i": 89,
+   "original_kind": 0,
+   "original_block": 2,
+   "original_cell": 1,
+   "kind": "plot",
+   "street": "琥珀路",
+   "street_index": 1,
+   "plot_in_street": 1,
+   "plot_key": "2:1"
+  },
+  {
+   "i": 90,
+   "original_kind": 0,
+   "original_block": 2,
+   "original_cell": 2,
+   "kind": "plot",
+   "street": "琥珀路",
+   "street_index": 1,
+   "plot_in_street": 2,
+   "plot_key": "2:2"
+  },
+  {
+   "i": 91,
+   "original_kind": 16,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "casino",
+   "name": "乐透"
+  },
+  {
+   "i": 92,
+   "original_kind": 0,
+   "original_block": 2,
+   "original_cell": 4,
+   "kind": "plot",
+   "street": "琥珀路",
+   "street_index": 1,
+   "plot_in_street": 3,
+   "plot_key": "2:4"
+  },
+  {
+   "i": 93,
+   "original_kind": 0,
+   "original_block": 2,
+   "original_cell": 5,
+   "kind": "plot",
+   "street": "琥珀路",
+   "street_index": 1,
+   "plot_in_street": 4,
+   "plot_key": "2:5"
+  },
+  {
+   "i": 94,
+   "original_kind": 0,
+   "original_block": 2,
+   "original_cell": 6,
+   "kind": "plot",
+   "street": "琥珀路",
+   "street_index": 1,
+   "plot_in_street": 5,
+   "plot_key": "2:6"
+  },
+  {
+   "i": 95,
+   "original_kind": 10,
+   "original_block": -1,
+   "original_cell": -1,
+   "kind": "event",
+   "event": "game_b",
+   "name": "游戏点B"
   }
  ],
  "stamina": {

@@ -6,10 +6,10 @@ class_name BoardView
 ## 设计依据见 docs/original-visual-reference.md 与 docs/screenshots/orig/07_牌桌.png。
 ##
 ## 对齐原版的四条：
-##   ① 地形 = 一整块【连续平面】，贴原版 ditu.tga 俯视棋盘美术（不切分、不用盒子）
+##   ① 地形与环境 = 原版 R6SM 网格、材质与 CVD 动画，统一应用地图坐标变换。
 ##   ② 地块 = 【地面贴花】（原版 ditan.tga 波斯地毯），沿路径切向摆放，四角带小红块
 ##   ③ 相机 = 【近距低机位斜视】跟随角色（实测约 3~4 格远 / 俯角 ~36°），不是俯视全盘
-##   ④ 角色 = chibi 小人 + 彩色地面圆盘 + 脚下投影
+##   ④ 角色 = 原版 MD2 网格动画 + 彩色地面圆盘 + 脚下投影
 ##
 ## 没有逆向坐标的地图自动退回矩形外圈布局（_fallback_positions）。
 
@@ -85,7 +85,7 @@ func build(m: MapData) -> void:
 	if m.has_real_layout:
 		for i in range(m.tile_count()):
 			var p2 := m.pos_of(i)
-			_tile_pos.append(Vector3(p2.x, GROUND_Y, p2.y))
+			_tile_pos.append(Vector3(p2.x, float(m.original_layout.get("tiles", [])[i].get("y", 0.0)), p2.y))
 		_ground_size = float(m.board_size)
 	else:
 		_tile_pos = _fallback_positions(m.tile_count())
@@ -126,6 +126,8 @@ func _apply_camera(cam: Camera3D) -> void:
 
 func _build_ground() -> void:
 	_ensure_environment()
+	if OriginalMesh.load_scene(self, map.name):
+		return
 
 	var mesh := ArrayMesh.new()
 	var h := _ground_size * 0.5
@@ -238,9 +240,11 @@ func _ensure_environment() -> void:
 	e.ambient_light_color = Color(0.60, 0.62, 0.66)
 	e.ambient_light_energy = 1.0
 	# 原版雾色（aiji.r6m @8 = 0.85/0.84/0.70），远处地形自然泛白
-	e.fog_enabled = true
-	e.fog_light_color = Color(0.85, 0.84, 0.70)
-	e.fog_density = 0.0045
+	var fog: Array = map.original_layout.get("fog_color", [0.85, 0.84, 0.70])
+	e.fog_enabled = map.name != "space"
+	e.fog_light_color = Color(float(fog[0]), float(fog[1]), float(fog[2]))
+	e.fog_density = 0.0015
+	e.background_color = Color(0.015, 0.02, 0.045) if map.name == "space" else e.fog_light_color
 
 
 # ------------------------------------------------------------------ 地块贴花
@@ -601,7 +605,7 @@ func _road_color(kind: String) -> Color:
 
 func _rug_size() -> float:
 	if not map.original_layout.is_empty():
-		return 3.2 # Original 100-unit cells are about 3.6 board units.
+		return float(map.original_layout.get("world_scale", 0.036)) * 90.0
 	return clampf(_tile_spacing * 0.94, 0.8, 24.0)
 
 
@@ -683,8 +687,7 @@ func _pos_of(i: int) -> Vector3:
 
 func _route_pos(tile: int, direction: int, progress: float) -> Vector3:
 	if map != null and not map.original_layout.is_empty():
-		var point := map.route_position(tile, direction, progress)
-		return Vector3(point.x, GROUND_Y, point.y)
+		return map.route_position_3d(tile, direction, progress)
 	var a := _pos_of(tile)
 	var b := _pos_of(tile + direction)
 	if map == null or not map.has_real_layout or _tile_pos.size() < 4:
@@ -835,7 +838,7 @@ func sync(snap: Dictionary) -> void:
 		if idx > 0:
 			var ang := TAU * float(idx - 1) / 4.0
 			pos += Vector3(cos(ang) * 0.34, 0.0, sin(ang) * 0.34)
-			_player_target[int(id)] = pos
+		_player_target[int(id)] = pos
 		# 世界名牌：名字 + 现金（原版截图里每个玩家头顶都有，如「巴克力 / 258」）
 		var tag := node.get_node_or_null("Tag") as Label3D
 		if tag != null:
@@ -850,6 +853,13 @@ func sync(snap: Dictionary) -> void:
 		var mat: StandardMaterial3D = _player_mats[int(id)]
 		mat.albedo_color = base_col
 		mat.emission = base_col * 0.22
+
+		var actor := node.get_node_or_null("OriginalActor") as OriginalMesh
+		if actor != null:
+			actor.play("slee" if sleep_until > float(snap.get("t", 0.0)) else ("run" if int(p["moving"]) > 0 else "stan"))
+			var ahead := _route_pos(int(p["tile"]), int(p["dir"]), minf(f + 0.01, 1.0)) - pos
+			if ahead.length_squared() > 0.00001:
+				actor.rotation.y = atan2(ahead.x, ahead.z)
 
 		# 骰子精灵：只在移动中显示，展示最近一次掷出的点数
 		var dz := node.get_node("Dice") as Sprite3D
@@ -1093,7 +1103,7 @@ func _create_player(id: int, p: Dictionary) -> void:
 	tag.outline_size = 10
 	tag.modulate = Color(1.0, 0.99, 0.94)
 	tag.outline_modulate = col.darkened(0.45)
-	tag.position = Vector3(0, 1.95, 0)
+	tag.position = Vector3(0, 4.3, 0)
 	root.add_child(tag)
 
 	# 脚下投影
@@ -1126,47 +1136,14 @@ func _create_player(id: int, p: Dictionary) -> void:
 	disc.position = Vector3(0, 0.06, 0)
 	root.add_child(disc)
 
-	# 身体（chibi：胶囊躯干 + 球头 + 两只手）
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = col
-	mat.roughness = 0.55
-	mat.emission_enabled = true
-	mat.emission = col * 0.22
-
-	var body := MeshInstance3D.new()
-	var cap := CapsuleMesh.new()
-	cap.radius = 0.30
-	cap.height = 0.86
-	body.mesh = cap
-	body.material_override = mat
-	body.position = Vector3(0, 0.52, 0)
-	root.add_child(body)
-
-	var head_mat := StandardMaterial3D.new()
-	head_mat.albedo_color = col.lightened(0.22)
-	head_mat.roughness = 0.5
-	head_mat.emission_enabled = true
-	head_mat.emission = col * 0.30
-
-	var head := MeshInstance3D.new()
-	var sph := SphereMesh.new()
-	sph.radius = 0.33
-	sph.height = 0.66
-	head.mesh = sph
-	head.material_override = head_mat
-	head.position = Vector3(0, 1.06, 0)
-	root.add_child(head)
-
-	for s in [-1.0, 1.0]:
-		var arm := MeshInstance3D.new()
-		var ac := CapsuleMesh.new()
-		ac.radius = 0.11
-		ac.height = 0.46
-		arm.mesh = ac
-		arm.material_override = mat
-		arm.position = Vector3(0.35 * s, 0.62, 0.0)
-		arm.rotation_degrees = Vector3(0, 0, 30.0 * s)
-		root.add_child(arm)
+	var actor := OriginalMesh.new()
+	actor.name = "OriginalActor"
+	actor.scale = Vector3.ONE * float(map.original_layout.get("world_scale", 0.036)) / 0.036
+	root.add_child(actor)
+	var actor_path := "res://assets/original/actors/role%d.json" % int(p.get("role", 1))
+	if FileAccess.file_exists(actor_path):
+		actor.setup(JSON.parse_string(FileAccess.get_file_as_string(actor_path)))
+		actor.play("stan")
 
 	# 最近一次点数：原版棋盘上那个实体骰子
 	var dice := Sprite3D.new()
@@ -1175,24 +1152,12 @@ func _create_player(id: int, p: Dictionary) -> void:
 	dice.shaded = false
 	dice.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
 	dice.pixel_size = 0.018
-	dice.position = Vector3(0, 1.85, 0)
+	dice.position = Vector3(0, 4.0, 0)
 	dice.visible = false
 	root.add_child(dice)
 
-	var lab := Label3D.new()
-	lab.text = str(p["name"])
-	lab.font_size = 56
-	lab.pixel_size = 0.0052
-	lab.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	lab.no_depth_test = true
-	lab.outline_size = 12
-	lab.modulate = Color(1, 1, 1)
-	lab.outline_modulate = Color(0.05, 0.05, 0.08, 0.9)
-	lab.position = Vector3(0, 1.50, 0)
-	root.add_child(lab)
-
 	_player_nodes[id] = root
-	_player_mats[id] = mat
+	_player_mats[id] = dmat
 	_player_target[id] = root.position
 
 

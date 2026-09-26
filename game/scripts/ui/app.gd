@@ -87,6 +87,8 @@ var _minimap: Minimap
 ##   ④ 聊天区 → 聊天记录页 ⑤ 聊天 → 额外弹出聊天栏 ⑥ 最右下角 → 收起 / 展开
 var _br_box: Control = null
 var _br_map_panel: Control = null
+## 地图面板的底框（切到别的页时要换成透明，但**面板本身得留着占位**）
+var _br_map_sb: StyleBox = null
 var _br_page := 2                     # 0=日志 1=股票 2=地图 3=聊天记录
 var _br_collapsed := false
 var _chat_bar: Control = null
@@ -398,10 +400,16 @@ func _run_ui_shot(delta: float) -> void:
 					await _capture("D:/Projects/RichMan/ui_shot_roadnear.png")
 					# 股票买进对话框：验证「滑动条是唯一输入点、每跳 100」
 					if _stock != null and Net.sim != null and not Net.sim.stock_names().is_empty():
+						# ① 先拍**股票页**本身 —— 重点看「切到股票后功能区那 6 个按钮还在不在」
+						_set_br_page(1)
+						await get_tree().create_timer(0.35).timeout
+						await _capture("D:/Projects/RichMan/ui_shot_stockpage.png")
+						# ② 再开买进对话框
 						_stock.open_trade(str(Net.sim.stock_names()[0]), true)
 						await get_tree().create_timer(0.3).timeout
 						await _capture("D:/Projects/RichMan/ui_shot_stock.png")
 						_stock.close_all()
+						_set_br_page(2)
 				_ui_shot_confirm_active = false
 			if not _ui_shot_confirm_active:
 				# 顺带验收「骰子数量选择」：切到 2 颗再掷（选择器第 1/2 颗亮、第 2 颗灰）
@@ -1459,9 +1467,10 @@ func _build_bottom_right() -> void:
 
 	var mp := PanelContainer.new()
 	mp.custom_minimum_size = Vector2(w, UI_BR_MAP_H * _ui_scale)
-	mp.add_theme_stylebox_override("panel", _sb_round(
-		Color8(22, 62, 122), Color8(170, 232, 250), int(round(9.0 * _ui_scale)),
-		maxi(2, int(round(4.0 * _ui_scale))), maxf(2.0, 3.0 * _ui_scale)))
+	_br_map_sb = _sb_round(Color8(22, 62, 122), Color8(170, 232, 250),
+		int(round(9.0 * _ui_scale)), maxi(2, int(round(4.0 * _ui_scale))),
+		maxf(2.0, 3.0 * _ui_scale))
+	mp.add_theme_stylebox_override("panel", _br_map_sb)
 	_br_map_panel = mp
 	_br_box.add_child(mp)
 	_minimap = Minimap.new()
@@ -1470,6 +1479,8 @@ func _build_bottom_right() -> void:
 	_icon_bar = _make_icon_bar(w)
 	_br_box.add_child(_icon_bar)
 	_build_br_extra_pages()
+	# 保险：把股票面板压到**最底层**，让功能区按钮永远在上（不被它盖住点击）
+	_hud.move_child(_stock, 0)
 
 
 ## 图标按钮条：底 = 浅薄荷青圆角条 + 蓝描边；6 个图标全部用原版 uitex/subc/*.png
@@ -1567,8 +1578,18 @@ func _sync_br_pages() -> void:
 	var on := not _br_collapsed
 	var r := Rect2()
 	if _br_map_panel != null:
+		# ⚠⚠ **地图面板必须始终占位**（只把里面的小地图藏掉、把底框透明化）。
+		#   一旦 `_br_map_panel.visible = false`，`_br_box` 这个 VBoxContainer 会
+		#   重新布局，把下面的**按钮条整体上移**到地图那块地方 ——
+		#   于是按钮正好钻到股票页底下被盖住，看起来就是「切到股票后按钮全没了」
+		#   （老板 2026-09-26 反馈）。
+		_br_map_panel.visible = on
+		var on_map: bool = on and _br_page == 2
+		if _minimap != null:
+			_minimap.visible = on_map
+		_br_map_panel.add_theme_stylebox_override("panel",
+			_br_map_sb if on_map else _sb_empty())
 		r = Rect2(_br_map_panel.global_position, _br_map_panel.size)
-		_br_map_panel.visible = on and _br_page == 2
 	if _stock != null:
 		_stock.set_embed_rect(r, on and _br_page == 1)
 	for p in [_br_log_page, _br_chat_page]:
@@ -1582,6 +1603,10 @@ func _sync_br_pages() -> void:
 		pc.size = r.size
 	_br_page_text(_br_log_page, _log_lines, 9)
 	_br_page_text(_br_chat_page, _chat_lines, 9)
+
+
+func _sb_empty() -> StyleBoxEmpty:
+	return StyleBoxEmpty.new()
 
 
 ## ⑥ 收起 / 展开整个右下角功能区

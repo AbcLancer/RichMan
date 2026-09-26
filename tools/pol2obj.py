@@ -2,16 +2,9 @@
 """
 pol2obj.py —— 把《大富翁6》的 R6HS(.pol) 建筑网格转成通用格式，并做贴图验证。
 
-顶点记录（步长 32 字节 = 8 个 float），本工具确认的语义：
-
-    f0  ???          疑似切线分量/标志（0 或 ±1 区间）
-    f1  x            位置
-    f2  y            位置（高度）
-    f3  z            位置
-    f4  u            贴图坐标
-    f5  v            贴图坐标
-    f6  ???          与 f7 组成单位向量（nan 出现在个别顶点）
-    f7  ???
+顶点块从文件偏移 128 开始，步长 32 字节：
+    f0,f1 UV；f2,f3,f4 法线；f5,f6,f7 位置。
+旧版偏移 144 虽然能读出位置，却把 UV 读到了下一个顶点。
 
 贴图名从「顶点块之后、索引块之前的材质块」里提取（形如 a1.tga / b0201.tga）。
 
@@ -33,25 +26,16 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import r6pol  # noqa: E402
 
 F0, F1 = 0, 32          # 顶点记录偏移与步长
-O_POS = 4
-O_UV = 16
-O_NRM = 28
+O_POS = 20
+O_UV = 0
+O_NRM = 8
 
 
 def read_verts(b, nv):
-    """
-    返回 (pos[N,3], uv[N,2]) —— float32。
-
-    顶点记录 8 个 float 的语义：位置=(f1,f2,f3)，UV=(f4,f5)，
-    法线分量=(f0,f6,f7)。f4/f5 在部分面上像盒投影，仍有局部贴图错位；
-    但交换二者会把屋顶贴成墙面、墙面贴成草地。
-    依据：tools/pol_struct.py 的字段分析和 a0101 图集区域逐面统计。
-    """
-    n = min(nv, max(0, (len(b) - 144) // 32))
-    raw = np.frombuffer(b, dtype="<f4", count=n * 8, offset=144).reshape(n, 8)
-    pos = np.stack([raw[:, 1], raw[:, 2], raw[:, 3]], axis=1).astype(np.float64)
-    uv = np.stack([raw[:, 4], raw[:, 5]], axis=1).astype(np.float64)
-    return pos, uv
+    # R6HS v100: vertices begin at 128, UV2 + normal3 + position3.
+    # The previous 144 offset accidentally read the NEXT vertex's UV.
+    raw = np.frombuffer(b, dtype="<f4", count=nv * 8, offset=128).reshape(nv, 8)
+    return raw[:, 5:8].astype(np.float64), raw[:, :2].astype(np.float64)
 
 
 TGA_RE = re.compile(rb"([^\x00-\x20\x7f-\xff]{1,40}\.tga)", re.I)
@@ -429,9 +413,7 @@ def pack_meshes(src, outdir):
             im = Image.open(src_tex)
             if im.mode != "RGB":
                 im = im.convert("RGB")
-            uv, snapped = snap_uv_to_content(uv, im)
-            snap_total += snapped
-            im = bleed_atlas(im)
+            # Preserve original UV and texture pixels; atlas snapping hid parser errors.
             tex_png = "tex/%s__%s.png" % (bid, os.path.splitext(os.path.basename(src_tex))[0])
             im.save(os.path.join(outdir, tex_png.replace("/", os.sep)))
             bleeded += 1
