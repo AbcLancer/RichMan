@@ -72,7 +72,9 @@ var _step_picker_i: int = -1                   # 当前选中步数（-1 = 未�
 ## 卡面素材是 128×128（samples/card/<n>_<名>.tga）。老板 2026-09-26 反馈
 ## 「卡牌太小了」→ 由 62 调到 100 native（卡面自身的 78%），接近原版一张卡
 ## 占屏宽的 1/10 左右。手牌最多 9 张，1280×720 下总宽 ≈ 835 px。
-const CARD_PX := 100.0                         # 手牌里每张卡的显示边长（native）
+const CARD_PX := 130.0                         # 手牌里每张卡的显示边长（native）
+## 130 = 原版 100 × 1.3 —— 手牌上限收到 5 张之后（`Sim.HAND_MAX`）一排有富余，
+## 老板 2026-09-26：「卡片可以再放大个 1.3 倍吧，因为现在只有五张卡了」
 const CARD_GAP := 4.0
 const CARD_SHOW_MAX := 9                       # 手牌最多显示几张（再多就折叠成 +N）
 const CARD_MENU_W := 96.0
@@ -118,6 +120,7 @@ var _char_panel: Control
 var _pet_strip: Control = null
 ## 右下角常驻的**股票行情面板**（原版就在这里 —— 老板 2026-09-26 的原版截图）
 var _stock: StockPanel = null
+var _pet_slot: TextureRect = null          # 精灵栏里的**出战精灵头像**
 var _pet_strip_nodes: Array = []
 const PET_STRIP_PX := 44.0             # 每只小神仙图标的边长（native）
 var _char_avatar: TextureRect
@@ -1072,7 +1075,9 @@ func _build_hud() -> void:
 	_build_bottom_right()
 	_build_action_entry()
 	_build_card_hand()
-	_build_pet_strip()
+	# （原来这里会 `_build_pet_strip()` 在角色面板**右侧**贴一排小神仙小图标 ——
+	#   老板 2026-09-26 说「把精灵头像放在了右侧缩到了很小，完全不对」→ 已去掉，
+	#   改成精灵栏里显示出战精灵的头像，见 `_build_char_panel` / `_sync_char_panel`）
 	# 右下角常驻行情面板（原版「名称 / 股价 / 持股 / %」那张表）
 	_stock = StockPanel.new()
 	_hud.add_child(_stock)
@@ -1364,14 +1369,26 @@ func _build_character_panel() -> void:
 	_char_avatar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_char_panel.add_child(_char_avatar)
 
-	# 右上信息槽（原版留空；我们放当前格 + 地主/等级）
+	# 右上信息槽 = **精灵栏**：显示出战小神仙的**头像**（点一下 → 精灵仓库）。
+	# ⚠️ 老板 2026-09-26：「精灵栏不对，没有放精灵的头像，反而是把精灵头像放在了右侧缩到了很小；
+	#   其实精灵栏点开是有一个单独的界面的，现在这样放完全不对。」
+	#   → 那块地方改成**直接显示头像**；原来贴在角色面板右侧那排小图标（`_pet_strip`）**去掉**。
 	var inf := _slot(ATB_INFO, k)
+	_pet_slot = TextureRect.new()
+	_pet_slot.position = inf.position + Vector2(3, 2) * _ui_scale
+	_pet_slot.size = inf.size - Vector2(6, 17) * _ui_scale
+	_pet_slot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_pet_slot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_pet_slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_char_panel.add_child(_pet_slot)
+
 	_char_info = Label.new()
-	_char_info.position = inf.position + Vector2(4, 3) * _ui_scale
-	_char_info.size = inf.size - Vector2(8, 6) * _ui_scale
-	_char_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_char_info.vertical_alignment = VERTICAL_ALIGNMENT_TOP
-	_char_info.add_theme_font_size_override("font_size", maxi(9, int(round(9.0 * k))))
+	_char_info.position = Vector2(inf.position.x, inf.position.y + inf.size.y
+		- 15.0 * _ui_scale)
+	_char_info.size = Vector2(inf.size.x, 14.0 * _ui_scale)
+	_char_info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_char_info.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_char_info.add_theme_font_size_override("font_size", maxi(8, int(round(9.0 * k))))
 	_char_info.add_theme_color_override("font_color", Color8(28, 46, 92))
 	_char_info.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_char_panel.add_child(_char_info)
@@ -3588,7 +3605,7 @@ func _hud_refresh(snap: Dictionary) -> void:
 		_sync_char_panel(me, players, plots, ids, my_id)
 		_sync_action_entry(me, plots, my_id)
 		_sync_card_hand(me)
-		_sync_pet_strip(me)
+		# （原 `_sync_pet_strip(me)` —— 右侧那排小头像已去掉）
 		if _stock != null:
 			_stock._sync(0.0, str(int(me.get("id", 0))))
 		# 右下角功能区：地图页 / 股票页互斥 + 聊天栏贴在其上方
@@ -3708,19 +3725,24 @@ func _sync_char_panel(me: Dictionary, players: Dictionary, plots: Dictionary,
 	var t: Dictionary = {}
 	if _board != null and _board.map != null:
 		t = _board.map.tile(int(me["tile"]))
-	# 这块是**精灵栏位**：显示出战的小神仙（点一下 → 精灵仓库）。
-	# ⚠️ 原来这里显示「所在地块的名字 + 等级」，老板 2026-09-26 反馈「很奇怪」。
+	# 这块是**精灵栏**：显示出战小神仙的**头像**（点一下 → 精灵仓库）。
+	# ⚠️ 原来这里显示「所在地块的名字 + 等级」，老板说「很奇怪」；也不该用文字。
 	var ap: Dictionary = {}
 	if Net.sim != null:
 		ap = Net.sim.active_pet(me)
+	if _pet_slot != null:
+		if ap.is_empty():
+			_pet_slot.texture = null
+		else:
+			_pet_slot.texture = _tex_or_null(Rules.pet_art(str(ap.get("id", "")), "face",
+				int(ap.get("level", 1))))
 	if ap.is_empty():
-		_char_info.text = "精灵栏位\n（暂无）"
+		_char_info.text = "精灵栏（空）"
 	else:
-		var pid2 := str(ap.get("id", ""))
-		var nm2 := pid2
+		var nm2 := str(ap.get("id", ""))
 		if Net.sim != null:
-			nm2 = Net.sim.pet_name(pid2)
-		_char_info.text = "精灵栏位\n%s Lv%d" % [nm2, int(ap.get("level", 1))]
+			nm2 = Net.sim.pet_name(nm2)
+		_char_info.text = "%s Lv%d" % [nm2, int(ap.get("level", 1))]
 
 
 ## 动作入口：GO 圆钮（掷骰子）+ 落点气泡（买 / 升级 / 放弃）
