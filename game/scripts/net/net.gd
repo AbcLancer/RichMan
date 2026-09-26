@@ -324,6 +324,10 @@ func _apply_action(who: int, action: String, args: Array) -> void:
 		"casino_pull":
 			# 拉霸：拉杆
 			sim.act_casino_pull(who)
+		"lotto_pick":
+			# 乐透：挑一个号码（1..12）
+			if args.size() > 0:
+				sim.act_lotto_pick(who, int(args[0]))
 		"walk":
 			# 骰子卡：玩家自选前进步数（1..6）
 			if args.size() > 0:

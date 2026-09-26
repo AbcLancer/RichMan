@@ -10,6 +10,7 @@ func run() -> void:
 	sim.add_player(2, "对手")
 	for i in [0, 1, 2]:
 		sim.plots[i] = {"owner": 1, "level": 0, "type": ""}
+	assert(sim.plot_value(0) == Sim.EMPTY_PLOT_PRICE)
 	var plan := sim.construction_plan(1, 1, "industry")
 	assert(int(plan.level) == 7 and int(plan.footprint) == 3)
 	assert(plan.members == [0, 1, 2] and int(plan.cell) == 0)
@@ -23,6 +24,7 @@ func run() -> void:
 	assert(sim.act_upgrade(1, "industry"))
 	assert(int(p.money) == money - 6000)
 	assert(sim.unique_plot_keys() == [0])
+	assert(sim.plot_value(2) == Sim.EMPTY_PLOT_PRICE * 3 + 6000)
 	assert(not sim.act_upgrade(1, "industry"), "One arrival, one construction")
 	# Restore exactly as clients do: deep duplicated dictionaries lose aliases.
 	var remote := Sim.new()

@@ -1023,6 +1023,74 @@ func card_target_candidates(pid: int) -> Array:
 	return out
 
 
+# ------------------------------------------------------------ 乐透
+
+## 乐透（`casino` 事件格）。参数出自 `Initvar_r.txt` 41..43（注释全是「进入**乐透**事件点…」）：
+##   · 进场交 `Event_Casino_Fee = 2500` → **计入奖池**
+##   · 挑一个 1..12 里**还没被选走**的号码
+##   · **头奖** = 奖池 × `Event_Casino_TopRate`(1.0)、**中奖** = 奖池 × `Event_Casino_MiddleRate`(0.3)
+##
+## 文案与时机取自 `Info.txt` 54..68：
+##   60「乐透奖金`<NUMBER>`元」（刚进入时）/ 61「请选择您的号码」/ 62「拜拜，祝您中奖」
+##   63「今日乐透开奖」（开奖时对所有人）/ 64「`<SOMEONE>`中乐透 奖金`<NUMBER>`元」
+##   65「SORRY 本月没有人中奖」/ 68「乐透号码已售完」
+##
+## ⚠️ **两处无明文、属推断**：
+##   ① 开奖周期 —— 老板说是「**每 15 天**」（`Initvar_r.txt` 里没有周期参数）
+##   ② 没人中奖时奖池**累积到下一期**（不清零）
+const LOTTO_NUMBERS := 12
+const LOTTO_DRAW_DAYS := 15
+
+var lotto_prize := 0                      # 奖池
+var lotto_numbers: Dictionary = {}        # 号码(int 1..12) -> 选了它的玩家 id
+var lotto_last_draw_day := 0
+
+
+func lotto_free_numbers() -> Array:
+	var out: Array = []
+	for i in range(1, LOTTO_NUMBERS + 1):
+		if not lotto_numbers.has(i):
+			out.append(i)
+	return out
+
+
+## 玩家挑一个号码（面板上点号格）
+func act_lotto_pick(id: int, n: int) -> bool:
+	var p: Dictionary = players.get(id, {})
+	if p.is_empty() or not bool(p["alive"]):
+		return false
+	if n < 1 or n > LOTTO_NUMBERS or lotto_numbers.has(n):
+		return false
+	lotto_numbers[n] = id
+	log_message.emit("%s 选了乐透号码 %d（当前奖金 %d 元）" % [p["name"], n, int(lotto_prize)])
+	_ev("lotto_pick", p, {"number": n, "prize": int(lotto_prize)})
+	return true
+
+
+## 开奖（每 `LOTTO_DRAW_DAYS` 天）
+func _lotto_draw() -> void:
+	var win_n := rng.randi_range(1, LOTTO_NUMBERS)
+	var winner := int(lotto_numbers.get(win_n, -1))
+	var top := int(round(float(lotto_prize)
+		* float(Rules.get_val("events.casino_top_rate", 1.0))))
+	var amount := 0
+	var winner_name := ""
+	if winner >= 0 and players.has(winner):
+		amount = top
+		players[winner]["money"] = int(players[winner]["money"]) + amount
+		winner_name = str(players[winner]["name"])
+	for pid in player_ids():
+		_ev("lotto_draw", players[pid], {"number": win_n, "prize": int(lotto_prize),
+			"winner": winner, "winner_name": winner_name, "amount": amount})
+	if winner >= 0:
+		log_message.emit("[乐透] 开奖号码 %d，%s 中了 %d 元" % [win_n, winner_name, amount])
+		lotto_prize = 0
+	else:
+		# Info.txt 65「SORRY 本月没有人中奖」→ 奖池**累积到下一期**（推断）
+		log_message.emit("[乐透] 开奖号码 %d，没有人中奖（奖金累积到下一期）" % win_n)
+	lotto_numbers.clear()
+
+
 ## 某公司属于哪个玩家（虚拟公司返回 -1）
 func company_owner(comp: String) -> int:
 	return int((stocks.get(comp, {}) as Dictionary).get("owner", -1))
@@ -1149,6 +1217,10 @@ func step(dt: float) -> void:
 		_spawn_road_obj()
 		_tick_stocks()              # 每天开盘：股价按 Stock_OpenPrice_Min/Max 波动
 		_maybe_global_news()        # 全局新闻（甲1..甲14）
+		# 乐透开奖：每 LOTTO_DRAW_DAYS 天一次
+		if road_day >= lotto_last_draw_day + LOTTO_DRAW_DAYS:
+			lotto_last_draw_day = road_day
+			_lotto_draw()
 		if road_day % MONTH_DAYS == 0:
 			_pay_dividends()        # 每 30 天（一个月）分红一次
 
@@ -1480,23 +1552,20 @@ func _resolve_event(p: Dictionary, idx: int, t: Dictionary) -> void:
 			log_message.emit("%s 上了%s，获得通告费 %d 元" % [p["name"], ename, bonus])
 			_ev("news", p, {"eid": eid, "amount": bonus})
 		"labar":
-			# 拉霸（原名 labar，即 slot）：押一次，赢了翻倍、输了交钱
-			var stake := 1000
-			if int(p["money"]) >= stake * 2 and rng.randi_range(0, 2) == 0:
-				p["money"] = int(p["money"]) + stake
-				log_message.emit("%s 在%s拉中大奖，赢 %d 元" % [p["name"], ename, stake])
-				_ev("win_money", p, {"eid": eid, "amount": stake})
-			else:
-				_transfer(p, null, stake, ename)
-				log_message.emit("%s 在%s输掉 %d 元" % [p["name"], ename, stake])
-				_ev("lose_money", p, {"eid": eid, "amount": stake})
+			# **拉霸（老虎机）** —— `labar` 就是「拉霸」的拼音（台语对老虎机的叫法）。
+			# 打开面板让玩家自己下注（原版截图 records/老虎机.png：
+			# 从左侧滑出 + 三档下注 `+1000/+5000/+10000` + 拉杆）。
+			#
+			# ⚠️ 2026-09-27 **纠正**：上一轮我把这一支写在了 `casino` 格上 —— 错了。
+			#   `casino` 格是**乐透**（`Event_Casino_*` 三项参数的注释都写着「进入**乐透**事件点…」），
+			#   `labar` 格才是拉霸。两台的素材也不同：拉霸 = `uitex/casino/`，乐透 = `uitex/casino2/`。
+			_ev("casino_open", p, {"eid": eid})
 		"capital":
 			# 市政府：按市政基金征收 / 发放（Event_CityFund_MinValue）
 			var fund := int(Rules.get_val("economy.city_fund_min", 1000))
 			if rng.randi_range(0, 1) == 0:
 				_transfer(p, null, fund, ename)
 				log_message.emit("%s 在%s缴纳市政基金 %d 元" % [p["name"], ename, fund])
-				_ev("lose_money", p, {"eid": eid, "amount": fund})
 			else:
 				p["money"] = int(p["money"]) + fund
 				log_message.emit("%s 在%s领到市政补助 %d 元" % [p["name"], ename, fund])
@@ -1517,10 +1586,22 @@ func _resolve_event(p: Dictionary, idx: int, t: Dictionary) -> void:
 			log_message.emit("%s 在%s玩了一把，赢得 %d 点券" % [p["name"], ename, g])
 			_ev("credit", p, {"eid": eid, "amount": g})
 		"casino":
-			# 拉霸（老虎机）：**打开面板让玩家自己下注**
-			# （原版截图 records/老虎机.png：从左侧滑出 + 三档下注 + 拉杆）
-			# ⚠️ 原来的实现是「到了就直接扣 casino_fee」，那是没界面时的简化版
-			_ev("casino_open", p, {"eid": eid})
+			# **乐透**（`Initvar_r.txt` 第 41..43 行：
+			#   `Event_Casino_Fee = 2500`   //**进入乐透事件点**扣除得钱
+			#   `Event_Casino_TopRate = 1.0`  //**进入乐透事件点**头奖得钱比例
+			#   `Event_Casino_MiddleRate = 0.3` //**进入乐透事件点**中奖得钱比例）
+			# 玩法：交入场费（**计入奖池**）→ 挑一个还没被选走的号码（1..12）→ 等开奖。
+			var fee := int(Rules.get_val("events.casino_fee", 2500))
+			if int(p["money"]) < fee:
+				_ev("insufficient_money", p, {"need": fee, "have": int(p["money"])})
+			elif lotto_free_numbers().is_empty():
+				_ev("lotto_sold_out", p, {})            # Info.txt 68「乐透号码已售完」
+			else:
+				_transfer(p, null, fee, ename)
+				lotto_prize = int(lotto_prize) + fee
+				log_message.emit("%s 进了乐透，奖金累积到 %d 元" % [p["name"], int(lotto_prize)])
+				_ev("lotto_open", p, {"prize": int(lotto_prize), "fee": fee,
+					"numbers": lotto_numbers.duplicate()})
 		_:
 			log_message.emit("%s 抵达 %s" % [p["name"], ename])
 			_ev("event", p, {"eid": eid, "ename": ename})
@@ -1798,6 +1879,8 @@ func upgrade_cost(p: Dictionary, idx: int, want_type: String = "") -> int:
 
 func _commit_construction(idx: int, plan: Dictionary) -> void:
 	var estate: Dictionary = plots[idx]
+	if int(estate.level) == 0:
+		estate["build_start_level"] = int(plan.level)
 	estate["type"] = plan.type
 	estate["level"] = plan.level
 	estate["anchor"] = plan.anchor
@@ -1974,7 +2057,7 @@ func plot_value(idx: int) -> int:
 	var pl: Dictionary = plots[idx]
 	var v := EMPTY_PLOT_PRICE * (pl.get("members", [idx]) as Array).size()
 	var tp := str(pl.get("type", ""))
-	for lv in range(1, int(pl["level"]) + 1):
+	for lv in range(maxi(1, mini(int(pl.get("build_start_level", 1)), int(pl["level"]))), int(pl["level"]) + 1):
 		v += Rules.house_upgrade_cost(tp, lv)
 	return v
 
@@ -2880,7 +2963,7 @@ func _downgrade_estate(idx: int) -> void:
 	if int(estate.level) == 0:
 		for member in estate.get("members", [idx]):
 			var empty := estate.duplicate(true)
-			for key in ["anchor", "members", "footprint", "build_cell"]:
+			for key in ["anchor", "members", "footprint", "build_cell", "build_start_level"]:
 				empty.erase(key)
 			empty["type"] = ""
 			plots[int(member)] = empty

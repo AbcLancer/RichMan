@@ -96,6 +96,15 @@ UI_FILES = {
     "casino_sym_apple.png": os.path.join(ROOT, "samples", "uitex", "casino", "苹果.tga"),
     "casino_sym_banana.png": os.path.join(ROOT, "samples", "uitex", "casino", "香蕉.tga"),
     "casino_sym_god.png": os.path.join(ROOT, "samples", "uitex", "casino", "财神.tga"),
+    # 乐透（`uitex/casino2/`）—— `casino` 事件格是**乐透**，不是老虎机（2026-09-27 纠正）：
+    #   背景 = 粉色面板、姑娘1..3 = 兔子女郎（128×256 立绘）、mark = 号码格上的标记、cursor、exit
+    "lotto_bg.png": os.path.join(ROOT, "samples", "uitex", "casino2", "背景.tga"),
+    "lotto_girl1.png": os.path.join(ROOT, "samples", "uitex", "casino2", "姑娘1.tga"),
+    "lotto_girl2.png": os.path.join(ROOT, "samples", "uitex", "casino2", "姑娘2.tga"),
+    "lotto_girl3.png": os.path.join(ROOT, "samples", "uitex", "casino2", "姑娘3.tga"),
+    "lotto_mark.png": os.path.join(ROOT, "samples", "uitex", "casino2", "mark.tga"),
+    "lotto_cursor.png": os.path.join(ROOT, "samples", "uitex", "casino2", "cursor.tga"),
+    "lotto_exit.png": os.path.join(ROOT, "samples", "uitex", "casino2", "exit.tga"),
 }
 
 # ---- 槽位（native 256×256 底图坐标；x, y, w, h）----

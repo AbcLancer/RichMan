@@ -110,6 +110,8 @@ var _news_text: Label = null
 var _news_left := 0.0
 ## 拉霸（老虎机）面板（原版 `uitex/casino/`；老板截图 records/老虎机.png）
 var _casino: CasinoPanel = null
+## 乐透面板（`casino` 事件格；素材 `uitex/casino2/`）
+var _lotto: LottoPanel = null
 ## 「请选择对手」的目标选择器（穷神卡这类要点人的卡）
 var _hover_player := -1                    # 选目标时鼠标指到了哪个玩家（脚下圆盘变红）
 var _log_panel: PanelContainer
@@ -414,8 +416,15 @@ func _run_ui_shot(delta: float) -> void:
 						_stock.open_trade(str(Net.sim.stock_names()[0]), true)
 						await get_tree().create_timer(0.3).timeout
 						await _capture("D:/Projects/RichMan/ui_shot_stock.png")
-						_stock.close_all()
-						_set_br_page(2)
+					_stock.close_all()
+					_set_br_page(2)
+					# ⑤ 乐透面板（`casino` 事件格；素材 uitex/casino2/）
+					# ⚠️ 必须放在股票对话框**关掉之后**，否则会被它盖住号码格（1..4 那一行）
+					if _lotto != null:
+						_lotto.open(88000, {2: 1, 5: 2})
+						await get_tree().create_timer(0.35).timeout
+						await _capture("D:/Projects/RichMan/ui_shot_lotto.png")
+						_lotto.close()
 				_ui_shot_confirm_active = false
 			if not _ui_shot_confirm_active:
 				# 顺带验收「骰子数量选择」：切到 2 颗再掷（选择器第 1/2 颗亮、第 2 颗灰）
@@ -1111,6 +1120,11 @@ func _build_hud() -> void:
 	_hud.add_child(_casino)
 	_casino.setup(_ui_scale)
 	_casino.act.connect(_on_casino_action)
+	# 乐透面板（`casino` 事件格；素材 uitex/casino2/）
+	_lotto = LottoPanel.new()
+	_hud.add_child(_lotto)
+	_lotto.setup(_ui_scale)
+	_lotto.act.connect(_on_lotto_action)
 	_build_shop()
 	_build_toast()
 
@@ -3207,6 +3221,16 @@ func _chat_append(who: String, text: String) -> void:
 		_chat_log.text = "\n".join(_chat_lines.slice(maxi(0, _chat_lines.size() - 3)))
 
 
+## 乐透面板的按钮回调（挑号码 / 离开）
+func _on_lotto_action(kind: String, number: int) -> void:
+	match kind:
+		"pick":
+			Net.send_action("lotto_pick", [number])
+		"exit":
+			if _lotto != null:
+				_lotto.close()
+
+
 ## 拉霸面板的按钮回调（下注 / 拉杆 / 离开）
 func _on_casino_action(kind: String, amount: int) -> void:
 	match kind:
@@ -3676,9 +3700,29 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 			_show_global_news(int(data.get("idx", 1)), str(data.get("text", "")),
 				int(data.get("art", 1)))
 		"casino_open":
-			# 走到「拉霸」格 → 打开老虎机面板（自己下注）
+			# 走到「拉霸」格（`labar`）→ 打开老虎机面板（自己下注）
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id() and _casino != null:
 				_casino.open()
+		"lotto_open":
+			# 走到「乐透」格（`casino`）→ 打开乐透面板挑号码（Info.txt 61「请选择您的号码」）
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id() and _lotto != null:
+				_lotto.open(int(data.get("prize", 0)),
+					data.get("numbers", {}) as Dictionary)
+		"lotto_pick":
+			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id() and _lotto != null:
+				_lotto.mark_picked(int(data.get("number", 0)))
+				_toast("乐透号码 %d 已登记（Info.txt 62「拜拜，祝您中奖」）"
+					% int(data.get("number", 0)))
+		"lotto_draw":
+			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
+			if _lotto != null and _lotto.visible:
+				_lotto.show_draw(int(data.get("number", 0)),
+					str(data.get("winner_name", "")), int(data.get("amount", 0)))
+		"lotto_sold_out":
+			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast("乐透号码已售完")          # Info.txt 68
 		"casino_bet":
 			_ev_sfx(Audio.SFX_UI_CLICK, data, pos)
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
