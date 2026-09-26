@@ -35,6 +35,7 @@ func _ready() -> void:
 	_load_ui_strings()
 	_load_info_strings()
 	_load_card_index()
+	_load_roles()
 	_load_pet_assets()
 
 func _load() -> void:
@@ -171,6 +172,48 @@ func card_menu_label(which: String) -> String:
 
 
 # ------------------------------------------------------- 卡面索引（card/index.json）
+
+# ------------------------------------------------------- 角色表（Role.txt）
+
+## `config/Role.txt` 的 12 个角色 → `roles.json`。
+## ⭐ 第 6 列「**缺省公司**」就是股票系统里那家公司的名字
+##   （老板 2026-09-26 的原版股票截图：中华美食 = 孙小美、新土地 = 阿土伯 …，逐字对上）。
+##   另外第 3~5 列是 AI 的**三项性格权重**（害人 / 买卖股票 / 买地）。
+const ROLES_PATH := "res://data/rules/roles.json"
+var roles_data: Dictionary = {}
+
+func _load_roles() -> void:
+	var f := FileAccess.open(ROLES_PATH, FileAccess.READ)
+	if f == null:
+		push_warning("Rules: 无 %s（先跑 tools/build_role_data.py）" % ROLES_PATH)
+		return
+	var parsed: Variant = JSON.parse_string(f.get_as_text())
+	if parsed is Dictionary:
+		roles_data = parsed
+		print("[Rules] 已载入 %d 个角色（Role.txt）" % int(roles_data.get("count", 0)))
+
+## 全部角色（按 Role.txt 行序）
+func roles() -> Array:
+	return roles_data.get("roles", [])
+
+## 第 n 个角色（1..12，= Role.txt 行序 = `Sim.p["role"]`）
+func role_record(n: int) -> Dictionary:
+	for r in roles():
+		if int((r as Dictionary).get("n", 0)) == n:
+			return r
+	return {}
+
+## 该角色上市的公司名（Role.txt 第 6 列「缺省公司」）
+func role_company(n: int) -> String:
+	return str(role_record(n).get("company", ""))
+
+func role_name(n: int) -> String:
+	return str(role_record(n).get("name", ""))
+
+## AI 三项性格权重 {screw, stock, land}
+func role_aggr(n: int) -> Dictionary:
+	return role_record(n).get("aggr", {})
+
 
 func _load_card_index() -> void:
 	var f := FileAccess.open(CARD_INDEX_PATH, FileAccess.READ)

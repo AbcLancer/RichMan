@@ -1,0 +1,637 @@
+{
+ "_source": "F:\\游戏\\Rich6\\config\\Role.txt（原版安装目录明文，UTF-8）",
+ "_note": "第 6 列「缺省公司」= 该角色上市的公司名（股票系统用，老板实机截图确认）；第 3~5 列是 AI 的三项性格权重。角色模型只有 role1..9 + rolea/b/c。",
+ "count": 12,
+ "roles": [
+  {
+   "n": 1,
+   "name": "钱夫人",
+   "model": "role1",
+   "aggr": {
+    "screw": 90,
+    "stock": 50,
+    "land": 50
+   },
+   "company": "钻石集团",
+   "marker": "diamond",
+   "color": [
+    232,
+    41,
+    196
+   ]
+  },
+  {
+   "n": 2,
+   "name": "阿土伯",
+   "model": "role2",
+   "aggr": {
+    "screw": 30,
+    "stock": 15,
+    "land": 50
+   },
+   "company": "新土地",
+   "marker": "hat",
+   "color": [
+    165,
+    121,
+    0
+   ]
+  },
+  {
+   "n": 3,
+   "name": "宫本宝藏",
+   "model": "role3",
+   "aggr": {
+    "screw": 70,
+    "stock": 20,
+    "land": 50
+   },
+   "company": "第一宝藏",
+   "marker": "knife",
+   "color": [
+    1,
+    52,
+    177
+   ]
+  },
+  {
+   "n": 4,
+   "name": "乌咪",
+   "model": "role4",
+   "aggr": {
+    "screw": 50,
+    "stock": 25,
+    "land": 50
+   },
+   "company": "玛雅",
+   "marker": "plume",
+   "color": [
+    255,
+    134,
+    0
+   ]
+  },
+  {
+   "n": 5,
+   "name": "孙小美",
+   "model": "role5",
+   "aggr": {
+    "screw": 50,
+    "stock": 35,
+    "land": 50
+   },
+   "company": "中华美食",
+   "marker": "shoe",
+   "color": [
+    237,
+    27,
+    36
+   ]
+  },
+  {
+   "n": 6,
+   "name": "金贝贝",
+   "model": "role6",
+   "aggr": {
+    "screw": 40,
+    "stock": 25,
+    "land": 50
+   },
+   "company": "魔力宝贝",
+   "marker": "nipple",
+   "color": [
+    22,
+    161,
+    216
+   ]
+  },
+  {
+   "n": 7,
+   "name": "巴克力",
+   "model": "role7",
+   "aggr": {
+    "screw": 90,
+    "stock": 20,
+    "land": 50
+   },
+   "company": "恐龙世纪",
+   "marker": "key",
+   "color": [
+    0,
+    138,
+    1
+   ]
+  },
+  {
+   "n": 8,
+   "name": "沙隆巴斯",
+   "model": "role8",
+   "aggr": {
+    "screw": 60,
+    "stock": 40,
+    "land": 50
+   },
+   "company": "巴斯石油",
+   "marker": "can",
+   "color": [
+    94,
+    61,
+    42
+   ]
+  },
+  {
+   "n": 9,
+   "name": "舞美拉",
+   "model": "role9",
+   "aggr": {
+    "screw": 30,
+    "stock": 30,
+    "land": 50
+   },
+   "company": "美丽音乐",
+   "marker": "mike",
+   "color": [
+    255,
+    127,
+    175
+   ]
+  },
+  {
+   "n": 10,
+   "name": "DDR",
+   "model": "rolea",
+   "aggr": {
+    "screw": 80,
+    "stock": 35,
+    "land": 50
+   },
+   "company": "星球大战",
+   "marker": "ufo",
+   "color": [
+    233,
+    216,
+    252
+   ]
+  },
+  {
+   "n": 11,
+   "name": "爱丽丝",
+   "model": "roleb",
+   "aggr": {
+    "screw": 1,
+    "stock": 25,
+    "land": 50
+   },
+   "company": "天使在线",
+   "marker": "wing",
+   "color": [
+    247,
+    221,
+    0
+   ]
+  },
+  {
+   "n": 12,
+   "name": "奇奇",
+   "model": "rolec",
+   "aggr": {
+    "screw": 40,
+    "stock": 30,
+    "land": 50
+   },
+   "company": "奇奇冒险",
+   "marker": "gear",
+   "color": [
+    169,
+    72,
+    213
+   ]
+  }
+ ],
+ "by_model": {
+  "role1": {
+   "n": 1,
+   "name": "钱夫人",
+   "model": "role1",
+   "aggr": {
+    "screw": 90,
+    "stock": 50,
+    "land": 50
+   },
+   "company": "钻石集团",
+   "marker": "diamond",
+   "color": [
+    232,
+    41,
+    196
+   ]
+  },
+  "role2": {
+   "n": 2,
+   "name": "阿土伯",
+   "model": "role2",
+   "aggr": {
+    "screw": 30,
+    "stock": 15,
+    "land": 50
+   },
+   "company": "新土地",
+   "marker": "hat",
+   "color": [
+    165,
+    121,
+    0
+   ]
+  },
+  "role3": {
+   "n": 3,
+   "name": "宫本宝藏",
+   "model": "role3",
+   "aggr": {
+    "screw": 70,
+    "stock": 20,
+    "land": 50
+   },
+   "company": "第一宝藏",
+   "marker": "knife",
+   "color": [
+    1,
+    52,
+    177
+   ]
+  },
+  "role4": {
+   "n": 4,
+   "name": "乌咪",
+   "model": "role4",
+   "aggr": {
+    "screw": 50,
+    "stock": 25,
+    "land": 50
+   },
+   "company": "玛雅",
+   "marker": "plume",
+   "color": [
+    255,
+    134,
+    0
+   ]
+  },
+  "role5": {
+   "n": 5,
+   "name": "孙小美",
+   "model": "role5",
+   "aggr": {
+    "screw": 50,
+    "stock": 35,
+    "land": 50
+   },
+   "company": "中华美食",
+   "marker": "shoe",
+   "color": [
+    237,
+    27,
+    36
+   ]
+  },
+  "role6": {
+   "n": 6,
+   "name": "金贝贝",
+   "model": "role6",
+   "aggr": {
+    "screw": 40,
+    "stock": 25,
+    "land": 50
+   },
+   "company": "魔力宝贝",
+   "marker": "nipple",
+   "color": [
+    22,
+    161,
+    216
+   ]
+  },
+  "role7": {
+   "n": 7,
+   "name": "巴克力",
+   "model": "role7",
+   "aggr": {
+    "screw": 90,
+    "stock": 20,
+    "land": 50
+   },
+   "company": "恐龙世纪",
+   "marker": "key",
+   "color": [
+    0,
+    138,
+    1
+   ]
+  },
+  "role8": {
+   "n": 8,
+   "name": "沙隆巴斯",
+   "model": "role8",
+   "aggr": {
+    "screw": 60,
+    "stock": 40,
+    "land": 50
+   },
+   "company": "巴斯石油",
+   "marker": "can",
+   "color": [
+    94,
+    61,
+    42
+   ]
+  },
+  "role9": {
+   "n": 9,
+   "name": "舞美拉",
+   "model": "role9",
+   "aggr": {
+    "screw": 30,
+    "stock": 30,
+    "land": 50
+   },
+   "company": "美丽音乐",
+   "marker": "mike",
+   "color": [
+    255,
+    127,
+    175
+   ]
+  },
+  "rolea": {
+   "n": 10,
+   "name": "DDR",
+   "model": "rolea",
+   "aggr": {
+    "screw": 80,
+    "stock": 35,
+    "land": 50
+   },
+   "company": "星球大战",
+   "marker": "ufo",
+   "color": [
+    233,
+    216,
+    252
+   ]
+  },
+  "roleb": {
+   "n": 11,
+   "name": "爱丽丝",
+   "model": "roleb",
+   "aggr": {
+    "screw": 1,
+    "stock": 25,
+    "land": 50
+   },
+   "company": "天使在线",
+   "marker": "wing",
+   "color": [
+    247,
+    221,
+    0
+   ]
+  },
+  "rolec": {
+   "n": 12,
+   "name": "奇奇",
+   "model": "rolec",
+   "aggr": {
+    "screw": 40,
+    "stock": 30,
+    "land": 50
+   },
+   "company": "奇奇冒险",
+   "marker": "gear",
+   "color": [
+    169,
+    72,
+    213
+   ]
+  }
+ },
+ "by_name": {
+  "钱夫人": {
+   "n": 1,
+   "name": "钱夫人",
+   "model": "role1",
+   "aggr": {
+    "screw": 90,
+    "stock": 50,
+    "land": 50
+   },
+   "company": "钻石集团",
+   "marker": "diamond",
+   "color": [
+    232,
+    41,
+    196
+   ]
+  },
+  "阿土伯": {
+   "n": 2,
+   "name": "阿土伯",
+   "model": "role2",
+   "aggr": {
+    "screw": 30,
+    "stock": 15,
+    "land": 50
+   },
+   "company": "新土地",
+   "marker": "hat",
+   "color": [
+    165,
+    121,
+    0
+   ]
+  },
+  "宫本宝藏": {
+   "n": 3,
+   "name": "宫本宝藏",
+   "model": "role3",
+   "aggr": {
+    "screw": 70,
+    "stock": 20,
+    "land": 50
+   },
+   "company": "第一宝藏",
+   "marker": "knife",
+   "color": [
+    1,
+    52,
+    177
+   ]
+  },
+  "乌咪": {
+   "n": 4,
+   "name": "乌咪",
+   "model": "role4",
+   "aggr": {
+    "screw": 50,
+    "stock": 25,
+    "land": 50
+   },
+   "company": "玛雅",
+   "marker": "plume",
+   "color": [
+    255,
+    134,
+    0
+   ]
+  },
+  "孙小美": {
+   "n": 5,
+   "name": "孙小美",
+   "model": "role5",
+   "aggr": {
+    "screw": 50,
+    "stock": 35,
+    "land": 50
+   },
+   "company": "中华美食",
+   "marker": "shoe",
+   "color": [
+    237,
+    27,
+    36
+   ]
+  },
+  "金贝贝": {
+   "n": 6,
+   "name": "金贝贝",
+   "model": "role6",
+   "aggr": {
+    "screw": 40,
+    "stock": 25,
+    "land": 50
+   },
+   "company": "魔力宝贝",
+   "marker": "nipple",
+   "color": [
+    22,
+    161,
+    216
+   ]
+  },
+  "巴克力": {
+   "n": 7,
+   "name": "巴克力",
+   "model": "role7",
+   "aggr": {
+    "screw": 90,
+    "stock": 20,
+    "land": 50
+   },
+   "company": "恐龙世纪",
+   "marker": "key",
+   "color": [
+    0,
+    138,
+    1
+   ]
+  },
+  "沙隆巴斯": {
+   "n": 8,
+   "name": "沙隆巴斯",
+   "model": "role8",
+   "aggr": {
+    "screw": 60,
+    "stock": 40,
+    "land": 50
+   },
+   "company": "巴斯石油",
+   "marker": "can",
+   "color": [
+    94,
+    61,
+    42
+   ]
+  },
+  "舞美拉": {
+   "n": 9,
+   "name": "舞美拉",
+   "model": "role9",
+   "aggr": {
+    "screw": 30,
+    "stock": 30,
+    "land": 50
+   },
+   "company": "美丽音乐",
+   "marker": "mike",
+   "color": [
+    255,
+    127,
+    175
+   ]
+  },
+  "DDR": {
+   "n": 10,
+   "name": "DDR",
+   "model": "rolea",
+   "aggr": {
+    "screw": 80,
+    "stock": 35,
+    "land": 50
+   },
+   "company": "星球大战",
+   "marker": "ufo",
+   "color": [
+    233,
+    216,
+    252
+   ]
+  },
+  "爱丽丝": {
+   "n": 11,
+   "name": "爱丽丝",
+   "model": "roleb",
+   "aggr": {
+    "screw": 1,
+    "stock": 25,
+    "land": 50
+   },
+   "company": "天使在线",
+   "marker": "wing",
+   "color": [
+    247,
+    221,
+    0
+   ]
+  },
+  "奇奇": {
+   "n": 12,
+   "name": "奇奇",
+   "model": "rolec",
+   "aggr": {
+    "screw": 40,
+    "stock": 30,
+    "land": 50
+   },
+   "company": "奇奇冒险",
+   "marker": "gear",
+   "color": [
+    169,
+    72,
+    213
+   ]
+  }
+ },
+ "companies": [
+  "钻石集团",
+  "新土地",
+  "第一宝藏",
+  "玛雅",
+  "中华美食",
+  "魔力宝贝",
+  "恐龙世纪",
+  "巴斯石油",
+  "美丽音乐",
+  "星球大战",
+  "天使在线",
+  "奇奇冒险"
+ ]
+}

@@ -5,6 +5,7 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 [Rules] 已载入原版界面字串 216 条（String.txt）
 [Rules] 已载入原版游戏消息 1236 条（Info.txt）
 [Rules] 已载入 42 张卡面（card/index.json）
+[Rules] 已载入 12 个角色（Role.txt）
 [Rules] 已载入小神仙素材 9 只（assets/pets）
 ========== RichMan6 P0 自检 ==========
 
@@ -151,8 +152,8 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
   [PASS] 埃及的权重逐条对得上（card=6 / crystal=2 / hanbao=3 / petegg=2） { "card": 6.0, "crystal": 2.0, "hanbao": 3.0, "petegg": 2.0, "robber": 1.0, "bomb": 1.0, "thief": 2.0, "block": -1.0, "mine": -1.0, "caishen": 2.0, "fushen": 2.0, "shuaishen": 2.0, "qiongshen": 2.0 }
   [PASS] 地雷 / 隔毁在埃及是 -1（不随机生成，只能由卡片放） mine=-1 block=-1
   [PASS] 过了 12.5 天棋盘上真的出现了路边物体 12 个
-  [PASS] 生成过的种类都在本图权重表里（不会出现 -1 的） 生成过 ["caishen", "card", "qiongshen", "hanbao", "petegg"]；越界 []
-  [PASS] 不会撒在起点格上 [88, 39, 7, 28, 36, 72, 34, 13, 38, 23, 58, 71]
+  [PASS] 生成过的种类都在本图权重表里（不会出现 -1 的） 生成过 ["caishen", "card", "petegg", "hanbao", "bomb", "thief"]；越界 []
+  [PASS] 不会撒在起点格上 [88, 55, 27, 53, 52, 41, 51, 32, 77, 66, 1, 9]
   [PASS] 不会撒在已有地产 / 已有陷阱的格上 []
   [PASS] 戒指（身上没有小神仙）= 什么也没发生 []
   [PASS] 戒指（有小神仙）= 等级 +1 level=2
@@ -196,6 +197,22 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
   [PASS] 锁定状态记在**权威 Sim** 里（满栏顶卡判定要用） 
   [PASS] 锁定的卡不会被顶掉（跳过它、顶下一张） 顶掉 qiongshen；fushen 仍在
   [PASS] 全部锁定时新卡进不来（reason = all_locked） reason=all_locked
+[3j] 股票 / 公司（Role.txt 的「缺省公司」+ Initvar_r 的 Stock_*）
+  [PASS] Role.txt 的 12 个角色都载入了 12 个
+  [PASS] 孙小美=中华美食 / 阿土伯=新土地 / 宫本宝藏=第一宝藏 / 乌咪=玛雅 中华美食 / 新土地 / 第一宝藏 / 玛雅
+  [PASS] 玩家以自己的「缺省公司」上市 钻石集团
+  [PASS] 初始持有本公司 2000 股（Player_Com_SelfShares，与截图一致） 2000 股
+  [PASS] 初始股价 = Player_Com_Capital / AllShares = 500000/10000 = 50 50.00
+  [PASS] 地图的 6 家虚拟公司也上市了（两个玩家 + 6 = 8 家） 8 家：["新土地", "钻石集团", "仙剑客栈", "华山派", "少林派", "峨嵋派", "武当派", "逍遥镖局"]
+  [PASS] 买进 100 股 → 持股变 2100 2100 股
+  [PASS] 买进扣的钱 = 股款 + 1% 手续费（Stock_Handle_Charge） 扣了 5050（期望 5050）
+  [PASS] 卖出 100 股 → 回到 2000 2000 股
+  [PASS] 手里没有的公司卖不出去 
+  [PASS] 持股 20% 不是董事长 
+  [PASS] 买到 60% 即成为董事长 60%
+  [PASS] 掉到 50% 就不再是董事长 
+  [PASS] 每天开盘股价会动，且落在 Stock_OpenPrice ±10% 内 50.00 → 51.39
+  [PASS] 涨跌是**整数**百分数（原版截图里就是 +7 / +3 / 0 / -1） 3
   [PASS] 抵达地产格 1 tile=1
   [PASS] 服务端标记可购买点（原版 id 91「是否购买」） last_plot=1 kind=buy
   [PASS] 购买成功 
@@ -241,7 +258,7 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
   [PASS] 破产后释放自己的地产 
   [PASS] 他人地产不受影响 
   [PASS] 仅剩 1 人 → 结束并产生赢家 winner=2
-  [PASS] 静止 25 秒后进入睡眠 sleep_until=35.0  now=25.2
+  [PASS] 静止 25 秒后进入睡眠 sleep_until=35.5  now=25.2
   [PASS] 睡眠期间无法掷骰 
   [PASS] 掷骰抛 roll 事件 收到 1 个事件
   [PASS] 事件带 pid / role / tile { "n": 3, "dice": 1, "faces": [3], "pid": 1, "role": 1, "tile": 0 }
@@ -275,7 +292,7 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
   [PASS] BGM 可停 
   [PASS] 环境底噪 95 已起且循环已开 
   [PASS] 环境底噪可停 
-通过 234 / 失败 0
+通过 249 / 失败 0
 ==============================
 WARNING: 16 ObjectDB instances were leaked at exit (run with `--verbose` for details).
    at: cleanup (core/object/object.cpp:2536)

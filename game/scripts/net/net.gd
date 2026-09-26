@@ -277,6 +277,14 @@ func _apply_action(who: int, action: String, args: Array) -> void:
 			# 卡片菜单 id 2「锁定」：锁着的卡不会被新卡顶掉
 			if args.size() > 0:
 				sim.act_lock_card(who, str(args[0]))
+		"buy_stock":
+			# args[0] = 公司名，args[1] = 股数
+			if args.size() > 1:
+				sim.act_buy_stock(who, str(args[0]), int(args[1]))
+		"sell_stock":
+			# args[0] = 公司名，args[1] = 股数
+			if args.size() > 1:
+				sim.act_sell_stock(who, str(args[0]), int(args[1]))
 		"walk":
 			# 骰子卡：玩家自选前进步数（1..6）
 			if args.size() > 0:

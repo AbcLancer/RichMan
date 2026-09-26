@@ -135,6 +135,7 @@ func setup(m: MapData, seed_val: int = 0) -> void:
 	else:
 		rng.seed = seed_val
 	_load_pets()
+	_init_virtual_companies()       # 地图的 6 家虚拟公司上市（玩家公司由 add_player 建）
 
 
 # ------------------------------------------------------------ 小神仙（精灵）数据
@@ -501,6 +502,197 @@ func _pet_apply(p: Dictionary, pet_id: String, lv: int) -> bool:
 			return false
 	return true
 
+# ------------------------------------------------------------ 股票 / 公司
+
+## 「公司」怎么来（依据逐条可查）：
+##   · **玩家公司** —— 每个玩家以自己的「缺省公司」上市，公司名 = `config/Role.txt`
+##     第 6 列（钱夫人=钻石集团、阿土伯=新土地、宫本宝藏=第一宝藏、乌咪=玛雅、
+##     孙小美=中华美食 …）。老板 2026-09-26 的原版股票截图（`docs/screenshots/orig/records/`）
+##     上那前四家**逐字对上**，而且那一局玩家是孙小美、持股 **2000** ——
+##     正好 = `Initvar_r.txt` 的 `Player_Com_SelfShares = 2000`。
+##   · **虚拟公司** —— 每图另有 6 家（`config/scene/<map>/<map>.txt`）→ `maps/*.json`。
+##
+## 一条行情：`{name, owner(>=0 玩家 / -1 虚拟), price, prev, shares, chairman}`
+var stocks: Dictionary = {}
+
+
+func _stock_cfg(key: String, dflt):
+	return Rules.get_val("economy.stock." + key, dflt)
+
+
+func stock_price(comp: String) -> float:
+	return float((stocks.get(comp, {}) as Dictionary).get("price", 0.0))
+
+
+## 涨跌（%，取整）—— 原版截图里就是 `+7` / `+3` / `0` / `-1` 这种整数
+func stock_change(comp: String) -> int:
+	var s: Dictionary = stocks.get(comp, {})
+	if s.is_empty():
+		return 0
+	var prev := float(s.get("prev", 0.0))
+	if prev <= 0.0:
+		return 0
+	return int(round((float(s["price"]) - prev) / prev * 100.0))
+
+
+func holding_of(pid: int, comp: String) -> int:
+	var p: Dictionary = players.get(pid, {})
+	return int((p.get("holdings", {}) as Dictionary).get(comp, 0))
+
+
+## 持股比例 0..1
+func holding_ratio(pid: int, comp: String) -> float:
+	var s: Dictionary = stocks.get(comp, {})
+	if s.is_empty():
+		return 0.0
+	return float(holding_of(pid, comp)) / maxf(float(s.get("shares", 1)), 1.0)
+
+
+## 建「玩家公司」（`add_player` 时调）
+func _init_player_company(p: Dictionary) -> void:
+	var cname := Rules.role_company(int(p.get("role", 1)))
+	if cname == "":
+		return
+	var capital := float(Rules.get_val("economy.player_company.init_capital", 500000))
+	var total := int(Rules.get_val("economy.player_company.init_total_shares", 10000))
+	var self_sh := int(Rules.get_val("economy.player_company.init_self_shares", 2000))
+	var unit := capital / maxf(float(total), 1.0)
+	stocks[cname] = {
+		"name": cname, "owner": int(p["id"]),
+		"price": unit, "prev": unit, "shares": total,
+		"chairman": -1,
+	}
+	var h: Dictionary = p.get("holdings", {})
+	h[cname] = int(h.get(cname, 0)) + self_sh
+	p["holdings"] = h
+	p["company"] = cname
+
+
+## 建「虚拟公司」（地图配置里的那 6 家）
+func _init_virtual_companies() -> void:
+	for c in (map.virtual_companies as Array):
+		var rec: Dictionary = c
+		var nm := str(rec.get("name", ""))
+		if nm == "" or stocks.has(nm):
+			continue
+		var cap := float(rec.get("capital", 300000))
+		var tot := int(rec.get("shares", 10000))
+		var unit := cap / maxf(float(tot), 1.0)
+		stocks[nm] = {
+			"name": nm, "owner": -1, "price": unit, "prev": unit,
+			"shares": tot, "chairman": -1,
+		}
+
+
+## 每天开盘：股价按 `Stock_OpenPrice_Min/Max`（%）波动，并记下昨收
+func _tick_stocks() -> void:
+	if stocks.is_empty():
+		return
+	var lo := float(_stock_cfg("open_price_min_pct", -10)) / 100.0
+	var hi := float(_stock_cfg("open_price_max_pct", 10)) / 100.0
+	for nm in stocks.keys():
+		var s: Dictionary = stocks[nm]
+		s["prev"] = float(s["price"])
+		s["price"] = maxf(0.1, float(s["price"]) * (1.0 + rng.randf_range(lo, hi)))
+		_ev("stock_tick", null, {"company": str(nm), "price": float(s["price"]),
+			"prev": float(s["prev"]), "change": stock_change(str(nm))})
+
+
+## 手续费率（`Stock_Handle_Charge = 0.01`：买卖一笔按交易额的 1%）
+func stock_charge_rate() -> float:
+	return float(_stock_cfg("handle_charge_rate", 0.01))
+
+
+## 买进 N 股：股款 = 当前价 × 股数，另外收手续费
+func act_buy_stock(id: int, comp: String, shares: int) -> bool:
+	var p: Dictionary = players.get(id, {})
+	if p.is_empty() or not bool(p["alive"]) or shares <= 0 or not stocks.has(comp):
+		return false
+	var price := stock_price(comp)
+	var cost := int(ceil(price * float(shares)))
+	var fee := int(ceil(float(cost) * stock_charge_rate()))
+	var need := cost + fee
+	if int(p["money"]) < need:
+		_ev("insufficient_money", p, {"need": need, "have": int(p["money"])})
+		return false
+	p["money"] = int(p["money"]) - need
+	var h: Dictionary = p.get("holdings", {})
+	h[comp] = int(h.get(comp, 0)) + shares
+	p["holdings"] = h
+	log_message.emit("%s 买进 %s %d 股（%.1f 元 × %d = %d 元，手续费 %d）" % [
+		p["name"], comp, shares, price, shares, cost, fee])
+	_ev("stock_buy", p, {"company": comp, "shares": shares, "price": price,
+		"cost": cost, "fee": fee})
+	_check_chairman(p, comp)
+	return true
+
+
+## 卖出 N 股（按当前价，扣手续费）
+func act_sell_stock(id: int, comp: String, shares: int) -> bool:
+	var p: Dictionary = players.get(id, {})
+	if p.is_empty() or shares <= 0 or not stocks.has(comp):
+		return false
+	shares = mini(shares, holding_of(id, comp))
+	if shares <= 0:
+		_ev("stock_no_holding", p, {"company": comp})
+		return false
+	var price := stock_price(comp)
+	var gross := int(price * float(shares))
+	var fee := int(ceil(float(gross) * stock_charge_rate()))
+	p["money"] = int(p["money"]) + gross - fee
+	var h: Dictionary = p.get("holdings", {})
+	h[comp] = int(h.get(comp, 0)) - shares
+	p["holdings"] = h
+	log_message.emit("%s 卖出 %s %d 股（得 %d 元，手续费 %d）" % [
+		p["name"], comp, shares, gross - fee, fee])
+	_ev("stock_sell", p, {"company": comp, "shares": shares, "price": price,
+		"gain": gross - fee, "fee": fee})
+	_check_chairman(p, comp)
+	return true
+
+
+## 持股 ≥60% = 该公司**董事长**（`Info.txt` 131..135；进自家公司土地免租）
+func _check_chairman(p: Dictionary, comp: String) -> void:
+	var s: Dictionary = stocks.get(comp, {})
+	if s.is_empty():
+		return
+	var ratio := holding_ratio(int(p["id"]), comp)
+	var is_ch := ratio >= 0.6
+	var cur := int(s.get("chairman", -1))
+	if is_ch and cur != int(p["id"]):
+		s["chairman"] = int(p["id"])
+		_ev("chairman", p, {"company": comp, "on": true, "ratio": ratio})
+		log_message.emit("%s 成为 %s 公司董事长（持股 %.0f%%）" % [
+			p["name"], comp, ratio * 100.0])
+	elif not is_ch and cur == int(p["id"]):
+		s["chairman"] = -1
+		_ev("chairman", p, {"company": comp, "on": false, "ratio": ratio})
+		log_message.emit("%s 持股低于 60%%，不再是 %s 公司董事长" % [p["name"], comp])
+
+
+func is_chairman(pid: int, comp: String) -> bool:
+	return int((stocks.get(comp, {}) as Dictionary).get("chairman", -1)) == pid
+
+
+## 面板显示顺序：玩家公司在前、虚拟公司在后（各自按名字排序）
+func stock_names() -> Array:
+	var own: Array = []
+	var virt: Array = []
+	for nm in stocks.keys():
+		if int((stocks[nm] as Dictionary).get("owner", -1)) >= 0:
+			own.append(str(nm))
+		else:
+			virt.append(str(nm))
+	own.sort()
+	virt.sort()
+	return own + virt
+
+
+## 某公司属于哪个玩家（虚拟公司返回 -1）
+func company_owner(comp: String) -> int:
+	return int((stocks.get(comp, {}) as Dictionary).get("owner", -1))
+
+
 # ------------------------------------------------------------------ 玩家管理
 
 ## 体力参数（地图级优先，读不到回落到常量）
@@ -556,6 +748,9 @@ func add_player(id: int, pname: String) -> Dictionary:
 		"cards": [],
 		# 锁定的卡（key = 卡 id）。锁着的卡不会被新卡顶掉（原版菜单 id 2「锁定」）
 		"card_locks": {},
+		# 持股：{公司名: 股数}。上市的公司 = 本角色的「缺省公司」（config/Role.txt 第 6 列）
+		"holdings": {},
+		"company": "",
 		"effects": {
 			"invincible_until": 0.0,      # 绝对时刻（秒）
 			"sleep_until": 0.0,           # 绝对时刻（秒）
@@ -576,6 +771,8 @@ func add_player(id: int, pname: String) -> Dictionary:
 		"role": idx + 1,          # 角色序号 1..12，对应原版 Role.txt 行序 / sound/player/roleN
 	}
 	players[id] = p
+	# 以自己的「缺省公司」上市（Role.txt 第 6 列）+ 初始持有本公司 2000 股
+	_init_player_company(p)
 	log_message.emit("%s 加入游戏" % pname)
 	return p
 
@@ -615,6 +812,7 @@ func step(dt: float) -> void:
 	while road_day < now_day:
 		road_day += 1
 		_spawn_road_obj()
+		_tick_stocks()              # 每天开盘：股价按 Stock_OpenPrice_Min/Max 波动
 
 	for id in player_ids():
 		var p: Dictionary = players[id]
@@ -2190,6 +2388,7 @@ func to_dict() -> Dictionary:
 		"obstacles": obstacles.duplicate(true),
 		"road_objs": road_objs.duplicate(true),
 		"road_day": road_day,
+		"stocks": stocks.duplicate(true),
 	}
 
 func apply_dict(d: Dictionary) -> void:
@@ -2210,3 +2409,4 @@ func apply_dict(d: Dictionary) -> void:
 		rf[int(k)] = d["road_objs"][k]
 	road_objs = rf
 	road_day = int(d.get("road_day", road_day))
+	stocks = d.get("stocks", stocks)

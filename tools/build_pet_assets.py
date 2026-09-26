@@ -70,6 +70,14 @@ UI_FILES = {
     "saybk.png": os.path.join(OTHER_SRC, "saybk.tga"),
     "msgbox.png": os.path.join(OTHER_SRC, "msgbox.tga"),
     "hint.png": os.path.join(OTHER_SRC, "hint.tga"),
+    # 股票买进对话框（`uitex/buystock/`）—— 老板原版截图里那个
+    # 「买进 [1900] / [63650] / OK PASS」的粉框：上排标签+输入、中间金额、下面按钮条
+    "stock_buy.png": os.path.join(ROOT, "samples", "uitex", "buystock", "buystock.tga"),
+    "stock_bar.png": os.path.join(ROOT, "samples", "uitex", "buystock", "bar.tga"),
+    "stock_ok_1.png": os.path.join(ROOT, "samples", "uitex", "buystock", "ok_1.tga"),
+    "stock_ok_2.png": os.path.join(ROOT, "samples", "uitex", "buystock", "ok_2.tga"),
+    "stock_pass_1.png": os.path.join(ROOT, "samples", "uitex", "buystock", "pass_1.tga"),
+    "stock_pass_2.png": os.path.join(ROOT, "samples", "uitex", "buystock", "pass_2.tga"),
 }
 
 # ---- 槽位（native 256×256 底图坐标；x, y, w, h）----

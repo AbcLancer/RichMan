@@ -33,6 +33,7 @@ func run() -> void:
 	_test_platform()
 	_test_card_menu_feed()
 	_test_hand()
+	_test_stock()
 	_test_buy_and_rent()
 	_test_upgrade_chain()
 	_test_timers()
@@ -460,6 +461,65 @@ func _test_hand() -> void:
 	_ok("全部锁定时新卡进不来（reason = all_locked）",
 		not bool(res3["added"]) and str(res3["reason"]) == "all_locked",
 		"reason=%s" % str(res3["reason"]))
+
+
+# ------------------------------------ 3j. 股票 / 公司（Role.txt 缺省公司 + Initvar_r 参数）
+
+func _test_stock() -> void:
+	_lines.append("[3j] 股票 / 公司（Role.txt 的「缺省公司」+ Initvar_r 的 Stock_*）")
+	_ok("Role.txt 的 12 个角色都载入了", Rules.roles().size() == 12,
+		"%d 个" % Rules.roles().size())
+	# 老板 2026-09-26 的原版股票截图：面板前四家 = 这四位的缺省公司（逐字对上）
+	_ok("孙小美=中华美食 / 阿土伯=新土地 / 宫本宝藏=第一宝藏 / 乌咪=玛雅",
+		Rules.role_company(5) == "中华美食" and Rules.role_company(2) == "新土地"
+		and Rules.role_company(3) == "第一宝藏" and Rules.role_company(4) == "玛雅",
+		"%s / %s / %s / %s" % [Rules.role_company(5), Rules.role_company(2),
+			Rules.role_company(3), Rules.role_company(4)])
+
+	var sim := _fresh_sim()
+	var p: Dictionary = sim.players[1]
+	var comp := str(p.get("company", ""))
+	_ok("玩家以自己的「缺省公司」上市", comp != "", comp)
+	_ok("初始持有本公司 2000 股（Player_Com_SelfShares，与截图一致）",
+		sim.holding_of(1, comp) == 2000, "%d 股" % sim.holding_of(1, comp))
+	_ok("初始股价 = Player_Com_Capital / AllShares = 500000/10000 = 50",
+		absf(sim.stock_price(comp) - 50.0) < 0.01, "%.2f" % sim.stock_price(comp))
+	_ok("地图的 6 家虚拟公司也上市了（两个玩家 + 6 = 8 家）",
+		sim.stocks.size() == 8, "%d 家：%s" % [sim.stocks.size(), str(sim.stock_names())])
+
+	p["money"] = 200000
+	var price := sim.stock_price(comp)
+	var before := int(p["money"])
+	_ok("买进 100 股 → 持股变 2100", sim.act_buy_stock(1, comp, 100)
+		and sim.holding_of(1, comp) == 2100, "%d 股" % sim.holding_of(1, comp))
+	var want := int(ceil(price * 100.0))
+	want += int(ceil(float(want) * 0.01))
+	_ok("买进扣的钱 = 股款 + 1% 手续费（Stock_Handle_Charge）",
+		before - int(p["money"]) == want, "扣了 %d（期望 %d）" % [before - int(p["money"]), want])
+	_ok("卖出 100 股 → 回到 2000", sim.act_sell_stock(1, comp, 100)
+		and sim.holding_of(1, comp) == 2000, "%d 股" % sim.holding_of(1, comp))
+	_ok("手里没有的公司卖不出去", not sim.act_sell_stock(1, "尼罗河", 100), "")
+
+	# 董事长：持股 ≥60%（Info.txt 131..135）
+	_ok("持股 20% 不是董事长", not sim.is_chairman(1, comp), "")
+	p["money"] = 600000                              # 先把钱备够（4000 股 ≈ 20 万 + 手续费）
+	sim.act_buy_stock(1, comp, 4000)                 # 2000+4000 = 6000 / 10000
+	_ok("买到 60% 即成为董事长", sim.is_chairman(1, comp),
+		"%.0f%%" % (sim.holding_ratio(1, comp) * 100.0))
+	sim.act_sell_stock(1, comp, 1000)                # 5000 / 10000 = 50%
+	_ok("掉到 50% 就不再是董事长", not sim.is_chairman(1, comp), "")
+
+	# 每天开盘波动
+	var sim2 := _fresh_sim()
+	var c2 := str(sim2.players[1].get("company", ""))
+	var pr2 := sim2.stock_price(c2)
+	sim2._tick_stocks()
+	_ok("每天开盘股价会动，且落在 Stock_OpenPrice ±10% 内",
+		absf(sim2.stock_price(c2) - pr2) > 0.0001
+		and sim2.stock_price(c2) >= pr2 * 0.895 and sim2.stock_price(c2) <= pr2 * 1.105,
+		"%.2f → %.2f" % [pr2, sim2.stock_price(c2)])
+	_ok("涨跌是**整数**百分数（原版截图里就是 +7 / +3 / 0 / -1）",
+		typeof(sim2.stock_change(c2)) == TYPE_INT, str(sim2.stock_change(c2)))
 
 
 # --------------------------------------------------- 3g. 传送平台（Roadevent 事件 1）

@@ -90,6 +90,8 @@ var _char_panel: Control
 ## `docs/screenshots/orig/records/使用卡片.png`，「钱夫人」右边就是「小财神」）。
 ## ⚠️ 原版**没有**「持有小神仙」的独立面板；我们原来在精灵屋左边放的那块是多余的（已去掉）。
 var _pet_strip: Control = null
+## 右下角常驻的**股票行情面板**（原版就在这里 —— 老板 2026-09-26 的原版截图）
+var _stock: StockPanel = null
 var _pet_strip_nodes: Array = []
 const PET_STRIP_PX := 44.0             # 每只小神仙图标的边长（native）
 var _char_avatar: TextureRect
@@ -1024,6 +1026,11 @@ func _build_hud() -> void:
 	_build_action_entry()
 	_build_card_hand()
 	_build_pet_strip()
+	# 右下角常驻行情面板（原版「名称 / 股价 / 持股 / %」那张表）
+	_stock = StockPanel.new()
+	_hud.add_child(_stock)
+	_stock.setup(_ui_scale)
+	_stock.act_requested.connect(_on_stock_action)
 	_build_shop()
 	_build_toast()
 
@@ -1790,6 +1797,33 @@ func _pop_buy_confirm() -> void:
 ##   · 悬停 → 原版卡面说明（String.txt 9001..9042）
 ## 小神仙条（角色面板右侧）。原版把持有的小神仙画在角色面板旁边，
 ## 而没有单独的「持有」面板 —— 所以精灵屋那边只显示商店。
+## 股票面板的「买进 / 卖出 / 股东 / 走势」（原版点一行弹出的四个按钮）
+func _on_stock_action(kind: String, comp: String, shares: int) -> void:
+	match kind:
+		"buy":
+			Net.send_action("buy_stock", [comp, shares])
+		"sell":
+			Net.send_action("sell_stock", [comp, shares])
+		"holder":
+			# 股东名单（持股 ≥60% 当董事长，见 Info.txt 131..135）
+			if Net.sim == null:
+				return
+			var rows: Array = []
+			for pid in Net.sim.player_ids():
+				var h := Net.sim.holding_of(int(pid), comp)
+				if h > 0:
+					rows.append("%s %d" % [str((Net.sim.players[pid] as Dictionary)["name"]), h])
+			var ch := int((Net.sim.stocks.get(comp, {}) as Dictionary).get("chairman", -1))
+			var who := "—"
+			if ch >= 0 and Net.sim.players.has(ch):
+				who = str((Net.sim.players[ch] as Dictionary)["name"])
+			_toast("%s ｜ 董事长：%s ｜ %s" % [comp, who,
+				"、".join(rows) if not rows.is_empty() else "暂无股东"])
+		"trend":
+			if Net.sim != null:
+				_toast("%s 当前涨跌 %+d%%（走势图待做）" % [comp, Net.sim.stock_change(comp)])
+
+
 func _build_pet_strip() -> void:
 	_pet_strip = Control.new()
 	_pet_strip.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
@@ -3078,6 +3112,25 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 		"road_god":
 			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
 			_toast(_info_disp(0, "%s附身" % str(data.get("god_cn", ""))))
+		# ---- 股票 / 公司 ----
+		"stock_buy":
+			_ev_sfx(Audio.SFX_COIN_DROP, data, pos)
+			_toast("买进 %s %d 股（%d 元）" % [str(data.get("company", "")),
+				int(data.get("shares", 0)), int(data.get("cost", 0))])
+		"stock_sell":
+			_ev_sfx(Audio.SFX_COIN_SCATTER, data, pos)
+			_toast("卖出 %s %d 股（得 %d 元）" % [str(data.get("company", "")),
+				int(data.get("shares", 0)), int(data.get("gain", 0))])
+		"chairman":
+			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast(("你成为 %s 公司董事长" % str(data.get("company", "")))
+					if bool(data.get("on", false))
+					else "持股低于 60%%，不再担任 %s 公司董事长" % str(data.get("company", "")))
+		"stock_no_holding":
+			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast("你没有 %s 的股票" % str(data.get("company", "")))
 		"roadblock":
 			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
 		"blast":
@@ -3155,6 +3208,8 @@ func _hud_refresh(snap: Dictionary) -> void:
 		_sync_action_entry(me, plots, my_id)
 		_sync_card_hand(me)
 		_sync_pet_strip(me)
+		if _stock != null:
+			_stock._sync(0.0, str(int(me.get("id", 0))))
 		_sync_shop()
 		# 骰子卡的步数选择器只在「待选步数」时出现
 		if _step_picker != null:
