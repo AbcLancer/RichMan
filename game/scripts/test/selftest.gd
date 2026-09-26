@@ -955,6 +955,10 @@ func _test_pets() -> void:
 	_ok("冷却期内不会连发（不重复扣点券）", int(p4["credit"]) == cr,
 		"点券 %d → %d" % [cr, int(p4["credit"])])
 	s4.time += s4.pet_seconds("huaxian", 1) + 0.1
+	# ⚠️ 现在发动还要求**体力满**（老板 2026-09-27：满体力条才能发动技能）——
+	# 上一次发动已经把体力清零了，这里手动填满再测冷却
+	for _e in (p4["pets"] as Array):
+		(_e as Dictionary)["energy"] = Sim.PET_ENERGY_MAX
 	s4._tick_pets(p4)
 	_ok("冷却（%.0f 秒）过后能再发，并再扣一次点券" % s4.pet_seconds("huaxian", 1),
 		int(p4["credit"]) < cr, "点券 %d" % int(p4["credit"]))

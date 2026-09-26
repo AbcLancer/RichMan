@@ -110,6 +110,8 @@ var _news_text: Label = null
 var _news_left := 0.0
 ## 拉霸（老虎机）面板（原版 `uitex/casino/`；老板截图 records/老虎机.png）
 var _casino: CasinoPanel = null
+## 「请选择对手」的目标选择器（穷神卡这类要点人的卡）
+var _target_pick: PanelContainer = null
 var _log_panel: PanelContainer
 
 # 左下角色面板（版式 = 原版 uitex/other/atb.png）
@@ -121,6 +123,7 @@ var _pet_strip: Control = null
 ## 右下角常驻的**股票行情面板**（原版就在这里 —— 老板 2026-09-26 的原版截图）
 var _stock: StockPanel = null
 var _pet_slot: TextureRect = null          # 精灵栏里的**出战精灵头像**
+var _pet_bar: ProgressBar = null           # 精灵栏里的**体力条**（满了才能发动技能）
 var _pet_strip_nodes: Array = []
 const PET_STRIP_PX := 44.0             # 每只小神仙图标的边长（native）
 var _char_avatar: TextureRect
@@ -487,7 +490,7 @@ func _run_ui_shot(delta: float) -> void:
 	# 四张都拍齐 → 收工；或 90 秒兜底
 	if _ui_shot_tired_done and _ui_shot_t - _ui_shot_tired_t > 0.8:
 		get_tree().quit(0)
-	if _ui_shot_t > 170.0:
+	if _ui_shot_t > 230.0:
 		if not _ui_shot_pop_done:
 			push_warning("[uishot] 90 秒内没等到落点气泡（一直没落到空地）")
 		if not _ui_shot_tired_done:
@@ -1376,11 +1379,28 @@ func _build_character_panel() -> void:
 	var inf := _slot(ATB_INFO, k)
 	_pet_slot = TextureRect.new()
 	_pet_slot.position = inf.position + Vector2(3, 2) * _ui_scale
-	_pet_slot.size = inf.size - Vector2(6, 17) * _ui_scale
+	_pet_slot.size = inf.size - Vector2(6, 26) * _ui_scale
 	_pet_slot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_pet_slot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_pet_slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_char_panel.add_child(_pet_slot)
+
+	# 精灵栏的**体力条** —— 老板 2026-09-27：「小神仙**满体力条**应该是可以发动技能的」。
+	# 体力靠**走步**攒（`Sim.PET_ENERGY_MAX = 60` 步攒满），攒满 → 自动发动技能 → 升一级 + 清零。
+	_pet_bar = ProgressBar.new()
+	_pet_bar.show_percentage = false
+	_pet_bar.position = Vector2(inf.position.x + 3.0 * _ui_scale,
+		inf.position.y + inf.size.y - 23.0 * _ui_scale)
+	_pet_bar.size = Vector2(inf.size.x - 6.0 * _ui_scale, 7.0 * _ui_scale)
+	_pet_bar.min_value = 0.0
+	_pet_bar.max_value = 100.0
+	_pet_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_pet_bar.add_theme_stylebox_override("background", _sb_round(
+		Color8(30, 42, 72, 210), Color8(120, 170, 230), int(round(3.0 * _ui_scale)),
+		maxi(1, int(round(1.0 * _ui_scale))), 0.0))
+	_pet_bar.add_theme_stylebox_override("fill", _sb_round(
+		Color8(120, 224, 120), Color(0, 0, 0, 0), int(round(3.0 * _ui_scale)), 0, 0.0))
+	_char_panel.add_child(_pet_bar)
 
 	_char_info = Label.new()
 	_char_info.position = Vector2(inf.position.x, inf.position.y + inf.size.y
@@ -2037,21 +2057,10 @@ func _sync_pet_strip(me: Dictionary) -> void:
 
 
 func _build_card_hand() -> void:
-	# ---- 卡片夹开关：原版 uitex/other/clamp.png（String.txt id 2010「卡片夹子」）----
-	_clamp_btn = TextureButton.new()
-	_clamp_btn.texture_normal = load("res://assets/uitex/other/clamp.png")
-	_clamp_btn.ignore_texture_size = true
-	_clamp_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-	_clamp_btn.custom_minimum_size = Vector2(30.0, 30.0) * _ui_scale
-	_clamp_btn.size = Vector2(30.0, 30.0) * _ui_scale
-	_clamp_btn.tooltip_text = "卡片夹（原版 String.txt 2010）"
-	_clamp_btn.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	_clamp_btn.position = Vector2((UI_CHAR_W + 8.0) * _ui_scale,
-		-(34.0 + UI_BR_MARGIN) * _ui_scale)
-	_clamp_btn.pressed.connect(func():
-		_card_bar_open = not _card_bar_open
-		Audio.play_sfx(Audio.SFX_UI_CLICK))
-	_hud.add_child(_clamp_btn)
+	# ⚠️ 这里原来有一个「卡片夹子」按钮（`uitex/other/clamp.png`，原版 String.txt 2010），
+	#   作用是收起 / 展开手牌条。老板 2026-09-27：「我都不知道现在左下角的这个图片是要干啥」
+	#   —— 图标含义不直观，而且它跟**卡片锁定标志**用的是同一张图，很容易被当成锁定标志
+	#   → **已移除**。现在 `clamp.png` 只作**锁定标志**用（贴在卡片下方，见 `_sync_card_hand`）。
 
 	# ---- 手牌条 ----
 	_card_bar = Control.new()
@@ -2256,11 +2265,22 @@ func _sync_card_hand(me: Dictionary) -> void:
 		btn.pressed.connect(func(): _on_card_clicked(idx))
 		box.add_child(btn)
 
-		# 压暗的两种情况（前者优先）：玩家自己「锁定」了这张卡（菜单 id 2）、
-		# 或者这张卡此刻条件不满足。
-		if bool((me.get("card_locks", {}) as Dictionary).get(cid, false)):
-			img.modulate = Color(0.55, 0.55, 0.6, 0.9)
-		elif code != 0:
+		# ---- 锁定标志：原版 `uitex/other/clamp.tga`（= 卡片夹子图标）----
+		# ⚠️ 老板 2026-09-27：「卡片的锁定效果，应该是**卡片下方显示**这个图片，
+		#   而不是压暗」→ 锁定不再靠压暗表达，改成在卡面**底边**贴一个夹子图标。
+		var lk := TextureRect.new()
+		lk.texture = _tex_or_null("res://assets/uitex/other/clamp.png")
+		lk.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		lk.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		lk.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		lk.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+		lk.offset_top = -20.0 * _ui_scale
+		lk.offset_bottom = -2.0 * _ui_scale
+		lk.visible = bool((me.get("card_locks", {}) as Dictionary).get(cid, false))
+		box.add_child(lk)
+
+		# 压暗**只留给「此刻条件不满足」**这一种情况（锁定改用夹子图标）
+		if code != 0:
 			img.modulate = Color(0.62, 0.62, 0.68, 0.72)
 		_card_slots.append({"box": box, "img": img, "btn": btn, "cnt": cnt, "code": code})
 		_card_ids.append(cid)
@@ -2375,15 +2395,105 @@ func _on_card_menu(which: String) -> void:
 
 
 ## 进入「请选择对手」模式：点亮右侧头像列，点头像即用卡
+## 「请选择对手」模式 —— 除了把右上角的头像点亮，**再在屏幕中间弹一个目标选择器**。
+##
+## ⚠️ 老板 2026-09-27：「那个地雷卡、穷神卡之类的需要选目标的卡牌…
+##   不管是以路径点为目标的还是以其他玩家为目标的，我都用不了，**不知道怎么选**」
+##   —— 原来只把右上角的小头像变成可点，提示条又只写「请选择对手」，
+##   等于让玩家自己猜要点哪儿。现在**明确弹一个带头像和名字的大按钮列表**，不可能点不到。
+##
+## ⚠️ 另外附上**原版权威说明**（`String.txt`），免得再猜哪张卡要不要选目标：
+##   · 地雷卡 9023「**身后一格**设置地雷」 → **不用选**（自动放身后）
+##   · 路障卡 9024「**放置路障**」        → 不用选（放前方一格）
+##   · 清除卡 9039「清除**前方**道路垃圾」→ 不用选
+##   · 穷神卡 9003「**指定**穷神附身的对象」→ **要选对手** ✔ 就是走这条
 func _set_card_target_mode(cid: String) -> void:
 	_card_pending = cid
-	_card_hint.text = "%s  →  %s" % [Rules.card_name(cid), Rules.card_target_prompt("player")]
+	_card_hint.text = "%s  →  请点下面的人（或右上角头像）" % Rules.card_name(cid)
 	_card_hint.visible = true
 	_sync_avatar_column(_player_ids(), _snapshot.get("players", {}), multiplayer.get_unique_id())
+	_open_target_picker(cid)
+
+
+## 屏幕中央的「选择对手」列表
+func _open_target_picker(cid: String) -> void:
+	_close_target_picker()
+	if _hud == null:
+		return
+	var pc := PanelContainer.new()
+	pc.z_index = 70
+	pc.add_theme_stylebox_override("panel", _sb_round(Color8(20, 42, 96, 244),
+		Color8(160, 225, 255), int(round(9.0 * _ui_scale)),
+		maxi(2, int(round(4.0 * _ui_scale))), maxf(2.0, 3.0 * _ui_scale)))
+	_hud.add_child(pc)
+	_target_pick = pc
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", maxi(2, int(round(5.0 * _ui_scale))))
+	pc.add_child(col)
+
+	var title := Label.new()
+	title.text = "%s ｜ 请选择对手" % Rules.card_name(cid)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", maxi(10, int(round(14.0 * _ui_scale))))
+	title.add_theme_color_override("font_color", Color8(226, 244, 255))
+	col.add_child(title)
+
+	var me_id := multiplayer.get_unique_id()
+	var players: Dictionary = _snapshot.get("players", {})
+	var any := false
+	for id in _player_ids():
+		if int(id) == me_id:
+			continue
+		var p: Dictionary = players.get(id, {})
+		if p.is_empty() or not bool(p.get("alive", false)):
+			continue
+		any = true
+		var b := Button.new()
+		b.text = "  %s　$%d" % [str(p.get("name", "")), int(p.get("money", 0))]
+		b.icon = _role_texture(int(p.get("role", 1)) - 1, "21")
+		b.expand_icon = true
+		b.custom_minimum_size = Vector2(180.0 * _ui_scale, 34.0 * _ui_scale)
+		b.focus_mode = Control.FOCUS_NONE
+		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.add_theme_font_size_override("font_size", maxi(10, int(round(14.0 * _ui_scale))))
+		b.add_theme_color_override("font_color", Color8(240, 250, 255))
+		b.add_theme_stylebox_override("normal", _sb_round(Color8(46, 96, 170),
+			Color8(120, 190, 250), int(round(6.0 * _ui_scale)),
+			maxi(1, int(round(2.0 * _ui_scale))), 0.0))
+		b.add_theme_stylebox_override("hover", _sb_round(Color8(80, 150, 230),
+			Color8(255, 246, 120), int(round(6.0 * _ui_scale)),
+			maxi(2, int(round(2.0 * _ui_scale))), 0.0))
+		var pid := int(id)
+		b.pressed.connect(func(): _on_avatar_clicked(pid))
+		col.add_child(b)
+	if not any:
+		var lb := Label.new()
+		lb.text = "没有可选的目标"
+		lb.add_theme_color_override("font_color", Color8(255, 200, 200))
+		col.add_child(lb)
+	var cancel := Button.new()
+	cancel.text = "取消"
+	cancel.focus_mode = Control.FOCUS_NONE
+	cancel.custom_minimum_size = Vector2(80.0 * _ui_scale, 24.0 * _ui_scale)
+	cancel.add_theme_color_override("font_color", Color8(200, 220, 240))
+	cancel.pressed.connect(func(): _clear_card_target_mode())
+	col.add_child(cancel)
+
+	var sz := pc.get_combined_minimum_size()
+	pc.size = sz
+	var vp := get_viewport().get_visible_rect()
+	pc.position = Vector2((vp.size.x - sz.x) * 0.5, (vp.size.y - sz.y) * 0.34)
+
+
+func _close_target_picker() -> void:
+	if _target_pick != null:
+		_target_pick.queue_free()
+		_target_pick = null
 
 
 func _clear_card_target_mode() -> void:
 	_card_pending = ""
+	_close_target_picker()
 	if _card_hint != null:
 		_card_hint.visible = false
 	if _avatar_rows.size() > 0:
@@ -3736,6 +3846,9 @@ func _sync_char_panel(me: Dictionary, players: Dictionary, plots: Dictionary,
 		else:
 			_pet_slot.texture = _tex_or_null(Rules.pet_art(str(ap.get("id", "")), "face",
 				int(ap.get("level", 1))))
+	if _pet_bar != null:
+		_pet_bar.value = 100.0 * (Net.sim.pet_energy_ratio(ap) if (Net.sim != null
+			and not ap.is_empty()) else 0.0)
 	if ap.is_empty():
 		_char_info.text = "精灵栏（空）"
 	else:

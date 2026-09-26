@@ -252,7 +252,8 @@ func add_pet(p: Dictionary, pet_id: String) -> int:
 		_ev("pet_full", p, {"pet": pet_id, "max": max_pets()})
 		log_message.emit("%s 已经拥有 %d 位小神仙，不能再请了" % [p["name"], max_pets()])
 		return 1
-	(p["pets"] as Array).append({"id": pet_id, "level": 1, "cool": 0.0})
+	(p["pets"] as Array).append({"id": pet_id, "level": 1, "cool": 0.0,
+		"energy": PET_ENERGY_MAX})       # 新来的直接给满体力（老板：满体力才能发动）
 	if str(p.get("pet_active", "")) == "":
 		p["pet_active"] = pet_id        # 第一只自动「出战」（显示在角色面板的精灵栏位）
 	log_message.emit("%s 得到小神仙「%s」" % [p["name"], pet_name(pet_id)])
@@ -401,6 +402,9 @@ func _tick_pets(p: Dictionary) -> void:
 		var lv := int(d.get("level", 1))
 		if time < float(d.get("cool", 0.0)):
 			continue
+		# 体力没满 → 发不动技能（老板 2026-09-27；体力由每走一步攒）
+		if float(d.get("energy", 0.0)) < PET_ENERGY_MAX:
+			continue
 		var cost := pet_cost(pid, lv)
 		if int(p["credit"]) < cost:
 			continue
@@ -408,11 +412,17 @@ func _tick_pets(p: Dictionary) -> void:
 			continue
 		p["credit"] = int(p["credit"]) - cost
 		d["cool"] = time + pet_seconds(pid, lv)
+		d["energy"] = 0.0                          # 发动 → 体力清零
 		log_message.emit("  （%s 发动「%s」，耗 %d 点券，剩 %d）" % [
 			pet_name(pid), pet_skill(pid), cost, int(p["credit"])])
 		_ev("pet_skill", p, {"pet": pid, "name": pet_name(pid), "level": lv,
 			"skill": pet_skill(pid), "effect": str(pet_record(pid).get("effect", "")),
 			"cost": cost, "seconds": pet_seconds(pid, lv), "credit": int(p["credit"])})
+		# 发动一次升一级（老板 2026-09-27 的原版观察）
+		if lv < PET_LEVEL_CAP:
+			d["level"] = lv + 1
+			log_message.emit("  （%s 升到 %d 级）" % [pet_name(pid), lv + 1])
+			_ev("pet_levelup", p, {"pet": pid, "name": pet_name(pid), "level": lv + 1})
 
 
 ## 真正施加特技。返回 false = 条件不满足（不消耗、不进冷却）。
@@ -968,6 +978,21 @@ func act_casino_pull(id: int) -> bool:
 	return true
 
 
+## 小神仙「体力」攒满需要走多少步。
+##
+## 老板 2026-09-27 观察到的原版机制：**走步攒体力 → 满了才发得动技能 → 发动一次升一级**。
+## ⚠️ `Pet.txt` 只有「秒数 / 次数 / 消耗点数」，`Initvar_r.txt` 只有 `Pet_Upgrade_Steps = 300`
+##   （那是「走步自动升级」，现在已停用）—— **没有体力字段**，所以这个常数是**推断**：
+##   取 `Pet_Upgrade_Steps` 的 1/5 = 60 步攒满一次。已登记在 `docs/alignment-gap.md`。
+const PET_ENERGY_MAX := 60.0
+const PET_LEVEL_CAP := 4               # Pet.txt 每只 4 级
+
+
+## 小神仙的体力进度 0..1（UI 画体力条用）
+func pet_energy_ratio(e: Dictionary) -> float:
+	return clampf(float(e.get("energy", 0.0)) / PET_ENERGY_MAX, 0.0, 1.0)
+
+
 ## 某公司属于哪个玩家（虚拟公司返回 -1）
 func company_owner(comp: String) -> int:
 	return int((stocks.get(comp, {}) as Dictionary).get("owner", -1))
@@ -1165,11 +1190,9 @@ func _advance(p: Dictionary, dt: float) -> void:
 				p["progress"] = 0.0
 				log_message.emit("%s 被路障挡住" % p["name"])
 				_ev("roadblock", p, {"idx": int(p["tile"]), "owner": int(ob["owner"])})
-		# 踩到**路边物体**（原版 roadobj）：踩到即触发，随即从棋盘上消失
-		elif road_objs.has(int(p["tile"])):
-			var rob: Dictionary = road_objs[int(p["tile"])]
-			road_objs.erase(int(p["tile"]))
-			_pick_road_obj(p, str(rob["kind"]), int(p["tile"]))
+		# ⚠️ 路边物体（roadobj）**故意不在这里判** —— 老板 2026-09-27：
+		#   「路线上的事件点必须要**踩到**才会生效，现在**路过**就生效了」
+		#   → 已挪到 `_arrive()`（停下来那一刻才触发）。
 		# 踩到**传送平台**（原版 Roadevent 事件 1）：经过就传送，并结束本次移动。
 		# ⚠ 必须放在**逐格循环里**判 —— 原来只在 _arrive（停下那一刻）判，
 		#   于是「路过」不传送，玩家可以站在传送平台上；此时再掷 1 点走 1 格到
@@ -1194,10 +1217,13 @@ func _tick_step_effects(p: Dictionary) -> void:
 	for k in STEP_EFFECTS:
 		if int(e[k]) > 0:
 			e[k] = int(e[k]) - 1
-	# 小神仙也按**步数**升级（原版 Initvar_r.txt「Pet_Upgrade_Steps = 300
-	# 宠物每走多少步（此值 × 级数）升级」）—— 与「在精灵屋重复购买升级」是两条并行途径
-	p["pet_steps"] = int(p.get("pet_steps", 0)) + 1
-	_try_pet_levelup(p)
+	# ⚠️ 小神仙的**体力**（老板 2026-09-27 的原版观察）：
+	#   「小神仙**满体力条**应该是可以发动技能的，**每发动一次可以升一级**」
+	#   → 每走 1 步给**出战的**小神仙 +1 体力；攒满后由 `_tick_pets()` 发动技能并升级。
+	#   ⚠️ 原来的「走步自动升级」（`Pet_Upgrade_Steps = 300`）**已停用** —— 升级改由发动技能触发。
+	var ap: Dictionary = active_pet(p)
+	if not ap.is_empty():
+		ap["energy"] = float(ap.get("energy", 0.0)) + 1.0
 
 
 ## 走够步数就把一只小神仙升一级。门槛 = Pet_Upgrade_Steps × 当前等级。
@@ -1271,6 +1297,13 @@ func _arrive(p: Dictionary) -> void:
 	# 上一次抵达留下的「一次性机会」作废 —— 想再动这块地，必须再走回来
 	# （原版 Info.txt id 93：升级是抵达时的一次询问，不是随时可点）
 	_clear_chance(p)
+
+	# 路边物体（宝箱 / 水晶 / 神仙蛋 / 小偷 …）：**停在这一格**才触发，随即消失。
+	# ⚠️ 老板 2026-09-27：原来写在逐格循环里 → **路过就捡**，不符合原版。
+	if road_objs.has(idx):
+		var rob: Dictionary = road_objs[idx]
+		road_objs.erase(idx)
+		_pick_road_obj(p, str(rob["kind"]), idx)
 
 	match t.get("kind", ""):
 		"plot":
@@ -2101,6 +2134,9 @@ func act_feed_card(id: int, card_id: String) -> bool:
 		return false
 	(p["cards"] as Array).remove_at(at)
 	(pets[best] as Dictionary)["level"] = best_lv + 1
+	# 顺便把它**体力充满** —— 老板 2026-09-27 反馈「喂食了之后小神仙的体力条没什么变化」，
+	# 喂食本来就该让它更有劲，也让体力条这个表现看得见。
+	(pets[best] as Dictionary)["energy"] = PET_ENERGY_MAX
 	log_message.emit("%s 把「%s」喂给 %s，升到 %d 级" % [
 		p["name"], Rules.card_name(card_id),
 		pet_name(str((pets[best] as Dictionary)["id"])), best_lv + 1])

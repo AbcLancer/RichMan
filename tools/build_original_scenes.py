@@ -48,6 +48,9 @@ def mesh_file(path,frames,uv,surfaces,times=None,clips=None):
     meta=dict(mesh='res://'+path.relative_to(ROOT/'game').as_posix(),
               surfaces=[{'texture':s['texture']} for s in surfaces],
               times=list(map(float,times)) if times is not None else [0],clips=clips or {})
+    meta['pivot']=((frames[0].min(0)+frames[0].max(0))*.5).tolist() if not clips else [0,0,0]
+    meta['definition']='res://'+path.with_suffix('.json').relative_to(ROOT/'game').as_posix()
+    dump(path.with_suffix('.json'),meta)
     return meta
 
 EVENTS={1:('platform','传送平台'),2:('cardshop','卡片商店'),3:('hospital','医院'),4:('cardpt','卡片点'),5:('tvnews','电视台'),6:('labar','拉霸'),7:('capital','市政府'),8:('pethouse','精灵屋'),9:('game_a','游戏点A'),10:('game_b','游戏点B'),11:('coupon5','点券5'),12:('coupon10','点券10'),13:('coupon20','点券20'),14:('coupon30','点券30'),15:('coupon50','点券50'),16:('casino','乐透')}
@@ -134,7 +137,19 @@ def cvd_exports(path,world,outdir):
     def walk(d,parents):
         if 'vertices' in d:
             frames=[]
-            for v,t in zip(d['vertices'],d['times']):
+            # Mesh deformation and node transform have INDEPENDENT clocks.
+            # A one-frame mesh can still have hundreds of transform keys (longdeng).
+            mesh_times=d['times']-d['times'][0]
+            time_parts=[mesh_times]
+            for parent in parents+[d]:
+                for track in parent.get('tracks',[]):
+                    if len(track):time_parts.append(track[:,0])
+            times=np.unique(np.concatenate(time_parts))
+            for t in times:
+                hi=min(int(np.searchsorted(mesh_times,t,side='right')),len(mesh_times)-1)
+                lo=max(0,hi-1)
+                f=np.clip((t-mesh_times[lo])/max(float(mesh_times[hi]-mesh_times[lo]),1e-8),0,1)
+                v=d['vertices'][lo]*(1-f)+d['vertices'][hi]*f
                 m=np.eye(4)
                 for parent in parents+[d]:m=m@matrix(parent,float(t))
                 p=v[:,5:]@m[:3,:3].T+m[:3,3];frames.append(world(p@root.T))
@@ -142,7 +157,14 @@ def cvd_exports(path,world,outdir):
             if surfaces:
                 uv=d['vertices'][0,:,:2].copy();uv[:,1]=1-uv[:,1]
                 dst=outdir/(path.stem.lower()+'_'+str(len(result))+'.r6v')
-                result.append(mesh_file(dst,frames,uv,surfaces,d['times']))
+                info=mesh_file(dst,frames,uv,surfaces,times)
+                info.update(source=str(path.relative_to(ROOT)),name=dst.stem)
+                ani=path.with_suffix('.ani')
+                if ani.exists():
+                    speed=re.search(r'set_speed\(\s*([\d.]+)',ani.read_text(encoding='gbk'))
+                    if speed:info['speed']=float(speed[1])
+                dump(dst.with_suffix('.json'),info)
+                result.append(info)
         for c in d['children']:walk(c,parents+[d])
     for d in nodes:walk(d,[])
     return result
@@ -156,7 +178,9 @@ def scenes():
             surfaces=[dict(texture=texture(folder,s['texture']),indices=s['indices']) for s in m['surfaces'] if len(s['indices'])]
             if not surfaces:continue
             uv=m['uv'].copy();uv[:,1]=1-uv[:,1]
-            item=mesh_file(outdir/(str(i)+'.r6v'),[world(p)],uv,surfaces);item['name']=m['name'];items.append(item)
+            item=mesh_file(outdir/(str(i)+'.r6v'),[world(p)],uv,surfaces)
+            item.update(name=m['name'],source=str((folder/(name+'.r6s')).relative_to(ROOT)),source_index=i)
+            dump(outdir/(str(i)+'.json'),item);items.append(item)
         anim=[];listing=folder/'anim/allanim.txt'
         if listing.exists():
             files={p.name.lower():p for p in listing.parent.iterdir()}

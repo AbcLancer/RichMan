@@ -677,6 +677,28 @@ func _fallback_positions(n: int) -> Array:
 	return out
 
 
+## 找屏幕上离 `screen` 最近的一格 —— 给「请选择一格」的卡用（地雷卡 / 路障卡 / 拆迁卡 …）。
+##
+## 做法：**把每一格投影到屏幕再比距离**。94 格 × 每帧一次完全够快，
+## 比「从相机打射线求交」简单得多，也不用管网格缩放。
+## `max_dist` = 命中半径（像素），超出就返回 -1（表示点空了）。
+func nearest_tile_to_screen(screen: Vector2, max_dist: float = 70.0) -> int:
+	var cam := _cam()
+	if cam == null or map == null:
+		return -1
+	var best := -1
+	var best_d := max_dist
+	for i in range(map.tile_count()):
+		var wp := _pos_of(i)
+		if cam.is_position_behind(wp):       # 在相机背后 → 跳过（否则会得到镜像坐标）
+			continue
+		var d := cam.unproject_position(wp).distance_to(screen)
+		if d < best_d:
+			best_d = d
+			best = i
+	return best
+
+
 func _pos_of(i: int) -> Vector3:
 	var n := _tile_pos.size()
 	if n == 0:
