@@ -835,7 +835,11 @@ func sync(snap: Dictionary) -> void:
 		if idx > 0:
 			var ang := TAU * float(idx - 1) / 4.0
 			pos += Vector3(cos(ang) * 0.34, 0.0, sin(ang) * 0.34)
-		_player_target[int(id)] = pos
+			_player_target[int(id)] = pos
+		# 世界名牌：名字 + 现金（原版截图里每个玩家头顶都有，如「巴克力 / 258」）
+		var tag := node.get_node_or_null("Tag") as Label3D
+		if tag != null:
+			tag.text = "%s\n$%d" % [str(p["name"]), int(p["money"])]
 		if node.position.distance_to(_player_target[int(id)]) > 12.0:
 			node.position = _player_target[int(id)]      # 复位（换图/首次出现）
 
@@ -1078,6 +1082,19 @@ func _create_player(id: int, p: Dictionary) -> void:
 	root.name = "P%d" % id
 	root.position = _pos_of(int(p["tile"]))
 	add_child(root)
+
+	# 世界名牌（名字 + 现金）—— 原版每个玩家头顶都有，用本人颜色描边
+	var tag := Label3D.new()
+	tag.name = "Tag"
+	tag.font_size = 44
+	tag.pixel_size = 0.0055
+	tag.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	tag.no_depth_test = true
+	tag.outline_size = 10
+	tag.modulate = Color(1.0, 0.99, 0.94)
+	tag.outline_modulate = col.darkened(0.45)
+	tag.position = Vector3(0, 1.95, 0)
+	root.add_child(tag)
 
 	# 脚下投影
 	var blob := MeshInstance3D.new()

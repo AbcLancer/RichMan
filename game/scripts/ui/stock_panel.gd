@@ -169,9 +169,93 @@ func _build() -> void:
 		_menu_btns.append(b)
 
 	_build_dialog()
+	_build_info()
 
 
 ## 买进 / 卖出对话框（底图 = `uitex/buystock/buystock.tga`）
+## 股东名单 / 走势图（点「股东」「走势」打开的小面板）
+var _info: PanelContainer
+var _info_title: Label
+var _info_list: Label
+var _chart: StockChart
+
+
+func _build_info() -> void:
+	_info = PanelContainer.new()
+	_info.visible = false
+	_info.z_index = 50
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color8(248, 250, 255, 246)
+	sb.border_color = Color8(32, 82, 168)
+	sb.set_border_width_all(maxi(2, int(round(_px(2.0)))))
+	sb.set_corner_radius_all(int(round(_px(6.0))))
+	sb.content_margin_left = _px(9.0)
+	sb.content_margin_right = _px(9.0)
+	sb.content_margin_top = _px(6.0)
+	sb.content_margin_bottom = _px(6.0)
+	_info.add_theme_stylebox_override("panel", sb)
+	add_child(_info)
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", maxi(2, int(round(_px(5.0)))))
+	_info.add_child(col)
+	_info_title = Label.new()
+	_info_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_info_title.add_theme_font_size_override("font_size", maxi(10, int(round(_px(14.0)))))
+	_info_title.add_theme_color_override("font_color", Color8(28, 62, 140))
+	col.add_child(_info_title)
+	_info_list = Label.new()
+	_info_list.custom_minimum_size = Vector2(_px(212.0), _px(30.0))
+	_info_list.add_theme_font_size_override("font_size", maxi(9, int(round(_px(12.0)))))
+	_info_list.add_theme_color_override("font_color", Color8(24, 28, 44))
+	col.add_child(_info_list)
+	_chart = StockChart.new()
+	_chart.custom_minimum_size = Vector2(_px(212.0), _px(66.0))
+	_chart.visible = false
+	col.add_child(_chart)
+	var cb := Button.new()
+	cb.text = "关闭"
+	cb.focus_mode = Control.FOCUS_NONE
+	cb.add_theme_font_size_override("font_size", maxi(9, int(round(_px(12.0)))))
+	cb.add_theme_color_override("font_color", Color8(60, 30, 90))
+	cb.add_theme_stylebox_override("normal", _btn_box(Color8(255, 246, 240)))
+	cb.add_theme_stylebox_override("pressed", _btn_box(Color8(240, 210, 200)))
+	cb.pressed.connect(func(): _info.visible = false)
+	col.add_child(cb)
+
+
+## 「股东」：持股从多到少的名单，董事长标 ★（持股 ≥60%）
+func _show_holders(comp: String) -> void:
+	if Net.sim == null:
+		return
+	var rows: Array = Net.sim.stockholders(comp)
+	var lines: Array = []
+	for r in rows:
+		lines.append("%s%s  %d 股（%.0f%%）" % ["★ " if bool(r["chairman"]) else "",
+			str(r["name"]), int(r["shares"]), float(r["ratio"]) * 100.0])
+	_info_title.text = "%s · 股东" % comp
+	_info_list.text = "\n".join(lines) if not lines.is_empty() else "暂无股东（自己先买点吧）"
+	_info_list.visible = true
+	_chart.visible = false
+	_info.visible = true
+	_sync_layout()
+
+
+## 「走势」：最近 60 天的价格折线
+func _show_trend(comp: String) -> void:
+	if Net.sim == null:
+		return
+	var h: Array = Net.sim.stock_history(comp)
+	_info_title.text = "%s · 走势（近 %d 天）" % [comp, h.size()]
+	_info_list.text = "现价 %.1f　涨跌 %+d%%　总额 %d 股" % [Net.sim.stock_price(comp),
+		Net.sim.stock_change(comp),
+		int((Net.sim.stocks.get(comp, {}) as Dictionary).get("shares", 0))]
+	_info_list.visible = true
+	_chart.visible = true
+	_chart.set_series(h)
+	_info.visible = true
+	_sync_layout()
+
+
 func _build_dialog() -> void:
 	_dlg = PanelContainer.new()
 	_dlg.visible = false
@@ -370,6 +454,10 @@ func _sync_layout() -> void:
 		var ms := _menu.get_combined_minimum_size()
 		_menu.position = Vector2(_bg.position.x - ms.x - _px(2.0), _bg.position.y)
 		_menu.size = ms
+	if _info.visible:
+		var isz := _info.get_combined_minimum_size()
+		_info.size = isz
+		_info.position = Vector2((vp.size.x - isz.x) * 0.5, (vp.size.y - isz.y) * 0.36)
 	if _dlg.visible:
 		var ds := _dlg.get_combined_minimum_size()
 		_dlg.size = ds
@@ -433,9 +521,9 @@ func _on_menu(which: String) -> void:
 			_refresh_amount()
 			_sync_layout()
 		"holder":
-			act_requested.emit("holder", _sel, 0)
+			_show_holders(_sel)
 		"trend":
-			act_requested.emit("trend", _sel, 0)
+			_show_trend(_sel)
 
 
 func _refresh_amount() -> void:
@@ -493,6 +581,8 @@ func open_trade(comp: String, buy: bool) -> void:
 func close_all() -> void:
 	_menu.visible = false
 	_dlg.visible = false
+	if _info != null:
+		_info.visible = false
 
 
 func menu_open() -> bool:

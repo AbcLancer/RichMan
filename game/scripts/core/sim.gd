@@ -73,8 +73,9 @@ func card_needs_player(card_id: String) -> bool:
 	return card_target(card_id) == "player"
 
 ## 还没做的子系统对应的卡 → **不消耗**（宁可留着，也别让玩家白扔一张卡）。
-## ✅ **红卡 / 黑卡在股票系统落地后就解开了**（2026-09-26）—— 现在只剩「复制卡」。
-const CARD_UNSUPPORTED := ["copy"]
+## ✅ 2026-09-26：**红卡 / 黑卡**（股票系统上线）与**复制卡**（本轮）都已解开 → 现在**没有了**，
+##   42 张卡全部可用。留这个常量是为了以后加新子系统时继续用同一套门禁。
+const CARD_UNSUPPORTED: Array = []
 
 ## 「按步数」计的效果（原版 Initvar_r.txt 里写「多少步」的项）。
 ## 每前进 1 格消耗 1 —— 与「按绝对时刻」的 invincible_until / sleep_until 严格区分。
@@ -562,6 +563,9 @@ func _init_player_company(p: Dictionary) -> void:
 		"name": cname, "owner": int(p["id"]),
 		"price": unit, "prev": unit, "shares": total,
 		"chairman": -1,
+		# 趋势 / 历史价 / 月初价（分红与走势折线用）
+		"activity": 20, "trend": 0, "trend_days": 0,
+		"history": [unit], "month_start_price": unit,
 	}
 	var h: Dictionary = p.get("holdings", {})
 	h[cname] = int(h.get(cname, 0)) + self_sh
@@ -582,21 +586,110 @@ func _init_virtual_companies() -> void:
 		stocks[nm] = {
 			"name": nm, "owner": -1, "price": unit, "prev": unit,
 			"shares": tot, "chairman": -1,
+			"activity": 20, "trend": 0, "trend_days": 0,
+			"history": [unit], "month_start_price": unit,
 		}
 
 
-## 每天开盘：股价按 `Stock_OpenPrice_Min/Max`（%）波动，并记下昨收
+## 每天开盘：
+##   · **趋势**每 `Stock_Trend_MinTime..MaxTime`（2~9）天重掷一次；取值按**活泼程度**
+##     （`Stock_VCom_Bottom/Middle/TopAct_Min/Max`：低 10 天 -50..120 / 中 20 天 -60..180 /
+##      高 30 天 -70..300）。玩家公司取「中」。
+##   · 股价 = 昨收 × (1 + 随机 ±`Stock_OpenPrice`% + 趋势漂移)
+##   · 顺手记一天历史价（走势折线用，最多 60 天）
 func _tick_stocks() -> void:
 	if stocks.is_empty():
 		return
 	var lo := float(_stock_cfg("open_price_min_pct", -10)) / 100.0
 	var hi := float(_stock_cfg("open_price_max_pct", 10)) / 100.0
+	var tmin := int(_stock_cfg("trend_change_days_min", 2))
+	var tmax := int(_stock_cfg("trend_change_days_max", 9))
 	for nm in stocks.keys():
 		var s: Dictionary = stocks[nm]
+		# ---- 趋势 ----
+		s["trend_days"] = int(s.get("trend_days", 0)) - 1
+		if int(s["trend_days"]) <= 0:
+			var act := int(s.get("activity", 20))
+			var tlo := -60
+			var thi := 180
+			if act <= 10:
+				tlo = -50
+				thi = 120
+			elif act >= 30:
+				tlo = -70
+				thi = 300
+			s["trend"] = rng.randi_range(tlo, thi)
+			s["trend_days"] = rng.randi_range(tmin, tmax)
+		# ---- 价格 ----
 		s["prev"] = float(s["price"])
-		s["price"] = maxf(0.1, float(s["price"]) * (1.0 + rng.randf_range(lo, hi)))
+		var bias := clampf(float(s.get("trend", 0)) / 300.0, -1.0, 1.0) * 0.5
+		var k := rng.randf_range(lo, hi) + (hi - lo) * bias * 0.5
+		s["price"] = maxf(0.1, float(s["price"]) * (1.0 + k))
+		var hist: Array = s.get("history", [])
+		hist.append(float(s["price"]))
+		while hist.size() > 60:
+			hist.pop_front()
+		s["history"] = hist
 		_ev("stock_tick", null, {"company": str(nm), "price": float(s["price"]),
-			"prev": float(s["prev"]), "change": stock_change(str(nm))})
+			"prev": float(s["prev"]), "change": stock_change(str(nm)),
+			"trend": int(s.get("trend", 0))})
+
+
+## 分红（原版 `Initvar_r.txt`）：
+##   · **虚拟公司** = 总资产 × rand(`Stock_VCom_Bonus_Min`..`Max`)（0 ~ 0.5）
+##   · **玩家公司** = **上月利润** × `Stock_PCom_Bonus`（0.3）
+##
+## ⚠️ 「玩家公司的利润」原版没写怎么算 → 取「这一个月里股价涨幅 × 总股数」，登记为推断。
+const MONTH_DAYS := 30
+
+
+func _pay_dividends() -> void:
+	for nm in stocks.keys():
+		var s: Dictionary = stocks[nm]
+		var tot := maxf(float(s.get("shares", 1)), 1.0)
+		var pool := 0.0
+		if int(s.get("owner", -1)) >= 0:
+			var start := float(s.get("month_start_price", s.get("price", 0.0)))
+			var profit := (float(s["price"]) - start) * tot
+			pool = maxf(profit, 0.0) * float(_stock_cfg("player_company_bonus_rate", 0.3))
+			s["month_start_price"] = float(s["price"])
+		else:
+			pool = float(s["price"]) * tot * rng.randf_range(
+				float(_stock_cfg("virtual_company_bonus_min", 0.0)),
+				float(_stock_cfg("virtual_company_bonus_max", 0.5)))
+		if pool <= 0.5:
+			continue
+		var per := pool / tot
+		for pid in player_ids():
+			var sh := holding_of(int(pid), str(nm))
+			if sh <= 0:
+				continue
+			var got := int(round(per * float(sh)))
+			if got > 0:
+				players[pid]["money"] = int(players[pid]["money"]) + got
+				_ev("dividend", players[pid], {"company": str(nm), "amount": got,
+					"shares": sh, "player": int(pid)})
+		log_message.emit("%s 分红：每股 %.2f 元" % [str(nm), per])
+
+
+## 走势的历史价（折线图用）
+func stock_history(comp: String) -> Array:
+	return (stocks.get(comp, {}) as Dictionary).get("history", [])
+
+
+## 股东名单（持股从多到少）→ [{pid, name, shares, ratio, chairman}]
+func stockholders(comp: String) -> Array:
+	var out: Array = []
+	var tot := maxf(float((stocks.get(comp, {}) as Dictionary).get("shares", 1)), 1.0)
+	for pid in player_ids():
+		var sh := holding_of(int(pid), comp)
+		if sh <= 0:
+			continue
+		out.append({"pid": int(pid), "name": str(players[pid]["name"]), "shares": sh,
+			"ratio": float(sh) / tot, "chairman": is_chairman(int(pid), comp)})
+	out.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return int(a["shares"]) > int(b["shares"]))
+	return out
 
 
 ## 手续费率（`Stock_Handle_Charge = 0.01`：买卖一笔按交易额的 1%）
@@ -855,6 +948,8 @@ func step(dt: float) -> void:
 		road_day += 1
 		_spawn_road_obj()
 		_tick_stocks()              # 每天开盘：股价按 Stock_OpenPrice_Min/Max 波动
+		if road_day % MONTH_DAYS == 0:
+			_pay_dividends()        # 每 30 天（一个月）分红一次
 
 	for id in player_ids():
 		var p: Dictionary = players[id]
@@ -1681,6 +1776,15 @@ func card_usable(id: int, card_id: String) -> int:
 		return 61
 	if CARD_UNSUPPORTED.has(card_id):
 		return 67
+	# 复制卡：手里得有**别的**卡可复制（`String.txt` 67「没有可以组合的卡片」）
+	if card_id == "copy":
+		var has_other := false
+		for cc in (p["cards"] as Array):
+			if str(cc) != "copy":
+				has_other = true
+				break
+		if not has_other:
+			return 67
 	var eff := str(Rules.card_by_id(card_id).get("effect", ""))
 	# 红卡 / 黑卡：要有股票可动（本图得有上市公司）
 	if eff == "stock_up" or eff == "stock_down":
@@ -1890,7 +1994,23 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 	var here := int(p["tile"])
 	var street := map.street_of(here)
 	var eff := str(c.get("effect", ""))
-	# ---- 红卡 / 黑卡（String.txt 9029「使一种股票价格上涨」/ 9030「下跌」）----
+	# ---- 复制卡（String.txt 9032「复制一张相同的卡片」）----
+	# 把手里**另一张**同名卡再复制一份（自己这张会被消耗掉）
+	if eff == "copy_card":
+		var hand: Array = p["cards"]
+		var other := ""
+		for cc in hand:
+			if str(cc) != card_id:
+				other = str(cc)
+				break
+		if other == "":
+			return false                  # String.txt 67「没有可以组合的卡片」
+		var res := _push_card(p, other)
+		if not bool(res["added"]):
+			return false
+		log_message.emit("%s 的复制卡复制出了「%s」" % [p["name"], Rules.card_name(other)])
+		_ev("copy_card", p, {"card": other, "name": Rules.card_name(other)})
+		return true
 	# 目标 = 玩家点选的那一种股票（`CARD_TARGET` 里就是 `"stock"`）；
 	# 幅度 = `Card_HongKa_Price` / `Card_HeiKa_Price`（Initvar_r.txt 都是 0.20）
 	if eff == "stock_up" or eff == "stock_down":

@@ -96,6 +96,9 @@ var _chat_log: Label = null
 var _chat_lines: Array = []
 var _chat_channels: Array = []
 var _chat_ch_idx := 0
+## ① 日志页 ④ 聊天记录页 —— 都占右下角功能区**同一块地方**，与其他页互斥
+var _br_log_page: Control = null
+var _br_chat_page: Control = null
 var _log_panel: PanelContainer
 
 # 左下角色面板（版式 = 原版 uitex/other/atb.png）
@@ -1445,6 +1448,7 @@ func _build_bottom_right() -> void:
 
 	_icon_bar = _make_icon_bar(w)
 	_br_box.add_child(_icon_bar)
+	_build_br_extra_pages()
 
 
 ## 图标按钮条：底 = 浅薄荷青圆角条 + 蓝描边；6 个图标全部用原版 uitex/subc/*.png
@@ -1494,29 +1498,69 @@ func _on_icon(i: int) -> void:
 			_toggle_br()
 
 
+## ① 日志 / ④ 聊天记录 —— 做成「占同一块地方」的页（与地图页 / 股票页互斥）
+func _build_br_extra_pages() -> void:
+	_br_log_page = _make_br_page()
+	_br_chat_page = _make_br_page()
+
+
+func _make_br_page() -> Control:
+	var pc := PanelContainer.new()
+	pc.visible = false
+	pc.z_index = 5
+	pc.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pc.add_theme_stylebox_override("panel", _sb_round(
+		Color8(22, 62, 122), Color8(170, 232, 250), int(round(9.0 * _ui_scale)),
+		maxi(2, int(round(4.0 * _ui_scale))), maxf(2.0, 3.0 * _ui_scale)))
+	_hud.add_child(pc)
+	var lb := RichTextLabel.new()
+	lb.scroll_following = true
+	lb.scroll_active = false
+	lb.add_theme_font_size_override("normal_font_size", maxi(8, int(round(11.0 * _ui_scale))))
+	lb.add_theme_color_override("default_color", Color8(226, 240, 255))
+	lb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pc.add_child(lb)
+	pc.set_meta("label", lb)
+	return pc
+
+
+func _br_page_text(pc: Control, lines: Array, keep: int) -> void:
+	if pc == null or not pc.visible:
+		return
+	var lb: RichTextLabel = pc.get_meta("label")
+	var tail: Array = lines.slice(maxi(0, lines.size() - keep))
+	lb.text = "\n".join(tail) if not tail.is_empty() else "（暂无记录）"
+
+
 ## 切换右下角功能区的页
 func _set_br_page(n: int) -> void:
 	_br_page = n
 	_br_collapsed = false
 	if _br_box != null:
 		_br_box.visible = true
-	if n == 0:
-		_toast("日志页：现有日志还在右上角那块，下轮嵌进功能区")
-	elif n == 3:
-		_toast("聊天记录页待做（聊天栏已可用）")
 	_sync_br_pages()
 
 
-## 右下角功能区：地图页 / 股票页**互斥**显示（同一块地方）
+## 右下角功能区：地图页 / 股票页 / 日志页 / 聊天记录页 —— **同一块地方互斥显示**
 func _sync_br_pages() -> void:
 	var on := not _br_collapsed
+	var r := Rect2()
 	if _br_map_panel != null:
+		r = Rect2(_br_map_panel.global_position, _br_map_panel.size)
 		_br_map_panel.visible = on and _br_page == 2
 	if _stock != null:
-		var r := Rect2()
-		if _br_map_panel != null:
-			r = Rect2(_br_map_panel.global_position, _br_map_panel.size)
 		_stock.set_embed_rect(r, on and _br_page == 1)
+	for p in [_br_log_page, _br_chat_page]:
+		var pc: Control = p
+		if pc == null:
+			continue
+		var want: bool = on and _br_page == (0 if pc == _br_log_page else 3)
+		if pc.visible != want:
+			pc.visible = want
+		pc.position = r.position
+		pc.size = r.size
+	_br_page_text(_br_log_page, _log_lines, 9)
+	_br_page_text(_br_chat_page, _chat_lines, 9)
 
 
 ## ⑥ 收起 / 展开整个右下角功能区

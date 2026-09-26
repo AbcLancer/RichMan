@@ -523,10 +523,10 @@ func _test_stock() -> void:
 		typeof(sim2.stock_change(c2)) == TYPE_INT, str(sim2.stock_change(c2)))
 
 	# ---- 红卡 / 黑卡（`String.txt` 9029/9030；幅度 `Card_HongKa/HeiKa_Price` = 20%）----
-	_ok("红卡 / 黑卡已从 CARD_UNSUPPORTED 里解开（现在只剩「复制卡」）",
+	_ok("红卡 / 黑卡 / 复制卡都已解开 → CARD_UNSUPPORTED 清空（42 张卡全可用）",
 		not Sim.CARD_UNSUPPORTED.has("redcard")
 		and not Sim.CARD_UNSUPPORTED.has("blackcard")
-		and Sim.CARD_UNSUPPORTED.has("copy"), str(Sim.CARD_UNSUPPORTED))
+		and not Sim.CARD_UNSUPPORTED.has("copy"), str(Sim.CARD_UNSUPPORTED))
 	_ok("红卡 / 黑卡的目标类型 = stock（要玩家选一种股票）",
 		sim.card_target("redcard") == "stock" and sim.card_target("blackcard") == "stock",
 		"%s / %s" % [sim.card_target("redcard"), sim.card_target("blackcard")])
@@ -1022,6 +1022,9 @@ func _test_cards() -> void:
 		var sim := _card_world(cid)
 		var p: Dictionary = sim.players[1]
 		(p["cards"] as Array).append(cid)
+		if cid == "copy":
+			# 复制卡要有**别的**卡才能复制（String.txt 67「没有可以组合的卡片」）
+			(p["cards"] as Array).append("step3")
 		var target := 2 if sim.card_needs_player(cid) else -1
 		# 红卡 / 黑卡要指定「哪一种股票」（第 3 个参数 = 公司名）
 		var tname := ""
@@ -1038,11 +1041,11 @@ func _test_cards() -> void:
 		elif str(sim.to_dict()) == before:
 			silent.append(cid)
 	var n_ok := cs.size() - Sim.CARD_UNSUPPORTED.size()
-	_ok("除未实现子系统（复制卡）外的 %d 张卡都能用" % n_ok,
+	_ok("**全部 %d 张卡**都能用（`CARD_UNSUPPORTED` 已清空）" % n_ok,
 		refused.is_empty(), str(refused))
 	_ok("每张卡都真的改变了状态（没有空转的）", silent.is_empty(), str(silent))
-	_ok("未实现的卡不消耗（股票/组合）", not Sim.CARD_UNSUPPORTED.is_empty(),
-		str(Sim.CARD_UNSUPPORTED))
+	_ok("`CARD_UNSUPPORTED` 已清空（红黑卡 + 复制卡都做完了）",
+		Sim.CARD_UNSUPPORTED.is_empty(), str(Sim.CARD_UNSUPPORTED))
 
 	# ---- 卡片可用性门禁：原因码全部取自原版 String.txt 60..70 ----
 	_ok("原因码文案来自原版 String.txt（60 现金不足 / 63 只能用于对手的地产 / 65 没有建筑）",
