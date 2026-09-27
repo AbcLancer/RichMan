@@ -248,10 +248,10 @@ var _ui_shot_cards_t := 0.0
 const WORLD_HEIGHT := 0.0
 
 
-## 全局默认字体 = 原版真字体。
+## 高清模式用可缩放字体；原版画面模式保留原版点阵字体。
 ## 原版是 TNFT 点阵字库 gbdata/unicode16.tft（16px）/ unicode24.tft（24px），
 ## 已由 tools/r6_tft.py 转成 BMFont（assets/fonts/r6_16.fnt 等）。
-## 设到 Window.theme 上 → 整个界面（菜单/大厅/对局）的中文都变成原版点阵字。
+## 设到 Window.theme 上，窗口放大后文字仍清晰；顶栏数字继续使用原版数字图。
 func _apply_ui_theme() -> void:
 	var f: Font = load("res://assets/fonts/r6_16.fnt")
 	if VisualQuality.enabled:
@@ -1450,7 +1450,9 @@ func _build_character_panel() -> void:
 	_char_panel.add_child(_pet_slot)
 
 	# 精灵栏的**体力条** —— 老板 2026-09-27：「小神仙**满体力条**应该是可以发动技能的」。
-	# 体力靠**走步**攒（`Sim.PET_ENERGY_MAX = 60` 步攒满），攒满 → 自动发动技能 → 升一级 + 清零。
+	# 精灵栏的**饱食度条** —— 老板 2026-09-27：
+	#   「喂食只会增加饱食度，**饱食度满了可以使用一次技能**；小神仙随时间升级，每月一级」。
+	#   所以这条不是「体力」而是「饱食度」：喂食涨、发动技能清零。
 	_pet_bar = ProgressBar.new()
 	_pet_bar.show_percentage = false
 	_pet_bar.position = Vector2(inf.position.x + 3.0 * _ui_scale,
@@ -1581,7 +1583,8 @@ func _build_bottom_right() -> void:
 	_br_box.add_child(_icon_bar)
 	_build_br_extra_pages()
 	# 保险：把股票面板压到**最底层**，让功能区按钮永远在上（不被它盖住点击）
-	_hud.move_child(_stock, 0)
+	if _stock != null:
+		_hud.move_child(_stock, 0)
 
 
 ## 图标按钮条：底 = 浅薄荷青圆角条 + 蓝描边；6 个图标全部用原版 uitex/subc/*.png
@@ -4149,7 +4152,7 @@ func _sync_char_panel(me: Dictionary, players: Dictionary, plots: Dictionary,
 			_pet_slot.texture = _tex_or_null(Rules.pet_art(str(ap.get("id", "")), "face",
 				int(ap.get("level", 1))))
 	if _pet_bar != null:
-		_pet_bar.value = 100.0 * (Net.sim.pet_energy_ratio(ap) if (Net.sim != null
+		_pet_bar.value = 100.0 * (Net.sim.pet_fullness_ratio(ap) if (Net.sim != null
 			and not ap.is_empty()) else 0.0)
 	if ap.is_empty():
 		_char_info.text = "精灵栏（空）"

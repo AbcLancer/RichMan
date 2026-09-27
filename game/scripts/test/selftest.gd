@@ -363,9 +363,9 @@ func _pet_world(pet_id: String) -> Sim:
 	# ⚠️ 体力系统（老板 2026-09-27）：技能要**体力满**才发得动 → 测试世界直接给满。
 	#   必须放在 add_pet **之后**（在那之前 p["pets"] 还是空的）。
 	for pe2 in (p["pets"] as Array):
-		(pe2 as Dictionary)["energy"] = Sim.PET_ENERGY_MAX
+		(pe2 as Dictionary)["fullness"] = Sim.PET_FULLNESS_MAX
 	for qe in (q["pets"] as Array):
-		(qe as Dictionary)["energy"] = Sim.PET_ENERGY_MAX
+		(qe as Dictionary)["fullness"] = Sim.PET_FULLNESS_MAX
 	return sim
 
 
@@ -384,14 +384,38 @@ func _test_card_menu_feed() -> void:
 	var sim := _pet_world("caishen")
 	var p: Dictionary = sim.players[1]
 	(p["cards"] as Array).append("step3")
+	# ⚠️ `_pet_world` 把饱食度填满了（好让技能发得动），测喂食前先把它饿下来
+	(p["pets"][0] as Dictionary)["fullness"] = 0.0
 	var lv0 := int(p["pets"][0]["level"])
+	var f0 := float(p["pets"][0].get("fullness", 0.0))
 	var n0 := (p["cards"] as Array).size()
 	var ok_feed := sim.act_feed_card(1, "step3")
-	_ok("喂食：消耗一张卡 + 小神仙升 1 级", ok_feed
-		and int(p["pets"][0]["level"]) == lv0 + 1
+	# ⚠️ 老板 2026-09-27 修正机制：**喂食只加饱食度、不升级**（升级改由时间驱动，每月一级）
+	_ok("喂食：消耗一张卡 + **只加饱食度、等级不变**", ok_feed
+		and int(p["pets"][0]["level"]) == lv0
+		and float(p["pets"][0]["fullness"]) > f0
 		and (p["cards"] as Array).size() == n0 - 1,
-		"level %d→%d，手牌 %d→%d" % [lv0, int(p["pets"][0]["level"]), n0,
+		"level %d→%d（应不变），饱食 %d→%d，手牌 %d→%d" % [lv0,
+			int(p["pets"][0]["level"]), int(f0), int(p["pets"][0]["fullness"]), n0,
 			(p["cards"] as Array).size()])
+	# 喂到饱 → 饱食度封顶，再喂应被拒（别浪费卡）
+	for _i in range(5):
+		(p["cards"] as Array).append("step3")
+		sim.act_feed_card(1, "step3")
+	_ok("喂饱之后弹「都吃饱了」、不再吃卡",
+		float(p["pets"][0]["fullness"]) == Sim.PET_FULLNESS_MAX
+			and not sim.act_feed_card(1, "step3"),
+		"饱食 %d / 上限 %d" % [int(p["pets"][0]["fullness"]),
+			int(Sim.PET_FULLNESS_MAX)])
+	# 时间驱动升级：过一个月，所有小神仙 +1 级
+	var lv_before := int(p["pets"][0]["level"])
+	sim.road_day = 31
+	sim._tick_pet_aging()
+	sim.road_day = 61
+	sim._tick_pet_aging()
+	_ok("小神仙**随时间升级**（每月一级，老板 2026-09-27）",
+		int(p["pets"][0]["level"]) == mini(lv_before + 2, Sim.PET_LEVEL_CAP),
+		"level %d → %d" % [lv_before, int(p["pets"][0]["level"])])
 
 	var s2 := _fresh_sim()
 	(s2.players[1]["cards"] as Array).append("step3")
@@ -983,7 +1007,7 @@ func _test_pets() -> void:
 	# ⚠️ 现在发动还要求**体力满**（老板 2026-09-27：满体力条才能发动技能）——
 	# 上一次发动已经把体力清零了，这里手动填满再测冷却
 	for _e in (p4["pets"] as Array):
-		(_e as Dictionary)["energy"] = Sim.PET_ENERGY_MAX
+		(_e as Dictionary)["fullness"] = Sim.PET_FULLNESS_MAX
 	s4._tick_pets(p4)
 	_ok("冷却（%.0f 秒）过后能再发，并再扣一次点券" % s4.pet_seconds("huaxian", 1),
 		int(p4["credit"]) < cr, "点券 %d" % int(p4["credit"]))
@@ -1002,7 +1026,7 @@ func _test_pets() -> void:
 	s6.add_pet(p6, "dushen")
 	# 体力系统（老板 2026-09-27）：技能要**体力满**才发得动，测试里直接给满
 	for pe6 in (p6["pets"] as Array):
-		(pe6 as Dictionary)["energy"] = Sim.PET_ENERGY_MAX
+		(pe6 as Dictionary)["fullness"] = Sim.PET_FULLNESS_MAX
 	p6["credit"] = 100
 	s6._tick_pets(p6)
 	_ok("小赌神发动后，下一掷必出 6 点",

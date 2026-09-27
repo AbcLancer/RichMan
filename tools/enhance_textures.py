@@ -83,6 +83,7 @@ def main():
     manifest = json.loads(manifest_path.read_text(encoding='utf-8')) if manifest_path.exists() else {}
     manifest.setdefault('textures', {})
     manifest.setdefault('texture_sizes', {})
+    manifest.setdefault('source_hashes', {})
     report_path = OUT / 'textures-report.json'
     report = json.loads(report_path.read_text(encoding='utf-8')) if report_path.exists() else {}
     all_paths = sorted(p for p in (GAME / 'assets').rglob('*.png') if 'enhanced' not in p.parts and 'fonts' not in p.parts)
@@ -100,6 +101,10 @@ def main():
         input_dir, output_dir = WORK / kind / 'input', WORK / kind / 'output'
         input_dir.mkdir(parents=True, exist_ok=True)
         output_dir.mkdir(parents=True, exist_ok=True)
+        # Keep only unfinished inputs in the next batch. Cached results are retained.
+        for cached in input_dir.glob('*.png'):
+            if (output_dir / cached.name).exists():
+                cached.unlink()
         missing = []
         for key, entry in jobs.items():
             if entry['target'].exists():
@@ -128,11 +133,13 @@ def main():
                 path = 'res://' + original.relative_to(GAME).as_posix()
                 manifest['textures'][path] = 'res://' + target.relative_to(GAME).as_posix()
                 manifest['texture_sizes'][path] = list(entry['image'].size)
+                manifest['source_hashes'][path] = hashlib.md5(original.read_bytes()).hexdigest()
         report[kind] = dict(unique_textures=len(jobs), source_files=sum(len(e['paths']) for e in jobs.values()),
             seconds=round(time.time() - start, 2), model=model, revision=REVISION)
         if manifest_path.exists():
             latest = json.loads(manifest_path.read_text(encoding='utf-8'))
             manifest['meshes'] = latest.get('meshes', {})
+            manifest['mesh_hashes'] = latest.get('mesh_hashes', {})
         atomic_json(manifest_path, manifest)
         atomic_json(report_path, report)
         print(f'{kind} COMPLETE: {report[kind]}', flush=True)

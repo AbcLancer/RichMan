@@ -255,7 +255,7 @@ func add_pet(p: Dictionary, pet_id: String) -> int:
 	# ⚠️ 新来的小神仙体力是 **0**（要自己走步攒），**不能给满** ——
 	#   给满会让它在下次抵达时**立刻发动技能**（其中「降级」那类会直接拆掉场上的房子）。
 	#   想吃满体力就用**喂食**（`act_feed_card` 会把体力充满）。
-	(p["pets"] as Array).append({"id": pet_id, "level": 1, "cool": 0.0, "energy": 0.0})
+	(p["pets"] as Array).append({"id": pet_id, "level": 1, "cool": 0.0, "fullness": 0.0})
 	if str(p.get("pet_active", "")) == "":
 		p["pet_active"] = pet_id        # 第一只自动「出战」（显示在角色面板的精灵栏位）
 	log_message.emit("%s 得到小神仙「%s」" % [p["name"], pet_name(pet_id)])
@@ -417,8 +417,8 @@ func _tick_pets(p: Dictionary) -> void:
 		var lv := int(d.get("level", 1))
 		if time < float(d.get("cool", 0.0)):
 			continue
-		# 体力没满 → 发不动技能（老板 2026-09-27；体力由每走一步攒）
-		if float(d.get("energy", 0.0)) < PET_ENERGY_MAX:
+		# **饱食度满**才能发动（老板 2026-09-27：「饱食度满了可以使用一次技能」）
+		if float(d.get("fullness", 0.0)) < PET_FULLNESS_MAX:
 			continue
 		var cost := pet_cost(pid, lv)
 		if int(p["credit"]) < cost:
@@ -427,17 +427,14 @@ func _tick_pets(p: Dictionary) -> void:
 			continue
 		p["credit"] = int(p["credit"]) - cost
 		d["cool"] = time + pet_seconds(pid, lv)
-		d["energy"] = 0.0                          # 发动 → 体力清零
+		d["fullness"] = 0.0                        # 发动一次 → 饱食度清零，要再喂
 		log_message.emit("  （%s 发动「%s」，耗 %d 点券，剩 %d）" % [
 			pet_name(pid), pet_skill(pid), cost, int(p["credit"])])
 		_ev("pet_skill", p, {"pet": pid, "name": pet_name(pid), "level": lv,
 			"skill": pet_skill(pid), "effect": str(pet_record(pid).get("effect", "")),
 			"cost": cost, "seconds": pet_seconds(pid, lv), "credit": int(p["credit"])})
-		# 发动一次升一级（老板 2026-09-27 的原版观察）
-		if lv < PET_LEVEL_CAP:
-			d["level"] = lv + 1
-			log_message.emit("  （%s 升到 %d 级）" % [pet_name(pid), lv + 1])
-			_ev("pet_levelup", p, {"pet": pid, "name": pet_name(pid), "level": lv + 1})
+		# ⚠️ **发动不再升级** —— 升级改由时间驱动（每月一级，见 `_tick_pet_aging()`）。
+		#   老板 2026-09-27 修正：「小神仙是随时间升级的，每个月升一级」。
 
 
 ## 真正施加特技。返回 false = 条件不满足（不消耗、不进冷却）。
@@ -1046,19 +1043,44 @@ func act_casino_pull(id: int) -> bool:
 	return true
 
 
-## 小神仙「体力」攒满需要走多少步。
+## 小神仙的**饱食度**（老板 2026-09-27 的原版观察，机制与上一轮我做的**完全不同**）：
 ##
-## 老板 2026-09-27 观察到的原版机制：**走步攒体力 → 满了才发得动技能 → 发动一次升一级**。
-## ⚠️ `Pet.txt` 只有「秒数 / 次数 / 消耗点数」，`Initvar_r.txt` 只有 `Pet_Upgrade_Steps = 300`
-##   （那是「走步自动升级」，现在已停用）—— **没有体力字段**，所以这个常数是**推断**：
-##   取 `Pet_Upgrade_Steps` 的 1/5 = 60 步攒满一次。已登记在 `docs/alignment-gap.md`。
-const PET_ENERGY_MAX := 60.0
+##   · **升级靠时间**：**每月（30 天）升一级** —— 不是走步、也不是发动
+##   · **喂食只增加饱食度**（不升级）
+##   · **饱食度满** → 才能**使用一次**技能；用完清零，要再喂
+##   · **等级影响技能效果**（`Pet.txt` 的秒数/次数随级数走，见 `pet_seconds()`）
+##
+## ⚠️ 推断项（配置里没有）：饱食度上限 **100**、**一张卡 +50**（喂两张够用一次技能）、每月按 `MONTH_DAYS`
+const PET_FULLNESS_MAX := 100.0
+const PET_FEED_PER_CARD := 50.0
 const PET_LEVEL_CAP := 4               # Pet.txt 每只 4 级
 
 
-## 小神仙的体力进度 0..1（UI 画体力条用）
-func pet_energy_ratio(e: Dictionary) -> float:
-	return clampf(float(e.get("energy", 0.0)) / PET_ENERGY_MAX, 0.0, 1.0)
+## 饱食度进度 0..1（UI 画条用）
+func pet_fullness_ratio(e: Dictionary) -> float:
+	return clampf(float(e.get("fullness", 0.0)) / PET_FULLNESS_MAX, 0.0, 1.0)
+
+
+## 时间驱动升级：每过一个月，**所有**小神仙各升 1 级（上限 4）
+## 老板 2026-09-27：「小神仙是随时间升级的，每个月升一级」
+func _tick_pet_aging() -> void:
+	var want := int(road_day / MONTH_DAYS)
+	for pid in player_ids():
+		var p: Dictionary = players[pid]
+		var last := int(p.get("pet_age_month", 0))
+		if want <= last:
+			continue
+		p["pet_age_month"] = want
+		for e in (p["pets"] as Array):
+			var d: Dictionary = e
+			var lv := int(d.get("level", 1))
+			if lv >= PET_LEVEL_CAP:
+				continue
+			d["level"] = lv + 1
+			log_message.emit("%s 的 %s 长大到 %d 级" % [p["name"],
+				pet_name(str(d.get("id", ""))), lv + 1])
+			_ev("pet_levelup", p, {"pet": str(d.get("id", "")), "level": lv + 1,
+				"by": "age"})
 
 
 ## 「请选择对手」的**合法候选**（原版有**距离限制** —— 老板 2026-09-27 的实机截图里，
@@ -1430,6 +1452,8 @@ func step(dt: float) -> void:
 			_lotto_draw()
 		# 拍卖：到点结算
 		_tick_auction()
+		# 小神仙：时间驱动升级（每月一级）
+		_tick_pet_aging()
 		if road_day % MONTH_DAYS == 0:
 			_pay_dividends()        # 每 30 天（一个月）分红一次
 
@@ -1504,6 +1528,11 @@ func _advance(p: Dictionary, dt: float) -> void:
 		# ⚠️ 路边物体（roadobj）**故意不在这里判** —— 老板 2026-09-27：
 		#   「路线上的事件点必须要**踩到**才会生效，现在**路过**就生效了」
 		#   → 已挪到 `_arrive()`（停下来那一刻才触发）。
+		# 卡片点（`cardpt`）：**路过就给 1 张**（老板 2026-09-27「路过就会发一张卡」），
+		#   停在这一格时由 `_resolve_event` **再补 1 张**（合计 2 张）。
+		elif _event_key(int(p["tile"])) == "cardpt":
+			_give_random_card(p, "卡片点")
+			p["_cardpt_given"] = int(p["tile"])
 		# 踩到**传送平台**（原版 Roadevent 事件 1）：经过就传送，并结束本次移动。
 		# ⚠ 必须放在**逐格循环里**判 —— 原来只在 _arrive（停下那一刻）判，
 		#   于是「路过」不传送，玩家可以站在传送平台上；此时再掷 1 点走 1 格到
@@ -1528,13 +1557,8 @@ func _tick_step_effects(p: Dictionary) -> void:
 	for k in STEP_EFFECTS:
 		if int(e[k]) > 0:
 			e[k] = int(e[k]) - 1
-	# ⚠️ 小神仙的**体力**（老板 2026-09-27 的原版观察）：
-	#   「小神仙**满体力条**应该是可以发动技能的，**每发动一次可以升一级**」
-	#   → 每走 1 步给**出战的**小神仙 +1 体力；攒满后由 `_tick_pets()` 发动技能并升级。
-	#   ⚠️ 原来的「走步自动升级」（`Pet_Upgrade_Steps = 300`）**已停用** —— 升级改由发动技能触发。
-	var ap: Dictionary = active_pet(p)
-	if not ap.is_empty():
-		ap["energy"] = float(ap.get("energy", 0.0)) + 1.0
+		# 小神仙的**饱食度**由「喂食」增加（不在走路时攒），升级由**时间**驱动
+		# —— 见 `_tick_pet_aging()`（老板 2026-09-27 修正的机制）
 
 
 ## 走够步数就把一只小神仙升一级。门槛 = Pet_Upgrade_Steps × 当前等级。
@@ -1744,8 +1768,15 @@ func _resolve_event(p: Dictionary, idx: int, t: Dictionary) -> void:
 				"stock": _shop_stock(), "have": int(p["credit"])})
 			log_message.emit("%s 走进%s（点券 %d）" % [p["name"], ename, int(p["credit"])])
 		"cardpt":
-			# 卡片点：直接捡一张卡（原版路面物体 roadobj/card/ 的 3D 实体未接入）
-			_give_random_card(p, ename)
+			# 卡片点：**站上去再补 1 张**（逐格循环里路过时已经给过 1 张了）
+			# 老板 2026-09-27：「路过就会发一张卡，站上去会发两张」
+			if int(p.get("_cardpt_given", -1)) == int(p["tile"]):
+				_give_random_card(p, ename)       # 补第 2 张（路过已得 1 张）
+			else:
+				# 没在逐格里给过（比如被传送/被挤上来）→ 直接给 2 张
+				_give_random_card(p, ename)
+				_give_random_card(p, ename)
+			p["_cardpt_given"] = -1
 		"coupon5", "coupon10", "coupon20", "coupon30", "coupon50":
 			# 点券格：事件名就是面额（Roadevent.txt 事件 11..15）
 			var amount := int(eid.substr(6))
@@ -2440,11 +2471,12 @@ func act_discard_card(id: int, card_id: String) -> bool:
 	return true
 
 
-## 「喂食」：把一张卡喂给小神仙（原版卡片菜单第三项，`String.txt` 4 = 喂食）。
+## 「喂食」：把一张卡喂给小神仙 → **只增加饱食度**（**不升级**）。
 ##
-## ⚠ 效果**没有明文依据** —— `Info.txt` 里没有「喂食」相关的文案，`Initvar_r.txt` 也没有对应
-##   参数。这里取**最保守**的实现：消耗卡片 → 让**等级最低**的一只小神仙升 1 级
-##   （与「魔戒」同效果，只是来源不同）。登记在 `docs/alignment-gap.md`。
+## 老板 2026-09-27 的修正：「**喂食只会增加饱食度**，饱食度满了可以使用一次技能；
+##   小神仙是**随时间升级**的，**每个月升一级**，等级影响技能效果」。
+## ⚠️ 上一轮我做成「喂食让等级 +1」，那是错的，已改。
+## ⚠️ 推断项：一张卡 +`PET_FEED_PER_CARD`(50)，上限 `PET_FULLNESS_MAX`(100)。
 func act_feed_card(id: int, card_id: String) -> bool:
 	var p: Dictionary = players.get(id, {})
 	if p.is_empty() or not bool(p["alive"]):
@@ -2456,30 +2488,29 @@ func act_feed_card(id: int, card_id: String) -> bool:
 	var at: int = (p["cards"] as Array).find(card_id)
 	if at < 0:
 		return false
-	var cap: int = int(Rules.get_val("road.crystal_max_pet_level", 4))
-	# 挑等级最低的那只喂；全都满级就不喂，别浪费卡
-	var best: int = -1
-	var best_lv: int = cap + 1
+	# 挑**最饿**（饱食度最低）的那只喂；全都吃饱了就别浪费卡
+	var best := -1
+	var best_f := PET_FULLNESS_MAX + 1.0
 	for i in range(pets.size()):
-		var lv: int = int((pets[i] as Dictionary)["level"])
-		if lv >= cap:
-			continue                  # 满级的不能再喂（否则会顶破 4 级上限）
-		if lv < best_lv:
-			best_lv = lv
+		var f := float((pets[i] as Dictionary).get("fullness", 0.0))
+		if f >= PET_FULLNESS_MAX:
+			continue
+		if f < best_f:
+			best_f = f
 			best = i
 	if best < 0:
-		_feed_refuse(p, "小神仙都满级了")
+		_feed_refuse(p, "小神仙都吃饱了")
 		return false
 	(p["cards"] as Array).remove_at(at)
-	(pets[best] as Dictionary)["level"] = best_lv + 1
-	# 顺便把它**体力充满** —— 老板 2026-09-27 反馈「喂食了之后小神仙的体力条没什么变化」，
-	# 喂食本来就该让它更有劲，也让体力条这个表现看得见。
-	(pets[best] as Dictionary)["energy"] = PET_ENERGY_MAX
-	log_message.emit("%s 把「%s」喂给 %s，升到 %d 级" % [
-		p["name"], Rules.card_name(card_id),
-		pet_name(str((pets[best] as Dictionary)["id"])), best_lv + 1])
-	_ev("feed_card", p, {"card": card_id,
-		"pet": str((pets[best] as Dictionary)["id"]), "level": best_lv + 1})
+	var d: Dictionary = pets[best]
+	d["fullness"] = minf(PET_FULLNESS_MAX,
+		float(d.get("fullness", 0.0)) + PET_FEED_PER_CARD)
+	var full := float(d["fullness"]) >= PET_FULLNESS_MAX
+	log_message.emit("%s 把「%s」喂给 %s（饱食度 %d/%d%s）" % [p["name"],
+		Rules.card_name(card_id), pet_name(str(d["id"])), int(d["fullness"]),
+		int(PET_FULLNESS_MAX), "，可以发动技能了" if full else ""])
+	_ev("feed_card", p, {"card": card_id, "pet": str(d["id"]),
+		"fullness": int(d["fullness"]), "full": full})
 	return true
 
 

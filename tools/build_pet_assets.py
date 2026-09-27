@@ -115,6 +115,23 @@ UI_FILES = {
     "auction_ok_dn.png": os.path.join(ROOT, "samples", "uitex", "auction", "ok_dn.tga"),
     "auction_pass.png": os.path.join(ROOT, "samples", "uitex", "auction", "pass_up.tga"),
     "auction_pass_dn.png": os.path.join(ROOT, "samples", "uitex", "auction", "pass_dn.tga"),
+    # ⭐ 主界面 / 地图选择 / 角色选择（2026-09-27：老板要求把这三个界面也做出来）
+    #   title1/2 = 原版标题条；subc/m_<map> = 7 张地图缩略图；form/* = 菜单按钮与滚动条
+    "title1.png": os.path.join(ROOT, "samples", "uitex", "other", "title1.tga"),
+    "title2.png": os.path.join(ROOT, "samples", "uitex", "other", "title2.tga"),
+    "menu_btn.png": os.path.join(ROOT, "samples", "uitex", "form", "按钮.tga"),
+    "scroll_up.png": os.path.join(ROOT, "samples", "uitex", "form", "scroll_up_1.tga"),
+    "scroll_dn.png": os.path.join(ROOT, "samples", "uitex", "form", "scroll_dn_1.tga"),
+    "arrow_back_up.png": os.path.join(ROOT, "samples", "uitex", "form", "back_up.tga"),
+    "arrow_back_dn.png": os.path.join(ROOT, "samples", "uitex", "form", "back_dn.tga"),
+    "map_aiji.png": os.path.join(ROOT, "samples", "uitex", "subc", "m_aiji.tga"),
+    "map_china.png": os.path.join(ROOT, "samples", "uitex", "subc", "m_china.tga"),
+    "map_island.png": os.path.join(ROOT, "samples", "uitex", "subc", "m_island.tga"),
+    "map_japan.png": os.path.join(ROOT, "samples", "uitex", "subc", "m_japan.tga"),
+    "map_paris.png": os.path.join(ROOT, "samples", "uitex", "subc", "m_paris.tga"),
+    "map_space.png": os.path.join(ROOT, "samples", "uitex", "subc", "m_space.tga"),
+    "map_train.png": os.path.join(ROOT, "samples", "uitex", "subc", "m_train.tga"),
+    "map_build.png": os.path.join(ROOT, "samples", "uitex", "subc", "m_trybuild.tga"),
 }
 
 # ---- 槽位（native 256×256 底图坐标；x, y, w, h）----

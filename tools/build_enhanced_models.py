@@ -145,6 +145,7 @@ def main():
     manifest_path = OUT / 'manifest.json'
     manifest = json.loads(manifest_path.read_text(encoding='utf-8')) if manifest_path.exists() else {}
     manifest.setdefault('meshes', {})
+    manifest.setdefault('mesh_hashes', {})
     report = {}
     jobs = []
     if not args.environment:
@@ -174,6 +175,7 @@ def main():
         hi, huv, hs, hn = refine(frames, uv, surfaces, divisions)
         write(target, hi, huv, hs, hn)
         manifest['meshes']['res://' + path.relative_to(GAME).as_posix()] = 'res://' + target.relative_to(GAME).as_posix()
+        manifest['mesh_hashes']['res://' + path.relative_to(GAME).as_posix()] = hashlib.md5(path.read_bytes()).hexdigest()
         report[key] = dict(frames=len(frames), vertices_before=frames.shape[1], vertices_after=hi.shape[1],
             triangles_before=sum(len(x) for x in surfaces), triangles_after=sum(len(x) for x in hs),
             bytes=target.stat().st_size)
@@ -182,6 +184,7 @@ def main():
     if manifest_path.exists():
         latest = json.loads(manifest_path.read_text(encoding='utf-8'))
         latest.setdefault('meshes', {}).update(manifest['meshes'])
+        latest.setdefault('mesh_hashes', {}).update(manifest['mesh_hashes'])
         manifest = latest
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding='utf-8')
     report_name = 'scenery-report.json' if args.environment else 'models-report.json'

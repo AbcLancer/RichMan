@@ -6,6 +6,9 @@ static var enabled := true
 static var _manifest: Dictionary = {}
 static var _loaded := false
 static var _textures: Dictionary = {}
+static var _texture_costs: Dictionary = {}
+static var _cache_bytes := 0
+const CACHE_BUDGET := 256 * 1024 * 1024
 
 static func manifest() -> Dictionary:
 	if not _loaded:
@@ -21,6 +24,9 @@ static func mesh_path(source: String) -> String:
 	if not enabled:
 		return source
 	var path := str(manifest().get("meshes", {}).get(source, source))
+	var source_hash := str(manifest().get("mesh_hashes", {}).get(source, ""))
+	if not source_hash.is_empty() and FileAccess.file_exists(source) and FileAccess.get_md5(source) != source_hash:
+		return source
 	return path if FileAccess.file_exists(path) else source
 
 static func texture(source: String, logical_size := false) -> Texture2D:
@@ -28,11 +34,22 @@ static func texture(source: String, logical_size := false) -> Texture2D:
 		return null
 	var key := source + str(enabled) + str(logical_size)
 	if _textures.has(key):
-		return _textures[key]
+		var cached: Texture2D = _textures[key]
+		_textures.erase(key)
+		_textures[key] = cached
+		return cached
 	var replacement := str(manifest().get("textures", {}).get(source, "")) if enabled else ""
+	# Manual edits to an original PNG take priority over an outdated enhancement.
+	var source_hash := str(manifest().get("source_hashes", {}).get(source, ""))
+	if not replacement.is_empty() and not source_hash.is_empty() and FileAccess.file_exists(source):
+		if FileAccess.get_md5(source) != source_hash:
+			replacement = ""
 	var result: Texture2D
+	var physical_size := Vector2.ZERO
 	if not replacement.is_empty() and ResourceLoader.exists(replacement):
 		result = load(replacement) as Texture2D
+		if result != null:
+			physical_size = result.get_size()
 		if logical_size and result != null:
 			var dimensions: Array = manifest().get("texture_sizes", {}).get(source, [])
 			if dimensions.size() == 2:
@@ -46,6 +63,8 @@ static func texture(source: String, logical_size := false) -> Texture2D:
 				result = ui_texture
 	elif ResourceLoader.exists(source):
 		result = load(source) as Texture2D
+		if result != null:
+			physical_size = result.get_size()
 	if result != null and not logical_size and enabled:
 		var image := result.get_image()
 		if image != null and not image.has_mipmaps():
@@ -54,4 +73,13 @@ static func texture(source: String, logical_size := false) -> Texture2D:
 			image.generate_mipmaps()
 			result = ImageTexture.create_from_image(image)
 	_textures[key] = result
+	var cost := int(physical_size.x * physical_size.y * 4.0 * (1.34 if result != null and result.has_mipmaps() else 1.0))
+	_texture_costs[key] = cost
+	_cache_bytes += cost
+	# Old maps can release their textures. Active materials still hold their own refs.
+	while _cache_bytes > CACHE_BUDGET and _textures.size() > 1:
+		var oldest: String = str(_textures.keys()[0])
+		_cache_bytes -= int(_texture_costs[oldest])
+		_texture_costs.erase(oldest)
+		_textures.erase(oldest)
 	return result
