@@ -60,7 +60,7 @@ func _tex(name: String) -> Texture2D:
 	var p := "res://assets/ui/shop/" + name
 	if not ResourceLoader.exists(p):
 		return null
-	var r: Resource = load(p)
+	var r: Resource = VisualQuality.texture(p, true)
 	return r if r is Texture2D else null
 
 

@@ -32,6 +32,9 @@ func setup(info: Dictionary) -> void:
 	_normals.clear()
 	_indices.clear()
 	_materials.clear()
+	_position_texture = null
+	_normal_texture = null
+	_clip = ""
 	_clock = 0.0
 	_last_frame = -1
 	_speed = float(info.get("speed", 1.0))

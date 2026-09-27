@@ -541,6 +541,8 @@ func _pet_apply(p: Dictionary, pet_id: String, lv: int) -> bool:
 ##
 ## 一条行情：`{name, owner(>=0 玩家 / -1 虚拟), price, prev, shares, chairman}`
 var stocks: Dictionary = {}
+## 甲6「股市暂停交易 N 天」—— 到这个 `road_day` 之前不刷新股价
+var stock_closed_until_day := 0
 
 
 func _stock_cfg(key: String, dflt):
@@ -624,6 +626,16 @@ func _init_virtual_companies() -> void:
 ##   · 顺手记一天历史价（走势折线用，最多 60 天）
 func _tick_stocks() -> void:
 	if stocks.is_empty():
+		return
+	# 甲6「股市暂停交易 N 天」：停牌期内不刷价（只推一条平盘历史）
+	if road_day < stock_closed_until_day:
+		for nm in stocks.keys():
+			var s0: Dictionary = stocks[nm]
+			var hist0: Array = s0.get("hist", [])
+			hist0.append(float(s0["price"]))
+			if hist0.size() > 60:
+				hist0.pop_front()
+			s0["hist"] = hist0
 		return
 	var lo := float(_stock_cfg("open_price_min_pct", -10)) / 100.0
 	var hi := float(_stock_cfg("open_price_max_pct", 10)) / 100.0
@@ -885,27 +897,66 @@ func _fire_global_news(idx: int) -> void:
 		10:  # 政府向每位市民发放一张卡片
 			for pid in player_ids():
 				_push_card(players[pid], _random_card())
-		11:  # 卡片商店赠送 N 张
-			var lo1: Array = _news_cfg("gift_cards", [1, 3]) as Array
-			for pid in player_ids():
-				for _i in range(rng.randi_range(int(lo1[0]), int(lo1[1]))):
-					_push_card(players[pid], _random_card())
-		12:  # 卡片商店散落 N 张（撒到棋盘上）
-			var lo2: Array = _news_cfg("scatter_cards", [1, 9]) as Array
-			for _i in range(rng.randi_range(int(lo2[0]), int(lo2[1]))):
-				_spawn_road_obj("card")
-		13:  # 强盗遗失宝箱
-			for _i in range(rng.randi_range(1, 3)):
-				_spawn_road_obj("robber")
-		14:  # 精灵遗失魔戒
-			for _i in range(rng.randi_range(1, 3)):
-				_spawn_road_obj("crystal")
+		3:   # 甲3 专家预测**商业**景气繁荣 → 商业区房租抬高
+			_news_type_rent("shop", 1.0 + float((_news_cfg("shop_rent_up", [0.1, 0.3]) as Array)[0]))
+		4:   # 甲4 专家预测**工业**景气回升
+			_news_type_rent("industry",
+				1.0 + float((_news_cfg("industry_price_up", [0.1, 0.3]) as Array)[0]))
+		5:   # 甲5 专家预测**房地产**买气回升
+			_news_type_rent("uptown",
+				1.0 + float((_news_cfg("uptown_price_up", [0.1, 0.3]) as Array)[0]))
+		6:   # 甲6 股市暂停交易 N 天
+			var mc: Array = _news_cfg("market_close_days", [1, 5]) as Array
+			stock_closed_until_day = road_day + rng.randi_range(int(mc[0]), int(mc[1]))
+		7:   # 甲7 银行加发存款利息 N％ → 现金按利率生息
+			var ir: Array = _news_cfg("interest_rate_pct", [5, 15]) as Array
+			var pct := rng.randi_range(int(ir[0]), int(ir[1]))
+			for pid2 in player_ids():
+				var pp: Dictionary = players[pid2]
+				pp["money"] = int(pp["money"]) + int(round(float(pp["money"]) * pct / 100.0))
+		11:  # 甲11 发生地震，部分建筑倒塌 → 随机几处房屋降 1 级
+			var quake := 0
+			var keys: Array = plots.keys()
+			keys.shuffle()
+			for k in keys:
+				if quake >= 3:
+					break
+				var qp: Dictionary = plots[k]
+				if int(qp.get("level", 0)) > 1:
+					qp["level"] = int(qp["level"]) - 1
+					quake += 1
+		12:  # 甲12 近日大雨，<ROAD>地价下跌！
+			var streets: Array = []
+			for i2 in range(map.tile_count()):
+				var st2 := str(map.street_of(i2))
+				if st2 != "" and not streets.has(st2):
+					streets.append(st2)
+			if not streets.is_empty():
+				var hit := str(streets[rng.randi_range(0, streets.size() - 1)])
+				for i3 in range(map.tile_count()):
+					if str(map.street_of(i3)) == hit and plots.has(i3):
+						var rp: Dictionary = plots[i3]
+						rp["level"] = maxi(1, int(rp.get("level", 1)))
+				log_message.emit("[新闻] 近日大雨，%s 地价下跌！" % hit)
+		13:  # ⭐ 甲13 公开拍卖<ROAD>一处公有土地（Info.txt 4001/4002/4003）
+			start_auction()
+		14:  # 甲14 经济萧条，所有租金下降 N％
+			_news_all_plots(1.0 - float((_news_cfg("all_price_down", [0.1, 0.2]) as Array)[1]))
 		_:
-			pass                          # 3/4/5/6/7：景气 / 停牌 / 利息 —— 只播新闻（效果待做）
+			pass                          # 剩下的只播新闻、不改状态
 	var msg := Rules.info_string(3000 + idx)
 	log_message.emit("[新闻] %s" % msg.replace("\n", ""))
 	_ev("global_news", null, {"idx": idx, "text": msg, "art": art,
 		"info_id": 3000 + idx})
+
+
+## 新闻「某一类房屋的租金一起涨 / 跌」（甲3/甲4/甲5）
+func _news_type_rent(type_id: String, ratio: float) -> void:
+	for i in plots.keys():
+		var pl: Dictionary = plots[i]
+		if str(pl.get("type", "")) != type_id:
+			continue
+		pl["rent_mul"] = float(pl.get("rent_mul", 1.0)) * ratio
 
 
 ## 新闻「所有股票一起涨 / 跌」
@@ -1126,6 +1177,127 @@ func pet_line(pet_id: String, line_key: int) -> String:
 	return ""
 
 
+# ------------------------------------------------------------ 拍卖
+
+## 拍卖（原版 `Info.txt` 364..367）：
+##   4001「`<ROAD>`一处土地公开拍卖。」（对所有人）
+##   4002「SORRY 加价**不得少于100元**。」（加价比现价低 100 元时）
+##   4003「`<SOMEONE>`成功竞购`<ROAD>`土地。」（对所有人）
+##
+## **触发** = 全局新闻的一种（`Info.txt` 3013/3213 甲13「公开拍卖`<ROAD>`一处公有土地」）。
+##
+## ⚠️ **推断项**（配置里一个字都没有，靠素材和常识定）：
+##   · 拍卖时长 **20 秒**（有人加价就重新计时）
+##   · **起拍价 = 地价的一半**
+##   · 加价档位 **+100 / +500 / +1000** ← 这三张就是 `uitex/auction/100|500|1000.tga`
+const AUCTION_SECONDS := 20.0
+const AUCTION_MIN_INC := 100            # Info.txt 4002「加价不得少于100元」
+const AUCTION_INCS := [100, 500, 1000]  # 素材就是这三张
+
+var auction: Dictionary = {}            # {} = 当前没在拍卖
+
+
+func auction_active() -> bool:
+	return not auction.is_empty()
+
+
+## 从**无主的地产**里挑一块开拍。返回 false = 没有可拍的地。
+func start_auction() -> bool:
+	if map == null or auction_active():
+		return false
+	var cands: Array = []
+	for i in range(map.tile_count()):
+		if str(map.tile(i).get("kind", "")) == "plot" and not plots.has(i):
+			cands.append(i)
+	if cands.is_empty():
+		return false
+	var idx := int(cands[rng.randi_range(0, cands.size() - 1)])
+	var base := int(round(float(plot_value(idx)) * 0.5))
+	auction = {"tile": idx, "price": base, "best": -1, "name": "",
+		"until": time + AUCTION_SECONDS}
+	for pid in player_ids():
+		_ev("auction_start", players[pid], {"tile": idx, "price": base,
+			"street": map.street_of(idx),
+			"info": Rules.info_fill(4001, {"ROAD": map.street_of(idx)})})
+	log_message.emit("[拍卖] %s 一处土地公开拍卖，起拍 %d 元"
+		% [map.street_of(idx), base])
+	return true
+
+
+## 加价（`delta` 取 `AUCTION_INCS` 之一）
+func act_auction_bid(id: int, delta: int) -> bool:
+	if not auction_active():
+		return false
+	var p: Dictionary = players.get(id, {})
+	if p.is_empty() or not bool(p["alive"]):
+		return false
+	if delta < AUCTION_MIN_INC:
+		# Info.txt 4002「SORRY 加价不得少于100元。」
+		_ev("auction_bad_bid", p, {"info": Rules.info_fill(4002, {})})
+		return false
+	var want := int(auction["price"]) + delta
+	if int(p["money"]) < want:
+		_ev("insufficient_money", p, {"need": want, "have": int(p["money"])})
+		return false
+	auction["price"] = want
+	auction["best"] = id
+	auction["name"] = str(p["name"])
+	if not players.has(-1):
+		auction["until"] = time + AUCTION_SECONDS      # 有人出价 → 重新计时
+	log_message.emit("%s 出价 %d 元" % [p["name"], want])
+	_ev("auction_bid", p, {"tile": int(auction["tile"]), "price": want,
+		"name": str(p["name"])})
+	return true
+
+
+## 放弃（PASS）：本场不再参与
+func act_auction_pass(id: int) -> bool:
+	if not auction_active():
+		return false
+	var p: Dictionary = players.get(id, {})
+	if p.is_empty():
+		return false
+	auction["passed"] = (auction.get("passed", []) as Array) + [id]
+	_ev("auction_pass", p, {"tile": int(auction["tile"])})
+	return true
+
+
+## 结算：出价最高的拿走地皮，钱付给银行
+func _auction_settle() -> void:
+	var a := auction.duplicate()
+	auction = {}
+	var idx := int(a.get("tile", -1))
+	var best := int(a.get("best", -1))
+	var price := int(a.get("price", 0))
+	if best < 0 or not players.has(best):
+		log_message.emit("[拍卖] 没有人出价，流拍")
+		for pid in player_ids():
+			_ev("auction_end", players[pid], {"tile": idx, "price": 0, "winner": -1,
+				"info": ""})
+		return
+	var pl: Dictionary = players[best]
+	pl["money"] = int(pl["money"]) - price
+	var t: Dictionary = map.tile(idx)
+	plots[idx] = {"owner": best, "level": 1, "type": ""}   # 拿到地，房型等他建
+	plots[idx]["type"] = ""
+	# 拿到地就要选房型（复用建筑卡片那套）
+	if not players.has(-1):
+		pl["last_plot"] = idx
+		pl["last_plot_kind"] = "build"
+	for pid in player_ids():
+		_ev("auction_end", players[pid], {"tile": idx, "price": price, "winner": best,
+			"name": str(pl["name"]),
+			"info": Rules.info_fill(4003, {"SOMEONE": str(pl["name"]),
+				"ROAD": map.street_of(idx)})})
+	log_message.emit("[拍卖] %s 以 %d 元竞购 %s 成功" % [pl["name"], price, map.street_of(idx)])
+
+
+## 每帧检查拍卖是否到点
+func _tick_auction() -> void:
+	if auction_active() and time >= float(auction.get("until", 0.0)):
+		_auction_settle()
+
+
 ## 某公司属于哪个玩家（虚拟公司返回 -1）
 func company_owner(comp: String) -> int:
 	return int((stocks.get(comp, {}) as Dictionary).get("owner", -1))
@@ -1256,6 +1428,8 @@ func step(dt: float) -> void:
 		if road_day >= lotto_last_draw_day + LOTTO_DRAW_DAYS:
 			lotto_last_draw_day = road_day
 			_lotto_draw()
+		# 拍卖：到点结算
+		_tick_auction()
 		if road_day % MONTH_DAYS == 0:
 			_pay_dividends()        # 每 30 天（一个月）分红一次
 
@@ -2959,6 +3133,8 @@ func to_dict() -> Dictionary:
 		# 拉霸状态（`casino`）也要进快照 —— 否则联机时客户端的面板永远是空的
 		"casino": casino.duplicate(true),
 		"card_shop": card_shop_stock.duplicate(),
+		"stock_closed": stock_closed_until_day,
+		"auction": auction.duplicate(true),
 	}
 
 func apply_dict(d: Dictionary) -> void:
@@ -2987,6 +3163,8 @@ func apply_dict(d: Dictionary) -> void:
 	stocks = d.get("stocks", stocks)
 	casino = d.get("casino", casino)
 	card_shop_stock = d.get("card_shop", card_shop_stock)
+	auction = d.get("auction", auction)
+	stock_closed_until_day = int(d.get("stock_closed", stock_closed_until_day))
 
 func _estate_in_radius(key: int, center: int, radius: int) -> bool:
 	for member in plots[key].get("members", [key]):

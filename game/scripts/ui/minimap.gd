@@ -33,7 +33,7 @@ func setup(m: MapData) -> void:
 	if m != null:
 		var p := "res://assets/uitex/subc/m_%s.png" % m.name
 		if ResourceLoader.exists(p):
-			var r: Resource = load(p)
+			var r: Resource = VisualQuality.texture(p, true)
 			if r is Texture2D:
 				_tex = r
 	queue_redraw()

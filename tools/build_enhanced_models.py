@@ -161,6 +161,14 @@ def main():
                 path = GAME / item['mesh'][6:]
                 key = path.relative_to(GAME / 'assets/original/scenes').as_posix()
                 jobs.append((key, path, OUT / 'scenery' / key, 2))
+            # Rounded original primitives benefit from curvature reconstruction;
+            # roads, terrain, roofs and rectangular buildings retain their planes.
+            for item in scene['meshes']:
+                if not item.get('name', '').lower().startswith(('sphere', 'cylinder', 'tube', 'cone')):
+                    continue
+                path = GAME / item['mesh'][6:]
+                key = path.relative_to(GAME / 'assets/original/scenes').as_posix()
+                jobs.append((key, path, OUT / 'scenery' / key, 2))
     for key, path, target, divisions in jobs:
         frames, uv, surfaces = read_mesh(path)
         hi, huv, hs, hn = refine(frames, uv, surfaces, divisions)

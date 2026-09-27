@@ -112,6 +112,8 @@ var _news_left := 0.0
 var _casino: CasinoPanel = null
 ## 乐透面板（`casino` 事件格；素材 `uitex/casino2/`）
 var _lotto: LottoPanel = null
+## 拍卖面板（甲13 新闻；素材 `uitex/auction/`）
+var _auction: AuctionPanel = null
 ## 「请选择对手」的目标选择器（穷神卡这类要点人的卡）
 var _hover_player := -1                    # 选目标时鼠标指到了哪个玩家（脚下圆盘变红）
 var _log_panel: PanelContainer
@@ -252,6 +254,11 @@ const WORLD_HEIGHT := 0.0
 ## 设到 Window.theme 上 → 整个界面（菜单/大厅/对局）的中文都变成原版点阵字。
 func _apply_ui_theme() -> void:
 	var f: Font = load("res://assets/fonts/r6_16.fnt")
+	if VisualQuality.enabled:
+		var scalable := SystemFont.new()
+		scalable.font_names = PackedStringArray(["Microsoft YaHei", "Noto Sans CJK SC", "sans-serif"])
+		scalable.antialiasing = TextServer.FONT_ANTIALIASING_GRAY
+		f = scalable
 	if f == null:
 		push_warning("[ui] 找不到原版点阵字体 r6_16.fnt，退回系统字体")
 		return
@@ -262,6 +269,7 @@ func _apply_ui_theme() -> void:
 
 
 func _ready() -> void:
+	VisualQuality.enabled = not OS.get_cmdline_user_args().has("--original-graphics")
 	# 单栋对照模式：--probe=<type>:<level>（如 --probe=uptown:1），只摆一栋、相机贴近
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--probe="):
@@ -425,6 +433,12 @@ func _run_ui_shot(delta: float) -> void:
 						await get_tree().create_timer(0.35).timeout
 						await _capture("D:/Projects/RichMan/ui_shot_lotto.png")
 						_lotto.close()
+					# ⑥ 拍卖面板（甲13 新闻；素材 uitex/auction/）
+					if _auction != null:
+						_auction.open("逍遥路", 12000, "老板", 0.65)
+						await get_tree().create_timer(0.35).timeout
+						await _capture("D:/Projects/RichMan/ui_shot_auction.png")
+						_auction.close()
 				_ui_shot_confirm_active = false
 			if not _ui_shot_confirm_active:
 				# 顺带验收「骰子数量选择」：切到 2 颗再掷（选择器第 1/2 颗亮、第 2 颗灰）
@@ -702,6 +716,14 @@ func _process(delta: float) -> void:
 				_say_bubble.visible = false
 			else:
 				_sync_say_bubble()
+		# 拍卖倒计时（每帧同步剩余时间 + 当前价）
+		if _auction != null and _auction.visible and Net.sim != null \
+				and Net.sim.auction_active():
+			var au: Dictionary = Net.sim.auction
+			var left := clampf((float(au.get("until", 0.0)) - float(Net.sim.time))
+				/ Sim.AUCTION_SECONDS, 0.0, 1.0)
+			_auction.open(str((Net.sim.map.street_of(int(au.get("tile", 0)))) if Net.sim.map != null else ""),
+				int(au.get("price", 0)), str(au.get("name", "")), left)
 		# 骰子卡的步数选择器：跟在角色头顶
 		_sync_step_picker()
 		# 「请选择对手」：每帧算鼠标指到了谁 → 脚下圆盘绿/红
@@ -1128,6 +1150,11 @@ func _build_hud() -> void:
 	_hud.add_child(_lotto)
 	_lotto.setup(_ui_scale)
 	_lotto.act.connect(_on_lotto_action)
+	# 拍卖面板（甲13 新闻「公开拍卖一处公有土地」；素材 uitex/auction/）
+	_auction = AuctionPanel.new()
+	_hud.add_child(_auction)
+	_auction.setup(_ui_scale)
+	_auction.act.connect(_on_auction_action)
 	_build_shop()
 	_build_toast()
 
@@ -1227,7 +1254,7 @@ func _top_counter(parent: Node, coin: String, navy: bool) -> HudNumber:
 	cap.add_child(hb)
 
 	var ic := TextureRect.new()
-	ic.texture = load("res://assets/ui/hud/%s.png" % coin)
+	ic.texture = VisualQuality.texture("res://assets/ui/hud/%s.png" % coin, true)
 	ic.custom_minimum_size = Vector2(UI_COIN_W * _ui_scale, h)
 	ic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	ic.stretch_mode = TextureRect.STRETCH_SCALE
@@ -1261,7 +1288,7 @@ func _top_btnstrip() -> Control:
 	var holder := Control.new()
 	holder.custom_minimum_size = Vector2(UI_BTN_W * _ui_scale, UI_BTN_H * _ui_scale)
 	var tex := TextureRect.new()
-	tex.texture = load("res://assets/ui/hud/btnstrip.png")
+	tex.texture = VisualQuality.texture("res://assets/ui/hud/btnstrip.png", true)
 	tex.set_anchors_preset(Control.PRESET_FULL_RECT)
 	tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	tex.stretch_mode = TextureRect.STRETCH_SCALE
@@ -1306,7 +1333,7 @@ func _toggle_pause() -> void:
 func _build_pause_overlay() -> void:
 	_pause_overlay = TextureRect.new()
 	_pause_overlay.set_anchors_preset(Control.PRESET_CENTER)
-	_pause_overlay.texture = load("res://assets/uitex/other/pause.png")
+	_pause_overlay.texture = VisualQuality.texture("res://assets/uitex/other/pause.png", true)
 	_pause_overlay.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_pause_overlay.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	var w := 420.0 * _ui_scale
@@ -1392,7 +1419,7 @@ func _build_character_panel() -> void:
 	_hud.add_child(_char_panel)
 
 	var fr := TextureRect.new()
-	fr.texture = load("res://assets/ui/panel/frame_atb.png")
+	fr.texture = VisualQuality.texture("res://assets/ui/panel/frame_atb.png", true)
 	fr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	fr.stretch_mode = TextureRect.STRETCH_SCALE
 	fr.size = Vector2(w, h)
@@ -1497,7 +1524,7 @@ func _build_character_panel() -> void:
 
 	# 齿轮按钮（叠在面板左下角，略压出边框 —— 同原版）
 	var g := TextureButton.new()
-	g.texture_normal = load("res://assets/ui/panel/gear.png")
+	g.texture_normal = VisualQuality.texture("res://assets/ui/panel/gear.png", true)
 	g.ignore_texture_size = true
 	g.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 	var gs := 44.0 * _ui_scale
@@ -1573,7 +1600,7 @@ func _make_icon_bar(w: float) -> Control:
 	var s := UI_ICON_SIZE * _ui_scale
 	for i in UI_ICON_NAMES.size():
 		var b := TextureButton.new()
-		b.texture_normal = load("res://assets/ui/panel/%s.png" % UI_ICON_NAMES[i])
+		b.texture_normal = VisualQuality.texture("res://assets/ui/panel/%s.png" % UI_ICON_NAMES[i], true)
 		b.ignore_texture_size = true
 		b.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 		b.custom_minimum_size = Vector2(s, s)
@@ -1700,8 +1727,8 @@ func _toggle_br() -> void:
 func _build_action_entry() -> void:
 	# ---- GO 圆钮 = 掷骰子 ----
 	_go_btn = TextureButton.new()
-	_go_btn.texture_normal = load("res://assets/ui/panel/go_btn.png")
-	_go_btn.texture_pressed = load("res://assets/ui/panel/go_btn_dn.png")
+	_go_btn.texture_normal = VisualQuality.texture("res://assets/ui/panel/go_btn.png", true)
+	_go_btn.texture_pressed = VisualQuality.texture("res://assets/ui/panel/go_btn_dn.png", true)
 	_go_btn.ignore_texture_size = true
 	_go_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 	var gs := UI_GO_SIZE * _ui_scale
@@ -1812,14 +1839,14 @@ func _ensure_die_textures() -> void:
 	## AtlasTexture 缓存一次即可（每帧 new 会漏资源）
 	if not _tex_spin.is_empty():
 		return
-	var spin_base: Texture2D = load("res://assets/ui/panel/dice_anim.png")
+	var spin_base: Texture2D = VisualQuality.texture("res://assets/ui/panel/dice_anim.png", true)
 	if spin_base != null:
 		for i in range(16):
 			var a := AtlasTexture.new()
 			a.atlas = spin_base
 			a.region = Rect2(float(i % 4) * DIE_PX, float(i / 4) * DIE_PX, DIE_PX, DIE_PX)
 			_tex_spin.append(a)
-	var face_base: Texture2D = load("res://assets/ui/panel/die_faces.png")
+	var face_base: Texture2D = VisualQuality.texture("res://assets/ui/panel/die_faces.png", true)
 	if face_base != null:
 		for i in range(6):
 			var a2 := AtlasTexture.new()
@@ -1948,7 +1975,7 @@ func _pop_btn(kind: String, cb: Callable) -> TextureButton:
 	# ⚠ 若用 KEEP_ASPECT_* 且容器给窄了，胶囊会被**裁掉一半**（实测过）。
 	var mk := func(p: String) -> AtlasTexture:
 		var at := AtlasTexture.new()
-		at.atlas = load(p)
+		at.atlas = VisualQuality.texture(p, true)
 		at.region = Rect2(0, 0, 56, 32)
 		return at
 	b.texture_normal = mk.call("res://assets/uitex/other/%s_up.png" % kind)
@@ -1978,6 +2005,9 @@ func _close_topmost() -> bool:
 		return true
 	if _lotto != null and _lotto.visible:
 		_lotto.close()
+		return true
+	if _auction != null and _auction.visible:
+		_auction.close()
 		return true
 	if _casino != null and _casino.visible:
 		_casino.close()
@@ -2378,7 +2408,7 @@ func _card_face(cid: String) -> Texture2D:
 	var p := Rules.card_face_path(cid)
 	if not ResourceLoader.exists(p):
 		return null
-	var r: Resource = load(p)
+	var r: Resource = VisualQuality.texture(p, true)
 	return r if r is Texture2D else null
 
 
@@ -2695,7 +2725,7 @@ func _build_shop() -> void:
 func _tex_or_null(p: String) -> Texture2D:
 	if p == "" or not ResourceLoader.exists(p):
 		return null
-	var r: Resource = load(p)
+	var r: Resource = VisualQuality.texture(p, true)
 	return r if r is Texture2D else null
 
 
@@ -3273,6 +3303,15 @@ func _chat_append(who: String, text: String) -> void:
 		_chat_log.text = "\n".join(_chat_lines.slice(maxi(0, _chat_lines.size() - 3)))
 
 
+## 拍卖面板的按钮回调（加价 / 放弃）
+func _on_auction_action(kind: String, amount: int) -> void:
+	match kind:
+		"bid":
+			Net.send_action("auction_bid", [amount])
+		"pass":
+			Net.send_action("auction_pass", [])
+
+
 ## 乐透面板的按钮回调（挑号码 / 离开）
 func _on_lotto_action(kind: String, number: int) -> void:
 	match kind:
@@ -3823,6 +3862,30 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
 				_show_say(Net.sim.pet_line(str(data.get("pet", "")), 2),
 					int(data.get("pid", -1)))
+		"auction_start":
+			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
+			if _auction != null:
+				_auction.open(str(data.get("street", "")), int(data.get("price", 0)), "", 1.0)
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast(str(data.get("info", "一处土地公开拍卖")))
+		"auction_bid":
+			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
+			if _auction != null:
+				_auction.open(str(data.get("street", "")), int(data.get("price", 0)),
+					str(data.get("name", "")), 1.0)
+		"auction_bad_bid":
+			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast(str(data.get("info", "加价不得少于100元")))     # Info.txt 4002
+		"auction_end":
+			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
+			if _auction != null:
+				_auction.close()
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				var t := str(data.get("info", ""))
+				_toast(t if t != "" else "拍卖结束（没人出价）")
+		"auction_pass":
+			_on_log("  （%s 放弃出价）" % str(data.get("name", "")))
 		"chat":
 			_chat_append(str(data.get("name", "")), str(data.get("text", "")))
 		"global_news":
@@ -4222,7 +4285,7 @@ func _role_texture(idx: int, kind: String = "01") -> Texture2D:
 	var p := "res://assets/uitex/player/%s_%s.png" % [tag, kind]
 	if not ResourceLoader.exists(p):
 		return null
-	var r: Resource = load(p)
+	var r: Resource = VisualQuality.texture(p, true)
 	return r if r is Texture2D else null
 
 

@@ -46,5 +46,12 @@ static func texture(source: String, logical_size := false) -> Texture2D:
 				result = ui_texture
 	elif ResourceLoader.exists(source):
 		result = load(source) as Texture2D
+	if result != null and not logical_size and enabled:
+		var image := result.get_image()
+		if image != null and not image.has_mipmaps():
+			if image.is_compressed():
+				image.decompress()
+			image.generate_mipmaps()
+			result = ImageTexture.create_from_image(image)
 	_textures[key] = result
 	return result

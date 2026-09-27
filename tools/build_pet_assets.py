@@ -105,6 +105,16 @@ UI_FILES = {
     "lotto_mark.png": os.path.join(ROOT, "samples", "uitex", "casino2", "mark.tga"),
     "lotto_cursor.png": os.path.join(ROOT, "samples", "uitex", "casino2", "cursor.tga"),
     "lotto_exit.png": os.path.join(ROOT, "samples", "uitex", "casino2", "exit.tga"),
+    # 拍卖（`uitex/auction/`）—— 依据 Info.txt 364..367（4001/4002/4003 三条文案）
+    "auction_bg.png": os.path.join(ROOT, "samples", "uitex", "auction", "back.tga"),
+    "auction_bar.png": os.path.join(ROOT, "samples", "uitex", "auction", "bar.tga"),
+    "auction_add100.png": os.path.join(ROOT, "samples", "uitex", "auction", "100.tga"),
+    "auction_add500.png": os.path.join(ROOT, "samples", "uitex", "auction", "500.tga"),
+    "auction_add1000.png": os.path.join(ROOT, "samples", "uitex", "auction", "1000.tga"),
+    "auction_ok.png": os.path.join(ROOT, "samples", "uitex", "auction", "ok_up.tga"),
+    "auction_ok_dn.png": os.path.join(ROOT, "samples", "uitex", "auction", "ok_dn.tga"),
+    "auction_pass.png": os.path.join(ROOT, "samples", "uitex", "auction", "pass_up.tga"),
+    "auction_pass_dn.png": os.path.join(ROOT, "samples", "uitex", "auction", "pass_dn.tga"),
 }
 
 # ---- 槽位（native 256×256 底图坐标；x, y, w, h）----

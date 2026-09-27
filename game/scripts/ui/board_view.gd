@@ -152,10 +152,10 @@ func _build_ground() -> void:
 	var mat := StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED   # 原版地形自带烘焙光影
 	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 	var tex: Texture2D = null
 	if map.ground_texture != "":
-		var res: Resource = load(map.ground_texture)
+		var res: Resource = VisualQuality.texture(map.ground_texture)
 		if res is Texture2D:
 			tex = res
 	if tex != null:
@@ -253,7 +253,7 @@ func _build_tiles() -> void:
 	var rug := _rug_size()
 	var tex: Texture2D = null
 	if ResourceLoader.exists("res://assets/decals/rug.png"):
-		var res: Resource = load("res://assets/decals/rug.png")
+		var res: Resource = VisualQuality.texture("res://assets/decals/rug.png")
 		if res is Texture2D:
 			tex = res
 
@@ -268,7 +268,7 @@ func _build_tiles() -> void:
 
 		var mat := StandardMaterial3D.new()
 		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 		mat.albedo_texture = tex
 		var kind: String = t.get("kind", "")
 		if kind == "start":
@@ -386,7 +386,7 @@ func _tex(path: String) -> Texture2D:
 		return null
 	if _tex_cache.has(path):
 		return _tex_cache[path]
-	var res: Resource = load(path) if ResourceLoader.exists(path) else null
+	var res: Resource = VisualQuality.texture(path) if ResourceLoader.exists(path) else null
 	var t: Texture2D = res if res is Texture2D else null
 	_tex_cache[path] = t
 	return t
@@ -415,7 +415,7 @@ func _build_event_icons() -> void:
 		var mat := StandardMaterial3D.new()
 		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 		mat.albedo_texture = tex
 		var mi := MeshInstance3D.new()
 		var pm := PlaneMesh.new()
@@ -943,7 +943,7 @@ func sync(snap: Dictionary) -> void:
 		if int(p["moving"]) > 0 and lr >= 1 and lr <= 6:
 			var dp := "res://assets/dice/%d.png" % lr
 			if ResourceLoader.exists(dp):
-				var rr: Resource = load(dp)
+				var rr: Resource = VisualQuality.texture(dp)
 				if rr is Texture2D:
 					dz.texture = rr
 					dz.visible = true
@@ -997,13 +997,13 @@ func _make_plot_platform(tile: int) -> Node3D:
 	root.name = "OwnedPlot%d" % tile
 	root.set_meta("footprint", 0)
 	var border := StandardMaterial3D.new()
-	border.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	border.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 	border.roughness = 0.9
 	border.emission_enabled = true
 	if _plot_border_tex == null:
 		var path := "res://assets/terrain/aiji_plot_border.png"
 		if ResourceLoader.exists(path):
-			_plot_border_tex = load(path) as Texture2D
+			_plot_border_tex = VisualQuality.texture(path) as Texture2D
 	border.albedo_texture = _plot_border_tex
 	for i in range(4):
 		var edge := MeshInstance3D.new()

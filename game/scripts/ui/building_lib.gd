@@ -104,14 +104,16 @@ static func mesh_for(id: String) -> ArrayMesh:
 	arrays[Mesh.ARRAY_VERTEX] = verts
 	arrays[Mesh.ARRAY_TEX_UV] = uvs
 	arrays[Mesh.ARRAY_INDEX] = idx
-	var m := ArrayMesh.new()
-	m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	# Architectural edges stay sharp. UVs and footprint are unchanged.
 	var surface := SurfaceTool.new()
-	surface.create_from(m, 0)
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	surface.set_smooth_group(-1)
+	for vertex_index in idx:
+		surface.set_uv(uvs[vertex_index])
+		surface.add_vertex(verts[vertex_index])
 	surface.generate_normals()
-	m = surface.commit()
+	surface.index()
+	var m := surface.commit()
 	_meshes[id] = m
 	return m
 

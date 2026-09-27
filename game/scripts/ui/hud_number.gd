@@ -31,7 +31,7 @@ var _pool: Array[TextureRect] = []
 static func _tex_of(name: String) -> Texture2D:
 	if not _tex.has(name):
 		var p := DIR + name + ".png"
-		_tex[name] = load(p) if ResourceLoader.exists(p) else null
+		_tex[name] = VisualQuality.texture(p, true) if ResourceLoader.exists(p) else null
 	return _tex[name]
 
 

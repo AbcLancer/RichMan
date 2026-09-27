@@ -1008,6 +1008,37 @@ func _test_pets() -> void:
 	_ok("小赌神发动后，下一掷必出 6 点",
 		s6.act_roll(1, 1) and int(p6["last_roll"]) == 6, "点数 %d" % int(p6["last_roll"]))
 
+	# ---- 拍卖（甲13 新闻「公开拍卖一处公有土地」/ Info.txt 4001..4003）----
+	var s8 := _fresh_sim()
+	var started := s8.start_auction()
+	_ok("甲13 能开拍（从无主地产里挑一块）", started,
+		"地块 %d 起拍 %d" % [int(s8.auction.get("tile", -1)), int(s8.auction.get("price", 0))])
+	if started:
+		var atile := int(s8.auction["tile"])
+		var base := int(s8.auction["price"])
+		_ok("加价不得少于 100 元（Info.txt 4002）", not s8.act_auction_bid(1, 50),
+			"出 50 被拒")
+		_ok("加 100 成功，当前价 = 起拍 + 100",
+			s8.act_auction_bid(1, 100) and int(s8.auction["price"]) == base + 100,
+			"%d → %d" % [base, int(s8.auction["price"])])
+		# 到点结算：出价的人拿地、扣钱
+		var m0 := int(s8.players[1]["money"])
+		s8.auction["until"] = s8.time - 1.0          # 强制到点
+		s8._tick_auction()
+		_ok("到点结算：最高出价者拿到地并扣钱",
+			s8.plots.has(atile) and int(s8.plots[atile]["owner"]) == 1
+				and int(s8.players[1]["money"]) == m0 - (base + 100),
+			"owner=%d 扣 %d" % [int(s8.plots.get(atile, {}).get("owner", -1)),
+				m0 - int(s8.players[1]["money"])])
+		_ok("结算后拍卖状态清空", not s8.auction_active())
+
+	# ---- 新闻 11..14 的对应关系（原来 11~14 全错位了）----
+	_ok("甲11 = 地震（房屋倒塌）而不是「送卡」",
+		Rules.info_string(3011).contains("地震"), Rules.info_string(3011))
+	_ok("甲12 = 大雨地价下跌", Rules.info_string(3012).contains("大雨"), Rules.info_string(3012))
+	_ok("甲13 = 公开拍卖", Rules.info_string(3013).contains("拍卖"), Rules.info_string(3013))
+	_ok("甲14 = 经济萧条租金下降", Rules.info_string(3014).contains("萧条"), Rules.info_string(3014))
+
 	# ---- 卡片商店（点券出口）----
 	var s7 := _fresh_sim()
 	var p7: Dictionary = s7.players[1]
