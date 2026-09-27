@@ -14,6 +14,8 @@ var _last_frame := -1
 var _speed := 1.0
 var _pivot := Vector3.ZERO
 var _position_texture: ImageTexture
+var _normal_texture: ImageTexture
+var _normals: Array[PackedVector3Array] = []
 @export_file("*.json") var definition_path := ""
 
 func _validate_property(property: Dictionary) -> void:
@@ -27,6 +29,7 @@ func _ready() -> void:
 
 func setup(info: Dictionary) -> void:
 	_frames.clear()
+	_normals.clear()
 	_indices.clear()
 	_materials.clear()
 	_clock = 0.0
@@ -36,17 +39,23 @@ func setup(info: Dictionary) -> void:
 	_pivot = Vector3(pivot_data[0], pivot_data[1], pivot_data[2])
 	set_meta("source", info.mesh)
 	set_meta("original_name", info.get("name", ""))
-	var file := FileAccess.open(str(info.mesh), FileAccess.READ)
+	var file := FileAccess.open(VisualQuality.mesh_path(str(info.mesh)), FileAccess.READ)
 	if file == null:
 		push_error("Missing original mesh: " + str(info.mesh))
 		return
-	assert(file.get_buffer(4).get_string_from_ascii() == "R6V1")
+	var format := file.get_buffer(4).get_string_from_ascii()
+	assert(format in ["R6V1", "R6V2"])
 	var nf := file.get_32()
 	var nv := file.get_32()
 	var ns := file.get_32()
 	_uv = file.get_buffer(nv * 8).to_vector2_array()
 	for i in range(nf):
 		_frames.append(file.get_buffer(nv * 12).to_vector3_array())
+	if format == "R6V2":
+		var normal_bytes := file.get_buffer(nf * nv * 12)
+		for i in range(nf):
+			_normals.append(normal_bytes.slice(i * nv * 12, (i + 1) * nv * 12).to_vector3_array())
+		_normal_texture = ImageTexture.create_from_image(Image.create_from_data(nv, nf, false, Image.FORMAT_RGBF, normal_bytes))
 	if nf > 1:
 		var bytes := PackedByteArray()
 		var bounds := AABB(_frames[0][0], Vector3.ZERO)
@@ -63,15 +72,18 @@ func setup(info: Dictionary) -> void:
 		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
 		mat.alpha_scissor_threshold = 0.3
-		mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 		var path := str(info.surfaces[i].texture)
 		if not path.is_empty():
-			mat.albedo_texture = load(path)
+			mat.albedo_texture = VisualQuality.texture(path)
 		if nf > 1:
 			var animated := ShaderMaterial.new()
 			animated.shader = preload("res://scripts/ui/original_animation.gdshader")
 			animated.set_shader_parameter("position_frames", _position_texture)
 			animated.set_shader_parameter("pivot", _pivot)
+			animated.set_shader_parameter("has_normals", not _normals.is_empty())
+			if not _normals.is_empty():
+				animated.set_shader_parameter("normal_frames", _normal_texture)
 			animated.set_shader_parameter("has_skin", mat.albedo_texture != null)
 			if mat.albedo_texture != null:
 				animated.set_shader_parameter("skin", mat.albedo_texture)
@@ -135,6 +147,8 @@ func _draw_frame(frame: int) -> void:
 		for j in range(vertices.size()):
 			vertices[j] -= _pivot
 		arrays[Mesh.ARRAY_VERTEX] = vertices
+		if not _normals.is_empty():
+			arrays[Mesh.ARRAY_NORMAL] = _normals[frame]
 		arrays[Mesh.ARRAY_TEX_UV] = _uv
 		arrays[Mesh.ARRAY_INDEX] = _indices[i]
 		result.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)

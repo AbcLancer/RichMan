@@ -1022,6 +1022,21 @@ func _test_pets() -> void:
 		"价 %d（徽章 %d），剩 %d" % [cprice, Rules.card_badge("caishen"), int(p7["credit"])])
 	_ok("货架正好 8 格（原版 cardshop.tga 是 2 列 × 4 行）",
 		s7._shop_stock().size() == 8, "%d 格" % s7._shop_stock().size())
+	# ⭐ 货架必须**持久**，且**买走的卡要从架上移除**
+	#   （老板 2026-09-27：「我买了的卡应该移除掉，不然我不就可以不停买了吗」）
+	#   改之前 `_shop_stock()` 每次现洗一副牌 → 买完卡还在架上、可以反复买。
+	_ok("货架是持久的（连读两次一模一样）",
+		str(s7._shop_stock()) == str(s7._shop_stock()),
+		str(s7._shop_stock().slice(0, 3)))
+	var stock_before: Array = s7._shop_stock()
+	var probe := "caishen" if stock_before.has("caishen") \
+		else (str(stock_before[0]) if not stock_before.is_empty() else "")
+	if probe != "":
+		p7["credit"] = 99999
+		s7.act_buy_card(1, probe)
+		_ok("买走的卡已从货架上移除",
+			not s7._shop_stock().has(probe),
+			"卖掉 %s 后货架剩 %d 张" % [probe, s7._shop_stock().size()])
 	_ok("Info.txt 41/42 文案在位（「卡片商店 您有N点券」/「您没有点券 不能进入卡片商店」）",
 		Rules.info_string(41).contains("卡片商店") and Rules.info_string(42).contains("不能进入"),
 		"%s ｜ %s" % [Rules.info_string(41).replace("\n", " "),

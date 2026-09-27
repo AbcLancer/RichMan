@@ -798,11 +798,11 @@ func _unhandled_input(e: InputEvent) -> void:
 		return
 
 	# 右键：先关商店 / 购买确认（原版 Info.txt 62 的批注就是「点击右键界面消失」）
-	if e is InputEventMouseButton and e.pressed 			and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_RIGHT:
-		if _pop_mode == "shop":
-			_pop_cancel()
-		elif shop_open():
-			_close_shop()
+	# 右键：**二级界面统一从这里关**。
+	# 老板 2026-09-27：「二级界面都应该可以使用右键关闭」+ 原版 Info.txt 62 的批注
+	# 就是「点击右键界面消失」→ 按**从上层往下**的顺序关一个。
+	if e is InputEventMouseButton and e.pressed and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_RIGHT:
+		_close_topmost()
 		return
 	if e is InputEventKey and e.pressed and not e.echo:
 		match e.keycode:
@@ -822,15 +822,9 @@ func _unhandled_input(e: InputEvent) -> void:
 				_card_bar_open = not _card_bar_open
 				_card_sig.clear()
 			KEY_ESCAPE:
-				if _pop_mode == "shop":
-					_pop_cancel()
-				elif shop_open():
-					_close_shop()
-				elif _pop_mode == "card":
-					_close_card_confirm()          # 先关掉卡片二次确认框
-				elif _card_pending != "":
-					_clear_card_target_mode()      # 再退「选对手」模式，别直接退游戏
-				else:
+				# 和右键同一套：先把**最上面**那个二级界面关掉；
+				# 一层都没有了才退回主菜单（避免随手一按就退出对局）
+				if not _close_topmost():
 					_on_leave()
 
 # ------------------------------------------------------------------ 3D 世界
@@ -1965,6 +1959,45 @@ func _pop_btn(kind: String, cb: Callable) -> TextureButton:
 	b.pressed.connect(cb)
 	_sfx(b)
 	return b
+
+
+## 右键 / ESC：**按「谁叠在最上面」的顺序关掉一个二级界面**，返回 true = 关掉了一个。
+##
+## 老板 2026-09-27：「二级界面都应该可以使用右键关闭」；
+## 原版 `Info.txt` 62 的批注也是「点击右键界面消失」。
+## ⚠️ 顺序很重要 —— 菜单 / 气泡这类**临时浮层**先关，整块的商店面板最后关。
+func _close_topmost() -> bool:
+	if _chat_input != null and _chat_input.visible and _chat_input.has_focus():
+		_chat_input.release_focus()
+		return true
+	if _pop_mode != "":
+		_pop_cancel()
+		return true
+	if _house_pick != null:
+		_close_house_picker()
+		return true
+	if _lotto != null and _lotto.visible:
+		_lotto.close()
+		return true
+	if _casino != null and _casino.visible:
+		_casino.close()
+		return true
+	if _stock != null and _stock.visible:
+		_stock.close_all()
+		return true
+	if _card_confirm_id != "":
+		_close_card_confirm()
+		return true
+	if _card_menu != null and _card_menu.visible:
+		_hide_card_menu()
+		return true
+	if _card_pending != "":
+		_clear_card_target_mode()
+		return true
+	if shop_open():
+		_close_shop()
+		return true
+	return false
 
 
 ## 落点气泡的「是」：按当前模式发买地 / 升级 / 卡片二次确认
@@ -3709,6 +3742,10 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 				_show_pet_skill(str(data.get("pet", "")), 1)
 		"buy_card":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
+			# ⭐ 买走的那张要**从货架上消失**（老板 2026-09-27：「我买了的卡应该移除掉，
+			# 不然我不就可以不停买了吗」）。权威货架在 `Sim.card_shop_stock`，
+			# 这里重新拉一次 → 下面的 `_sync_shop` 会因为签名变化而重建格子。
+			_shop_stock = _shop_stock_for_me()
 			_toast("买下「%s」（%d 点券）" % [str(data.get("name", "")), int(data.get("price", 0))])
 		"pet_full":
 			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)

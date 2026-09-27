@@ -330,18 +330,28 @@ func card_price(card_id: String) -> int:
 
 ## 货架上摆哪 8 张（原版 `uitex/other/cardshop.tga` 是 2 列 × 4 行 = 8 格）
 const CARD_SHOP_SLOTS := 8
+## 卡片商店的**持久货架**（买走的卡从这里移除，见 `act_buy_card`）
+var card_shop_stock: Array = []
 
 
 func _shop_stock() -> Array:
+	## ⚠️ 货架**必须持久**（`card_shop_stock`）—— 原来这里每次都 `shuffle()` 现洗一副，
+	## 于是**买走的卡还在货架上**，玩家能对着同一格反复买同一张卡。
+	## 老板 2026-09-27：「那个卡片商店，我买了的卡应该移除掉，不然我不就可以不停买了吗」。
+	if card_shop_stock.is_empty():
+		refill_card_shop()
+	return card_shop_stock.duplicate()
+
+
+## 洗一副牌上架（进游戏时一次；卖空之后**不自动补货** —— 原版没有补货的明文，
+## 卖光就是卖光，`Info.txt` 里「售完」的语气也是这样）
+func refill_card_shop() -> void:
 	var all: Array = Rules.cards()
-	if all.is_empty():
-		return []
-	# 洗一副牌取前 8 张（不重复）
 	var ids: Array = []
 	for c in all:
 		ids.append(str(c.get("id", "")))
 	ids.shuffle()
-	return ids.slice(0, mini(CARD_SHOP_SLOTS, ids.size()))
+	card_shop_stock = ids.slice(0, mini(CARD_SHOP_SLOTS, ids.size()))
 
 
 func act_buy_card(id: int, card_id: String) -> bool:
@@ -367,7 +377,10 @@ func act_buy_card(id: int, card_id: String) -> bool:
 			p["name"], Rules.card_name(card_id)])
 		return false
 	_report_card_push(p, res, Rules.card_name(card_id))
-	log_message.emit("%s 花 %d 点券买下「%s」" % [p["name"], price, Rules.card_name(card_id)])
+	# ⭐ 买走 → **从货架上移除**（老板 2026-09-27；不然可以对着同一格反复买）
+	card_shop_stock.erase(card_id)
+	log_message.emit("%s 花 %d 点券买下「%s」（货架剩 %d 张）" % [p["name"], price,
+		Rules.card_name(card_id), card_shop_stock.size()])
 	_ev("buy_card", p, {"card": card_id, "name": Rules.card_name(card_id), "price": price})
 	return true
 
@@ -2945,6 +2958,7 @@ func to_dict() -> Dictionary:
 		"stocks": stocks.duplicate(true),
 		# 拉霸状态（`casino`）也要进快照 —— 否则联机时客户端的面板永远是空的
 		"casino": casino.duplicate(true),
+		"card_shop": card_shop_stock.duplicate(),
 	}
 
 func apply_dict(d: Dictionary) -> void:
@@ -2972,6 +2986,7 @@ func apply_dict(d: Dictionary) -> void:
 	road_day = int(d.get("road_day", road_day))
 	stocks = d.get("stocks", stocks)
 	casino = d.get("casino", casino)
+	card_shop_stock = d.get("card_shop", card_shop_stock)
 
 func _estate_in_radius(key: int, center: int, radius: int) -> bool:
 	for member in plots[key].get("members", [key]):

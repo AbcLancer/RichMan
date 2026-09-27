@@ -106,6 +106,12 @@ static func mesh_for(id: String) -> ArrayMesh:
 	arrays[Mesh.ARRAY_INDEX] = idx
 	var m := ArrayMesh.new()
 	m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	# Architectural edges stay sharp. UVs and footprint are unchanged.
+	var surface := SurfaceTool.new()
+	surface.create_from(m, 0)
+	surface.set_smooth_group(-1)
+	surface.generate_normals()
+	m = surface.commit()
 	_meshes[id] = m
 	return m
 
@@ -144,7 +150,7 @@ static func material_for(id: String) -> StandardMaterial3D:
 	var e := entry(id)
 	var mat := StandardMaterial3D.new()
 	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 	mat.roughness = 0.92
 	mat.metallic = 0.0
 	mat.metallic_specular = 0.08
@@ -152,7 +158,7 @@ static func material_for(id: String) -> StandardMaterial3D:
 	if tex_path != "":
 		var full := DIR + tex_path
 		if ResourceLoader.exists(full):
-			var r: Resource = load(full)
+			var r: Resource = VisualQuality.texture(full)
 			if r is Texture2D:
 				mat.albedo_texture = r as Texture2D
 	if mat.albedo_texture == null:
