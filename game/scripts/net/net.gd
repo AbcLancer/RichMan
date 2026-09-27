@@ -36,6 +36,10 @@ const AI_THINK_MAX := 2.2
 var ai_ids: Array = []
 var _ai_next: Dictionary = {}
 
+## 本机在**角色选择界面**挑的角色序号（1..12；0 = 按加入顺序自动分配）。
+## 由 `app.gd` 的 `_pick_role()` 写入，开局时只对本机玩家生效。
+var pick_role: int = 0
+
 var is_host: bool = false
 
 
@@ -237,7 +241,9 @@ func _internal_start(m: String, seed_val: int) -> void:
 		sim.game_event.connect(func(kind: String, d: Dictionary) -> void:
 			_rpc_event.rpc(kind, d))
 	for id in players_info.keys():
-		sim.add_player(int(id), str(players_info[id]))
+		# 本机玩家用他在**角色选择界面**挑的角色；其他人按加入顺序自动分配
+		sim.add_player(int(id), str(players_info[id]),
+			pick_role if int(id) == multiplayer.get_unique_id() else 0)
 	sim.running = true          # 必须显式开启，否则 Sim.step() 会直接返回
 	in_lobby = false
 	game_started.emit(m, seed_val)

@@ -1348,7 +1348,9 @@ func can_start_walk(p: Dictionary) -> bool:
 		return false
 	return float(p.get("stamina", 0.0)) >= stamina_min_start()
 
-func add_player(id: int, pname: String) -> Dictionary:
+## `want_role`：玩家在**角色选择界面**挑的角色序号（1..12）。
+## 0 或不合法 → 按加入顺序自动分配（原行为）。角色序号对应 `Role.txt` 行序与 `sound/player/roleN`。
+func add_player(id: int, pname: String, want_role: int = 0) -> Dictionary:
 	var idx := players.size()
 	var p := {
 		"id": id,
@@ -1400,7 +1402,7 @@ func add_player(id: int, pname: String) -> Dictionary:
 		"last_plot": -1,
 		"last_plot_kind": "",     # "buy" / "upgrade" —— 本次抵达留下的**一次性**机会
 		"last_roll": 0,
-		"role": idx + 1,          # 角色序号 1..12，对应原版 Role.txt 行序 / sound/player/roleN
+		"role": (want_role if want_role >= 1 and want_role <= 12 else idx + 1),
 	}
 	players[id] = p
 	# 以自己的「缺省公司」上市（Role.txt 第 6 列）+ 初始持有本公司 2000 股

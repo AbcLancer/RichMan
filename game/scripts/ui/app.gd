@@ -289,6 +289,7 @@ func _ready() -> void:
 	_setup_world()
 	_build_menu()
 	_build_lobby()
+	_build_loading()
 	_build_hud()
 	_show(Screen.MENU)
 
@@ -709,6 +710,15 @@ func _process(delta: float) -> void:
 		if _casino != null and _casino.visible and Net.sim != null:
 			var st: Dictionary = Net.sim._casino_of(multiplayer.get_unique_id())
 			_casino.tick(delta, int(st.get("bet", 0)), st.get("reels", []))
+		# 加载界面：按时间推进进度条，走满后淡出
+		if _loading != null and _loading.visible:
+			_loading_t -= delta
+			if _loading_bar != null:
+				_loading_bar.value = clampf(1.0 - _loading_t / 1.4, 0.0, 1.0) * 100.0
+			if _loading_t <= 0.4:
+				_loading.modulate = Color(1, 1, 1, clampf(_loading_t / 0.4, 0.0, 1.0))
+			if _loading_t <= 0.0:
+				_loading.visible = false
 		# 台词气泡：跟人走 + 到点收
 		if _say_t > 0.0:
 			_say_t -= delta
@@ -881,6 +891,80 @@ func _setup_world() -> void:
 
 # ------------------------------------------------------------------ 主菜单
 
+## **加载界面**（老板 2026-09-27：「加载界面也都做了」）。
+##
+## 做法：开局时铺一层全屏遮罩 —— 中间放**该地图的原版缩略图**（`uitex/subc/m_<map>`，
+## 自带蓝色标题条）+ 「载入中…」+ 一条进度条，1.4 秒后淡出。
+## ⚠️ 我们的地图是**同步加载**的（没有真异步），所以这层主要是**原版那种过场感**，
+##   进度条按时间走满而不是按真实负载。
+var _loading: Control = null
+var _loading_t := 0.0
+var _loading_bar: ProgressBar = null
+
+
+func _build_loading() -> void:
+	_loading = Control.new()
+	_loading.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_loading.visible = false
+	_loading.mouse_filter = Control.MOUSE_FILTER_STOP
+	_ui.add_child(_loading)
+	var bg := ColorRect.new()
+	bg.color = Color8(6, 10, 20, 246)
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_loading.add_child(bg)
+
+	var pic := TextureRect.new()
+	pic.name = "Pic"
+	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pic.size = Vector2(384.0, 192.0) * _ui_scale
+	pic.position = Vector2(get_viewport().get_visible_rect().size * 0.5
+		- pic.size * 0.5 - Vector2(0, 40.0 * _ui_scale))
+	_loading.add_child(pic)
+
+	var lb := Label.new()
+	lb.text = "载入中…"
+	lb.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lb.add_theme_font_size_override("font_size", maxi(12, int(round(20.0 * _ui_scale))))
+	lb.add_theme_color_override("font_color", Color8(210, 232, 255))
+	lb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	lb.position = Vector2(0, pic.position.y + pic.size.y + 18.0 * _ui_scale)
+	lb.size = Vector2(get_viewport().get_visible_rect().size.x, 30.0 * _ui_scale)
+	_loading.add_child(lb)
+
+	_loading_bar = ProgressBar.new()
+	_loading_bar.show_percentage = false
+	_loading_bar.min_value = 0.0
+	_loading_bar.max_value = 100.0
+	_loading_bar.size = Vector2(300.0, 10.0) * _ui_scale
+	_loading_bar.position = Vector2(get_viewport().get_visible_rect().size * 0.5
+		- Vector2(_loading_bar.size.x * 0.5, -20.0 * _ui_scale))
+	_loading_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color8(30, 44, 72, 220)
+	_loading_bar.add_theme_stylebox_override("background", sb)
+	var sf := StyleBoxFlat.new()
+	sf.bg_color = Color8(120, 200, 255)
+	_loading_bar.add_theme_stylebox_override("fill", sf)
+	_loading.add_child(_loading_bar)
+
+
+## 开局/进图时亮一下加载界面
+func _show_loading(map_name: String) -> void:
+	if _loading == null:
+		return
+	var pic := _loading.get_node_or_null("Pic") as TextureRect
+	if pic != null:
+		pic.texture = _tex_or_null("res://assets/ui/shop/map_%s.png" % map_name)
+	_loading.modulate = Color(1, 1, 1, 1)
+	_loading.visible = true
+	_loading_t = 1.4
+	if _loading_bar != null:
+		_loading_bar.value = 0.0
+
+
 func _build_menu() -> void:
 	_menu_root = Control.new()
 	_menu_root.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -924,7 +1008,13 @@ func _build_menu() -> void:
 		if m == "china":
 			default_idx = _map_opt.item_count - 1
 	_map_opt.select(default_idx)
+	# 下拉框**保留但收起来** —— 真正给玩家看的是下面那排**原版地图缩略图**
+	_map_opt.visible = false
 	box.add_child(_map_opt)
+
+	# ⭐ 地图选择：**原版的 7 张缩略图**（`uitex/subc/m_<map>.tga`，每张自带蓝色标题条）。
+	#   老板 2026-09-27：「把主界面…也都做了」—— 原来这里是个下拉框，跟原版差得远。
+	_build_map_cards()
 
 	box.add_child(_spacer(6))
 
@@ -986,6 +1076,125 @@ func _build_menu() -> void:
 
 # -------------------------------------------------------------------- 大厅
 
+## 主界面的**地图缩略图选择**（原版 `uitex/subc/m_<map>.tga`：7 张，图里自带蓝色标题条）。
+##
+## 老板 2026-09-27：「把主界面、角色选择界面、加载界面也都做了」——
+## 原来主菜单是个**纯程序化黑底**（标题 + 下拉框），跟原版差得远。
+##
+## 布局：横排 7 张，点哪张选哪个图；选中的加一圈亮边。与隐藏的 `_map_opt` 保持同步，
+## 这样后面所有读 `_map_opt` 的逻辑（开局、单人练习）都不用改。
+var _map_cards: Array = []
+
+
+func _build_map_cards() -> void:
+	var row := HBoxContainer.new()
+	row.name = "MapCards"
+	row.add_theme_constant_override("separation", maxi(3, int(round(6.0 * _ui_scale))))
+	_menu_root.add_child(row)
+	var n := MapData.available_maps().size()
+	var cw := 108.0 * _ui_scale
+	var ch := 62.0 * _ui_scale
+	row.custom_minimum_size = Vector2((cw + 6.0 * _ui_scale) * float(n), ch)
+	# ⚠️ 这里**不能用 set_anchors_preset** —— 锚点会和下面的 position 互相覆盖，
+	#   结果整排缩略图跑到看不见的地方（第一次就踩了）。
+	var vp := get_viewport().get_visible_rect().size
+	row.position = Vector2((vp.x - row.custom_minimum_size.x) * 0.5, vp.y - ch - 20.0 * _ui_scale)
+	row.size = row.custom_minimum_size
+	for m in MapData.available_maps():
+		var md := MapData.load_from(m)
+		var b := Button.new()
+		b.icon = _tex_or_null("res://assets/ui/shop/map_%s.png" % str(m))
+		b.expand_icon = true
+		b.custom_minimum_size = Vector2(cw, ch)
+		b.focus_mode = Control.FOCUS_NONE
+		b.tooltip_text = str(md.display_name) if md != null else str(m)
+		b.add_theme_stylebox_override("normal", _sb_round(Color8(18, 34, 66, 220),
+			Color8(120, 180, 240), int(round(5.0 * _ui_scale)),
+			maxi(1, int(round(2.0 * _ui_scale))), 0.0))
+		b.add_theme_stylebox_override("hover", _sb_round(Color8(30, 60, 110, 235),
+			Color8(255, 246, 120), int(round(5.0 * _ui_scale)),
+			maxi(2, int(round(3.0 * _ui_scale))), 0.0))
+		b.add_theme_stylebox_override("pressed", _sb_round(Color8(14, 26, 52, 240),
+			Color8(255, 246, 120), int(round(5.0 * _ui_scale)),
+			maxi(2, int(round(3.0 * _ui_scale))), 0.0))
+		var mk := str(m)
+		b.pressed.connect(func(): _pick_map(mk))
+		row.add_child(b)
+		_map_cards.append({"btn": b, "map": mk})
+	_sync_map_cards()
+
+
+func _pick_map(m: String) -> void:
+	for i in range(_map_opt.item_count):
+		if str(_map_opt.get_item_metadata(i)) == m:
+			_map_opt.select(i)
+			break
+	_sync_map_cards()
+
+
+## 选中的那张地图加亮边
+func _sync_map_cards() -> void:
+	var cur := ""
+	if _map_opt != null and _map_opt.item_count > 0:
+		cur = str(_map_opt.get_item_metadata(_map_opt.selected))
+	for e in _map_cards:
+		var b: Button = e["btn"]
+		var on: bool = str(e["map"]) == cur
+		b.modulate = Color(1, 1, 1, 1) if on else Color(0.62, 0.66, 0.74, 0.85)
+
+
+## 大厅里的**角色选择**：12 个原版角色小头像，点一个换一个。
+##
+## 老板 2026-09-27：「把主界面、**角色选择界面**、加载界面也都做了」。
+## 素材 = `uitex/player/roleN_21`（列头小图；大图是 `_01`）。
+## ⚠️ 序号 1..12 → `role1..role9` / `rolea` / `roleb` / `rolec`（**没有 role10/11/12**）。
+var _role_cards: Array = []
+## 本机在大厅选的角色序号（1..12）；开局时通过 `Net` 传给 `Sim.add_player`
+var my_role: int = 1
+
+
+func _build_role_picker(parent: Control) -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", maxi(2, int(round(4.0 * _ui_scale))))
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	parent.add_child(row)
+	for i in range(12):
+		var b := Button.new()
+		b.icon = _role_texture(i, "21")
+		b.expand_icon = true
+		b.custom_minimum_size = Vector2(34.0, 34.0) * _ui_scale
+		b.focus_mode = Control.FOCUS_NONE
+		b.add_theme_stylebox_override("normal", _sb_round(Color8(16, 30, 58, 210),
+			Color8(110, 170, 235), int(round(4.0 * _ui_scale)),
+			maxi(1, int(round(1.0 * _ui_scale))), 0.0))
+		b.add_theme_stylebox_override("hover", _sb_round(Color8(28, 56, 104, 235),
+			Color8(255, 246, 120), int(round(4.0 * _ui_scale)),
+			maxi(2, int(round(2.0 * _ui_scale))), 0.0))
+		b.add_theme_stylebox_override("pressed", _sb_round(Color8(12, 22, 44, 240),
+			Color8(255, 246, 120), int(round(4.0 * _ui_scale)),
+			maxi(2, int(round(2.0 * _ui_scale))), 0.0))
+		var rn := i + 1
+		b.tooltip_text = "角色 %d" % rn
+		b.pressed.connect(func(): _pick_role(rn))
+		row.add_child(b)
+		_role_cards.append({"btn": b, "role": rn})
+	_sync_role_cards()
+
+
+func _pick_role(r: int) -> void:
+	my_role = clampi(r, 1, 12)
+	Net.pick_role = my_role            # 开局时由 net.gd 传给 Sim.add_player
+	Audio.play_sfx(Audio.SFX_UI_CLICK)
+	_sync_role_cards()
+
+
+func _sync_role_cards() -> void:
+	for e in _role_cards:
+		var b: Button = e["btn"]
+		var on: bool = int(e["role"]) == my_role
+		b.modulate = Color(1, 1, 1, 1) if on else Color(0.58, 0.62, 0.7, 0.8)
+
+
 func _build_lobby() -> void:
 	_lobby_root = Control.new()
 	_lobby_root.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -1015,6 +1224,10 @@ func _build_lobby() -> void:
 	_lobby_list = VBoxContainer.new()
 	_lobby_list.add_theme_constant_override("separation", 6)
 	panel.add_child(_lobby_list)
+
+	# ⭐ 角色选择（老板 2026-09-27：「角色选择界面」）
+	box.add_child(_label("选择角色"))
+	_build_role_picker(box)
 
 	_start_btn = Button.new()
 	_start_btn.text = "开始游戏"
@@ -3618,6 +3831,7 @@ func _on_game_started(map_name: String, _seed_val: int) -> void:
 	_log_lines.clear()
 	_hud_log.text = ""
 	_last_log_count = 0
+	_show_loading(map_name)          # 先铺加载界面（原版那种过场感），1.4 秒后自己收
 	_board.build(MapData.load_from(map_name))
 	if _minimap != null:
 		_minimap.setup(_board.map)
