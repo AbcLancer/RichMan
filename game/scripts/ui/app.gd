@@ -270,6 +270,7 @@ func _apply_ui_theme() -> void:
 
 func _ready() -> void:
 	VisualQuality.enabled = not OS.get_cmdline_user_args().has("--original-graphics")
+	get_window().title = "RichMan6 · 新版重绘" if VisualQuality.remade else ("RichMan6 · 高清修复" if VisualQuality.enabled else "RichMan6 · 原素材")
 	# 单栋对照模式：--probe=<type>:<level>（如 --probe=uptown:1），只摆一栋、相机贴近
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--probe="):
@@ -291,7 +292,14 @@ func _ready() -> void:
 	_build_lobby()
 	_build_loading()
 	_build_hud()
+	var workbench := UiWorkbench.new()
+	workbench.name = "UiWorkbench"
+	add_child(workbench)
+	workbench.setup(_ui)
 	_show(Screen.MENU)
+	if OS.get_cmdline_user_args().has("--ui-editor"):
+		workbench.panel.show()
+		workbench.call_deferred("refresh")
 
 	Net.lobby_changed.connect(_on_lobby_changed)
 	Net.game_started.connect(_on_game_started)
@@ -299,6 +307,11 @@ func _ready() -> void:
 	Net.log_received.connect(_on_log)
 	Net.connection_failed.connect(_on_conn_fail)
 	Net.disconnected.connect(_on_disconnected)
+	if OS.get_cmdline_user_args().has("--ui-review"):
+		var gallery := UiGallery.new()
+		set_meta("ui_gallery", gallery)
+		gallery.call_deferred("run", self)
+		return
 
 	if OS.get_cmdline_user_args().has("--demo"):
 		_start_demo()
@@ -925,6 +938,8 @@ func _build_loading() -> void:
 	_loading.add_child(pic)
 
 	var lb := Label.new()
+
+	lb.clip_text = true
 	lb.text = "载入中…"
 	lb.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lb.add_theme_font_size_override("font_size", maxi(12, int(round(20.0 * _ui_scale))))
@@ -965,38 +980,760 @@ func _show_loading(map_name: String) -> void:
 		_loading_bar.value = 0.0
 
 
+## ⭐ **原版主界面**（老板 2026-09-27 给的 4 张实机截图，按这个复刻）
+##
+## 版式（对齐 `docs/screenshots/orig/records/` 里那张原版主界面）：
+##   · 背景 = **城市天际线**（⚠️ `gamedata.pck` 里**没有**主界面背景与 logo 图 ——
+##     查过 1323 张 tga 都没有，所以这里是**程序化画**的：天空渐变 + 随机楼块 + 光晕，
+##     不求百分百一样，只求那种「蓝天 + 高楼」的观感）
+##   · 中间 = 「大富翁 6 / RICH MAN」标题（用**原版点阵字体** + 金色描边渲染）
+##   · 4 个**胶囊按钮**（**原版素材 `uitex/form/按钮.tga`**）：单人游戏 / 多人游戏 / 系统 / 退出
+##   · 左上角「即時制」小标签、右下角版权行
+##
+## ⚠️ 现有的**联机控件一个都没删**，只是收进「多人游戏」面板里（点开才显示）。
+var _menu_bg: Control = null
+var _menu_home: Control = null          # 原版那层（标题 + 4 按钮）
+var _menu_more: PanelContainer = null   # 多人游戏 / 系统 面板（装原有控件）
+var _menu_more_box: VBoxContainer = null
+var _menu_more_hint: Label = null
+var _menu_pages: Control = null         # 单人流程的子页（选地图 / 选项设定）挂这里
+var _vol_slider: HSlider = null
+## 选地图页（截图 3）：地图序号 → 六边形按钮；当前选中的地图
+var _map_hex: Array = []
+var _pick_map_name := "china"
+## 选项设定页（截图 4）：12 个角色格 + 右侧几项设置
+var _opt_role_btns: Array = []
+var _opt_role_art: TextureRect = null
+var _solo_menu: Control = null          # 「新游戏 / 读取游戏」（截图 2）
+var _frontend: Frontend
+var _solo_settings: Dictionary = {}
+
+
+func _build_menu_original() -> void:
+	# ---- 背景：程序化城市天际线 ----
+	_menu_bg = Control.new()
+	_menu_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_menu_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_menu_root.add_child(_menu_bg)
+	var sky := ColorRect.new()
+	sky.set_anchors_preset(Control.PRESET_FULL_RECT)
+	sky.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	sky.color = Color8(96, 170, 232)
+	_menu_bg.add_child(sky)
+	# 天空渐变（上深下浅）盖在纯色上；楼群用几层深浅不同的色块堆出来
+	var grad := Gradient.new()
+	grad.colors = PackedColorArray([Color8(56, 116, 200), Color8(132, 196, 244),
+		Color8(206, 232, 250)])
+	var gt := GradientTexture2D.new()
+	gt.gradient = grad
+	gt.fill_from = Vector2(0, 0)
+	gt.fill_to = Vector2(0, 1)
+	var sky2 := TextureRect.new()
+	sky2.texture = gt
+	sky2.set_anchors_preset(Control.PRESET_FULL_RECT)
+	sky2.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	sky2.stretch_mode = TextureRect.STRETCH_SCALE
+	sky2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_menu_bg.add_child(sky2)
+	var vp := get_viewport().get_visible_rect().size
+	var rng2 := RandomNumberGenerator.new()
+	rng2.seed = 20020927                      # 固定种子 → 每次进来楼群一样
+	for layer in range(3):
+		var base_y := vp.y * (0.56 + 0.14 * float(layer))
+		var col: Color = [Color8(86, 132, 186), Color8(62, 100, 152),
+			Color8(40, 70, 116)][layer]
+		var x := -40.0
+		while x < vp.x + 40.0:
+			var w := rng2.randf_range(38.0, 96.0)
+			var h := rng2.randf_range(60.0, 210.0) * (1.0 + 0.35 * float(layer))
+			var b := ColorRect.new()
+			b.color = col
+			b.position = Vector2(x, base_y - h)
+			b.size = Vector2(w, h + (vp.y - base_y))
+			b.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_menu_bg.add_child(b)
+			x += w + rng2.randf_range(4.0, 16.0)
+	# 中心一圈柔光（原版 logo 背后那团亮）
+	var glow := ColorRect.new()
+	glow.color = Color(1, 1, 1, 0.10)
+	glow.position = Vector2(vp.x * 0.5 - 300.0, vp.y * 0.06)
+	glow.size = Vector2(600.0, 380.0)
+	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_menu_bg.add_child(glow)
+
+	# ---- 首页那层（标题 + 4 按钮）----
+	_menu_home = Control.new()
+	_menu_home.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_menu_home.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_menu_root.add_child(_menu_home)
+	var tag := Label.new()
+	tag.text = " 即時制 "
+	tag.add_theme_font_size_override("font_size", maxi(10, int(round(15.0 * _ui_scale))))
+	tag.add_theme_color_override("font_color", Color8(235, 245, 255))
+	tag.add_theme_stylebox_override("normal", _sb_round(Color8(40, 96, 190, 220),
+		Color8(150, 200, 250), int(round(4.0 * _ui_scale)), 1, 0.0))
+	tag.position = Vector2(14.0, 10.0) * _ui_scale
+	tag.size = Vector2(84.0, 26.0) * _ui_scale
+	tag.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_menu_home.add_child(tag)
+
+	var title := Label.new()
+
+	title.clip_text = true
+	title.text = "大富翁 6"
+	title.add_theme_font_size_override("font_size", maxi(28, int(round(76.0 * _ui_scale))))
+	title.add_theme_color_override("font_color", Color8(255, 226, 120))
+	title.add_theme_color_override("font_outline_color", Color8(58, 40, 20))
+	title.add_theme_constant_override("outline_size", maxi(4, int(round(10.0 * _ui_scale))))
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.position = Vector2(0, vp.y * 0.16)
+	title.size = Vector2(vp.x, 100.0 * _ui_scale)
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_menu_home.add_child(title)
+	var sub := Label.new()
+	sub.text = "R I C H   M A N"
+	sub.add_theme_font_size_override("font_size", maxi(12, int(round(22.0 * _ui_scale))))
+	sub.add_theme_color_override("font_color", Color8(40, 170, 120))
+	sub.add_theme_color_override("font_outline_color", Color8(255, 255, 255))
+	sub.add_theme_constant_override("outline_size", maxi(2, int(round(5.0 * _ui_scale))))
+	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sub.position = Vector2(0, vp.y * 0.16 + 96.0 * _ui_scale)
+	sub.size = Vector2(vp.x, 34.0 * _ui_scale)
+	sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_menu_home.add_child(sub)
+
+	# 4 个胶囊按钮（原版 form/按钮.tga）：单人游戏 / 多人游戏 · 系统 / 退出
+	var bw := 168.0 * _ui_scale
+	var bh := 42.0 * _ui_scale
+	var lx := vp.x * 0.5 - bw - 18.0 * _ui_scale
+	var rx := vp.x * 0.5 + 18.0 * _ui_scale
+	_orig_menu_btn("單人遊戲", "🎲", Vector2(lx, vp.y * 0.60), Vector2(bw, bh),
+		func(): _open_solo_menu())
+	_orig_menu_btn("多人遊戲", "👥", Vector2(rx, vp.y * 0.60), Vector2(bw, bh),
+		func(): _open_menu_more("mp"))
+	_orig_menu_btn("系　　統", "⚙", Vector2(lx, vp.y * 0.60 + 56.0 * _ui_scale),
+		Vector2(bw, bh), func(): _open_menu_more("sys"))
+	_orig_menu_btn("退　　出", "🚪", Vector2(rx, vp.y * 0.60 + 56.0 * _ui_scale),
+		Vector2(bw, bh), func(): get_tree().quit())
+
+	var cr := Label.new()
+
+	cr.clip_text = true
+	cr.text = "(C) 2002 SOFTSTAR ENTERTAINMET INC　·　复刻学习版"
+	cr.add_theme_font_size_override("font_size", maxi(9, int(round(12.0 * _ui_scale))))
+	cr.add_theme_color_override("font_color", Color8(20, 40, 70))
+	cr.position = Vector2(0, vp.y - 22.0 * _ui_scale)
+	cr.size = Vector2(vp.x - 16.0 * _ui_scale, 20.0 * _ui_scale)
+	cr.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	cr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_menu_home.add_child(cr)
+
+
+## 一个原版样式的胶囊按钮（底图 = `uitex/form/按钮.tga`，左边加个圆形小图标）
+func _orig_menu_btn(txt: String, glyph: String, pos: Vector2, sz: Vector2,
+		cb: Callable) -> Button:
+	var b := Button.new()
+	b.text = "   %s %s" % [glyph, txt]
+	b.position = pos
+	b.size = sz
+	b.focus_mode = Control.FOCUS_NONE
+	b.add_theme_font_size_override("font_size", maxi(11, int(round(18.0 * _ui_scale))))
+	b.add_theme_color_override("font_color", Color8(40, 60, 130))
+	b.add_theme_color_override("font_outline_color", Color8(255, 255, 255))
+	b.add_theme_constant_override("outline_size", maxi(2, int(round(4.0 * _ui_scale))))
+	var tex := _tex_or_null("res://assets/ui/shop/menu_btn.png")
+	if tex != null:
+		# 原版按钮底：拉满整块（九宫格拉伸会破形，直接 STRETCH_SCALE）
+		var sb := StyleBoxTexture.new()
+		sb.texture = tex
+		sb.texture_margin_left = 24
+		sb.texture_margin_right = 24
+		sb.axis_stretch_horizontal = StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
+		sb.axis_stretch_vertical = StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
+		b.add_theme_stylebox_override("normal", sb)
+		var sb2: StyleBoxTexture = sb.duplicate()
+		sb2.modulate_color = Color(1.06, 1.06, 0.86)
+		b.add_theme_stylebox_override("hover", sb2)
+		b.add_theme_stylebox_override("pressed", sb2)
+	b.pressed.connect(cb)
+	_menu_home.add_child(b)
+	return b
+
+
+## 截图 2：「單人遊戲」下的两个大圆图标 —— 新遊戲 / 讀取遊戲
+func _open_solo_menu() -> void:
+	if _frontend != null:
+		_frontend.show_page("single")
+		return
+	_close_menu_panels()
+	_solo_menu = Control.new()
+	_solo_menu.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_solo_menu.mouse_filter = Control.MOUSE_FILTER_STOP
+	_menu_root.add_child(_solo_menu)
+	var vp := get_viewport().get_visible_rect().size
+	var dim := ColorRect.new()
+	dim.color = Color(0, 0, 0, 0.35)
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_solo_menu.add_child(dim)
+	var pc := PanelContainer.new()
+	pc.position = Vector2(vp.x * 0.5 - 260.0 * _ui_scale, vp.y * 0.16)
+	pc.size = Vector2(520.0, 330.0) * _ui_scale
+	pc.add_theme_stylebox_override("panel", _sb_round(Color8(238, 244, 250, 250),
+		Color8(120, 170, 225), int(round(12.0 * _ui_scale)),
+		maxi(2, int(round(3.0 * _ui_scale))), 0.0))
+	_solo_menu.add_child(pc)
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", maxi(4, int(round(10.0 * _ui_scale))))
+	pc.add_child(col)
+	var bar := Label.new()
+	bar.text = " 單人遊戲 "
+	bar.add_theme_font_size_override("font_size", maxi(12, int(round(20.0 * _ui_scale))))
+	bar.add_theme_color_override("font_color", Color8(240, 250, 255))
+	bar.add_theme_stylebox_override("normal", _sb_round(Color8(30, 92, 160),
+		Color8(20, 60, 120), int(round(8.0 * _ui_scale)), 1, 0.0))
+	bar.custom_minimum_size = Vector2(0, 34.0 * _ui_scale)
+	bar.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	col.add_child(bar)
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", maxi(10, int(round(60.0 * _ui_scale))))
+	col.add_child(row)
+	_big_round_icon("NEW", "新遊戲", row, func(): _open_map_select())
+	_big_round_icon("LOAD", "讀取遊戲", row, func():
+		_toast("存档系统还没做（原版这里读的是存档）"))
+	var back := Button.new()
+	back.text = "返回"
+	back.custom_minimum_size = Vector2(90.0, 30.0) * _ui_scale
+	back.add_theme_font_size_override("font_size", maxi(10, int(round(15.0 * _ui_scale))))
+	back.pressed.connect(func(): _close_menu_panels())
+	col.add_child(back)
+
+
+## 截图 2 里那种「大圆 + 图标 + 名字」
+func _big_round_icon(glyph: String, name_cn: String, parent: Node, cb: Callable) -> void:
+	var col := VBoxContainer.new()
+	col.alignment = BoxContainer.ALIGNMENT_CENTER
+	col.add_theme_constant_override("separation", maxi(3, int(round(6.0 * _ui_scale))))
+	parent.add_child(col)
+	var b := Button.new()
+	b.text = glyph
+	b.custom_minimum_size = Vector2(132.0, 132.0) * _ui_scale
+	b.focus_mode = Control.FOCUS_NONE
+	b.add_theme_font_size_override("font_size", maxi(16, int(round(34.0 * _ui_scale))))
+	b.add_theme_color_override("font_color", Color8(238, 246, 255))
+	b.add_theme_stylebox_override("normal", _circle_box(Color8(52, 96, 150)))
+	b.add_theme_stylebox_override("hover", _circle_box(Color8(82, 140, 200)))
+	b.add_theme_stylebox_override("pressed", _circle_box(Color8(38, 72, 118)))
+	b.pressed.connect(cb)
+	col.add_child(b)
+	var lb := Label.new()
+	lb.text = name_cn
+	lb.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lb.add_theme_font_size_override("font_size", maxi(11, int(round(19.0 * _ui_scale))))
+	lb.add_theme_color_override("font_color", Color8(238, 248, 255))
+	lb.add_theme_color_override("font_outline_color", Color8(20, 60, 120))
+	lb.add_theme_constant_override("outline_size", maxi(2, int(round(5.0 * _ui_scale))))
+	col.add_child(lb)
+
+
+## ⭐ **选择地图**（老板截图 3）：左侧 **7 个六边形地图格**（蜂窝状 2-3-2 排列）+ 右侧详情
+## （缩略图 + 地图名 + 一段介绍）+ 「确定」。
+##
+## 素材：`uitex/subc/m_<map>.tga`（7 张缩略图，自带蓝色标题条）。
+## ⚠️ 原版截图里每格下面有个**金杯**（通关进度）；我们还没有存档系统，先画一个灰杯子占位。
+func _open_map_select() -> void:
+	if _frontend != null:
+		_frontend.show_page("selmap")
+		return
+	_close_menu_pages()
+	var pg := Control.new()
+	pg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	pg.mouse_filter = Control.MOUSE_FILTER_STOP
+	_menu_pages.add_child(pg)
+	var vp := get_viewport().get_visible_rect().size
+	var dim := ColorRect.new()
+	dim.color = Color(0, 0, 0, 0.42)
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pg.add_child(dim)
+
+	var pc := PanelContainer.new()
+	pc.position = Vector2(vp.x * 0.5 - 460.0 * _ui_scale, vp.y * 0.08)
+	pc.size = Vector2(920.0, 560.0) * _ui_scale
+	pc.add_theme_stylebox_override("panel", _sb_round(Color8(240, 246, 251, 252),
+		Color8(120, 170, 225), int(round(14.0 * _ui_scale)),
+		maxi(2, int(round(3.0 * _ui_scale))), 0.0))
+	pg.add_child(pc)
+	var root := Control.new()
+	root.custom_minimum_size = pc.size
+	pc.add_child(root)
+
+	var bar := Label.new()
+
+	bar.clip_text = true
+	bar.text = "　選擇地圖"
+	bar.add_theme_font_size_override("font_size", maxi(12, int(round(20.0 * _ui_scale))))
+	bar.add_theme_color_override("font_color", Color8(244, 252, 255))
+	bar.add_theme_stylebox_override("normal", _sb_round(Color8(26, 78, 140),
+		Color8(16, 52, 104), int(round(9.0 * _ui_scale)), 1, 0.0))
+	bar.position = Vector2(24.0, 14.0) * _ui_scale
+	bar.size = Vector2(300.0, 34.0) * _ui_scale
+	bar.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	root.add_child(bar)
+
+	# ---- 左：六边形蜂窝（7 格，2-3-2 排）----
+	_map_hex.clear()
+	var hex_w := 132.0 * _ui_scale
+	var hex_h := 150.0 * _ui_scale
+	var origin := Vector2(70.0 * _ui_scale, 90.0 * _ui_scale)
+	var slot := [Vector2(0, 0), Vector2(1, 0),
+		Vector2(-0.5, 1), Vector2(0.5, 1), Vector2(1.5, 1),
+		Vector2(0, 2), Vector2(1, 2)]
+	var maps := MapData.available_maps()
+	for i in range(mini(maps.size(), slot.size())):
+		var m := str(maps[i])
+		var md := MapData.load_from(m)
+		var s: Vector2 = slot[i]
+		var pos := origin + Vector2(s.x * (hex_w + 6.0 * _ui_scale),
+			s.y * (hex_h * 0.86))
+		var b := Button.new()
+		b.icon = _tex_or_null("res://assets/ui/shop/map_%s.png" % m)
+		b.expand_icon = true
+		b.position = pos
+		b.size = Vector2(hex_w, hex_h) * _ui_scale
+		b.focus_mode = Control.FOCUS_NONE
+		b.tooltip_text = str(md.display_name) if md != null else m
+		b.add_theme_stylebox_override("normal", _hex_box(Color8(232, 240, 248), Color8(206, 108, 116)))
+		b.add_theme_stylebox_override("hover", _hex_box(Color8(255, 252, 236), Color8(230, 90, 100)))
+		b.add_theme_stylebox_override("pressed", _hex_box(Color8(226, 236, 246), Color8(230, 90, 100)))
+		var mk := m
+		b.pressed.connect(func(): _pick_map_hex(mk))
+		root.add_child(b)
+		_map_hex.append({"btn": b, "map": m})
+		# 下面的「金杯」占位（原版是通关奖杯）
+		var cup := Label.new()
+		cup.text = "🏆"
+		cup.add_theme_font_size_override("font_size", maxi(12, int(round(20.0 * _ui_scale))))
+		cup.position = pos + Vector2(hex_w * 0.5 - 12.0 * _ui_scale, hex_h * 0.72)
+		cup.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		root.add_child(cup)
+
+	# ---- 右：详情 ----
+	var rx := 560.0 * _ui_scale
+	var pic := TextureRect.new()
+	pic.name = "MapPic"
+	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	pic.position = Vector2(rx, 60.0 * _ui_scale)
+	pic.size = Vector2(300.0, 170.0) * _ui_scale
+	pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(pic)
+	var nm := Label.new()
+	nm.name = "MapName"
+	nm.add_theme_font_size_override("font_size", maxi(12, int(round(20.0 * _ui_scale))))
+	nm.add_theme_color_override("font_color", Color8(30, 44, 72))
+	nm.position = Vector2(rx, 240.0 * _ui_scale)
+	nm.size = Vector2(320.0, 30.0) * _ui_scale
+	root.add_child(nm)
+	var desc := Label.new()
+	desc.name = "MapDesc"
+	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	desc.add_theme_font_size_override("font_size", maxi(10, int(round(14.0 * _ui_scale))))
+	desc.add_theme_color_override("font_color", Color8(48, 60, 84))
+	desc.position = Vector2(rx, 274.0 * _ui_scale)
+	desc.size = Vector2(320.0, 190.0) * _ui_scale
+	root.add_child(desc)
+
+	var ok := Button.new()
+	ok.text = "確定"
+	ok.position = Vector2(rx + 220.0 * _ui_scale, 486.0 * _ui_scale)
+	ok.size = Vector2(100.0, 36.0) * _ui_scale
+	ok.add_theme_font_size_override("font_size", maxi(11, int(round(17.0 * _ui_scale))))
+	ok.pressed.connect(func(): _open_option_page())
+	root.add_child(ok)
+
+	var back := Button.new()
+	back.text = "返回"
+	back.position = Vector2(24.0, 486.0) * _ui_scale
+	back.size = Vector2(90.0, 36.0) * _ui_scale
+	back.pressed.connect(func(): _close_menu_pages())
+	root.add_child(back)
+
+	_pick_map_hex(str(maps[mini(1, maps.size() - 1)]))
+
+
+func _pick_map_hex(m: String) -> void:
+	_pick_map_name = m
+	# 同步给隐藏的下拉框（开局逻辑读它）
+	for i in range(_map_opt.item_count):
+		if str(_map_opt.get_item_metadata(i)) == m:
+			_map_opt.select(i)
+			break
+	var md := MapData.load_from(m)
+	for e in _map_hex:
+		var b: Button = e["btn"]
+		var on: bool = str(e["map"]) == m
+		b.modulate = Color(1, 1, 1, 1) if on else Color(0.62, 0.66, 0.72, 0.9)
+	if _menu_pages == null:
+		return
+	var pg := _menu_pages.get_child(_menu_pages.get_child_count() - 1) if _menu_pages.get_child_count() > 0 else null
+	if pg == null:
+		return
+	var pic := pg.find_child("MapPic", true, false) as TextureRect
+	var nm := pg.find_child("MapName", true, false) as Label
+	var ds := pg.find_child("MapDesc", true, false) as Label
+	if pic != null:
+		pic.texture = _tex_or_null("res://assets/ui/shop/map_%s.png" % m)
+	if nm != null:
+		nm.text = str(md.display_name) if md != null else m
+	if ds != null:
+		ds.text = _map_blurb(m)
+
+
+## 每张图的介绍（⚠️ 原版这几段文案在 `Initvar`/`String` 里都没有，
+## 「埃及」那段是老板截图里给的，其余按关卡特产自己写，属**推断**）
+func _map_blurb(m: String) -> String:
+	match m:
+		"aiji":
+			return "埃及\n利用时空穿梭机来到古代埃及世界，本关任务是发展工业，胜利条件是令所有对手破产，成为埃及工业大亨。"
+		"china":
+			return "中国\n回到了古老的东方大地，发展商业、买下整条街，让所有对手破产，成为一方首富。"
+		"japan":
+			return "日本\n竞争激烈的岛国商战，把握机会扩张地盘，令所有对手破产即获胜。"
+		"island":
+			return "海岛\n阳光沙滩上的度假天堂，靠旅游与地产赚取暴利，成为海岛之王。"
+		"paris":
+			return "巴黎\n浪漫之都只允许经营商业，用时尚与精品把对手挤出市场。"
+		"space":
+			return "太空\n未来星轨站的奇幻商战，道路靠传送平台连接，胜者是最后的巨头。"
+		"train":
+			return "铁路\n沿着铁路线一路买地，让对手无路可走、破产出局。"
+		_:
+			return str(m)
+
+
+## 六边形边框（用 StyleBoxFlat + 大圆角近似；原版是真六边形）
+func _hex_box(fill: Color, border: Color) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = fill
+	sb.border_color = border
+	sb.set_border_width_all(maxi(2, int(round(4.0 * _ui_scale))))
+	sb.set_corner_radius_all(int(round(10.0 * _ui_scale)))
+	return sb
+
+
+## ⭐ **选项设定**（老板截图 4）：左 3×4 = **12 个角色格**（未选灰、选中彩），
+## 中间是选中角色的**大立绘** + 名字，右侧 = 地图缩略图 + **5 项设置**（人数/起始资金/
+## 游戏时间/难度/起始点券），底部「開始」。
+##
+## 玩法数值：人数 / 起始资金 / 起始点券 / 难度 都写进 `Sim`（`rule_pending`），
+## `_on_start_clicked()` 时应用；「游戏时间」原版是「不限/30分/…」，我们记录上限分钟。
+func _open_option_page() -> void:
+	if _frontend != null:
+		_frontend.show_page("start")
+		return
+	_close_menu_pages()
+	var pg := Control.new()
+	pg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	pg.mouse_filter = Control.MOUSE_FILTER_STOP
+	_menu_pages.add_child(pg)
+	var vp := get_viewport().get_visible_rect().size
+	var dim := ColorRect.new()
+	dim.color = Color(0, 0, 0, 0.42)
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pg.add_child(dim)
+	var pc := PanelContainer.new()
+	pc.position = Vector2(vp.x * 0.5 - 460.0 * _ui_scale, vp.y * 0.07)
+	pc.size = Vector2(920.0, 580.0) * _ui_scale
+	pc.add_theme_stylebox_override("panel", _sb_round(Color8(240, 246, 251, 252),
+		Color8(120, 170, 225), int(round(14.0 * _ui_scale)),
+		maxi(2, int(round(3.0 * _ui_scale))), 0.0))
+	pg.add_child(pc)
+
+	var bar := Label.new()
+
+	bar.clip_text = true
+	bar.text = "　選項設定"
+	bar.add_theme_font_size_override("font_size", maxi(12, int(round(20.0 * _ui_scale))))
+	bar.add_theme_color_override("font_color", Color8(244, 252, 255))
+	bar.add_theme_stylebox_override("normal", _sb_round(Color8(26, 78, 140),
+		Color8(16, 52, 104), int(round(9.0 * _ui_scale)), 1, 0.0))
+	bar.position = Vector2(24.0, 12.0) * _ui_scale
+	bar.size = Vector2(300.0, 34.0) * _ui_scale
+	bar.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	pc.add_child(bar)
+
+	# ---- 左：12 个角色格（3 列 × 4 行）----
+	_opt_role_btns.clear()
+	for i in range(12):
+		var c := i % 3
+		var r := i / 3
+		var b := Button.new()
+		b.icon = _role_texture(i, "21")
+		b.expand_icon = true
+		b.position = Vector2((26.0 + float(c) * 84.0) * _ui_scale,
+			(58.0 + float(r) * 106.0) * _ui_scale)
+		b.size = Vector2(76.0, 76.0) * _ui_scale
+		b.focus_mode = Control.FOCUS_NONE
+		b.add_theme_stylebox_override("normal", _sb_round(Color8(222, 232, 242),
+			Color8(150, 175, 200), int(round(6.0 * _ui_scale)),
+			maxi(2, int(round(3.0 * _ui_scale))), 0.0))
+		b.add_theme_stylebox_override("hover", _sb_round(Color8(245, 250, 255),
+			Color8(255, 170, 120), int(round(6.0 * _ui_scale)),
+			maxi(2, int(round(3.0 * _ui_scale))), 0.0))
+		b.add_theme_stylebox_override("pressed", _sb_round(Color8(214, 228, 240),
+			Color8(255, 170, 120), int(round(6.0 * _ui_scale)),
+			maxi(2, int(round(3.0 * _ui_scale))), 0.0))
+		b.tooltip_text = Rules.role_name(i + 1)
+		var rn := i + 1
+		b.pressed.connect(func(): _opt_pick_role(rn))
+		pc.add_child(b)
+		_opt_role_btns.append({"btn": b, "role": rn})
+		# 名字条（原版在头像下面）
+		var nl := Label.new()
+		nl.text = Rules.role_name(rn)
+		nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		nl.add_theme_font_size_override("font_size", maxi(8, int(round(11.0 * _ui_scale))))
+		nl.add_theme_color_override("font_color", Color8(36, 52, 80))
+		nl.position = Vector2((24.0 + float(c) * 84.0) * _ui_scale,
+			(136.0 + float(r) * 106.0) * _ui_scale)
+		nl.size = Vector2(80.0, 18.0) * _ui_scale
+		nl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		pc.add_child(nl)
+
+	# ---- 中：选中角色的大立绘 + 名字 ----
+	_opt_role_art = TextureRect.new()
+	_opt_role_art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_opt_role_art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_opt_role_art.position = Vector2(300.0, 60.0) * _ui_scale
+	_opt_role_art.size = Vector2(150.0, 260.0) * _ui_scale
+	_opt_role_art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pc.add_child(_opt_role_art)
+	var rn_lbl := Label.new()
+	rn_lbl.name = "RoleName"
+	rn_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	rn_lbl.add_theme_font_size_override("font_size", maxi(10, int(round(15.0 * _ui_scale))))
+	rn_lbl.add_theme_color_override("font_color", Color8(30, 44, 72))
+	rn_lbl.position = Vector2(280.0, 326.0) * _ui_scale
+	rn_lbl.size = Vector2(190.0, 26.0) * _ui_scale
+	pc.add_child(rn_lbl)
+
+	# ---- 右：地图缩略图 + 5 项设置 ----
+	var mp := TextureRect.new()
+	mp.texture = _tex_or_null("res://assets/ui/shop/map_%s.png" % _pick_map_name)
+	mp.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	mp.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	mp.position = Vector2(500.0, 58.0) * _ui_scale
+	mp.size = Vector2(380.0, 190.0) * _ui_scale
+	mp.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pc.add_child(mp)
+
+	var rows := [["遊戲人數", ["2", "3", "4"], 2], ["起始資金", ["100000", "300000", "500000"], 1],
+		["遊戲時間", ["不限", "30 分", "60 分"], 0], ["遊戲難度", ["簡單", "普通", "困難"], 0],
+		["起始點卷", ["0", "50", "100"], 1]]
+	for i in range(rows.size()):
+		var rr: Array = rows[i]
+		var y := (262.0 + float(i) * 44.0) * _ui_scale
+		var lb := Label.new()
+		lb.text = str(rr[0])
+		lb.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lb.add_theme_font_size_override("font_size", maxi(9, int(round(14.0 * _ui_scale))))
+		lb.add_theme_color_override("font_color", Color8(36, 52, 80))
+		lb.add_theme_stylebox_override("normal", _sb_round(Color8(214, 236, 246),
+			Color8(120, 170, 210), int(round(6.0 * _ui_scale)), 1, 0.0))
+		lb.position = Vector2(500.0, y) * _ui_scale
+		lb.size = Vector2(132.0, 32.0) * _ui_scale
+		lb.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		pc.add_child(lb)
+		var val := Label.new()
+		val.name = "Opt%d" % i
+		val.text = str((rr[1] as Array)[int(rr[2])])
+		val.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		val.add_theme_font_size_override("font_size", maxi(9, int(round(14.0 * _ui_scale))))
+		val.add_theme_color_override("font_color", Color8(40, 60, 110))
+		val.add_theme_stylebox_override("normal", _sb_round(Color8(240, 248, 252),
+			Color8(150, 190, 220), int(round(6.0 * _ui_scale)), 1, 0.0))
+		val.position = Vector2(640.0, y) * _ui_scale
+		val.size = Vector2(180.0, 32.0) * _ui_scale
+		val.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		pc.add_child(val)
+		var cyc := Button.new()
+		cyc.text = "▾"
+		cyc.position = Vector2(826.0, y) * _ui_scale
+		cyc.size = Vector2(30.0, 32.0) * _ui_scale
+		cyc.focus_mode = Control.FOCUS_NONE
+		cyc.tooltip_text = "点一下换下一档"
+		var opts: Array = rr[1]
+		var idx0: int = int(rr[2])
+		var vlab: Label = val
+		cyc.pressed.connect(func():
+			var cur := opts.find(vlab.text)
+			var nxt := (cur + 1) % opts.size() if cur >= 0 else 0
+			vlab.text = str(opts[nxt]))
+		pc.add_child(cyc)
+
+	# ---- 底部：開始 / 返回 ----
+	var st := Button.new()
+	st.text = "開　始"
+	st.position = Vector2(320.0, 500.0) * _ui_scale
+	st.size = Vector2(150.0, 44.0) * _ui_scale
+	st.add_theme_font_size_override("font_size", maxi(11, int(round(18.0 * _ui_scale))))
+	st.add_theme_stylebox_override("normal", _sb_round(Color8(40, 76, 118),
+		Color8(20, 46, 84), int(round(8.0 * _ui_scale)), 1, 0.0))
+	st.add_theme_color_override("font_color", Color8(240, 250, 255))
+	st.pressed.connect(func(): _on_start_clicked())
+	pc.add_child(st)
+
+	var back := Button.new()
+	back.text = "返回"
+	back.position = Vector2(24.0, 500.0) * _ui_scale
+	back.size = Vector2(90.0, 36.0) * _ui_scale
+	back.pressed.connect(func(): _open_map_select())
+	pc.add_child(back)
+
+	# 初始选中大厅里挑的那个角色
+	_opt_pick_role(clampi(Net.pick_role if Net.pick_role > 0 else 1, 1, 12))
+
+
+func _opt_pick_role(r: int) -> void:
+	Net.pick_role = r
+	my_role = r
+	for e in _opt_role_btns:
+		var b: Button = e["btn"]
+		var on: bool = int(e["role"]) == r
+		b.modulate = Color(1, 1, 1, 1) if on else Color(0.42, 0.45, 0.5, 0.9)   # 未选灰、选中彩
+	if _opt_role_art != null:
+		_opt_role_art.texture = _role_texture(r - 1, "01")
+	var pg := _menu_pages.get_child(_menu_pages.get_child_count() - 1) \
+		if _menu_pages != null and _menu_pages.get_child_count() > 0 else null
+	if pg != null:
+		var nl := pg.find_child("RoleName", true, false) as Label
+		if nl != null:
+			nl.text = Rules.role_name(r)
+
+
+## 「開始」：把选项设定里的数值应用下去，再走原来的单人开局
+func _on_start_clicked() -> void:
+	var pg := _menu_pages.get_child(_menu_pages.get_child_count() - 1) \
+		if _menu_pages != null and _menu_pages.get_child_count() > 0 else null
+	var vals: Array = []
+	if pg != null:
+		for i in range(5):
+			var l := pg.find_child("Opt%d" % i, true, false) as Label
+			vals.append("" if l == null else l.text)
+	Net.start_money_override = _int_or(vals, 1, 300000)
+	Net.start_credit_override = _int_or(vals, 4, 50)
+	Net.ai_count = _int_or(vals, 0, 4)
+	_close_menu_pages()
+	_on_solo()
+
+
+func _int_or(vals: Array, i: int, dflt: int) -> int:
+	if i >= vals.size():
+		return dflt
+	var s := str(vals[i])
+	return int(s) if s.is_valid_int() else dflt
+
+
+func _close_menu_pages() -> void:
+	if _menu_pages != null:
+		for c in _menu_pages.get_children():
+			c.queue_free()
+
+
+func _circle_box(c: Color) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = c
+	sb.set_corner_radius_all(9999)
+	sb.border_color = Color8(18, 46, 86)
+	sb.set_border_width_all(maxi(2, int(round(4.0 * _ui_scale))))
+	return sb
+
+
+func _close_menu_panels() -> void:
+	if _menu_more != null:
+		_menu_more.hide()
+	if _solo_menu != null:
+		_solo_menu.queue_free()
+	_solo_menu = null
+
+
+func _open_menu_more(which: String) -> void:
+	_close_menu_panels()
+	if _menu_more_box == null:
+		return
+	_menu_more.show()
+	_menu_more_box.show()
+	_menu_more.size = _menu_more.get_combined_minimum_size()
+	_menu_more.position = (get_viewport().get_visible_rect().size - _menu_more.size) * 0.5
+	if _menu_more_box.visible:
+		_menu_more_hint.text = "联机：一方「创建房间」当主机，另一方填主机 IP「加入房间」"
+
+
 func _build_menu() -> void:
 	_menu_root = Control.new()
 	_menu_root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_ui.add_child(_menu_root)
+	# ⭐ **原版版式**（背景城市天际线 + 「大富翁6」logo + 4 个胶囊按钮）
+	#   —— 老板 2026-09-27 给了 4 张原版实机截图要求照这个复刻。
+	_frontend = Frontend.new()
+	_frontend.map_description = _map_blurb
+	_menu_root.add_child(_frontend)
+	_frontend.multiplayer_requested.connect(func(): _open_menu_more("mp"))
+	_frontend.system_requested.connect(func(): _open_menu_more("sys"))
+	_frontend.message_requested.connect(func(message):
+		var dialog := AcceptDialog.new()
+		dialog.title = "大富翁 6"
+		dialog.dialog_text = message
+		add_child(dialog)
+		dialog.confirmed.connect(dialog.queue_free)
+		dialog.close_requested.connect(dialog.queue_free)
+		dialog.popup_centered(Vector2i(400, 120)))
+	_frontend.start_requested.connect(func(settings):
+		_solo_settings = settings
+		Net.pick_role = int(settings.role)
+		_pick_map(str(settings.map))
+		_on_solo())
+	# 原有的联机 / 设置控件**一个都没删**，收进「多人游戏」「系统」两个面板里（点开才显示）
+	_build_menu_more()
+	# 原版流程里的两个子页（都在 `_menu_root` 下，按需创建/销毁）
+	#   单人游戏 → 新游戏/读档 → **选地图** → **选项设定** → 开始
+	_menu_pages = Control.new()
+	_menu_pages.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_menu_pages.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_menu_root.add_child(_menu_pages)
 
-	var box := VBoxContainer.new()
-	box.set_anchors_preset(Control.PRESET_CENTER)
-	box.custom_minimum_size = Vector2(420, 0)
-	box.position = Vector2(-210, -190)
-	box.add_theme_constant_override("separation", 10)
-	_menu_root.add_child(box)
 
-	var title := Label.new()
-	title.text = "大富翁 6 · 即时制复刻"
-	title.add_theme_font_size_override("font_size", 30)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(title)
+## 「多人游戏 / 系统」面板：装的是**原有那套控件**（昵称 / 地图下拉 / 端口 / 主机 IP）
+## —— 新主界面上不直接露出来，点「多人游戏」或「系统」才弹。
+func _build_menu_more() -> void:
+	_menu_more = PanelContainer.new()
+	_menu_more.set_anchors_preset(Control.PRESET_CENTER)
+	_menu_more.visible = false
+	_menu_more.z_index = 30
+	_menu_more.add_theme_stylebox_override("panel", _sb_round(Color8(20, 40, 78, 246),
+		Color8(150, 205, 250), int(round(10.0 * _ui_scale)),
+		maxi(2, int(round(3.0 * _ui_scale))), 0.0))
+	_menu_root.add_child(_menu_more)
+	_menu_more_box = VBoxContainer.new()
+	_menu_more_box.name = "MoreBox"
+	_menu_more_box.custom_minimum_size = Vector2(440, 0) * _ui_scale
+	_menu_more_box.add_theme_constant_override("separation", maxi(3, int(round(8.0 * _ui_scale))))
+	_menu_more.add_child(_menu_more_box)
 
-	var sub := Label.new()
-	sub.text = "权威服务端联机 · 素材取自原版 gamedata.pck"
-	sub.add_theme_color_override("font_color", Color(0.62, 0.66, 0.74))
-	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(sub)
+	_menu_more_hint = Label.new()
+	_menu_more_hint.add_theme_color_override("font_color", Color8(200, 224, 250))
+	_menu_more_hint.add_theme_font_size_override("font_size", maxi(9, int(round(12.0 * _ui_scale))))
+	_menu_more_box.add_child(_menu_more_hint)
 
-	box.add_child(_spacer(8))
-
-	box.add_child(_label("玩家昵称"))
+	_menu_more_box.add_child(_label("玩家昵称"))
 	_name_edit = LineEdit.new()
 	_name_edit.text = "老板"
-	box.add_child(_name_edit)
+	_menu_more_box.add_child(_name_edit)
 
-	box.add_child(_label("地图"))
+	_menu_more_box.add_child(_label("地图"))
 	_map_opt = OptionButton.new()
 	var default_idx := 0
 	for m in MapData.available_maps():
@@ -1008,66 +1745,71 @@ func _build_menu() -> void:
 		if m == "china":
 			default_idx = _map_opt.item_count - 1
 	_map_opt.select(default_idx)
-	# 下拉框**保留但收起来** —— 真正给玩家看的是下面那排**原版地图缩略图**
-	_map_opt.visible = false
-	box.add_child(_map_opt)
+	_menu_more_box.add_child(_map_opt)
 
-	# ⭐ 地图选择：**原版的 7 张缩略图**（`uitex/subc/m_<map>.tga`，每张自带蓝色标题条）。
-	#   老板 2026-09-27：「把主界面…也都做了」—— 原来这里是个下拉框，跟原版差得远。
-	_build_map_cards()
-
-	box.add_child(_spacer(6))
-
-	# 单人练习：一键开局，对阵 3 名电脑（验收表现效果最快的入口）
-	_solo_btn = Button.new()
-	_solo_btn.text = "▶  单人练习（对阵 3 名电脑）"
-	_solo_btn.custom_minimum_size = Vector2(420, 46)
-	_solo_btn.add_theme_font_size_override("font_size", 17)
-	box.add_child(_solo_btn)
-	_solo_btn.pressed.connect(_on_solo)
-	_sfx(_solo_btn, true)
-
-	var sep := Label.new()
-	sep.text = "—— 或者联机 ——"
-	sep.add_theme_color_override("font_color", Color(0.45, 0.48, 0.56))
-	sep.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(sep)
-
-	var host_row := HBoxContainer.new()
-	host_row.add_theme_constant_override("separation", 8)
-	box.add_child(host_row)
-	host_row.add_child(_label("端口"))
+	# 联机
+	_menu_more_box.add_child(_label("联机"))
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", maxi(4, int(round(8.0 * _ui_scale))))
+	_menu_more_box.add_child(row)
 	_port_edit = LineEdit.new()
-	_port_edit.text = str(Net.DEFAULT_PORT)
-	_port_edit.custom_minimum_size = Vector2(90, 0)
-	host_row.add_child(_port_edit)
-	_host_btn = Button.new()
-	_host_btn.text = "创建房间（主机）"
-	_host_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	host_row.add_child(_host_btn)
-
-	box.add_child(_spacer(6))
-
-	var join_row := HBoxContainer.new()
-	join_row.add_theme_constant_override("separation", 8)
-	box.add_child(join_row)
-	join_row.add_child(_label("主机 IP"))
+	_port_edit.text = "27060"
+	_port_edit.custom_minimum_size = Vector2(90, 0) * _ui_scale
+	row.add_child(_label("端口"))
+	row.add_child(_port_edit)
+	var host_btn := Button.new()
+	host_btn.text = "创建房间（主机）"
+	_host_btn = host_btn
+	row.add_child(host_btn)
+	var row2 := HBoxContainer.new()
+	row2.add_theme_constant_override("separation", maxi(4, int(round(8.0 * _ui_scale))))
+	_menu_more_box.add_child(row2)
 	_ip_edit = LineEdit.new()
 	_ip_edit.text = "127.0.0.1"
-	_ip_edit.custom_minimum_size = Vector2(150, 0)
-	join_row.add_child(_ip_edit)
-	_join_btn = Button.new()
-	_join_btn.text = "加入房间"
-	_join_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	join_row.add_child(_join_btn)
+	_ip_edit.custom_minimum_size = Vector2(120, 0) * _ui_scale
+	row2.add_child(_label("主机 IP"))
+	row2.add_child(_ip_edit)
+	var join_btn := Button.new()
+	join_btn.text = "加入房间"
+	_join_btn = join_btn
+	row2.add_child(join_btn)
 
-	box.add_child(_spacer(10))
 	_status = Label.new()
 	_status.add_theme_color_override("font_color", Color(1.0, 0.72, 0.35))
 	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_status.custom_minimum_size = Vector2(420, 0)
-	box.add_child(_status)
+	_menu_more_box.add_child(_status)
+
+	# 系统：音量 / 全屏
+	_menu_more_box.add_child(_label("系统"))
+	var row3 := HBoxContainer.new()
+	row3.add_theme_constant_override("separation", maxi(4, int(round(8.0 * _ui_scale))))
+	_menu_more_box.add_child(row3)
+	_vol_slider = HSlider.new()
+	_vol_slider.min_value = 0
+	_vol_slider.max_value = 10
+	_vol_slider.step = 1
+	_vol_slider.value = Audio.snd_vol
+	_vol_slider.custom_minimum_size = Vector2(160, 0) * _ui_scale
+	_vol_slider.value_changed.connect(func(v: float): Audio.set_sfx_vol(int(v)))
+	row3.add_child(_label("音效音量"))
+	row3.add_child(_vol_slider)
+	var fs_btn := Button.new()
+	fs_btn.text = "全屏"
+	fs_btn.pressed.connect(func(): _toggle_fullscreen())
+	row3.add_child(fs_btn)
+
+	var close := Button.new()
+	close.text = "关闭"
+	close.pressed.connect(func(): _close_menu_panels())
+	_menu_more_box.add_child(close)
+
+	# 单人练习（验收最快入口）也放进来
+	_solo_btn = Button.new()
+	_solo_btn.text = "▶  单人练习（对阵 3 名电脑）"
+	_solo_btn.custom_minimum_size = Vector2(0, 38.0 * _ui_scale)
+	_solo_btn.pressed.connect(func(): _on_solo())
+	_menu_more_box.add_child(_solo_btn)
 
 	_host_btn.pressed.connect(_on_host)
 	_join_btn.pressed.connect(_on_join)
@@ -1208,6 +1950,8 @@ func _build_lobby() -> void:
 	_lobby_root.add_child(box)
 
 	var t := Label.new()
+
+	t.clip_text = true
 	t.text = "房间大厅"
 	t.add_theme_font_size_override("font_size", 26)
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -1742,8 +2486,8 @@ func _build_character_panel() -> void:
 	g.texture_normal = VisualQuality.texture("res://assets/ui/panel/gear.png", true)
 	g.ignore_texture_size = true
 	g.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-	var gs := 44.0 * _ui_scale
-	g.position = Vector2(0.0, h - gs * 0.78)
+	var gs := 24.0 * _ui_scale
+	g.position = Vector2(0.0, h - gs)
 	g.size = Vector2(gs, gs)
 	g.tooltip_text = "角色情报 (C)"
 	g.pressed.connect(func(): _toggle_log())
@@ -2202,6 +2946,35 @@ func _pop_btn(kind: String, cb: Callable) -> TextureButton:
 	b.pressed.connect(cb)
 	_sfx(b)
 	return b
+
+
+## 被挤走时：**关掉所有「跟位置绑定」的界面**。
+##
+## 老板 2026-09-27：「他移动一格的这个操作会**打断他当前格的操作**，
+##   比如购买、升级建筑、卡片、精灵商店这种**跟位置绑定**的操作
+##   （**购入股票**等等这种**跟位置没关系**的不会打断）」。
+##
+## 所以这里**故意不关股票面板** —— 那是在交易所里操作、跟脚下站在哪格无关。
+func _close_position_bound_ui() -> void:
+	if _pop != null and _pop.visible:
+		_pop_cancel()                       # 买地 / 升级 的落点气泡
+	if _house_pick != null:
+		_close_house_picker()               # 选房型的建筑卡片
+	if _card_confirm_id != "":
+		_close_card_confirm()
+	if _card_menu != null and _card_menu.visible:
+		_hide_card_menu()
+	if _card_pending != "":
+		_clear_card_target_mode()
+	if _lotto != null and _lotto.visible:
+		_lotto.close()
+	if _casino != null and _casino.visible:
+		_casino.close()
+	if _auction != null and _auction.visible:
+		_auction.close()
+	if shop_open():
+		_close_shop()                       # 卡片商店 / 精灵屋 / 仓库
+	# ⚠️ `_stock`（股票）**故意不关** —— 它跟位置无关
 
 
 ## 右键 / ESC：**按「谁叠在最上面」的顺序关掉一个二级界面**，返回 true = 关掉了一个。
@@ -2956,6 +3729,7 @@ func _open_shop(mode: String) -> void:
 	_shop_sig = ""
 	_shop.visible = true
 	_hide_card_menu()
+	_sync_shop()
 
 
 ## 精灵仓库（角色面板的精灵栏位点开）：列出**持有**的小神仙，点一只设为出战。
@@ -3067,6 +3841,8 @@ func _render_shop(me: Dictionary, credit: int, owned: Array) -> void:
 			_shop_stock = _shop_stock_for_me()
 		var d: Dictionary = slots
 		var arr: Array = d.get("slots", [])
+		var calibrated: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/ui/widget-slots.json"))
+		arr = calibrated.get("cardshop", arr)
 		for i in range(mini(arr.size(), _shop_stock.size())):
 			_add_card_slot(shop_x, shop_y, arr[i], str(_shop_stock[i]), credit)
 		_shop_hint.text = "右键 / ESC 关闭"
@@ -3506,8 +4282,8 @@ func _sync_chat_bar() -> void:
 	# 贴在右下角功能区的**正上方**（原版截图里聊天栏就在小面板上面）
 	var bw := (UI_BR_W + UI_BR_MARGIN) * _ui_scale
 	var by := (UI_BR_MAP_H + UI_BR_BAR_H + UI_BR_GAP + UI_BR_MARGIN) * _ui_scale
-	_chat_bar.position = Vector2(vp.size.x - bw, vp.size.y - by - sz.y - 2.0 * _ui_scale)
 	_chat_bar.size = Vector2(maxf(sz.x, bw), sz.y)
+	_chat_bar.position = Vector2(maxf(0.0, vp.size.x - _chat_bar.size.x - 2.0 * _ui_scale), maxf(0.0, vp.size.y - by - sz.y - 2.0 * _ui_scale))
 
 
 ## 往聊天记录里追加一行
@@ -3689,6 +4465,8 @@ func _open_house_picker(data: Dictionary) -> void:
 	pc.add_child(col)
 
 	var title := Label.new()
+
+	title.clip_text = true
 	title.text = "请选择要盖的房屋"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", maxi(10, int(round(14.0 * _ui_scale))))
@@ -3709,13 +4487,27 @@ func _open_house_picker(data: Dictionary) -> void:
 		var free := bool(data.get("free", false))
 		b.disabled = plan.is_empty()
 		# 卡面：上面是房屋缩略图，下面是「名字 + 造价」（原版截图就是这个版式）
-		b.icon = _tex_or_null("res://assets/uitex/house/%s.png"
-			% Rules.house_file(tid, level))
-		b.expand_icon = true
-		b.text = "%s\n%d 联地 · 造价:%d" % [str(plan.get("name", Rules.house_type_cn(tid))),
+		var caption := "%s\n%d 联地 · 造价:%d" % [str(plan.get("name", Rules.house_type_cn(tid))),
 			(plan.get("members", []) as Array).size(), 0 if free else int(plan.get("cost", 0))]
-		b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+		b.tooltip_text = caption if not plan.is_empty() else "%s：需要拥有对应的连续地块" % Rules.house_type_cn(tid)
 		b.custom_minimum_size = Vector2(96.0 * _ui_scale, 118.0 * _ui_scale)
+		var preview := TextureRect.new()
+		preview.texture = _tex_or_null("res://assets/uitex/house/%s.png" % Rules.house_file(tid, level))
+		preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		preview.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		preview.position = Vector2(6, 6) * _ui_scale
+		preview.size = Vector2(84, 70) * _ui_scale
+		b.add_child(preview)
+		var description := Label.new()
+		description.text = caption if not plan.is_empty() else "%s\n需要连续地块" % Rules.house_type_cn(tid)
+		description.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		description.position = Vector2(4, 78) * _ui_scale
+		description.size = Vector2(88, 36) * _ui_scale
+		description.add_theme_font_size_override("font_size", maxi(10, int(round(12.0 * _ui_scale))))
+		description.add_theme_color_override("font_color", Color8(250, 248, 235))
+		description.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		b.add_child(description)
 		b.focus_mode = Control.FOCUS_NONE
 		b.add_theme_font_size_override("font_size", maxi(9, int(round(12.0 * _ui_scale))))
 		b.add_theme_color_override("font_color", Color8(250, 248, 235))
@@ -3778,8 +4570,12 @@ func _on_solo() -> void:
 	_status.text = ""
 	if not Net.host_game(_name_edit.text, int(_port_edit.text)):
 		return
-	Net.add_local_ai(3)
+	Net.add_local_ai(int(_solo_settings.get("players", 4)) - 1)
 	Net.start_game(_selected_map())
+	if Net.sim != null and not _solo_settings.is_empty():
+		for player in Net.sim.players.values():
+			player["money"] = int(_solo_settings.get("money", 300000))
+			player["credit"] = int(_solo_settings.get("credit", 50))
 
 func _on_host() -> void:
 	_status.text = ""
@@ -4103,6 +4899,16 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 				_toast(t if t != "" else "拍卖结束（没人出价）")
 		"auction_pass":
 			_on_log("  （%s 放弃出价）" % str(data.get("name", "")))
+		"pushed_away":
+			# 被人挤走 → 当前格的操作全部作废（老板 2026-09-27）。
+			# ⚠️ 只有**被挤的人自己**要关界面；别人被挤只播个提示。
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_close_position_bound_ui()
+				_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
+				_toast("被 %s 挤到 %d 格，刚才的操作作废了"
+					% [str(data.get("by_name", "")), int(data.get("tile", 0))])
+			else:
+				_ev_sfx(Audio.SFX_UI_CLICK, data, pos)
 		"chat":
 			_chat_append(str(data.get("name", "")), str(data.get("text", "")))
 		"global_news":
@@ -4423,7 +5229,7 @@ func _sync_action_entry(me: Dictionary, plots: Dictionary, my_id: int) -> void:
 	#   id 91「<ROAD>\n购买价格<NUMBER>元\n是否购买」
 	#   id 93「<ROAD>\n升级费用<NUMBER>元\n是否升级」
 	if kind == "buy":
-		_pop_text.text = "%s\n买地 %d 元" % [_plot_name(lidx), Sim.EMPTY_PLOT_PRICE]
+		_pop_text.text = "%s\n买地 %d 元" % [_plot_name(lidx), Net.sim.empty_plot_price()]
 		_btn_bldtype.visible = false
 		return
 	if kind == "upgrade" and lidx >= 0 and plots.has(lidx):

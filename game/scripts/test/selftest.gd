@@ -1063,6 +1063,60 @@ func _test_pets() -> void:
 	_ok("甲13 = 公开拍卖", Rules.info_string(3013).contains("拍卖"), Rules.info_string(3013))
 	_ok("甲14 = 经济萧条租金下降", Rules.info_string(3014).contains("萧条"), Rules.info_string(3014))
 
+	# ---- 挤人：朝向 / 打断 / 连锁（老板 2026-09-27）----
+	_lines.append("[3i] 挤人：朝向转过来 · 位置绑定的操作作废 · 连锁往前推")
+	var sA := _fresh_sim()
+	sA.add_player(3, "玩家三")                 # _fresh_sim 只造了 2 个，连锁要 3 个人
+	var pa: Dictionary = sA.players[1]
+	var pb: Dictionary = sA.players[2]
+	var pc: Dictionary = sA.players[3]
+	# 三人挨着站：a 在 10、b 在 11、c 在 12
+	pa["tile"] = 10; pb["tile"] = 11; pc["tile"] = 12
+	pa["moving"] = 0; pb["moving"] = 0; pc["moving"] = 0
+	pa["dir"] = 1; pb["dir"] = -1; pc["dir"] = -1      # b/c 原来朝反方向
+	# b 手上留着一次买地机会（代表「正在操作这一格」）
+	pb["last_plot"] = 11; pb["last_plot_kind"] = "buy"
+	pc["last_plot"] = 12; pc["last_plot_kind"] = "upgrade"
+	# a 走到 b 那一格 → 把 b 挤到 11+1，b 又去挤 c（连锁）
+	pa["tile"] = 11
+	sA._push_away_occupants(pa)
+	_ok("① 被挤的人朝向变得和挤他的人一致",
+		int(pb["dir"]) == 1 and int(pc["dir"]) == 1,
+		"b.dir=%d c.dir=%d（应都是 1）" % [int(pb["dir"]), int(pc["dir"])])
+	_ok("③ 连锁：b 被挤走时又挤了 c（c 从 12 → 13）",
+		int(pb["tile"]) == 12 and int(pc["tile"]) == 13,
+		"b=%d c=%d" % [int(pb["tile"]), int(pc["tile"])])
+	_ok("① 任何时刻都没有两人同格",
+		int(pa["tile"]) != int(pb["tile"]) and int(pb["tile"]) != int(pc["tile"])
+			and int(pa["tile"]) != int(pc["tile"]),
+		"a=%d b=%d c=%d" % [int(pa["tile"]), int(pb["tile"]), int(pc["tile"])])
+	_ok("② 被挤后「本格的操作机会」作废（买地/升级都清掉）",
+		int(pb["last_plot"]) == -1 and int(pc["last_plot"]) == -1,
+		"b=%d c=%d" % [int(pb["last_plot"]), int(pc["last_plot"])])
+
+	# ---- 物价指数：30 天一个月，每月上涨（老板 2026-09-27）----
+	_lines.append("[3j] 物价指数每月上涨")
+	var sE := _fresh_sim()
+	_ok("一个月 = 30 天", Sim.MONTH_DAYS == 30, str(Sim.MONTH_DAYS))
+	var idx0 := sE.estate_index
+	var price0 := sE.empty_plot_price()
+	sE.road_day = 29
+	sE._tick_estate_index()
+	_ok("没满 30 天不涨", sE.estate_index == idx0,
+		"%.0f（应还是 %.0f）" % [sE.estate_index, idx0])
+	sE.road_day = 30
+	sE._tick_estate_index()
+	_ok("满 30 天 → 指数上涨、地价跟着涨",
+		sE.estate_index > idx0 and sE.empty_plot_price() > price0,
+		"指数 %.0f→%.0f，地价 %d→%d" % [idx0, sE.estate_index, price0,
+			sE.empty_plot_price()])
+	sE.road_day = 90
+	sE._tick_estate_index()
+	_ok("跨 3 个月会补涨（一次跨月不丢）", sE.estate_index >= idx0 + 3.0,
+		"%.0f" % sE.estate_index)
+	_ok("房租也跟着指数涨（物价指数影响过路费）",
+		sE._rent_of(1, "uptown") > int(round(float(Rules.house_rent("uptown", 1)))), "")
+
 	# ---- 卡片商店（点券出口）----
 	var s7 := _fresh_sim()
 	var p7: Dictionary = s7.players[1]
@@ -1229,7 +1283,7 @@ func _test_cards() -> void:
 			and (pD["cards"] as Array).has("tudigong"),
 		"code %d" % simD.card_usable(1, "tudigong"))
 	_ok("购地卡「现值」= 地价 + 已投入建造费（> 空地价）",
-		pv > Sim.EMPTY_PLOT_PRICE, "%d > %d" % [pv, Sim.EMPTY_PLOT_PRICE])
+		pv > simD.empty_plot_price(), "%d > %d" % [pv, simD.empty_plot_price()])
 
 	# ---- 需要点选对手的卡：没目标不许用，且不消耗 ----
 	var sim3 := _card_world("qiongshen")
@@ -1419,7 +1473,7 @@ func _test_buy_and_rent() -> void:
 	var ok_buy: bool = sim.act_buy(1)
 	_ok("购买成功", ok_buy)
 	_ok("扣除地价 2000（Empty_Grid_PriceFactor 200 × 地价因子 10）",
-		int(p1["money"]) == before - Sim.EMPTY_PLOT_PRICE,
+		int(p1["money"]) == before - sim.empty_plot_price(),
 		"%d -> %d" % [before, int(p1["money"])])
 	_ok("地块登记归属", sim.plots.has(1) and int(sim.plots[1]["owner"]) == 1)
 	_ok("买下只是「空地」：等级 0 且还没定房型",
@@ -1441,7 +1495,7 @@ func _test_buy_and_rent() -> void:
 		int(sim.plots[1]["level"]) == 1 and str(sim.plots[1]["type"]) == "uptown",
 		"level=%d type=%s" % [int(sim.plots[1]["level"]), str(sim.plots[1]["type"])])
 	_ok("建设费 = 一级公寓升级费 1000",
-		int(p1["money"]) == before - Sim.EMPTY_PLOT_PRICE - 1000,
+		int(p1["money"]) == before - sim.empty_plot_price() - 1000,
 		"money=%d" % int(p1["money"]))
 
 	# 玩家 2 走到该格 → 应付过路费
@@ -1452,9 +1506,9 @@ func _test_buy_and_rent() -> void:
 	_ok("玩家2 被扣 1500（House.txt 一级公寓基本租金）",
 		m2 == Sim.START_MONEY - 1500, "money=%d" % m2)
 	_ok("玩家1 收到等额租金",
-		m1 == before - Sim.EMPTY_PLOT_PRICE - 1000 + 1500, "money=%d" % m1)
+		m1 == before - sim.empty_plot_price() - 1000 + 1500, "money=%d" % m1)
 	_ok("收支平衡",
-		(Sim.START_MONEY - m2) == (m1 - (before - Sim.EMPTY_PLOT_PRICE - 1000)))
+		(Sim.START_MONEY - m2) == (m1 - (before - sim.empty_plot_price() - 1000)))
 
 # --------------------------------------- 5. 地产升级链条（老板 2026-09-26 的硬要求）
 

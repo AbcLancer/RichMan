@@ -18,7 +18,45 @@ signal log_message(text: String)
 signal game_event(kind: String, data: Dictionary)
 
 # ---- 经济常量（对齐原版 House.txt / Initvar_r.txt）----
-const EMPTY_PLOT_PRICE := 2000      # Empty_Grid_PriceFactor(200) × 地价因子(10)
+## ⭐ **地价指数**（动态，不是常量了）
+##
+## 依据 `Initvar_r.txt`：
+##   `Empty_Grid_PriceFactor = 200`   //空地产格价格 (200) 将要乘**地价因子** (10)
+##   `EstateGrid_PriceFactor_Min = 5` //**地价指数最小值**
+## → **空地产格价 = 200 × 地价指数**，指数**默认 10**（就是那行注释尾上的 (10)）。
+##
+## 老板 2026-09-27：「游戏里是 30 天为一个月，**每个月物价指数都会有上涨**」。
+## ⚠️ **涨幅在配置里没有明文**（只有最小值 5，没有最大值也没有涨速）→ 取**每月 +1**（推断），
+##   并且始终不低于 `EstateGrid_PriceFactor_Min`。房租、地价都按这个指数放大。
+var estate_index: float = 10.0
+## 上一次涨指数时的「第几个月」，避免一个月内重复涨
+var estate_month := 0
+
+
+## 空地产格价格 = `Empty_Grid_PriceFactor`(200) × 地价指数
+func empty_plot_price() -> int:
+	return int(round(float(Rules.get_val("economy.empty_grid_price_factor", 200))
+		* estate_index))
+
+
+## 相对的物价倍数（房租等按它放大；指数 10 = 1.0 倍）
+func price_scale() -> float:
+	return estate_index / 10.0
+
+
+## 每个月涨一次物价指数（老板 2026-09-27）
+func _tick_estate_index() -> void:
+	var mon := int(road_day / MONTH_DAYS)
+	if mon <= estate_month:
+		return
+	var step := maxi(1, mon - estate_month)          # 一次跨多月就补涨几次
+	estate_month = mon
+	var lo := float(Rules.get_val("economy.estate_price_index_min", 5))
+	estate_index = maxf(lo, estate_index + float(step))
+	log_message.emit("[物价] 第 %d 个月，地价指数涨到 %.0f（地价 %d 元/格）" % [
+		mon, estate_index, empty_plot_price()])
+	_ev("estate_index_up", null, {"month": mon, "index": estate_index,
+		"price": empty_plot_price()})
 const EMPTY_PLOT_RENT := 250        # Empty_Grid_RentFactor(25) × 地价因子(10)
 const START_MONEY := 500000         # 对齐 Player_Com_Capital 量级
 const START_HP := 3000
@@ -1208,11 +1246,12 @@ func pet_line(pet_id: String, line_key: int) -> String:
 ##
 ## **触发** = 全局新闻的一种（`Info.txt` 3013/3213 甲13「公开拍卖`<ROAD>`一处公有土地」）。
 ##
-## ⚠️ **推断项**（配置里一个字都没有，靠素材和常识定）：
-##   · 拍卖时长 **20 秒**（有人加价就重新计时）
-##   · **起拍价 = 地价的一半**
-##   · 加价档位 **+100 / +500 / +1000** ← 这三张就是 `uitex/auction/100|500|1000.tga`
-const AUCTION_SECONDS := 20.0
+## ⚠️ **推断项**（配置里只给了这两条，别的没有）：
+##   · `EstateSell_WaitTicks = 15` → **拍卖等待 15 秒**（有人加价就重新计时）
+##   · `EstateSell_InitPriceRate = 0.8` → **起拍价 = 地产值 × 0.8**
+##   · 加价档 **+100 / +500 / +1000** ← 这三张就是 `uitex/auction/100|500|1000.tga`
+const AUCTION_SECONDS := 15.0           # EstateSell_WaitTicks
+const AUCTION_INIT_RATE := 0.8          # EstateSell_InitPriceRate
 const AUCTION_MIN_INC := 100            # Info.txt 4002「加价不得少于100元」
 const AUCTION_INCS := [100, 500, 1000]  # 素材就是这三张
 
@@ -1234,7 +1273,8 @@ func start_auction() -> bool:
 	if cands.is_empty():
 		return false
 	var idx := int(cands[rng.randi_range(0, cands.size() - 1)])
-	var base := int(round(float(plot_value(idx)) * 0.5))
+	# `EstateSell_InitPriceRate = 0.8`「拍卖开始价格占房产价格的比例」
+	var base := int(round(float(plot_value(idx)) * AUCTION_INIT_RATE))
 	auction = {"tile": idx, "price": base, "best": -1, "name": "",
 		"until": time + AUCTION_SECONDS}
 	for pid in player_ids():
@@ -1456,6 +1496,8 @@ func step(dt: float) -> void:
 		_tick_auction()
 		# 小神仙：时间驱动升级（每月一级）
 		_tick_pet_aging()
+		# 物价指数：每月上涨（老板 2026-09-27）
+		_tick_estate_index()
 		if road_day % MONTH_DAYS == 0:
 			_pay_dividends()        # 每 30 天（一个月）分红一次
 
@@ -1599,31 +1641,57 @@ func _wrap(i: int) -> int:
 ##   · 但**不触发**地面事件 / 买地 / 升级 —— 结算完立刻 `_clear_chance()` 把机会作废
 ##
 ## ⚠️ 只挤「**站着不动**」的人（`moving == 0`）；正在走的人不挤（他马上会离开这格）。
-func _push_away_occupants(p: Dictionary) -> void:
-	if map == null:
-		return
-	var here := int(p["tile"])
+## 找到站在 `tile` 上、且**不是** `except_id` 的**一个**玩家（没有则返回 {}）。
+## 只算**站着不动**的 —— 正在走的人还没落位，不算占着这格。
+func _occupant_at(tile: int, except_id: int) -> Dictionary:
 	for oid in player_ids():
-		if int(oid) == int(p["id"]):
+		if int(oid) == except_id:
 			continue
 		var o: Dictionary = players[oid]
 		if not bool(o["alive"]) or int(o["moving"]) > 0:
 			continue
-		if int(o["tile"]) != here:
-			continue
-		var dest := _wrap(here + 1)
-		o["tile"] = dest
-		o["progress"] = 0.0
-		o["idle"] = 0.0
-		log_message.emit("%s 站在 %d 格，被 %s 挤到了 %d 格" % [
-			o["name"], here, p["name"], dest])
-		_ev("push_away", o, {"by": int(p["id"]), "name": str(p["name"]),
-			"from": here, "tile": dest})
-		var t: Dictionary = map.tile(dest)
-		if str(t.get("kind", "")) == "plot":
-			_resolve_plot(o, dest, t)   # 会付房租（如果那是别人的地）
-			_clear_chance(o)            # 买地 / 升级的机会当场作废
+		if int(o["tile"]) == tile:
+			return o
+	return {}
 
+
+## 把同格的人往前挤一格。**原版铁律：任何时刻都不允许两人同格。**
+##
+## 老板 2026-09-27 补充的三条，缺一不可：
+##   ① 被挤的人**朝向变得和挤他的人一致**（`dir` 跟着走，不是原地转身）
+##   ② 这一下移动会**打断他跟位置绑定的操作** —— 买地/升级的气泡、卡片菜单、
+##      卡片商店 / 精灵屋、拍卖 / 乐透 / 拉霸这些「站在这一格才点得开」的界面全部作废；
+##      而**买入股票**这种**跟位置无关**的不受影响（所以事件的 `bound` 标记区分两类）
+##   ③ 被挤的人**也会去挤他前面的人**（**连锁反应**），一直往前推，直到前面没人
+func _push_away_occupants(p: Dictionary) -> void:
+	if map == null:
+		return
+	var cur: Dictionary = p
+	var guard := 0
+	while guard < players.size() + 2:
+		guard += 1
+		var victim := _occupant_at(int(cur["tile"]), int(cur["id"]))
+		if victim.is_empty():
+			return                      # 前面没人了 → 连锁结束
+		var from := int(victim["tile"])
+		var dest := _wrap(from + 1)
+		victim["tile"] = dest
+		victim["progress"] = 0.0
+		victim["idle"] = 0.0
+		# ① 朝向跟挤他的人一致
+		victim["dir"] = int(cur.get("dir", 1))
+		# ② 位置绑定的操作当场作废（UI 收到 `pushed_away` 会把对应界面关掉）
+		_clear_chance(victim)
+		log_message.emit("%s 被 %s 挤到 %d 格" % [victim["name"], cur["name"], dest])
+		_ev("pushed_away", victim, {"by": int(cur["id"]), "by_name": str(cur["name"]),
+			"from": from, "tile": dest})
+		# 落到新格：是别人的地就要付房租（空手被挤过去也得付）
+		var t: Dictionary = map.tile(dest)
+		if str(t.get("kind", "")) == "plot" \
+				and int(plots.get(dest, {}).get("owner", -1)) >= 0:
+			_resolve_plot(victim, dest, t)
+		cur = victim                    # ③ 接着往前连锁
+	
 
 func _arrive(p: Dictionary) -> void:
 	var idx: int = int(p["tile"])
@@ -1663,7 +1731,7 @@ func _resolve_plot(p: Dictionary, idx: int, t: Dictionary) -> void:
 		p["last_plot"] = idx
 		p["last_plot_kind"] = "buy"
 		log_message.emit("%s 抵达 %s（空地，可购买）" % [p["name"], street])
-		_ev("arrive_empty", p, {"idx": idx, "street": street, "price": EMPTY_PLOT_PRICE})
+		_ev("arrive_empty", p, {"idx": idx, "street": street, "price": empty_plot_price()})
 		return
 
 	var plot: Dictionary = plots[idx]
@@ -1744,7 +1812,9 @@ func _resolve_plot(p: Dictionary, idx: int, t: Dictionary) -> void:
 func _rent_of(level: int, type_id: String = "") -> int:
 	if level <= 0:
 		return EMPTY_PLOT_RENT
-	return Rules.house_rent(type_id, level)
+	# 房租跟着**物价指数**一起涨（老板 2026-09-27：每月物价指数上涨）。
+	# `price_scale()` = 指数 / 10 —— 指数 10 时就是 House.txt 原价。
+	return int(round(float(Rules.house_rent(type_id, level)) * price_scale()))
 
 ## 路面事件（权威表 = 原版 config/Roadevent.txt 的 1..16，地图 JSON 的 event 字段即这张表的 key）
 func _resolve_event(p: Dictionary, idx: int, t: Dictionary) -> void:
@@ -2151,7 +2221,7 @@ func act_buy(id: int) -> bool:
 	var idx: int = int(p["last_plot"])
 	if plots.has(idx):
 		return false
-	var price := EMPTY_PLOT_PRICE
+	var price := empty_plot_price()
 	if int(p["money"]) < price:
 		log_message.emit("%s 资金不足，无法购地" % p["name"])
 		_ev("insufficient_money", p, {"idx": idx, "need": price, "have": int(p["money"])})
@@ -2295,9 +2365,9 @@ func _enemy_plot_best(id: int) -> int:
 ## 购地卡强制购买时按这个价付给原主。
 func plot_value(idx: int) -> int:
 	if not plots.has(idx):
-		return EMPTY_PLOT_PRICE
+		return empty_plot_price()
 	var pl: Dictionary = plots[idx]
-	var v := EMPTY_PLOT_PRICE * (pl.get("members", [idx]) as Array).size()
+	var v := empty_plot_price() * (pl.get("members", [idx]) as Array).size()
 	var tp := str(pl.get("type", ""))
 	for lv in range(maxi(1, mini(int(pl.get("build_start_level", 1)), int(pl["level"]))), int(pl["level"]) + 1):
 		v += Rules.house_upgrade_cost(tp, lv)
