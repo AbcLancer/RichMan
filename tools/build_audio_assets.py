@@ -104,6 +104,23 @@ def copy_tree(src, dst, exts=(".wav", ".mp3"), verbose=False):
             os.makedirs(out, exist_ok=True)
             s = os.path.join(dirpath, fn)
             d = os.path.join(out, fn.lower())
+            # Windows considers WAV == wav, but exported PCK paths are case-sensitive.
+            # Normalize the actual on-disk spelling even when size-based copying is skipped.
+            for existing in os.listdir(out):
+                if existing.lower() == fn.lower() and existing != fn.lower():
+                    old = os.path.join(out, existing)
+                    temporary = old + ".case-normalize"
+                    os.rename(old, temporary)
+                    os.rename(temporary, d)
+                    if os.path.isfile(old + ".import"):
+                        imported = old + ".import"
+                        os.rename(imported, imported + ".case-normalize")
+                        os.rename(imported + ".case-normalize", d + ".import")
+                        with open(d + ".import", encoding="utf-8") as stream:
+                            import_text = stream.read().replace(existing, fn.lower())
+                        with open(d + ".import", "w", encoding="utf-8") as stream:
+                            stream.write(import_text)
+                    break
             if os.path.exists(d) and os.path.getsize(d) == os.path.getsize(s):
                 n += 1
                 b += os.path.getsize(s)

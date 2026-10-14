@@ -30,6 +30,7 @@ echo.
 echo   正在启动 大富翁6 即时制复刻 ...
 echo   Godot: %GODOT%
 echo.
+start "" /wait "%GODOT%" --headless --editor --import --path "%~dp0game" >nul 2>&1
 start "" "%GODOT%" --path "%~dp0game" --resolution 1440x810
 
 endlocal

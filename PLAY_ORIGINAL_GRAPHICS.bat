@@ -7,5 +7,6 @@ if not exist "%GODOT%" (
   pause
   exit /b 1
 )
+start "" /wait "%GODOT%" --headless --editor --import --path "%~dp0game" >nul 2>&1
 start "" "%GODOT%" --path "%~dp0game" --resolution 1440x810 -- --original-graphics
 endlocal

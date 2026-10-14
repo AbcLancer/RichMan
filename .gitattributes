@@ -1,0 +1,10 @@
+# 让 .bat / .cmd **无论谁 clone、autocrlf 怎么设，检出都是 CRLF**
+#
+# 为什么必须写死：Windows cmd 解析批处理文件时，若换行是 LF-only，
+# `goto :label` 会找不到标签（报 "The system cannot find the batch label specified"）。
+# 本项目 PACKAGE.bat 就用了 `:check` / `:pack` / `:done` 三个标签，踩到即失效。
+#
+# 另外中文机 cmd 按 cp936 解析 bat，含中文的 bat 必须存 **GBK**（不能是 UTF-8），
+# 否则命令行会被从中间切断、脚本静默失效 —— 这一条 git 管不了，改 bat 时自己注意。
+*.bat text eol=crlf
+*.cmd text eol=crlf

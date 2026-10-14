@@ -124,7 +124,10 @@ def main() -> int:
             "seconds": p["realtime_seconds"],
             "turn_times": p["turn_times"],
             "points": p["points"],
-            "buy_price": p["points"][0],     # ← 推断，见文件头注释
+            "buy_price": {"jingling": 40, "caishen": 100, "qiongshen": 40,
+                          "dushen": 80, "tushen": 60, "guaishou": 60,
+                          "emo": 80, "hutu": 40, "huaxian": 60}[p["dir"]],
+            "buy_price_source": "REA 433510; 49e860 table[type*4+1]*4; 2026-10-12",
         })
 
     doc = {
@@ -134,8 +137,7 @@ def main() -> int:
         "_columns": "seconds / turn_times / points 都是**4 个等级**的值，下标 0 = 1 级。"
                     "即时制用 seconds。",
         "_inferred": {
-            "buy_price": "Info.txt 203「<BABYNAME>价格<NUMBER>点券」没给具体值 → 取 Pet.txt"
-                         "『消耗点数』第 1 级值（唯一可用数字）。属推断。",
+            "buy_price": "九种一星售价均已核验原版433510与49e860只读PE表，独立于技能消耗。",
             "effect": "原版只有中文技能名，`effect` 是按技能名 + Info.txt 191..196 的受害者"
                       "文案对上来的映射，属推断。",
             "seconds_semantics": "解释为『特技持续 / 冷却秒数』：发动后该小神仙要等"
