@@ -1,0 +1,17 @@
+[
+  {
+    "addr": "0x41b127",
+    "asm": "push 0x49daf8",
+    "term": "Event_Casino"
+  },
+  {
+    "addr": "0x41b151",
+    "asm": "push 0x49dae0",
+    "term": "Event_Casino"
+  },
+  {
+    "addr": "0x41b17b",
+    "asm": "push 0x49dac8",
+    "term": "Event_Casino"
+  }
+]

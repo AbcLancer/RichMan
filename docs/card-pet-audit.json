@@ -1,0 +1,315 @@
+{
+	"cards": [
+		{
+			"expected": "现金增加1～5万元，免租30步",
+			"id": "caishen",
+			"name": "财神卡",
+			"passed": true
+		},
+		{
+			"expected": "免费加盖30步并获得5张卡",
+			"id": "fushen",
+			"name": "福神卡",
+			"passed": true
+		},
+		{
+			"expected": "转移现金，目标过路费加倍30步",
+			"id": "qiongshen",
+			"name": "穷神卡",
+			"passed": true
+		},
+		{
+			"expected": "目标不能购地/升级30步且有反馈",
+			"id": "shuaishen",
+			"name": "衰神卡",
+			"passed": true
+		},
+		{
+			"expected": "当前街道的已有建筑升级/降级",
+			"id": "tianshi",
+			"name": "天使卡",
+			"passed": true
+		},
+		{
+			"expected": "当前街道的已有建筑升级/降级",
+			"id": "emo",
+			"name": "恶魔卡",
+			"passed": true
+		},
+		{
+			"expected": "获得一只小神仙并自动出战",
+			"id": "qingshen",
+			"name": "请神卡",
+			"passed": true
+		},
+		{
+			"expected": "脚下对手地产免费转移所有权",
+			"id": "tudigong",
+			"name": "土神卡",
+			"passed": true
+		},
+		{
+			"expected": "增加对应步数",
+			"id": "step1",
+			"name": "1步卡",
+			"passed": true
+		},
+		{
+			"expected": "增加对应步数",
+			"id": "step2",
+			"name": "2步卡",
+			"passed": true
+		},
+		{
+			"expected": "增加对应步数",
+			"id": "step3",
+			"name": "3步卡",
+			"passed": true
+		},
+		{
+			"expected": "增加对应步数",
+			"id": "step4",
+			"name": "4步卡",
+			"passed": true
+		},
+		{
+			"expected": "增加对应步数",
+			"id": "step5",
+			"name": "5步卡",
+			"passed": true
+		},
+		{
+			"expected": "改变前进方向",
+			"id": "turn",
+			"name": "转向卡",
+			"passed": true
+		},
+		{
+			"expected": "原版随机暴走21～36步",
+			"id": "run",
+			"name": "暴走卡",
+			"passed": true
+		},
+		{
+			"expected": "进入选点数状态，自选四步后移动",
+			"id": "dice",
+			"name": "骰子卡",
+			"passed": true
+		},
+		{
+			"expected": "普通建筑改建成相同占地尺寸的特殊建筑",
+			"id": "rebuild",
+			"name": "改建卡",
+			"passed": true
+		},
+		{
+			"expected": "选中自己的建筑免费升级一级",
+			"id": "upgrade",
+			"name": "升级卡",
+			"passed": true
+		},
+		{
+			"expected": "选中建筑降一级",
+			"id": "monster",
+			"name": "怪兽卡",
+			"passed": true
+		},
+		{
+			"expected": "按现值支付原主并转移脚下地产",
+			"id": "buyland",
+			"name": "购地卡",
+			"passed": true
+		},
+		{
+			"expected": "当前街道地价指数增加5",
+			"id": "priceup",
+			"name": "涨价卡",
+			"passed": true
+		},
+		{
+			"expected": "当前街道地价指数减少5",
+			"id": "pricedown",
+			"name": "降价卡",
+			"passed": true
+		},
+		{
+			"expected": "按原版在身后一格放置地雷",
+			"id": "mine",
+			"name": "地雷卡",
+			"passed": true
+		},
+		{
+			"expected": "放置在指定路点",
+			"id": "roadblock",
+			"name": "路障卡",
+			"passed": true
+		},
+		{
+			"expected": "免租20步",
+			"id": "free",
+			"name": "免费卡",
+			"passed": true
+		},
+		{
+			"expected": "无敌72秒",
+			"id": "invincible",
+			"name": "无敌卡",
+			"passed": true
+		},
+		{
+			"expected": "选中爆心延迟命中、建筑受损、附近体力不足角色住院",
+			"id": "missile",
+			"name": "飞弹卡",
+			"passed": true
+		},
+		{
+			"expected": "其他有效角色冬眠10秒",
+			"id": "hibernate",
+			"name": "冬眠卡",
+			"passed": true
+		},
+		{
+			"expected": "指定公司股价增加20%",
+			"id": "redcard",
+			"name": "红卡",
+			"passed": true
+		},
+		{
+			"expected": "指定公司股价减少20%",
+			"id": "blackcard",
+			"name": "黑卡",
+			"passed": true
+		},
+		{
+			"expected": "当前街道查封5天",
+			"id": "seize",
+			"name": "查封卡",
+			"passed": true
+		},
+		{
+			"expected": "复制选中的手牌",
+			"id": "copy",
+			"name": "复制卡",
+			"passed": true
+		},
+		{
+			"expected": "组合衰神卡并验证强化后60步；目前组合支持四神卡",
+			"id": "gem",
+			"name": "宝石卡",
+			"passed": true
+		},
+		{
+			"expected": "补充原版500体力并限制到上限",
+			"id": "hamburger",
+			"name": "汉堡卡",
+			"passed": true
+		},
+		{
+			"expected": "对手随身实例转入备用栏",
+			"id": "abduct",
+			"name": "诱拐卡",
+			"passed": true
+		},
+		{
+			"expected": "目标现金5%～10%转移",
+			"id": "tax",
+			"name": "查税卡",
+			"passed": true
+		},
+		{
+			"expected": "目标手牌转移给自己",
+			"id": "rob",
+			"name": "抢夺卡",
+			"passed": true
+		},
+		{
+			"expected": "与选中对手平分现金",
+			"id": "sharewealth",
+			"name": "均富卡",
+			"passed": true
+		},
+		{
+			"expected": "推土机沿途抵达后清除",
+			"id": "clear",
+			"name": "清除卡",
+			"passed": true
+		},
+		{
+			"expected": "停止并重新结算当前格",
+			"id": "stay",
+			"name": "停留卡",
+			"passed": true
+		},
+		{
+			"expected": "独立隐形72秒，免租免伤无额外状态残留",
+			"id": "invisible",
+			"name": "隐形卡",
+			"passed": true
+		},
+		{
+			"expected": "选中爆心延迟命中、建筑受损、附近体力不足角色住院",
+			"id": "nuke",
+			"name": "核弹卡",
+			"passed": true
+		}
+	],
+	"checks": 213,
+	"failed": false,
+	"pets": [
+		{
+			"id": "qiongshen",
+			"name": "小穷神",
+			"passed": true,
+			"skill": "穷神技  罚金加倍"
+		},
+		{
+			"id": "hutu",
+			"name": "糊涂鬼",
+			"passed": true,
+			"skill": "梦游技  强迫梦游"
+		},
+		{
+			"id": "emo",
+			"name": "小恶魔",
+			"passed": true,
+			"skill": "拆除技  拆除房屋"
+		},
+		{
+			"id": "caishen",
+			"name": "小财神",
+			"passed": true,
+			"skill": "免费技  免付房租"
+		},
+		{
+			"id": "tushen",
+			"name": "小土神",
+			"passed": true,
+			"skill": "土神技  强制占地"
+		},
+		{
+			"id": "jingling",
+			"name": "雪精灵",
+			"passed": true,
+			"skill": "加盖技  升级房屋"
+		},
+		{
+			"id": "huaxian",
+			"name": "花仙子",
+			"passed": true,
+			"skill": "无敌技  无敌状态"
+		},
+		{
+			"id": "dushen",
+			"name": "小赌神",
+			"passed": true,
+			"skill": "骰子技  遥控骰子"
+		},
+		{
+			"id": "guaishou",
+			"name": "小怪兽",
+			"passed": true,
+			"skill": "PK技  攻击小神仙"
+		}
+	],
+	"scope": "42 card outcomes plus real UI commands/skill clicks for nine pets; remaining native uncertainties are documented separately"
+}

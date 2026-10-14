@@ -1,0 +1,1833 @@
+{
+  "binary": "D:\\Projects\\reference\\Rich6\\rich6.exe",
+  "sha256": "5dd5c38e09aefbdc2cadd970aefb14a2e64b0560e943d8ef0fbdfddb77a4e1f7",
+  "authority": "static shipped-artifact, not runtime observation",
+  "regions": {
+    "hud_render": {
+      "start": "0x447740",
+      "end_exclusive": "0x447823",
+      "file_offset": 292672,
+      "file": "deep-hud_render.asm.txt",
+      "bytes_sha256": "fc092116bd1d9d725f3ea7918409e686d8b7f21b1b24b16bba2936954c4075a8"
+    },
+    "human_feed_command": {
+      "start": "0x43b672",
+      "end_exclusive": "0x43b6f1",
+      "file_offset": 243314,
+      "file": "deep-human_feed_command.asm.txt",
+      "bytes_sha256": "fa9fbb7e2b10145efdd15cf05f44bf566572754343ca1d15a553f8cf699e269a"
+    },
+    "pet_texture_loader": {
+      "start": "0x432470",
+      "end_exclusive": "0x43270e",
+      "file_offset": 205936,
+      "file": "deep-pet_texture_loader.asm.txt",
+      "bytes_sha256": "4ce0d96651c45b708efca9a2f587eab47ef0f51bb973a09a5a8590446df659e2"
+    },
+    "growth_increment": {
+      "start": "0x4361b0",
+      "end_exclusive": "0x436228",
+      "file_offset": 221616,
+      "file": "deep-growth_increment.asm.txt",
+      "bytes_sha256": "78f2feb2a754357b1e8ac8037687cba0d05b25417c2ed32306ba9415e99943c1"
+    }
+  },
+  "functions": [
+    {
+      "requested": "0x4321b0",
+      "evidence_id": "ev_d8f183a4f58b7ff77cc8ec860a3ff5a0c3e9477e1b19c3dfb94ff2c5a2ac4f89",
+      "resolved": "0x4321b0",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x4321b0",
+            "end": "0x432354"
+          }
+        ],
+        "total_bytes": 421,
+        "span_bytes": 421,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x4321b0.json",
+      "pseudocode_file": "rea-function-0x4321b0.c"
+    },
+    {
+      "requested": "0x432470",
+      "evidence_id": "ev_1e4d9fc87ffd97dad21c49f95c35c7d187e4e61fe7c3d154a4db1009c7ac602a",
+      "resolved": "0x432470",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x432470",
+            "end": "0x43274c"
+          }
+        ],
+        "total_bytes": 733,
+        "span_bytes": 733,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x432470.json",
+      "pseudocode_file": "rea-function-0x432470.c"
+    },
+    {
+      "requested": "0x432830",
+      "evidence_id": "ev_1ae5f66bac18bf2f224613a68277948de5f5b1ca52059af979dd01c2353f8faf",
+      "resolved": "0x432830",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x432830",
+            "end": "0x4328b9"
+          }
+        ],
+        "total_bytes": 138,
+        "span_bytes": 138,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x432830.json",
+      "pseudocode_file": "rea-function-0x432830.c"
+    },
+    {
+      "requested": "0x432910",
+      "evidence_id": "ev_e78976c4bc95c20f766c0f6883bb3abbe7c97da11749d4a305467a1dd62f7990",
+      "resolved": "0x432910",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x432910",
+            "end": "0x432920"
+          }
+        ],
+        "total_bytes": 17,
+        "span_bytes": 17,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x432910.json",
+      "pseudocode_file": "rea-function-0x432910.c"
+    },
+    {
+      "requested": "0x432930",
+      "evidence_id": "ev_1d3eac5ab72aa60703f94e4602c8635a9ed619d3239b9430bfca998c39d22623",
+      "resolved": "0x432930",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x432930",
+            "end": "0x43295c"
+          }
+        ],
+        "total_bytes": 45,
+        "span_bytes": 45,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x432930.json",
+      "pseudocode_file": "rea-function-0x432930.c"
+    },
+    {
+      "requested": "0x4329d0",
+      "evidence_id": "ev_6512e23f86608cc9529b1e95bc8e7aa120c548a649ab4dbe22674101d35c0ffe",
+      "resolved": "0x4329d0",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x4329d0",
+            "end": "0x4329e8"
+          }
+        ],
+        "total_bytes": 25,
+        "span_bytes": 25,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x4329d0.json",
+      "pseudocode_file": "rea-function-0x4329d0.c"
+    },
+    {
+      "requested": "0x41e460",
+      "evidence_id": "ev_6d231b2e78ac6515bdc1b371b47a7b03e41a91bff447ddbfbc1c404a59f78933",
+      "resolved": "0x41e460",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x41e460",
+            "end": "0x41e875"
+          }
+        ],
+        "total_bytes": 1046,
+        "span_bytes": 1046,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x41e460.json",
+      "pseudocode_file": "rea-function-0x41e460.c"
+    },
+    {
+      "requested": "0x41c612",
+      "evidence_id": "ev_3b5a89f952e9ed3df56c43c0d857c56d7c3dec105143760c2bd1b3a90f8baf44",
+      "resolved": "0x41c530",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x41c530",
+            "end": "0x41c6f4"
+          }
+        ],
+        "total_bytes": 453,
+        "span_bytes": 453,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x41c612.json",
+      "pseudocode_file": "rea-function-0x41c612.c"
+    },
+    {
+      "requested": "0x432410",
+      "evidence_id": "ev_faaddc6e16dbe0ef662c5c85532c98c871f50a1243d16508e53afa53dbc8539b",
+      "resolved": "0x432410",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x432410",
+            "end": "0x432434"
+          }
+        ],
+        "total_bytes": 37,
+        "span_bytes": 37,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x432410.json",
+      "pseudocode_file": "rea-function-0x432410.c"
+    },
+    {
+      "requested": "0x432d60",
+      "evidence_id": "ev_5915b250993d35216267070c75873fadf7f0b06572768426ded61d212e2ecaeb",
+      "resolved": "0x432d60",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x432d60",
+            "end": "0x432dce"
+          }
+        ],
+        "total_bytes": 111,
+        "span_bytes": 111,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x432d60.json",
+      "pseudocode_file": "rea-function-0x432d60.c"
+    },
+    {
+      "requested": "0x447c75",
+      "evidence_id": "ev_1e006c67958eb63565c26624da48ee874a78e2121a5074d25d6b7c2fdf6d0b6a",
+      "resolved": "0x447b70",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x447b70",
+            "end": "0x447d1a"
+          }
+        ],
+        "total_bytes": 427,
+        "span_bytes": 427,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x447c75.json",
+      "pseudocode_file": "rea-function-0x447c75.c"
+    },
+    {
+      "requested": "0x447d20",
+      "evidence_id": "ev_2597ca550671abadc217a79b959feede6f545c6efc7524ae45ec0731adfa60b0",
+      "resolved": "0x447d20",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x447d20",
+            "end": "0x447d98"
+          }
+        ],
+        "total_bytes": 121,
+        "span_bytes": 121,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x447d20.json",
+      "pseudocode_file": "rea-function-0x447d20.c"
+    },
+    {
+      "requested": "0x44f1a7",
+      "evidence_id": "ev_7c2bc39263042408de010099919dc1ce973ccf0a6320c56260bd3280f2b0a23d",
+      "resolved": "0x44f150",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x44f150",
+            "end": "0x44f1f2"
+          }
+        ],
+        "total_bytes": 163,
+        "span_bytes": 163,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x44f1a7.json",
+      "pseudocode_file": "rea-function-0x44f1a7.c"
+    },
+    {
+      "requested": "0x44ea48",
+      "evidence_id": "ev_916004a05097005c75b44bab205000b1aaf048d17781111e5e757cf4f7b86f2f",
+      "resolved": "0x44e9e0",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x44e9e0",
+            "end": "0x44eae4"
+          }
+        ],
+        "total_bytes": 261,
+        "span_bytes": 261,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x44ea48.json",
+      "pseudocode_file": "rea-function-0x44ea48.c"
+    },
+    {
+      "requested": "0x4361dc",
+      "evidence_id": "ev_a494f4917d6b96e6588286522f3c2d4f91a9af41284a7998fed6def7d8860410",
+      "resolved": "0x4361b0",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x4361b0",
+            "end": "0x436227"
+          }
+        ],
+        "total_bytes": 120,
+        "span_bytes": 120,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x4361dc.json",
+      "pseudocode_file": "rea-function-0x4361dc.c"
+    },
+    {
+      "requested": "0x433d52",
+      "evidence_id": "ev_e00caa8a2d8f9857904cb40ad323748892d1f7ec2a007243d36fbfb04fe96b8e",
+      "resolved": "0x433d40",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x433d40",
+            "end": "0x433e1b"
+          }
+        ],
+        "total_bytes": 220,
+        "span_bytes": 220,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x433d52.json",
+      "pseudocode_file": "rea-function-0x433d52.c"
+    },
+    {
+      "requested": "0x434167",
+      "evidence_id": "ev_6c328d5738d3a66db0e35337c8f98a712d7ac4145b67f3ef5f9c175769c72846",
+      "resolved": "0x433f00",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x433f00",
+            "end": "0x434170"
+          }
+        ],
+        "total_bytes": 625,
+        "span_bytes": 625,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x434167.json",
+      "pseudocode_file": "rea-function-0x434167.c"
+    },
+    {
+      "requested": "0x423b90",
+      "evidence_id": "ev_afaff39be75aa449341579b3d647e9dfd1c858dbbfbc6838ae83cfb4d0093c3c",
+      "resolved": "0x423b90",
+      "body": {
+        "available": true,
+        "provenance": "ghidra-function-body-address-set",
+        "ranges": [
+          {
+            "start": "0x423b90",
+            "end": "0x423ce6"
+          }
+        ],
+        "total_bytes": 343,
+        "span_bytes": 343,
+        "non_contiguous": false,
+        "contains_entry": true
+      },
+      "file": "rea-function-0x423b90.json",
+      "pseudocode_file": "rea-function-0x423b90.c"
+    }
+  ],
+  "card_food": [
+    {
+      "path": "D:\\Projects\\reference\\Rich6\\mainmenu\\cardset\\aiji\\card.crd",
+      "sha256": "0d366d2e7a244e70b00edb8b322d1ca68368d7b2b9d5ee314f537e8ed7131118",
+      "header_bytes": 40,
+      "record_bytes": 576,
+      "food_offset": 548,
+      "values": [
+        {
+          "id": "caishen",
+          "energy": 5
+        },
+        {
+          "id": "fushen",
+          "energy": 5
+        },
+        {
+          "id": "qiongshen",
+          "energy": 4
+        },
+        {
+          "id": "shuaishen",
+          "energy": 3
+        },
+        {
+          "id": "tianshi",
+          "energy": 4
+        },
+        {
+          "id": "emo",
+          "energy": 4
+        },
+        {
+          "id": "qingshen",
+          "energy": 4
+        },
+        {
+          "id": "tudigong",
+          "energy": 5
+        },
+        {
+          "id": "step1",
+          "energy": 5
+        },
+        {
+          "id": "step2",
+          "energy": 4
+        },
+        {
+          "id": "step3",
+          "energy": 3
+        },
+        {
+          "id": "step4",
+          "energy": 2
+        },
+        {
+          "id": "step5",
+          "energy": 1
+        },
+        {
+          "id": "turn",
+          "energy": 1
+        },
+        {
+          "id": "run",
+          "energy": 2
+        },
+        {
+          "id": "dice",
+          "energy": 4
+        },
+        {
+          "id": "rebuild",
+          "energy": 5
+        },
+        {
+          "id": "upgrade",
+          "energy": 2
+        },
+        {
+          "id": "monster",
+          "energy": 3
+        },
+        {
+          "id": "buyland",
+          "energy": 5
+        },
+        {
+          "id": "priceup",
+          "energy": 3
+        },
+        {
+          "id": "pricedown",
+          "energy": 2
+        },
+        {
+          "id": "mine",
+          "energy": 3
+        },
+        {
+          "id": "roadblock",
+          "energy": 3
+        },
+        {
+          "id": "free",
+          "energy": 4
+        },
+        {
+          "id": "invincible",
+          "energy": 3
+        },
+        {
+          "id": "missile",
+          "energy": 4
+        },
+        {
+          "id": "hibernate",
+          "energy": 3
+        },
+        {
+          "id": "redcard",
+          "energy": 3
+        },
+        {
+          "id": "blackcard",
+          "energy": 2
+        },
+        {
+          "id": "seize",
+          "energy": 3
+        },
+        {
+          "id": "copy",
+          "energy": 3
+        },
+        {
+          "id": "gem",
+          "energy": 2
+        },
+        {
+          "id": "hamburger",
+          "energy": 4
+        },
+        {
+          "id": "abduct",
+          "energy": 4
+        },
+        {
+          "id": "tax",
+          "energy": 3
+        },
+        {
+          "id": "rob",
+          "energy": 3
+        },
+        {
+          "id": "sharewealth",
+          "energy": 5
+        },
+        {
+          "id": "clear",
+          "energy": 2
+        },
+        {
+          "id": "stay",
+          "energy": 2
+        },
+        {
+          "id": "invisible",
+          "energy": 5
+        },
+        {
+          "id": "nuke",
+          "energy": 5
+        }
+      ]
+    },
+    {
+      "path": "D:\\Projects\\reference\\Rich6\\mainmenu\\cardset\\china\\card.crd",
+      "sha256": "8ed3fbcc8b8139007ab4053f582ecd1dae92fcfc61e172a6221aa5920c4749e0",
+      "header_bytes": 40,
+      "record_bytes": 576,
+      "food_offset": 548,
+      "values": [
+        {
+          "id": "caishen",
+          "energy": 5
+        },
+        {
+          "id": "fushen",
+          "energy": 5
+        },
+        {
+          "id": "qiongshen",
+          "energy": 4
+        },
+        {
+          "id": "shuaishen",
+          "energy": 3
+        },
+        {
+          "id": "tianshi",
+          "energy": 4
+        },
+        {
+          "id": "emo",
+          "energy": 4
+        },
+        {
+          "id": "qingshen",
+          "energy": 4
+        },
+        {
+          "id": "tudigong",
+          "energy": 5
+        },
+        {
+          "id": "step1",
+          "energy": 5
+        },
+        {
+          "id": "step2",
+          "energy": 4
+        },
+        {
+          "id": "step3",
+          "energy": 3
+        },
+        {
+          "id": "step4",
+          "energy": 2
+        },
+        {
+          "id": "step5",
+          "energy": 1
+        },
+        {
+          "id": "turn",
+          "energy": 1
+        },
+        {
+          "id": "run",
+          "energy": 2
+        },
+        {
+          "id": "dice",
+          "energy": 4
+        },
+        {
+          "id": "rebuild",
+          "energy": 5
+        },
+        {
+          "id": "upgrade",
+          "energy": 2
+        },
+        {
+          "id": "monster",
+          "energy": 3
+        },
+        {
+          "id": "buyland",
+          "energy": 5
+        },
+        {
+          "id": "priceup",
+          "energy": 3
+        },
+        {
+          "id": "pricedown",
+          "energy": 2
+        },
+        {
+          "id": "mine",
+          "energy": 3
+        },
+        {
+          "id": "roadblock",
+          "energy": 3
+        },
+        {
+          "id": "free",
+          "energy": 4
+        },
+        {
+          "id": "invincible",
+          "energy": 3
+        },
+        {
+          "id": "missile",
+          "energy": 4
+        },
+        {
+          "id": "hibernate",
+          "energy": 3
+        },
+        {
+          "id": "redcard",
+          "energy": 3
+        },
+        {
+          "id": "blackcard",
+          "energy": 2
+        },
+        {
+          "id": "seize",
+          "energy": 3
+        },
+        {
+          "id": "copy",
+          "energy": 3
+        },
+        {
+          "id": "gem",
+          "energy": 2
+        },
+        {
+          "id": "hamburger",
+          "energy": 4
+        },
+        {
+          "id": "abduct",
+          "energy": 4
+        },
+        {
+          "id": "tax",
+          "energy": 3
+        },
+        {
+          "id": "rob",
+          "energy": 3
+        },
+        {
+          "id": "sharewealth",
+          "energy": 5
+        },
+        {
+          "id": "clear",
+          "energy": 2
+        },
+        {
+          "id": "stay",
+          "energy": 2
+        },
+        {
+          "id": "invisible",
+          "energy": 5
+        },
+        {
+          "id": "nuke",
+          "energy": 5
+        }
+      ]
+    },
+    {
+      "path": "D:\\Projects\\reference\\Rich6\\mainmenu\\cardset\\island\\card.crd",
+      "sha256": "1af767e4bdf5903844a88519a77a674d193697c6f1077926aa2b711a4bf5e1db",
+      "header_bytes": 40,
+      "record_bytes": 576,
+      "food_offset": 548,
+      "values": [
+        {
+          "id": "caishen",
+          "energy": 5
+        },
+        {
+          "id": "fushen",
+          "energy": 5
+        },
+        {
+          "id": "qiongshen",
+          "energy": 4
+        },
+        {
+          "id": "shuaishen",
+          "energy": 3
+        },
+        {
+          "id": "tianshi",
+          "energy": 4
+        },
+        {
+          "id": "emo",
+          "energy": 4
+        },
+        {
+          "id": "qingshen",
+          "energy": 4
+        },
+        {
+          "id": "tudigong",
+          "energy": 5
+        },
+        {
+          "id": "step1",
+          "energy": 5
+        },
+        {
+          "id": "step2",
+          "energy": 4
+        },
+        {
+          "id": "step3",
+          "energy": 3
+        },
+        {
+          "id": "step4",
+          "energy": 2
+        },
+        {
+          "id": "step5",
+          "energy": 1
+        },
+        {
+          "id": "turn",
+          "energy": 1
+        },
+        {
+          "id": "run",
+          "energy": 2
+        },
+        {
+          "id": "dice",
+          "energy": 4
+        },
+        {
+          "id": "rebuild",
+          "energy": 5
+        },
+        {
+          "id": "upgrade",
+          "energy": 2
+        },
+        {
+          "id": "monster",
+          "energy": 3
+        },
+        {
+          "id": "buyland",
+          "energy": 5
+        },
+        {
+          "id": "priceup",
+          "energy": 3
+        },
+        {
+          "id": "pricedown",
+          "energy": 2
+        },
+        {
+          "id": "mine",
+          "energy": 3
+        },
+        {
+          "id": "roadblock",
+          "energy": 3
+        },
+        {
+          "id": "free",
+          "energy": 4
+        },
+        {
+          "id": "invincible",
+          "energy": 3
+        },
+        {
+          "id": "missile",
+          "energy": 4
+        },
+        {
+          "id": "hibernate",
+          "energy": 3
+        },
+        {
+          "id": "redcard",
+          "energy": 3
+        },
+        {
+          "id": "blackcard",
+          "energy": 2
+        },
+        {
+          "id": "seize",
+          "energy": 3
+        },
+        {
+          "id": "copy",
+          "energy": 3
+        },
+        {
+          "id": "gem",
+          "energy": 2
+        },
+        {
+          "id": "hamburger",
+          "energy": 4
+        },
+        {
+          "id": "abduct",
+          "energy": 4
+        },
+        {
+          "id": "tax",
+          "energy": 3
+        },
+        {
+          "id": "rob",
+          "energy": 3
+        },
+        {
+          "id": "sharewealth",
+          "energy": 5
+        },
+        {
+          "id": "clear",
+          "energy": 2
+        },
+        {
+          "id": "stay",
+          "energy": 2
+        },
+        {
+          "id": "invisible",
+          "energy": 5
+        },
+        {
+          "id": "nuke",
+          "energy": 5
+        }
+      ]
+    },
+    {
+      "path": "D:\\Projects\\reference\\Rich6\\mainmenu\\cardset\\japan\\card.crd",
+      "sha256": "6ff59861217dbd521682bd456caa0330c169d5d36e3f8a6f25cbd315e553b92e",
+      "header_bytes": 40,
+      "record_bytes": 576,
+      "food_offset": 548,
+      "values": [
+        {
+          "id": "caishen",
+          "energy": 5
+        },
+        {
+          "id": "fushen",
+          "energy": 5
+        },
+        {
+          "id": "qiongshen",
+          "energy": 4
+        },
+        {
+          "id": "shuaishen",
+          "energy": 3
+        },
+        {
+          "id": "tianshi",
+          "energy": 4
+        },
+        {
+          "id": "emo",
+          "energy": 4
+        },
+        {
+          "id": "qingshen",
+          "energy": 4
+        },
+        {
+          "id": "tudigong",
+          "energy": 5
+        },
+        {
+          "id": "step1",
+          "energy": 5
+        },
+        {
+          "id": "step2",
+          "energy": 4
+        },
+        {
+          "id": "step3",
+          "energy": 3
+        },
+        {
+          "id": "step4",
+          "energy": 2
+        },
+        {
+          "id": "step5",
+          "energy": 1
+        },
+        {
+          "id": "turn",
+          "energy": 1
+        },
+        {
+          "id": "run",
+          "energy": 2
+        },
+        {
+          "id": "dice",
+          "energy": 4
+        },
+        {
+          "id": "rebuild",
+          "energy": 5
+        },
+        {
+          "id": "upgrade",
+          "energy": 2
+        },
+        {
+          "id": "monster",
+          "energy": 3
+        },
+        {
+          "id": "buyland",
+          "energy": 5
+        },
+        {
+          "id": "priceup",
+          "energy": 3
+        },
+        {
+          "id": "pricedown",
+          "energy": 2
+        },
+        {
+          "id": "mine",
+          "energy": 3
+        },
+        {
+          "id": "roadblock",
+          "energy": 3
+        },
+        {
+          "id": "free",
+          "energy": 4
+        },
+        {
+          "id": "invincible",
+          "energy": 3
+        },
+        {
+          "id": "missile",
+          "energy": 4
+        },
+        {
+          "id": "hibernate",
+          "energy": 3
+        },
+        {
+          "id": "redcard",
+          "energy": 3
+        },
+        {
+          "id": "blackcard",
+          "energy": 2
+        },
+        {
+          "id": "seize",
+          "energy": 3
+        },
+        {
+          "id": "copy",
+          "energy": 3
+        },
+        {
+          "id": "gem",
+          "energy": 2
+        },
+        {
+          "id": "hamburger",
+          "energy": 4
+        },
+        {
+          "id": "abduct",
+          "energy": 4
+        },
+        {
+          "id": "tax",
+          "energy": 3
+        },
+        {
+          "id": "rob",
+          "energy": 3
+        },
+        {
+          "id": "sharewealth",
+          "energy": 5
+        },
+        {
+          "id": "clear",
+          "energy": 2
+        },
+        {
+          "id": "stay",
+          "energy": 2
+        },
+        {
+          "id": "invisible",
+          "energy": 5
+        },
+        {
+          "id": "nuke",
+          "energy": 5
+        }
+      ]
+    },
+    {
+      "path": "D:\\Projects\\reference\\Rich6\\mainmenu\\cardset\\paris\\card.crd",
+      "sha256": "fd77c946895784861aae80230d5a687100a45c81f034e0f3a5c5a156c4731759",
+      "header_bytes": 40,
+      "record_bytes": 576,
+      "food_offset": 548,
+      "values": [
+        {
+          "id": "caishen",
+          "energy": 5
+        },
+        {
+          "id": "fushen",
+          "energy": 5
+        },
+        {
+          "id": "qiongshen",
+          "energy": 4
+        },
+        {
+          "id": "shuaishen",
+          "energy": 3
+        },
+        {
+          "id": "tianshi",
+          "energy": 4
+        },
+        {
+          "id": "emo",
+          "energy": 4
+        },
+        {
+          "id": "qingshen",
+          "energy": 4
+        },
+        {
+          "id": "tudigong",
+          "energy": 5
+        },
+        {
+          "id": "step1",
+          "energy": 5
+        },
+        {
+          "id": "step2",
+          "energy": 4
+        },
+        {
+          "id": "step3",
+          "energy": 3
+        },
+        {
+          "id": "step4",
+          "energy": 2
+        },
+        {
+          "id": "step5",
+          "energy": 1
+        },
+        {
+          "id": "turn",
+          "energy": 1
+        },
+        {
+          "id": "run",
+          "energy": 2
+        },
+        {
+          "id": "dice",
+          "energy": 4
+        },
+        {
+          "id": "rebuild",
+          "energy": 5
+        },
+        {
+          "id": "upgrade",
+          "energy": 2
+        },
+        {
+          "id": "monster",
+          "energy": 3
+        },
+        {
+          "id": "buyland",
+          "energy": 5
+        },
+        {
+          "id": "priceup",
+          "energy": 3
+        },
+        {
+          "id": "pricedown",
+          "energy": 2
+        },
+        {
+          "id": "mine",
+          "energy": 3
+        },
+        {
+          "id": "roadblock",
+          "energy": 3
+        },
+        {
+          "id": "free",
+          "energy": 4
+        },
+        {
+          "id": "invincible",
+          "energy": 3
+        },
+        {
+          "id": "missile",
+          "energy": 4
+        },
+        {
+          "id": "hibernate",
+          "energy": 3
+        },
+        {
+          "id": "redcard",
+          "energy": 3
+        },
+        {
+          "id": "blackcard",
+          "energy": 2
+        },
+        {
+          "id": "seize",
+          "energy": 3
+        },
+        {
+          "id": "copy",
+          "energy": 3
+        },
+        {
+          "id": "gem",
+          "energy": 2
+        },
+        {
+          "id": "hamburger",
+          "energy": 4
+        },
+        {
+          "id": "abduct",
+          "energy": 4
+        },
+        {
+          "id": "tax",
+          "energy": 3
+        },
+        {
+          "id": "rob",
+          "energy": 3
+        },
+        {
+          "id": "sharewealth",
+          "energy": 5
+        },
+        {
+          "id": "clear",
+          "energy": 2
+        },
+        {
+          "id": "stay",
+          "energy": 2
+        },
+        {
+          "id": "invisible",
+          "energy": 5
+        },
+        {
+          "id": "nuke",
+          "energy": 5
+        }
+      ]
+    },
+    {
+      "path": "D:\\Projects\\reference\\Rich6\\mainmenu\\cardset\\space\\card.crd",
+      "sha256": "e58115999cca4e7c4aa06b4987b1695632bf5ad594d1fcb5f6164437d9db2d99",
+      "header_bytes": 40,
+      "record_bytes": 576,
+      "food_offset": 548,
+      "values": [
+        {
+          "id": "caishen",
+          "energy": 5
+        },
+        {
+          "id": "fushen",
+          "energy": 5
+        },
+        {
+          "id": "qiongshen",
+          "energy": 4
+        },
+        {
+          "id": "shuaishen",
+          "energy": 3
+        },
+        {
+          "id": "tianshi",
+          "energy": 4
+        },
+        {
+          "id": "emo",
+          "energy": 4
+        },
+        {
+          "id": "qingshen",
+          "energy": 4
+        },
+        {
+          "id": "tudigong",
+          "energy": 5
+        },
+        {
+          "id": "step1",
+          "energy": 5
+        },
+        {
+          "id": "step2",
+          "energy": 4
+        },
+        {
+          "id": "step3",
+          "energy": 3
+        },
+        {
+          "id": "step4",
+          "energy": 2
+        },
+        {
+          "id": "step5",
+          "energy": 1
+        },
+        {
+          "id": "turn",
+          "energy": 1
+        },
+        {
+          "id": "run",
+          "energy": 2
+        },
+        {
+          "id": "dice",
+          "energy": 4
+        },
+        {
+          "id": "rebuild",
+          "energy": 5
+        },
+        {
+          "id": "upgrade",
+          "energy": 2
+        },
+        {
+          "id": "monster",
+          "energy": 3
+        },
+        {
+          "id": "buyland",
+          "energy": 5
+        },
+        {
+          "id": "priceup",
+          "energy": 3
+        },
+        {
+          "id": "pricedown",
+          "energy": 2
+        },
+        {
+          "id": "mine",
+          "energy": 3
+        },
+        {
+          "id": "roadblock",
+          "energy": 3
+        },
+        {
+          "id": "free",
+          "energy": 4
+        },
+        {
+          "id": "invincible",
+          "energy": 3
+        },
+        {
+          "id": "missile",
+          "energy": 4
+        },
+        {
+          "id": "hibernate",
+          "energy": 3
+        },
+        {
+          "id": "redcard",
+          "energy": 3
+        },
+        {
+          "id": "blackcard",
+          "energy": 2
+        },
+        {
+          "id": "seize",
+          "energy": 3
+        },
+        {
+          "id": "copy",
+          "energy": 3
+        },
+        {
+          "id": "gem",
+          "energy": 2
+        },
+        {
+          "id": "hamburger",
+          "energy": 4
+        },
+        {
+          "id": "abduct",
+          "energy": 4
+        },
+        {
+          "id": "tax",
+          "energy": 3
+        },
+        {
+          "id": "rob",
+          "energy": 3
+        },
+        {
+          "id": "sharewealth",
+          "energy": 5
+        },
+        {
+          "id": "clear",
+          "energy": 2
+        },
+        {
+          "id": "stay",
+          "energy": 2
+        },
+        {
+          "id": "invisible",
+          "energy": 5
+        },
+        {
+          "id": "nuke",
+          "energy": 5
+        }
+      ]
+    },
+    {
+      "path": "D:\\Projects\\reference\\Rich6\\mainmenu\\cardset\\train\\card.crd",
+      "sha256": "fd77c946895784861aae80230d5a687100a45c81f034e0f3a5c5a156c4731759",
+      "header_bytes": 40,
+      "record_bytes": 576,
+      "food_offset": 548,
+      "values": [
+        {
+          "id": "caishen",
+          "energy": 5
+        },
+        {
+          "id": "fushen",
+          "energy": 5
+        },
+        {
+          "id": "qiongshen",
+          "energy": 4
+        },
+        {
+          "id": "shuaishen",
+          "energy": 3
+        },
+        {
+          "id": "tianshi",
+          "energy": 4
+        },
+        {
+          "id": "emo",
+          "energy": 4
+        },
+        {
+          "id": "qingshen",
+          "energy": 4
+        },
+        {
+          "id": "tudigong",
+          "energy": 5
+        },
+        {
+          "id": "step1",
+          "energy": 5
+        },
+        {
+          "id": "step2",
+          "energy": 4
+        },
+        {
+          "id": "step3",
+          "energy": 3
+        },
+        {
+          "id": "step4",
+          "energy": 2
+        },
+        {
+          "id": "step5",
+          "energy": 1
+        },
+        {
+          "id": "turn",
+          "energy": 1
+        },
+        {
+          "id": "run",
+          "energy": 2
+        },
+        {
+          "id": "dice",
+          "energy": 4
+        },
+        {
+          "id": "rebuild",
+          "energy": 5
+        },
+        {
+          "id": "upgrade",
+          "energy": 2
+        },
+        {
+          "id": "monster",
+          "energy": 3
+        },
+        {
+          "id": "buyland",
+          "energy": 5
+        },
+        {
+          "id": "priceup",
+          "energy": 3
+        },
+        {
+          "id": "pricedown",
+          "energy": 2
+        },
+        {
+          "id": "mine",
+          "energy": 3
+        },
+        {
+          "id": "roadblock",
+          "energy": 3
+        },
+        {
+          "id": "free",
+          "energy": 4
+        },
+        {
+          "id": "invincible",
+          "energy": 3
+        },
+        {
+          "id": "missile",
+          "energy": 4
+        },
+        {
+          "id": "hibernate",
+          "energy": 3
+        },
+        {
+          "id": "redcard",
+          "energy": 3
+        },
+        {
+          "id": "blackcard",
+          "energy": 2
+        },
+        {
+          "id": "seize",
+          "energy": 3
+        },
+        {
+          "id": "copy",
+          "energy": 3
+        },
+        {
+          "id": "gem",
+          "energy": 2
+        },
+        {
+          "id": "hamburger",
+          "energy": 4
+        },
+        {
+          "id": "abduct",
+          "energy": 4
+        },
+        {
+          "id": "tax",
+          "energy": 3
+        },
+        {
+          "id": "rob",
+          "energy": 3
+        },
+        {
+          "id": "sharewealth",
+          "energy": 5
+        },
+        {
+          "id": "clear",
+          "energy": 2
+        },
+        {
+          "id": "stay",
+          "energy": 2
+        },
+        {
+          "id": "invisible",
+          "energy": 5
+        },
+        {
+          "id": "nuke",
+          "energy": 5
+        }
+      ]
+    },
+    {
+      "path": "D:\\Projects\\reference\\Rich6\\mainmenu\\cardset\\trybuild\\card.crd",
+      "sha256": "fd77c946895784861aae80230d5a687100a45c81f034e0f3a5c5a156c4731759",
+      "header_bytes": 40,
+      "record_bytes": 576,
+      "food_offset": 548,
+      "values": [
+        {
+          "id": "caishen",
+          "energy": 5
+        },
+        {
+          "id": "fushen",
+          "energy": 5
+        },
+        {
+          "id": "qiongshen",
+          "energy": 4
+        },
+        {
+          "id": "shuaishen",
+          "energy": 3
+        },
+        {
+          "id": "tianshi",
+          "energy": 4
+        },
+        {
+          "id": "emo",
+          "energy": 4
+        },
+        {
+          "id": "qingshen",
+          "energy": 4
+        },
+        {
+          "id": "tudigong",
+          "energy": 5
+        },
+        {
+          "id": "step1",
+          "energy": 5
+        },
+        {
+          "id": "step2",
+          "energy": 4
+        },
+        {
+          "id": "step3",
+          "energy": 3
+        },
+        {
+          "id": "step4",
+          "energy": 2
+        },
+        {
+          "id": "step5",
+          "energy": 1
+        },
+        {
+          "id": "turn",
+          "energy": 1
+        },
+        {
+          "id": "run",
+          "energy": 2
+        },
+        {
+          "id": "dice",
+          "energy": 4
+        },
+        {
+          "id": "rebuild",
+          "energy": 5
+        },
+        {
+          "id": "upgrade",
+          "energy": 2
+        },
+        {
+          "id": "monster",
+          "energy": 3
+        },
+        {
+          "id": "buyland",
+          "energy": 5
+        },
+        {
+          "id": "priceup",
+          "energy": 3
+        },
+        {
+          "id": "pricedown",
+          "energy": 2
+        },
+        {
+          "id": "mine",
+          "energy": 3
+        },
+        {
+          "id": "roadblock",
+          "energy": 3
+        },
+        {
+          "id": "free",
+          "energy": 4
+        },
+        {
+          "id": "invincible",
+          "energy": 3
+        },
+        {
+          "id": "missile",
+          "energy": 4
+        },
+        {
+          "id": "hibernate",
+          "energy": 3
+        },
+        {
+          "id": "redcard",
+          "energy": 3
+        },
+        {
+          "id": "blackcard",
+          "energy": 2
+        },
+        {
+          "id": "seize",
+          "energy": 3
+        },
+        {
+          "id": "copy",
+          "energy": 3
+        },
+        {
+          "id": "gem",
+          "energy": 2
+        },
+        {
+          "id": "hamburger",
+          "energy": 4
+        },
+        {
+          "id": "abduct",
+          "energy": 4
+        },
+        {
+          "id": "tax",
+          "energy": 3
+        },
+        {
+          "id": "rob",
+          "energy": 3
+        },
+        {
+          "id": "sharewealth",
+          "energy": 5
+        },
+        {
+          "id": "clear",
+          "energy": 2
+        },
+        {
+          "id": "stay",
+          "energy": 2
+        },
+        {
+          "id": "invisible",
+          "energy": 5
+        },
+        {
+          "id": "nuke",
+          "energy": 5
+        }
+      ]
+    }
+  ]
+}

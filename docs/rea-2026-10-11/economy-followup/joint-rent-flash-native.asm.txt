@@ -1,0 +1,140 @@
+00442c70: mov      eax, dword ptr [esi + 0x50]
+00442c73: test     al, 2
+00442c75: je       0x442c7f
+00442c77: lea      edi, [ebp + 0x119c4]
+00442c7d: jmp      0x442cab
+00442c7f: test     al, 4
+00442c81: je       0x442c9d
+00442c83: fld      qword ptr [esi + 0x60]
+00442c86: fmul     qword ptr [0x4957c0]
+00442c8c: call     0x4853d4
+00442c91: test     al, 1
+00442c93: je       0x442ca9
+00442c95: lea      edi, [ebp + 0x119c4]
+00442c9b: jmp      0x442cab
+00442c9d: test     al, 1
+00442c9f: je       0x442ca9
+00442ca1: lea      edi, [ebp + 0x1197c]
+00442ca7: jmp      0x442cab
+00442ca9: xor      edi, edi
+00442cab: mov      ecx, dword ptr [esp + 0x1c]
+00442caf: call     0x404ea0
+00442cb4: push     ebx
+00442cb5: mov      ebx, dword ptr [esp + 0x20]
+00442cb9: mov      ecx, ebx
+00442cbb: call     0x404f30
+00442cc0: mov      eax, dword ptr [esi + 0x68]
+00442cc3: test     eax, eax
+00442cc5: je       0x442cd1
+00442cc7: mov      ecx, dword ptr [esi + 0x48]
+00442cca: call     0x406300
+00442ccf: jmp      0x442cdc
+00442cd1: mov      esi, dword ptr [esi + 0x48]
+00442cd4: mov      edx, dword ptr [esi]
+00442cd6: push     edi
+00442cd7: mov      ecx, esi
+00442cd9: call     dword ptr [edx + 8]
+00442cdc: mov      ecx, ebx
+00442cde: call     0x404ed0
+00442ce3: mov      ecx, ebp
+00442ce5: call     0x401d00
+00442cea: mov      esi, eax
+00442cec: test     esi, esi
+00442cee: jne      0x442ba8
+00442cf4: pop      edi
+00442cf5: pop      esi
+00442cf6: pop      ebp
+00442cf7: pop      ebx
+00442cf8: mov      esp, ebp
+00442cfa: pop      ebp
+00442cfb: ret      
+00442cfc: nop      
+00442cfd: nop      
+00442cfe: nop      
+00442cff: nop      
+00442d00: sub      esp, 0xc10
+00442d06: push     ebx
+00442d07: push     ebp
+00442d08: mov      ebx, ecx
+00442d0a: mov      eax, dword ptr [ebx + 0x24]
+00442d0d: push     esi
+00442d0e: xor      esi, esi
+00442d10: test     eax, eax
+00442d12: push     edi
+00442d13: jle      0x442d2e
+00442d15: xor      edi, edi
+00442d17: mov      ebp, dword ptr [ebx + 0x28]
+00442d1a: mov      ecx, edi
+00442d1c: add      ecx, ebp
+00442d1e: call     0x441b00
+00442d23: mov      eax, dword ptr [ebx + 0x24]
+00442d26: inc      esi
+00442d27: add      edi, 0xc
+00442d2a: cmp      esi, eax
+00442d2c: jl       0x442d17
+00442d2e: xor      edi, edi
+00442d30: mov      ecx, ebx
+00442d32: xor      ebp, ebp
+00442d34: mov      dword ptr [esp + 0x10], edi
+00442d38: call     0x401cf0
+00442d3d: mov      esi, eax
+00442d3f: test     esi, esi
+00442d41: je       0x442eb8
+00442d47: lea      eax, [esp + 0x420]
+00442d4e: lea      ecx, [esp + 0x20]
+00442d52: lea      edx, [esp + 0x820]
+00442d59: mov      dword ptr [esp + 0x14], eax
+00442d5d: mov      dword ptr [esp + 0x18], ecx
+00442d61: mov      dword ptr [esp + 0x1c], edx
+00442d65: fld      dword ptr [esi + 0x6c]
+00442d68: fcomp    dword ptr [0x495430]
+00442d6e: fnstsw   ax
+00442d70: test     ah, 0x41
+00442d73: jne      0x442dbd
+00442d75: fld      qword ptr [esp + 0xc24]
+00442d7c: fsubr    dword ptr [esi + 0x6c]
+00442d7f: fst      dword ptr [esi + 0x6c]
+00442d82: fcomp    dword ptr [0x495430]
+00442d88: fnstsw   ax
+00442d8a: test     ah, 0x41
+00442d8d: mov      eax, dword ptr [esi + 0x70]
+00442d90: je       0x442db5
+00442d92: test     eax, eax
+00442d94: je       0x442dac
+00442d96: mov      eax, dword ptr [esp + 0x1c]
+00442d9a: mov      edx, dword ptr [esp + 0x10]
+00442d9e: inc      edx
+00442d9f: mov      dword ptr [eax], esi
+00442da1: add      eax, 4
+00442da4: mov      dword ptr [esp + 0x10], edx
+00442da8: mov      dword ptr [esp + 0x1c], eax
+00442dac: mov      dword ptr [esi + 0x6c], 0
+00442db3: jmp      0x442dbd
+00442db5: test     eax, eax
+00442db7: je       0x442ea7
+00442dbd: test     byte ptr [esi + 0x50], 6
+00442dc1: je       0x442e0f
+00442dc3: fld      qword ptr [esp + 0xc24]
+00442dca: mov      al, byte ptr [esi + 0x50]
+00442dcd: test     al, 2
+00442dcf: fadd     qword ptr [esi + 0x60]
+00442dd2: fstp     qword ptr [esi + 0x60]
+00442dd5: je       0x442df0
+00442dd7: fld      qword ptr [esi + 0x60]
+00442dda: fcomp    qword ptr [0x4957b8]
+00442de0: fnstsw   ax
+00442de2: test     ah, 0x41
+00442de5: jne      0x442df0
+00442de7: push     2
+00442de9: mov      ecx, esi
+00442deb: call     0x443360
+00442df0: test     byte ptr [esi + 0x50], 4
+00442df4: je       0x442e0f
+00442df6: fld      qword ptr [esi + 0x60]
+00442df9: fcomp    qword ptr [0x495c20]
+00442dff: fnstsw   ax
+00442e01: test     ah, 0x41
+00442e04: jne      0x442e0f
+00442e06: push     4
+00442e08: mov      ecx, esi
+00442e0a: call     0x443360

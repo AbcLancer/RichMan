@@ -1,0 +1,37 @@
+[
+  {
+    "path": "game/scripts/core/sim.gd",
+    "sha256": "ffd438f7941c6dab4b1cc71a645fa5e5fe241f7a0a43bc2d18a9adb344413e69",
+    "bytes": 179892
+  },
+  {
+    "path": "game/scripts/core/rules.gd",
+    "sha256": "b6a624da5209ccea35c046acb4c05328d72c827b5f99d7058f59234efc645b9b",
+    "bytes": 16221
+  },
+  {
+    "path": "game/scripts/core/map_data.gd",
+    "sha256": "98eea97c78ceb112e92923a9b2bcc32c898edc75fb46a42b540bbe4cdff7b86d",
+    "bytes": 9124
+  },
+  {
+    "path": "game/scripts/core/plot_assembly.gd",
+    "sha256": "c171ae00ad1afa59063cd5126aef09843bb5baf42f194ec67f51d94b18125053",
+    "bytes": 2796
+  },
+  {
+    "path": "game/scripts/ui/app.gd",
+    "sha256": "7e36ee4b8ff2c53909cd2dc2568eb61861cc744821b0098d0e6a3116e1c6b840",
+    "bytes": 280094
+  },
+  {
+    "path": "game/data/rules/realtime.json",
+    "sha256": "dc46a508f8b49715916f79e0332907cd15fc8851f60aa860d4d31746eed0b8e6",
+    "bytes": 10611
+  },
+  {
+    "path": "game/data/rules/pets.json",
+    "sha256": "ea2a9b47c98d85bff3f0554a7dbe089ae8e5cfb016c7eba555539c8fe915c71d",
+    "bytes": 6017
+  }
+]

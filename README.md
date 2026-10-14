@@ -17,6 +17,10 @@
 
 ## 怎么打开
 
+### 打包到 PC、Android、iOS
+
+双击根目录 **`PACKAGE.bat`** 打包 Windows PC。Android/iOS 暂预留流程，适配等 PC 稳定后再做。环境准备和产物说明见 [打包说明](docs/packaging.md)。
+
 ### 方式一：双击 `PLAY.bat`（推荐）
 
 在工程根目录双击 **`PLAY.bat`** 即可。它会自动按以下顺序找 Godot，找到哪个用哪个：

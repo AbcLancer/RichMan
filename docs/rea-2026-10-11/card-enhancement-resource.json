@@ -1,0 +1,2738 @@
+[
+  {
+    "file": "D:\\Projects\\reference\\Rich6\\mainmenu\\cardset\\aiji\\card.crd",
+    "sha256": "0d366d2e7a244e70b00edb8b322d1ca68368d7b2b9d5ee314f537e8ed7131118",
+    "cards": [
+      {
+        "number": 1,
+        "name": "财神卡",
+        "file_offset": 612,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 2,
+        "name": "福神卡",
+        "file_offset": 1188,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 3,
+        "name": "穷神卡",
+        "file_offset": 1764,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 4,
+        "name": "衰神卡",
+        "file_offset": 2340,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 5,
+        "name": "天使卡",
+        "file_offset": 2916,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 6,
+        "name": "恶魔卡",
+        "file_offset": 3492,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 7,
+        "name": "请神卡",
+        "file_offset": 4068,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 8,
+        "name": "土地公",
+        "file_offset": 4644,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 9,
+        "name": "1步卡",
+        "file_offset": 5220,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 10,
+        "name": "2步卡",
+        "file_offset": 5796,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 11,
+        "name": "3步卡",
+        "file_offset": 6372,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 12,
+        "name": "4步卡",
+        "file_offset": 6948,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 13,
+        "name": "5步卡",
+        "file_offset": 7524,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 14,
+        "name": "转向卡",
+        "file_offset": 8100,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 15,
+        "name": "暴走卡",
+        "file_offset": 8676,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 16,
+        "name": "骰子卡",
+        "file_offset": 9252,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 17,
+        "name": "改建卡",
+        "file_offset": 9828,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 18,
+        "name": "升级卡",
+        "file_offset": 10404,
+        "raw_enhance": 5,
+        "runtime_mapping": 4,
+        "meaning": "天使卡"
+      },
+      {
+        "number": 19,
+        "name": "怪兽卡",
+        "file_offset": 10980,
+        "raw_enhance": 6,
+        "runtime_mapping": 5,
+        "meaning": "恶魔卡"
+      },
+      {
+        "number": 20,
+        "name": "购地卡",
+        "file_offset": 11556,
+        "raw_enhance": 8,
+        "runtime_mapping": 7,
+        "meaning": "土地公"
+      },
+      {
+        "number": 21,
+        "name": "涨价卡",
+        "file_offset": 12132,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 22,
+        "name": "降价卡",
+        "file_offset": 12708,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 23,
+        "name": "地雷卡",
+        "file_offset": 13284,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 24,
+        "name": "路障卡",
+        "file_offset": 13860,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 25,
+        "name": "免费卡",
+        "file_offset": 14436,
+        "raw_enhance": 1,
+        "runtime_mapping": 0,
+        "meaning": "财神卡"
+      },
+      {
+        "number": 26,
+        "name": "无敌卡",
+        "file_offset": 15012,
+        "raw_enhance": 41,
+        "runtime_mapping": 40,
+        "meaning": "隐形卡"
+      },
+      {
+        "number": 27,
+        "name": "飞弹卡",
+        "file_offset": 15588,
+        "raw_enhance": 42,
+        "runtime_mapping": 41,
+        "meaning": "核弹卡"
+      },
+      {
+        "number": 28,
+        "name": "冬眠卡",
+        "file_offset": 16164,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 29,
+        "name": "红卡",
+        "file_offset": 16740,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 30,
+        "name": "黑卡",
+        "file_offset": 17316,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 31,
+        "name": "查封卡",
+        "file_offset": 17892,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 32,
+        "name": "复制卡",
+        "file_offset": 18468,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 33,
+        "name": "宝石卡",
+        "file_offset": 19044,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 34,
+        "name": "汉堡卡",
+        "file_offset": 19620,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 35,
+        "name": "诱拐卡",
+        "file_offset": 20196,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 36,
+        "name": "查税卡",
+        "file_offset": 20772,
+        "raw_enhance": 3,
+        "runtime_mapping": 2,
+        "meaning": "穷神卡"
+      },
+      {
+        "number": 37,
+        "name": "抢夺卡",
+        "file_offset": 21348,
+        "raw_enhance": 4,
+        "runtime_mapping": 3,
+        "meaning": "衰神卡"
+      },
+      {
+        "number": 38,
+        "name": "均富卡",
+        "file_offset": 21924,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 39,
+        "name": "清除卡",
+        "file_offset": 22500,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 40,
+        "name": "停留卡",
+        "file_offset": 23076,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 41,
+        "name": "隐形卡",
+        "file_offset": 23652,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 42,
+        "name": "核弹卡",
+        "file_offset": 24228,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      }
+    ]
+  },
+  {
+    "file": "D:\\Projects\\reference\\Rich6\\mainmenu\\cardset\\china\\card.crd",
+    "sha256": "8ed3fbcc8b8139007ab4053f582ecd1dae92fcfc61e172a6221aa5920c4749e0",
+    "cards": [
+      {
+        "number": 1,
+        "name": "财神卡",
+        "file_offset": 612,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 2,
+        "name": "福神卡",
+        "file_offset": 1188,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 3,
+        "name": "穷神卡",
+        "file_offset": 1764,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 4,
+        "name": "衰神卡",
+        "file_offset": 2340,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 5,
+        "name": "天使卡",
+        "file_offset": 2916,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 6,
+        "name": "恶魔卡",
+        "file_offset": 3492,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 7,
+        "name": "请神卡",
+        "file_offset": 4068,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 8,
+        "name": "土地公",
+        "file_offset": 4644,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 9,
+        "name": "1步卡",
+        "file_offset": 5220,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 10,
+        "name": "2步卡",
+        "file_offset": 5796,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 11,
+        "name": "3步卡",
+        "file_offset": 6372,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 12,
+        "name": "4步卡",
+        "file_offset": 6948,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 13,
+        "name": "5步卡",
+        "file_offset": 7524,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 14,
+        "name": "转向卡",
+        "file_offset": 8100,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 15,
+        "name": "暴走卡",
+        "file_offset": 8676,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 16,
+        "name": "骰子卡",
+        "file_offset": 9252,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 17,
+        "name": "改建卡",
+        "file_offset": 9828,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 18,
+        "name": "升级卡",
+        "file_offset": 10404,
+        "raw_enhance": 5,
+        "runtime_mapping": 4,
+        "meaning": "天使卡"
+      },
+      {
+        "number": 19,
+        "name": "怪兽卡",
+        "file_offset": 10980,
+        "raw_enhance": 6,
+        "runtime_mapping": 5,
+        "meaning": "恶魔卡"
+      },
+      {
+        "number": 20,
+        "name": "购地卡",
+        "file_offset": 11556,
+        "raw_enhance": 8,
+        "runtime_mapping": 7,
+        "meaning": "土地公"
+      },
+      {
+        "number": 21,
+        "name": "涨价卡",
+        "file_offset": 12132,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 22,
+        "name": "降价卡",
+        "file_offset": 12708,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 23,
+        "name": "地雷卡",
+        "file_offset": 13284,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 24,
+        "name": "路障卡",
+        "file_offset": 13860,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 25,
+        "name": "免费卡",
+        "file_offset": 14436,
+        "raw_enhance": 1,
+        "runtime_mapping": 0,
+        "meaning": "财神卡"
+      },
+      {
+        "number": 26,
+        "name": "无敌卡",
+        "file_offset": 15012,
+        "raw_enhance": 41,
+        "runtime_mapping": 40,
+        "meaning": "隐形卡"
+      },
+      {
+        "number": 27,
+        "name": "飞弹卡",
+        "file_offset": 15588,
+        "raw_enhance": 42,
+        "runtime_mapping": 41,
+        "meaning": "核弹卡"
+      },
+      {
+        "number": 28,
+        "name": "冬眠卡",
+        "file_offset": 16164,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 29,
+        "name": "红卡",
+        "file_offset": 16740,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 30,
+        "name": "黑卡",
+        "file_offset": 17316,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 31,
+        "name": "查封卡",
+        "file_offset": 17892,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 32,
+        "name": "复制卡",
+        "file_offset": 18468,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 33,
+        "name": "宝石卡",
+        "file_offset": 19044,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 34,
+        "name": "汉堡卡",
+        "file_offset": 19620,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 35,
+        "name": "诱拐卡",
+        "file_offset": 20196,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 36,
+        "name": "查税卡",
+        "file_offset": 20772,
+        "raw_enhance": 3,
+        "runtime_mapping": 2,
+        "meaning": "穷神卡"
+      },
+      {
+        "number": 37,
+        "name": "抢夺卡",
+        "file_offset": 21348,
+        "raw_enhance": 4,
+        "runtime_mapping": 3,
+        "meaning": "衰神卡"
+      },
+      {
+        "number": 38,
+        "name": "均富卡",
+        "file_offset": 21924,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 39,
+        "name": "清除卡",
+        "file_offset": 22500,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 40,
+        "name": "停留卡",
+        "file_offset": 23076,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 41,
+        "name": "隐形卡",
+        "file_offset": 23652,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 42,
+        "name": "核弹卡",
+        "file_offset": 24228,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      }
+    ]
+  },
+  {
+    "file": "D:\\Projects\\reference\\Rich6\\mainmenu\\cardset\\island\\card.crd",
+    "sha256": "1af767e4bdf5903844a88519a77a674d193697c6f1077926aa2b711a4bf5e1db",
+    "cards": [
+      {
+        "number": 1,
+        "name": "财神卡",
+        "file_offset": 612,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 2,
+        "name": "福神卡",
+        "file_offset": 1188,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 3,
+        "name": "穷神卡",
+        "file_offset": 1764,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 4,
+        "name": "衰神卡",
+        "file_offset": 2340,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 5,
+        "name": "天使卡",
+        "file_offset": 2916,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 6,
+        "name": "恶魔卡",
+        "file_offset": 3492,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 7,
+        "name": "请神卡",
+        "file_offset": 4068,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 8,
+        "name": "土地公",
+        "file_offset": 4644,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 9,
+        "name": "1步卡",
+        "file_offset": 5220,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 10,
+        "name": "2步卡",
+        "file_offset": 5796,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 11,
+        "name": "3步卡",
+        "file_offset": 6372,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 12,
+        "name": "4步卡",
+        "file_offset": 6948,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 13,
+        "name": "5步卡",
+        "file_offset": 7524,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 14,
+        "name": "转向卡",
+        "file_offset": 8100,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 15,
+        "name": "暴走卡",
+        "file_offset": 8676,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 16,
+        "name": "骰子卡",
+        "file_offset": 9252,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 17,
+        "name": "改建卡",
+        "file_offset": 9828,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 18,
+        "name": "升级卡",
+        "file_offset": 10404,
+        "raw_enhance": 5,
+        "runtime_mapping": 4,
+        "meaning": "天使卡"
+      },
+      {
+        "number": 19,
+        "name": "怪兽卡",
+        "file_offset": 10980,
+        "raw_enhance": 6,
+        "runtime_mapping": 5,
+        "meaning": "恶魔卡"
+      },
+      {
+        "number": 20,
+        "name": "购地卡",
+        "file_offset": 11556,
+        "raw_enhance": 8,
+        "runtime_mapping": 7,
+        "meaning": "土地公"
+      },
+      {
+        "number": 21,
+        "name": "涨价卡",
+        "file_offset": 12132,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 22,
+        "name": "降价卡",
+        "file_offset": 12708,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 23,
+        "name": "地雷卡",
+        "file_offset": 13284,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 24,
+        "name": "路障卡",
+        "file_offset": 13860,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 25,
+        "name": "免费卡",
+        "file_offset": 14436,
+        "raw_enhance": 1,
+        "runtime_mapping": 0,
+        "meaning": "财神卡"
+      },
+      {
+        "number": 26,
+        "name": "无敌卡",
+        "file_offset": 15012,
+        "raw_enhance": 41,
+        "runtime_mapping": 40,
+        "meaning": "隐形卡"
+      },
+      {
+        "number": 27,
+        "name": "飞弹卡",
+        "file_offset": 15588,
+        "raw_enhance": 42,
+        "runtime_mapping": 41,
+        "meaning": "核弹卡"
+      },
+      {
+        "number": 28,
+        "name": "冬眠卡",
+        "file_offset": 16164,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 29,
+        "name": "红卡",
+        "file_offset": 16740,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 30,
+        "name": "黑卡",
+        "file_offset": 17316,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 31,
+        "name": "查封卡",
+        "file_offset": 17892,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 32,
+        "name": "复制卡",
+        "file_offset": 18468,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 33,
+        "name": "宝石卡",
+        "file_offset": 19044,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 34,
+        "name": "汉堡卡",
+        "file_offset": 19620,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 35,
+        "name": "诱拐卡",
+        "file_offset": 20196,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 36,
+        "name": "查税卡",
+        "file_offset": 20772,
+        "raw_enhance": 3,
+        "runtime_mapping": 2,
+        "meaning": "穷神卡"
+      },
+      {
+        "number": 37,
+        "name": "抢夺卡",
+        "file_offset": 21348,
+        "raw_enhance": 4,
+        "runtime_mapping": 3,
+        "meaning": "衰神卡"
+      },
+      {
+        "number": 38,
+        "name": "均富卡",
+        "file_offset": 21924,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 39,
+        "name": "清除卡",
+        "file_offset": 22500,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 40,
+        "name": "停留卡",
+        "file_offset": 23076,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 41,
+        "name": "隐形卡",
+        "file_offset": 23652,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 42,
+        "name": "核弹卡",
+        "file_offset": 24228,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      }
+    ]
+  },
+  {
+    "file": "D:\\Projects\\reference\\Rich6\\mainmenu\\cardset\\japan\\card.crd",
+    "sha256": "6ff59861217dbd521682bd456caa0330c169d5d36e3f8a6f25cbd315e553b92e",
+    "cards": [
+      {
+        "number": 1,
+        "name": "财神卡",
+        "file_offset": 612,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 2,
+        "name": "福神卡",
+        "file_offset": 1188,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 3,
+        "name": "穷神卡",
+        "file_offset": 1764,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 4,
+        "name": "衰神卡",
+        "file_offset": 2340,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 5,
+        "name": "天使卡",
+        "file_offset": 2916,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 6,
+        "name": "恶魔卡",
+        "file_offset": 3492,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 7,
+        "name": "请神卡",
+        "file_offset": 4068,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 8,
+        "name": "土地公",
+        "file_offset": 4644,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 9,
+        "name": "1步卡",
+        "file_offset": 5220,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 10,
+        "name": "2步卡",
+        "file_offset": 5796,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 11,
+        "name": "3步卡",
+        "file_offset": 6372,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 12,
+        "name": "4步卡",
+        "file_offset": 6948,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 13,
+        "name": "5步卡",
+        "file_offset": 7524,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 14,
+        "name": "转向卡",
+        "file_offset": 8100,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 15,
+        "name": "暴走卡",
+        "file_offset": 8676,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 16,
+        "name": "骰子卡",
+        "file_offset": 9252,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 17,
+        "name": "改建卡",
+        "file_offset": 9828,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 18,
+        "name": "升级卡",
+        "file_offset": 10404,
+        "raw_enhance": 5,
+        "runtime_mapping": 4,
+        "meaning": "天使卡"
+      },
+      {
+        "number": 19,
+        "name": "怪兽卡",
+        "file_offset": 10980,
+        "raw_enhance": 6,
+        "runtime_mapping": 5,
+        "meaning": "恶魔卡"
+      },
+      {
+        "number": 20,
+        "name": "购地卡",
+        "file_offset": 11556,
+        "raw_enhance": 8,
+        "runtime_mapping": 7,
+        "meaning": "土地公"
+      },
+      {
+        "number": 21,
+        "name": "涨价卡",
+        "file_offset": 12132,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 22,
+        "name": "降价卡",
+        "file_offset": 12708,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 23,
+        "name": "地雷卡",
+        "file_offset": 13284,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 24,
+        "name": "路障卡",
+        "file_offset": 13860,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 25,
+        "name": "免费卡",
+        "file_offset": 14436,
+        "raw_enhance": 1,
+        "runtime_mapping": 0,
+        "meaning": "财神卡"
+      },
+      {
+        "number": 26,
+        "name": "无敌卡",
+        "file_offset": 15012,
+        "raw_enhance": 41,
+        "runtime_mapping": 40,
+        "meaning": "隐形卡"
+      },
+      {
+        "number": 27,
+        "name": "飞弹卡",
+        "file_offset": 15588,
+        "raw_enhance": 42,
+        "runtime_mapping": 41,
+        "meaning": "核弹卡"
+      },
+      {
+        "number": 28,
+        "name": "冬眠卡",
+        "file_offset": 16164,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 29,
+        "name": "红卡",
+        "file_offset": 16740,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 30,
+        "name": "黑卡",
+        "file_offset": 17316,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 31,
+        "name": "查封卡",
+        "file_offset": 17892,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 32,
+        "name": "复制卡",
+        "file_offset": 18468,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 33,
+        "name": "宝石卡",
+        "file_offset": 19044,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 34,
+        "name": "汉堡卡",
+        "file_offset": 19620,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 35,
+        "name": "诱拐卡",
+        "file_offset": 20196,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 36,
+        "name": "查税卡",
+        "file_offset": 20772,
+        "raw_enhance": 3,
+        "runtime_mapping": 2,
+        "meaning": "穷神卡"
+      },
+      {
+        "number": 37,
+        "name": "抢夺卡",
+        "file_offset": 21348,
+        "raw_enhance": 4,
+        "runtime_mapping": 3,
+        "meaning": "衰神卡"
+      },
+      {
+        "number": 38,
+        "name": "均富卡",
+        "file_offset": 21924,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 39,
+        "name": "清除卡",
+        "file_offset": 22500,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 40,
+        "name": "停留卡",
+        "file_offset": 23076,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 41,
+        "name": "隐形卡",
+        "file_offset": 23652,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 42,
+        "name": "核弹卡",
+        "file_offset": 24228,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      }
+    ]
+  },
+  {
+    "file": "D:\\Projects\\reference\\Rich6\\mainmenu\\cardset\\paris\\card.crd",
+    "sha256": "fd77c946895784861aae80230d5a687100a45c81f034e0f3a5c5a156c4731759",
+    "cards": [
+      {
+        "number": 1,
+        "name": "财神卡",
+        "file_offset": 612,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 2,
+        "name": "福神卡",
+        "file_offset": 1188,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 3,
+        "name": "穷神卡",
+        "file_offset": 1764,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 4,
+        "name": "衰神卡",
+        "file_offset": 2340,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 5,
+        "name": "天使卡",
+        "file_offset": 2916,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 6,
+        "name": "恶魔卡",
+        "file_offset": 3492,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 7,
+        "name": "请神卡",
+        "file_offset": 4068,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 8,
+        "name": "土地公",
+        "file_offset": 4644,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 9,
+        "name": "1步卡",
+        "file_offset": 5220,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 10,
+        "name": "2步卡",
+        "file_offset": 5796,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 11,
+        "name": "3步卡",
+        "file_offset": 6372,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 12,
+        "name": "4步卡",
+        "file_offset": 6948,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 13,
+        "name": "5步卡",
+        "file_offset": 7524,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 14,
+        "name": "转向卡",
+        "file_offset": 8100,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 15,
+        "name": "暴走卡",
+        "file_offset": 8676,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 16,
+        "name": "骰子卡",
+        "file_offset": 9252,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 17,
+        "name": "改建卡",
+        "file_offset": 9828,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 18,
+        "name": "升级卡",
+        "file_offset": 10404,
+        "raw_enhance": 5,
+        "runtime_mapping": 4,
+        "meaning": "天使卡"
+      },
+      {
+        "number": 19,
+        "name": "怪兽卡",
+        "file_offset": 10980,
+        "raw_enhance": 6,
+        "runtime_mapping": 5,
+        "meaning": "恶魔卡"
+      },
+      {
+        "number": 20,
+        "name": "购地卡",
+        "file_offset": 11556,
+        "raw_enhance": 8,
+        "runtime_mapping": 7,
+        "meaning": "土地公"
+      },
+      {
+        "number": 21,
+        "name": "涨价卡",
+        "file_offset": 12132,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 22,
+        "name": "降价卡",
+        "file_offset": 12708,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 23,
+        "name": "地雷卡",
+        "file_offset": 13284,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 24,
+        "name": "路障卡",
+        "file_offset": 13860,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 25,
+        "name": "免费卡",
+        "file_offset": 14436,
+        "raw_enhance": 1,
+        "runtime_mapping": 0,
+        "meaning": "财神卡"
+      },
+      {
+        "number": 26,
+        "name": "无敌卡",
+        "file_offset": 15012,
+        "raw_enhance": 41,
+        "runtime_mapping": 40,
+        "meaning": "隐形卡"
+      },
+      {
+        "number": 27,
+        "name": "飞弹卡",
+        "file_offset": 15588,
+        "raw_enhance": 42,
+        "runtime_mapping": 41,
+        "meaning": "核弹卡"
+      },
+      {
+        "number": 28,
+        "name": "冬眠卡",
+        "file_offset": 16164,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 29,
+        "name": "红卡",
+        "file_offset": 16740,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 30,
+        "name": "黑卡",
+        "file_offset": 17316,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 31,
+        "name": "查封卡",
+        "file_offset": 17892,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 32,
+        "name": "复制卡",
+        "file_offset": 18468,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 33,
+        "name": "宝石卡",
+        "file_offset": 19044,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 34,
+        "name": "汉堡卡",
+        "file_offset": 19620,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 35,
+        "name": "诱拐卡",
+        "file_offset": 20196,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 36,
+        "name": "查税卡",
+        "file_offset": 20772,
+        "raw_enhance": 3,
+        "runtime_mapping": 2,
+        "meaning": "穷神卡"
+      },
+      {
+        "number": 37,
+        "name": "抢夺卡",
+        "file_offset": 21348,
+        "raw_enhance": 4,
+        "runtime_mapping": 3,
+        "meaning": "衰神卡"
+      },
+      {
+        "number": 38,
+        "name": "均富卡",
+        "file_offset": 21924,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 39,
+        "name": "清除卡",
+        "file_offset": 22500,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 40,
+        "name": "停留卡",
+        "file_offset": 23076,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 41,
+        "name": "隐形卡",
+        "file_offset": 23652,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 42,
+        "name": "核弹卡",
+        "file_offset": 24228,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      }
+    ]
+  },
+  {
+    "file": "D:\\Projects\\reference\\Rich6\\mainmenu\\cardset\\space\\card.crd",
+    "sha256": "e58115999cca4e7c4aa06b4987b1695632bf5ad594d1fcb5f6164437d9db2d99",
+    "cards": [
+      {
+        "number": 1,
+        "name": "财神卡",
+        "file_offset": 612,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 2,
+        "name": "福神卡",
+        "file_offset": 1188,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 3,
+        "name": "穷神卡",
+        "file_offset": 1764,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 4,
+        "name": "衰神卡",
+        "file_offset": 2340,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 5,
+        "name": "天使卡",
+        "file_offset": 2916,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 6,
+        "name": "恶魔卡",
+        "file_offset": 3492,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 7,
+        "name": "请神卡",
+        "file_offset": 4068,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 8,
+        "name": "土地公",
+        "file_offset": 4644,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 9,
+        "name": "1步卡",
+        "file_offset": 5220,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 10,
+        "name": "2步卡",
+        "file_offset": 5796,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 11,
+        "name": "3步卡",
+        "file_offset": 6372,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 12,
+        "name": "4步卡",
+        "file_offset": 6948,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 13,
+        "name": "5步卡",
+        "file_offset": 7524,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 14,
+        "name": "转向卡",
+        "file_offset": 8100,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 15,
+        "name": "暴走卡",
+        "file_offset": 8676,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 16,
+        "name": "骰子卡",
+        "file_offset": 9252,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 17,
+        "name": "改建卡",
+        "file_offset": 9828,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 18,
+        "name": "升级卡",
+        "file_offset": 10404,
+        "raw_enhance": 5,
+        "runtime_mapping": 4,
+        "meaning": "天使卡"
+      },
+      {
+        "number": 19,
+        "name": "怪兽卡",
+        "file_offset": 10980,
+        "raw_enhance": 6,
+        "runtime_mapping": 5,
+        "meaning": "恶魔卡"
+      },
+      {
+        "number": 20,
+        "name": "购地卡",
+        "file_offset": 11556,
+        "raw_enhance": 8,
+        "runtime_mapping": 7,
+        "meaning": "土地公"
+      },
+      {
+        "number": 21,
+        "name": "涨价卡",
+        "file_offset": 12132,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 22,
+        "name": "降价卡",
+        "file_offset": 12708,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 23,
+        "name": "地雷卡",
+        "file_offset": 13284,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 24,
+        "name": "路障卡",
+        "file_offset": 13860,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 25,
+        "name": "免费卡",
+        "file_offset": 14436,
+        "raw_enhance": 1,
+        "runtime_mapping": 0,
+        "meaning": "财神卡"
+      },
+      {
+        "number": 26,
+        "name": "无敌卡",
+        "file_offset": 15012,
+        "raw_enhance": 41,
+        "runtime_mapping": 40,
+        "meaning": "隐形卡"
+      },
+      {
+        "number": 27,
+        "name": "飞弹卡",
+        "file_offset": 15588,
+        "raw_enhance": 42,
+        "runtime_mapping": 41,
+        "meaning": "核弹卡"
+      },
+      {
+        "number": 28,
+        "name": "冬眠卡",
+        "file_offset": 16164,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 29,
+        "name": "红卡",
+        "file_offset": 16740,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 30,
+        "name": "黑卡",
+        "file_offset": 17316,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 31,
+        "name": "查封卡",
+        "file_offset": 17892,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 32,
+        "name": "复制卡",
+        "file_offset": 18468,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 33,
+        "name": "宝石卡",
+        "file_offset": 19044,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 34,
+        "name": "汉堡卡",
+        "file_offset": 19620,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 35,
+        "name": "诱拐卡",
+        "file_offset": 20196,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 36,
+        "name": "查税卡",
+        "file_offset": 20772,
+        "raw_enhance": 3,
+        "runtime_mapping": 2,
+        "meaning": "穷神卡"
+      },
+      {
+        "number": 37,
+        "name": "抢夺卡",
+        "file_offset": 21348,
+        "raw_enhance": 4,
+        "runtime_mapping": 3,
+        "meaning": "衰神卡"
+      },
+      {
+        "number": 38,
+        "name": "均富卡",
+        "file_offset": 21924,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 39,
+        "name": "清除卡",
+        "file_offset": 22500,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 40,
+        "name": "停留卡",
+        "file_offset": 23076,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 41,
+        "name": "隐形卡",
+        "file_offset": 23652,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 42,
+        "name": "核弹卡",
+        "file_offset": 24228,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      }
+    ]
+  },
+  {
+    "file": "D:\\Projects\\reference\\Rich6\\mainmenu\\cardset\\train\\card.crd",
+    "sha256": "fd77c946895784861aae80230d5a687100a45c81f034e0f3a5c5a156c4731759",
+    "cards": [
+      {
+        "number": 1,
+        "name": "财神卡",
+        "file_offset": 612,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 2,
+        "name": "福神卡",
+        "file_offset": 1188,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 3,
+        "name": "穷神卡",
+        "file_offset": 1764,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 4,
+        "name": "衰神卡",
+        "file_offset": 2340,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 5,
+        "name": "天使卡",
+        "file_offset": 2916,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 6,
+        "name": "恶魔卡",
+        "file_offset": 3492,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 7,
+        "name": "请神卡",
+        "file_offset": 4068,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 8,
+        "name": "土地公",
+        "file_offset": 4644,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 9,
+        "name": "1步卡",
+        "file_offset": 5220,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 10,
+        "name": "2步卡",
+        "file_offset": 5796,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 11,
+        "name": "3步卡",
+        "file_offset": 6372,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 12,
+        "name": "4步卡",
+        "file_offset": 6948,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 13,
+        "name": "5步卡",
+        "file_offset": 7524,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 14,
+        "name": "转向卡",
+        "file_offset": 8100,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 15,
+        "name": "暴走卡",
+        "file_offset": 8676,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 16,
+        "name": "骰子卡",
+        "file_offset": 9252,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 17,
+        "name": "改建卡",
+        "file_offset": 9828,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 18,
+        "name": "升级卡",
+        "file_offset": 10404,
+        "raw_enhance": 5,
+        "runtime_mapping": 4,
+        "meaning": "天使卡"
+      },
+      {
+        "number": 19,
+        "name": "怪兽卡",
+        "file_offset": 10980,
+        "raw_enhance": 6,
+        "runtime_mapping": 5,
+        "meaning": "恶魔卡"
+      },
+      {
+        "number": 20,
+        "name": "购地卡",
+        "file_offset": 11556,
+        "raw_enhance": 8,
+        "runtime_mapping": 7,
+        "meaning": "土地公"
+      },
+      {
+        "number": 21,
+        "name": "涨价卡",
+        "file_offset": 12132,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 22,
+        "name": "降价卡",
+        "file_offset": 12708,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 23,
+        "name": "地雷卡",
+        "file_offset": 13284,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 24,
+        "name": "路障卡",
+        "file_offset": 13860,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 25,
+        "name": "免费卡",
+        "file_offset": 14436,
+        "raw_enhance": 1,
+        "runtime_mapping": 0,
+        "meaning": "财神卡"
+      },
+      {
+        "number": 26,
+        "name": "无敌卡",
+        "file_offset": 15012,
+        "raw_enhance": 41,
+        "runtime_mapping": 40,
+        "meaning": "隐形卡"
+      },
+      {
+        "number": 27,
+        "name": "飞弹卡",
+        "file_offset": 15588,
+        "raw_enhance": 42,
+        "runtime_mapping": 41,
+        "meaning": "核弹卡"
+      },
+      {
+        "number": 28,
+        "name": "冬眠卡",
+        "file_offset": 16164,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 29,
+        "name": "红卡",
+        "file_offset": 16740,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 30,
+        "name": "黑卡",
+        "file_offset": 17316,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 31,
+        "name": "查封卡",
+        "file_offset": 17892,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 32,
+        "name": "复制卡",
+        "file_offset": 18468,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 33,
+        "name": "宝石卡",
+        "file_offset": 19044,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 34,
+        "name": "汉堡卡",
+        "file_offset": 19620,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 35,
+        "name": "诱拐卡",
+        "file_offset": 20196,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 36,
+        "name": "查税卡",
+        "file_offset": 20772,
+        "raw_enhance": 3,
+        "runtime_mapping": 2,
+        "meaning": "穷神卡"
+      },
+      {
+        "number": 37,
+        "name": "抢夺卡",
+        "file_offset": 21348,
+        "raw_enhance": 4,
+        "runtime_mapping": 3,
+        "meaning": "衰神卡"
+      },
+      {
+        "number": 38,
+        "name": "均富卡",
+        "file_offset": 21924,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 39,
+        "name": "清除卡",
+        "file_offset": 22500,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 40,
+        "name": "停留卡",
+        "file_offset": 23076,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 41,
+        "name": "隐形卡",
+        "file_offset": 23652,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 42,
+        "name": "核弹卡",
+        "file_offset": 24228,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      }
+    ]
+  },
+  {
+    "file": "D:\\Projects\\reference\\Rich6\\mainmenu\\cardset\\trybuild\\card.crd",
+    "sha256": "fd77c946895784861aae80230d5a687100a45c81f034e0f3a5c5a156c4731759",
+    "cards": [
+      {
+        "number": 1,
+        "name": "财神卡",
+        "file_offset": 612,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 2,
+        "name": "福神卡",
+        "file_offset": 1188,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 3,
+        "name": "穷神卡",
+        "file_offset": 1764,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 4,
+        "name": "衰神卡",
+        "file_offset": 2340,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 5,
+        "name": "天使卡",
+        "file_offset": 2916,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 6,
+        "name": "恶魔卡",
+        "file_offset": 3492,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 7,
+        "name": "请神卡",
+        "file_offset": 4068,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 8,
+        "name": "土地公",
+        "file_offset": 4644,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 9,
+        "name": "1步卡",
+        "file_offset": 5220,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 10,
+        "name": "2步卡",
+        "file_offset": 5796,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 11,
+        "name": "3步卡",
+        "file_offset": 6372,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 12,
+        "name": "4步卡",
+        "file_offset": 6948,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 13,
+        "name": "5步卡",
+        "file_offset": 7524,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 14,
+        "name": "转向卡",
+        "file_offset": 8100,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 15,
+        "name": "暴走卡",
+        "file_offset": 8676,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 16,
+        "name": "骰子卡",
+        "file_offset": 9252,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 17,
+        "name": "改建卡",
+        "file_offset": 9828,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 18,
+        "name": "升级卡",
+        "file_offset": 10404,
+        "raw_enhance": 5,
+        "runtime_mapping": 4,
+        "meaning": "天使卡"
+      },
+      {
+        "number": 19,
+        "name": "怪兽卡",
+        "file_offset": 10980,
+        "raw_enhance": 6,
+        "runtime_mapping": 5,
+        "meaning": "恶魔卡"
+      },
+      {
+        "number": 20,
+        "name": "购地卡",
+        "file_offset": 11556,
+        "raw_enhance": 8,
+        "runtime_mapping": 7,
+        "meaning": "土地公"
+      },
+      {
+        "number": 21,
+        "name": "涨价卡",
+        "file_offset": 12132,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 22,
+        "name": "降价卡",
+        "file_offset": 12708,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 23,
+        "name": "地雷卡",
+        "file_offset": 13284,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 24,
+        "name": "路障卡",
+        "file_offset": 13860,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 25,
+        "name": "免费卡",
+        "file_offset": 14436,
+        "raw_enhance": 1,
+        "runtime_mapping": 0,
+        "meaning": "财神卡"
+      },
+      {
+        "number": 26,
+        "name": "无敌卡",
+        "file_offset": 15012,
+        "raw_enhance": 41,
+        "runtime_mapping": 40,
+        "meaning": "隐形卡"
+      },
+      {
+        "number": 27,
+        "name": "飞弹卡",
+        "file_offset": 15588,
+        "raw_enhance": 42,
+        "runtime_mapping": 41,
+        "meaning": "核弹卡"
+      },
+      {
+        "number": 28,
+        "name": "冬眠卡",
+        "file_offset": 16164,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 29,
+        "name": "红卡",
+        "file_offset": 16740,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 30,
+        "name": "黑卡",
+        "file_offset": 17316,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 31,
+        "name": "查封卡",
+        "file_offset": 17892,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 32,
+        "name": "复制卡",
+        "file_offset": 18468,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 33,
+        "name": "宝石卡",
+        "file_offset": 19044,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 34,
+        "name": "汉堡卡",
+        "file_offset": 19620,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 35,
+        "name": "诱拐卡",
+        "file_offset": 20196,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 36,
+        "name": "查税卡",
+        "file_offset": 20772,
+        "raw_enhance": 3,
+        "runtime_mapping": 2,
+        "meaning": "穷神卡"
+      },
+      {
+        "number": 37,
+        "name": "抢夺卡",
+        "file_offset": 21348,
+        "raw_enhance": 4,
+        "runtime_mapping": 3,
+        "meaning": "衰神卡"
+      },
+      {
+        "number": 38,
+        "name": "均富卡",
+        "file_offset": 21924,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 39,
+        "name": "清除卡",
+        "file_offset": 22500,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 40,
+        "name": "停留卡",
+        "file_offset": 23076,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      },
+      {
+        "number": 41,
+        "name": "隐形卡",
+        "file_offset": 23652,
+        "raw_enhance": 1000,
+        "runtime_mapping": 999,
+        "meaning": "enhanced flag"
+      },
+      {
+        "number": 42,
+        "name": "核弹卡",
+        "file_offset": 24228,
+        "raw_enhance": 0,
+        "runtime_mapping": -1,
+        "meaning": "cannot enhance"
+      }
+    ]
+  }
+]

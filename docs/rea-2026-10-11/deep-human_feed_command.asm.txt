@@ -1,0 +1,39 @@
+; human_feed_command: VA 0x43b672..0x43b6f1 (end exclusive)
+; Original EXE SHA256 5dd5c38e09aefbdc2cadd970aefb14a2e64b0560e943d8ef0fbdfddb77a4e1f7
+0043b672: 8d44242e                 lea      eax, [esp + 0x2e]
+0043b676: 50                       push     eax
+0043b677: 8bcb                     mov      ecx, ebx
+0043b679: e89245ffff               call     0x42fc10
+0043b67e: 0fbf4c242e               movsx    ecx, word ptr [esp + 0x2e]
+0043b683: 51                       push     ecx
+0043b684: 8bcd                     mov      ecx, ebp
+0043b686: e8b598ffff               call     0x434f40
+0043b68b: 83f8ff                   cmp      eax, -1
+0043b68e: 0f84be0c0000             je       0x43c352
+0043b694: 0fbf54242e               movsx    edx, word ptr [esp + 0x2e]
+0043b699: 52                       push     edx
+0043b69a: b9b8484e00               mov      ecx, 0x4e48b8
+0043b69f: e86c39feff               call     0x41f010
+0043b6a4: 68ff000000               push     0xff
+0043b6a9: 8bcd                     mov      ecx, ebp
+0043b6ab: 8bf8                     mov      edi, eax
+0043b6ad: e87e9fffff               call     0x435630
+0043b6b2: 83f8ff                   cmp      eax, -1
+0043b6b5: 7425                     je       0x43b6dc
+0043b6b7: 8b871c010000             mov      eax, dword ptr [edi + 0x11c]
+0043b6bd: 50                       push     eax
+0043b6be: 68ff000000               push     0xff
+0043b6c3: 8bcd                     mov      ecx, ebp
+0043b6c5: e8669fffff               call     0x435630
+0043b6ca: 50                       push     eax
+0043b6cb: b9183b4e00               mov      ecx, 0x4e3b18
+0043b6d0: e86b79ffff               call     0x433040
+0043b6d5: 8bc8                     mov      ecx, eax
+0043b6d7: e8346dffff               call     0x432410
+0043b6dc: 6a00                     push     0
+0043b6de: 8d4c2432                 lea      ecx, [esp + 0x32]
+0043b6e2: 51                       push     ecx
+0043b6e3: 6a01                     push     1
+0043b6e5: 8bcd                     mov      ecx, ebp
+0043b6e7: e85495ffff               call     0x434c40
+0043b6ec: e9610c0000               jmp      0x43c352

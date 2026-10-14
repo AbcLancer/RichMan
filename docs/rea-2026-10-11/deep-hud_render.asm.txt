@@ -1,0 +1,80 @@
+; hud_render: VA 0x447740..0x447823 (end exclusive)
+; Original EXE SHA256 5dd5c38e09aefbdc2cadd970aefb14a2e64b0560e943d8ef0fbdfddb77a4e1f7
+00447740: a1842a4e00               mov      eax, dword ptr [0x4e2a84]
+00447745: 83ec08                   sub      esp, 8
+00447748: 53                       push     ebx
+00447749: 56                       push     esi
+0044774a: 8bf1                     mov      esi, ecx
+0044774c: 8d0440                   lea      eax, [eax + eax*2]
+0044774f: 8d0c80                   lea      ecx, [eax + eax*4]
+00447752: 57                       push     edi
+00447753: c1e105                   shl      ecx, 5
+00447756: 81c1801b4e00             add      ecx, 0x4e1b80
+0044775c: 68ff000000               push     0xff
+00447761: e8cadefeff               call     0x435630
+00447766: 85c0                     test     eax, eax
+00447768: 0f8cad000000             jl       0x44781b
+0044776e: 50                       push     eax
+0044776f: b948704c00               mov      ecx, 0x4c7048
+00447774: e8c7b8feff               call     0x433040
+00447779: 8bf8                     mov      edi, eax
+0044777b: 8bcf                     mov      ecx, edi
+0044777d: e88eb1feff               call     0x432910
+00447782: 8b4e20                   mov      ecx, dword ptr [esi + 0x20]
+00447785: 8b561c                   mov      edx, dword ptr [esi + 0x1c]
+00447788: 50                       push     eax
+00447789: 8b4678                   mov      eax, dword ptr [esi + 0x78]
+0044778c: 894c2410                 mov      dword ptr [esp + 0x10], ecx
+00447790: d9442410                 fld      dword ptr [esp + 0x10]
+00447794: 50                       push     eax
+00447795: d84628                   fadd     dword ptr [esi + 0x28]
+00447798: 51                       push     ecx
+00447799: 8954241c                 mov      dword ptr [esp + 0x1c], edx
+0044779d: d91c24                   fstp     dword ptr [esp]
+004477a0: 51                       push     ecx
+004477a1: d9442420                 fld      dword ptr [esp + 0x20]
+004477a5: d84624                   fadd     dword ptr [esi + 0x24]
+004477a8: d91c24                   fstp     dword ptr [esp]
+004477ab: 51                       push     ecx
+004477ac: 52                       push     edx
+004477ad: e8fe1e0100               call     0x4596b0
+004477b2: 8b4730                   mov      eax, dword ptr [edi + 0x30]
+004477b5: 33db                     xor      ebx, ebx
+004477b7: 83c418                   add      esp, 0x18
+004477ba: 85c0                     test     eax, eax
+004477bc: 895c2410                 mov      dword ptr [esp + 0x10], ebx
+004477c0: 7e59                     jle      0x44781b
+004477c2: db442410                 fild     dword ptr [esp + 0x10]
+004477c6: 8b4620                   mov      eax, dword ptr [esi + 0x20]
+004477c9: 8b8edc000000             mov      ecx, dword ptr [esi + 0xdc]
+004477cf: 8b5678                   mov      edx, dword ptr [esi + 0x78]
+004477d2: d80d04564900             fmul     dword ptr [0x495604]
+004477d8: 51                       push     ecx
+004477d9: 89442410                 mov      dword ptr [esp + 0x10], eax
+004477dd: 52                       push     edx
+004477de: d8461c                   fadd     dword ptr [esi + 0x1c]
+004477e1: 51                       push     ecx
+004477e2: d95c241c                 fstp     dword ptr [esp + 0x1c]
+004477e6: d9442418                 fld      dword ptr [esp + 0x18]
+004477ea: d805d45d4900             fadd     dword ptr [0x495dd4]
+004477f0: d91c24                   fstp     dword ptr [esp]
+004477f3: 51                       push     ecx
+004477f4: d9442420                 fld      dword ptr [esp + 0x20]
+004477f8: 8b4c2420                 mov      ecx, dword ptr [esp + 0x20]
+004477fc: d80504564900             fadd     dword ptr [0x495604]
+00447802: d91c24                   fstp     dword ptr [esp]
+00447805: 50                       push     eax
+00447806: 51                       push     ecx
+00447807: e8a41e0100               call     0x4596b0
+0044780c: 8b4730                   mov      eax, dword ptr [edi + 0x30]
+0044780f: 83c418                   add      esp, 0x18
+00447812: 43                       inc      ebx
+00447813: 3bd8                     cmp      ebx, eax
+00447815: 895c2410                 mov      dword ptr [esp + 0x10], ebx
+00447819: 7ca7                     jl       0x4477c2
+0044781b: 5f                       pop      edi
+0044781c: 5e                       pop      esi
+0044781d: 5b                       pop      ebx
+0044781e: 83c408                   add      esp, 8
+00447821: c3                       ret      
+00447822: 90                       nop      

@@ -1,0 +1,231 @@
+{
+  "target_sha256": "5dd5c38e09aefbdc2cadd970aefb14a2e64b0560e943d8ef0fbdfddb77a4e1f7",
+  "method": "433510: table[type*4+level] << 2; 433540 creates level=1 stock",
+  "pets": {
+    "qiongshen": {
+      "native_type": 2,
+      "levels": [
+        {
+          "level": 1,
+          "address": "0x49e884",
+          "price": 40
+        },
+        {
+          "level": 2,
+          "address": "0x49e888",
+          "price": 80
+        },
+        {
+          "level": 3,
+          "address": "0x49e88c",
+          "price": 120
+        },
+        {
+          "level": 4,
+          "address": "0x49e890",
+          "price": 160
+        }
+      ]
+    },
+    "hutu": {
+      "native_type": 3,
+      "levels": [
+        {
+          "level": 1,
+          "address": "0x49e894",
+          "price": 40
+        },
+        {
+          "level": 2,
+          "address": "0x49e898",
+          "price": 80
+        },
+        {
+          "level": 3,
+          "address": "0x49e89c",
+          "price": 120
+        },
+        {
+          "level": 4,
+          "address": "0x49e8a0",
+          "price": 160
+        }
+      ]
+    },
+    "emo": {
+      "native_type": 4,
+      "levels": [
+        {
+          "level": 1,
+          "address": "0x49e8a4",
+          "price": 80
+        },
+        {
+          "level": 2,
+          "address": "0x49e8a8",
+          "price": 160
+        },
+        {
+          "level": 3,
+          "address": "0x49e8ac",
+          "price": 240
+        },
+        {
+          "level": 4,
+          "address": "0x49e8b0",
+          "price": 320
+        }
+      ]
+    },
+    "caishen": {
+      "native_type": 5,
+      "levels": [
+        {
+          "level": 1,
+          "address": "0x49e8b4",
+          "price": 100
+        },
+        {
+          "level": 2,
+          "address": "0x49e8b8",
+          "price": 200
+        },
+        {
+          "level": 3,
+          "address": "0x49e8bc",
+          "price": 300
+        },
+        {
+          "level": 4,
+          "address": "0x49e8c0",
+          "price": 400
+        }
+      ]
+    },
+    "tushen": {
+      "native_type": 6,
+      "levels": [
+        {
+          "level": 1,
+          "address": "0x49e8c4",
+          "price": 60
+        },
+        {
+          "level": 2,
+          "address": "0x49e8c8",
+          "price": 120
+        },
+        {
+          "level": 3,
+          "address": "0x49e8cc",
+          "price": 180
+        },
+        {
+          "level": 4,
+          "address": "0x49e8d0",
+          "price": 240
+        }
+      ]
+    },
+    "jingling": {
+      "native_type": 7,
+      "levels": [
+        {
+          "level": 1,
+          "address": "0x49e8d4",
+          "price": 40
+        },
+        {
+          "level": 2,
+          "address": "0x49e8d8",
+          "price": 80
+        },
+        {
+          "level": 3,
+          "address": "0x49e8dc",
+          "price": 120
+        },
+        {
+          "level": 4,
+          "address": "0x49e8e0",
+          "price": 160
+        }
+      ]
+    },
+    "huaxian": {
+      "native_type": 8,
+      "levels": [
+        {
+          "level": 1,
+          "address": "0x49e8e4",
+          "price": 60
+        },
+        {
+          "level": 2,
+          "address": "0x49e8e8",
+          "price": 120
+        },
+        {
+          "level": 3,
+          "address": "0x49e8ec",
+          "price": 180
+        },
+        {
+          "level": 4,
+          "address": "0x49e8f0",
+          "price": 240
+        }
+      ]
+    },
+    "dushen": {
+      "native_type": 9,
+      "levels": [
+        {
+          "level": 1,
+          "address": "0x49e8f4",
+          "price": 80
+        },
+        {
+          "level": 2,
+          "address": "0x49e8f8",
+          "price": 160
+        },
+        {
+          "level": 3,
+          "address": "0x49e8fc",
+          "price": 240
+        },
+        {
+          "level": 4,
+          "address": "0x49e900",
+          "price": 320
+        }
+      ]
+    },
+    "guaishou": {
+      "native_type": 10,
+      "levels": [
+        {
+          "level": 1,
+          "address": "0x49e904",
+          "price": 60
+        },
+        {
+          "level": 2,
+          "address": "0x49e908",
+          "price": 120
+        },
+        {
+          "level": 3,
+          "address": "0x49e90c",
+          "price": 180
+        },
+        {
+          "level": 4,
+          "address": "0x49e910",
+          "price": 240
+        }
+      ]
+    }
+  }
+}

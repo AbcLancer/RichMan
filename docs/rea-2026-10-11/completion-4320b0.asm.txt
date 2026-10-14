@@ -1,0 +1,38 @@
+004320b0: push esi
+004320b1: mov esi, ecx
+004320b3: push 7
+004320b5: call 0x432d60
+004320ba: mov eax, dword ptr [esi]
+004320bc: mov dword ptr [0x4fdb20], eax
+004320c1: mov ecx, dword ptr [esi]
+004320c3: push 0x4fdb20
+004320c8: mov dword ptr [0x4fdb24], ecx
+004320ce: push 0x9b
+004320d3: mov ecx, 0x5090b0
+004320d8: mov dword ptr [0x4fdb40], esi
+004320de: call 0x42ab30
+004320e3: mov edx, dword ptr [esi + 0x50]
+004320e6: push edx
+004320e7: mov ecx, 0x4e3b18
+004320ec: call 0x4330b0
+004320f1: mov eax, dword ptr [esi + 0x50]
+004320f4: mov ecx, dword ptr [0x4fe7ac]
+004320fa: push 0
+004320fc: push eax
+004320fd: push 0x23
+004320ff: call 0x43cb00
+00432104: mov ecx, dword ptr [esi]
+00432106: push -1
+00432108: push 0xff
+0043210d: call 0x435650
+00432112: mov ecx, dword ptr [esi]
+00432114: mov edx, dword ptr [ecx + 0x38]
+00432117: mov eax, dword ptr [esi + 0x50]
+0043211a: mov ecx, dword ptr [0x4fe7ac]
+00432120: push edx
+00432121: or eax, 0xff00
+00432126: push eax
+00432127: push 0x1f
+00432129: call 0x43cb00
+0043212e: pop esi
+0043212f: ret 

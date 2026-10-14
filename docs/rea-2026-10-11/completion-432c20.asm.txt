@@ -1,0 +1,87 @@
+00432c20: push esi
+00432c21: mov esi, dword ptr [esp + 8]
+00432c25: fld dword ptr [esi + 0x34]
+00432c28: fimul dword ptr [esp + 0xc]
+00432c2c: fmul dword ptr [0x495bd8]
+00432c32: call 0x4853d4
+00432c37: cmp dword ptr [esi + 0x30], 4
+00432c3b: mov dword ptr [esp + 8], eax
+00432c3f: jne 0x432c5c
+00432c41: lea ecx, [eax + eax*4]
+00432c44: shl ecx, 4
+00432c47: mov eax, 0x51eb851f
+00432c4c: imul ecx
+00432c4e: sar edx, 5
+00432c51: mov eax, edx
+00432c53: shr eax, 0x1f
+00432c56: add edx, eax
+00432c58: mov dword ptr [esp + 8], edx
+00432c5c: fild dword ptr [esp + 8]
+00432c60: fsubr dword ptr [esi + 0x38]
+00432c63: fst dword ptr [esi + 0x38]
+00432c66: fcomp dword ptr [0x495430]
+00432c6c: fnstsw ax
+00432c6e: test ah, 1
+00432c71: je 0x432c7a
+00432c73: mov dword ptr [esi + 0x38], 0
+00432c7a: or byte ptr [esi + 0x40], 1
+00432c7e: mov dword ptr [0x4fdb40], esi
+00432c84: mov ecx, dword ptr [esi]
+00432c86: push 0x4fdb20
+00432c8b: mov dword ptr [0x4fdb20], ecx
+00432c91: push 0x9c
+00432c96: mov ecx, 0x5090b0
+00432c9b: call 0x42ab30
+00432ca0: fld dword ptr [esi + 0x38]
+00432ca3: fcomp dword ptr [0x495430]
+00432ca9: fnstsw ax
+00432cab: test ah, 0x40
+00432cae: je 0x432cd6
+00432cb0: mov dword ptr [0x4fdb40], esi
+00432cb6: mov edx, dword ptr [esi]
+00432cb8: push 0x4fdb20
+00432cbd: push 0x9d
+00432cc2: mov ecx, 0x5090b0
+00432cc7: mov dword ptr [0x4fdb20], edx
+00432ccd: call 0x42ab30
+00432cd2: push 6
+00432cd4: jmp 0x432cd8
+00432cd6: push 4
+00432cd8: mov ecx, esi
+00432cda: call 0x432d60
+00432cdf: mov eax, dword ptr [esi + 0x50]
+00432ce2: mov ecx, dword ptr [0x4fe7ac]
+00432ce8: push 0
+00432cea: push eax
+00432ceb: push 0x25
+00432ced: call 0x43cb00
+00432cf2: pop esi
+00432cf3: ret 8
+00432cf6: nop 
+00432cf7: nop 
+00432cf8: nop 
+00432cf9: nop 
+00432cfa: nop 
+00432cfb: nop 
+00432cfc: nop 
+00432cfd: nop 
+00432cfe: nop 
+00432cff: nop 
+00432d00: mov eax, dword ptr [esp + 8]
+00432d04: mov ecx, dword ptr [esp + 4]
+00432d08: lea edx, [eax + ecx*4]
+00432d0b: mov eax, dword ptr [edx*4 + 0x49e740]
+00432d12: ret 
+00432d13: nop 
+00432d14: nop 
+00432d15: nop 
+00432d16: nop 
+00432d17: nop 
+00432d18: nop 
+00432d19: nop 
+00432d1a: nop 
+00432d1b: nop 
+00432d1c: nop 
+00432d1d: nop 
+00432d1e: nop 
+00432d1f: nop 

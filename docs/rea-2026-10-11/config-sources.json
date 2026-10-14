@@ -1,0 +1,254 @@
+[
+  {
+    "source": "D:/Projects/reference/Rich6/config/Card.txt",
+    "sha256": "57498790b73c5d33b574b1c1ec980e27d461123897b3db7eb80b816291677639",
+    "bytes": 331,
+    "line_count": 43,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/Card.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/House.txt",
+    "sha256": "bdcc2cf2f31ed1eb643410b4afbc9c4eb63afea6baec200e69a5194a3c6b45d9",
+    "bytes": 5332,
+    "line_count": 70,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/House.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/Info.txt",
+    "sha256": "bb094f28cf1c5be70f022589387a714f4396df7d104b45c08a1cf28e5a7ee461",
+    "bytes": 84368,
+    "line_count": 1490,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/Info.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/Info1.txt",
+    "sha256": "fe7edf1c1f3f61946e6b87d8d6d1a8d498fbee64219e5f189689042f654ba98e",
+    "bytes": 84376,
+    "line_count": 1490,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/Info1.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/Info_change.txt",
+    "sha256": "aff3422736fed91af43f3a8eecd4d12bbd8e330632ab3d0d4361f1f737056cfc",
+    "bytes": 103,
+    "line_count": 1,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/Info_change.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/Initvar_r.txt",
+    "sha256": "f6684487464bd53464d391c0c3fd734de0488623fc9d05beee3561e88fe4adcb",
+    "bytes": 8488,
+    "line_count": 146,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/Initvar_r.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/Initvar_t.txt",
+    "sha256": "7d9b7043d3684e33a032db49fe72f1694ea2b4f254ac1f1be867ed3ebca496f7",
+    "bytes": 8488,
+    "line_count": 146,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/Initvar_t.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/Pet.txt",
+    "sha256": "f1fdecdd88fadfa5e8e5d5ef7fc789c6ecae47bba7502e2d2e89c717a399b18c",
+    "bytes": 1017,
+    "line_count": 36,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/Pet.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/Roadevent.txt",
+    "sha256": "f04c4f67844222b5ce873248c459155e8221baa47a64be429582054861ccb2a5",
+    "bytes": 464,
+    "line_count": 17,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/Roadevent.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/Role.txt",
+    "sha256": "3c086b4f301eb81f15ff085ef8030c4aa426ed8785efbf41538b5a8e763984bb",
+    "bytes": 1136,
+    "line_count": 25,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/Role.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/aiji/Aiji.txt",
+    "sha256": "4ff4879c12de15d5ea69f6473cb99a6e5845a95e70d492801c2ddece18ea28a8",
+    "bytes": 774,
+    "line_count": 48,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/aiji/Aiji.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/aiji/Street.txt",
+    "sha256": "ef0ee3b9229e6e5ab5f757ad9d960901bb7636c59d5415fe922c4f22eb8a7e48",
+    "bytes": 196,
+    "line_count": 23,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/aiji/Street.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/china/china.txt",
+    "sha256": "5b8742b978b8f6e49b34cb9140e4a7ebf5ae047ebcc2df6c78f8ea403b122e7a",
+    "bytes": 802,
+    "line_count": 49,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/china/china.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/china/street.txt",
+    "sha256": "62b87306f5235f9b988adb85408c4ad327150e253200ecc1351e8aba8fc5c175",
+    "bytes": 156,
+    "line_count": 20,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/china/street.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/island/Island.txt",
+    "sha256": "ad9d2d7a5f284053148950fd5eae985311cdc9fddec7a287146c4cf26b578f68",
+    "bytes": 756,
+    "line_count": 47,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/island/Island.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/island/Street.txt",
+    "sha256": "60a2e901eb00e3d6ac2f85f82d5d74ed79a22d8d9b2474656e48cce898b5999b",
+    "bytes": 98,
+    "line_count": 12,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/island/Street.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/japan/Japan.txt",
+    "sha256": "a4f7369ae295af9a7781991c37cb95505797a5ad44d8026de35878774dc4f2ce",
+    "bytes": 854,
+    "line_count": 51,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/japan/Japan.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/japan/Street.txt",
+    "sha256": "539d73f6be01c367667f9d66f9920c4953b873780994cfa2f76e768e898e0c45",
+    "bytes": 92,
+    "line_count": 15,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/japan/Street.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/paris/Paris.txt",
+    "sha256": "1266ba9a92ef8c7e6393b035561923798ed9eba1e24658948588391158371374",
+    "bytes": 859,
+    "line_count": 51,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/paris/Paris.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/paris/Street.txt",
+    "sha256": "809207c20b3c114ff120564c69d45041dec748effad62f06be5ab6a4ff3f7b1d",
+    "bytes": 178,
+    "line_count": 20,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/paris/Street.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/Scene.txt",
+    "sha256": "1ce405c6354210e9d4cfbd4f524ac34cba6a475da8f8d23fcd472f72e30c4fb5",
+    "bytes": 101,
+    "line_count": 8,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/Scene.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/space/Space.txt",
+    "sha256": "8afeed92226827983ab4fe58c43802582c94393833be384f7bd334c8efa6c6d6",
+    "bytes": 734,
+    "line_count": 47,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/space/Space.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/space/Street.txt",
+    "sha256": "aa7cf0ce1de935ea61a9a46e820353d940d0937c78127e8b207773be3efce247",
+    "bytes": 11,
+    "line_count": 2,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/space/Street.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/train/Street.txt",
+    "sha256": "9e0e6cec5c118187bebcc5fad0d76004fd7175f3872349e46a06725bf9cc0b22",
+    "bytes": 96,
+    "line_count": 11,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/train/Street.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/train/Train.txt",
+    "sha256": "2a095ca6911acf48dc9e73c834cb2dc0435f30d37a145f12591cd4a2186abeb1",
+    "bytes": 797,
+    "line_count": 49,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/train/Train.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/trybuild/Street.txt",
+    "sha256": "c10de06448ba9224e251e9a9202db533d69c1eadac665192d706ee70e22213f0",
+    "bytes": 29,
+    "line_count": 5,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/trybuild/Street.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/scene/trybuild/Trybuild.txt",
+    "sha256": "c2ecc4cdba5cc4ff3305e498c9bd29eb9654d86b1f1155042b501ddf3c3974e2",
+    "bytes": 597,
+    "line_count": 21,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/scene/trybuild/Trybuild.txt",
+    "same_lines_as_utf8_mirror": true
+  },
+  {
+    "source": "D:/Projects/reference/Rich6/config/String.txt",
+    "sha256": "36c6963703c34df1772341505e62ad02f856de742e875042be901c295048b7ff",
+    "bytes": 11154,
+    "line_count": 301,
+    "source_encoding": "GB18030",
+    "mirror": "D:/Projects/RichMan/docs/original-readable/installation/config/String.txt",
+    "same_lines_as_utf8_mirror": true
+  }
+]

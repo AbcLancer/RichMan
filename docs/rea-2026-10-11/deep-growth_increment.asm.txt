@@ -1,0 +1,45 @@
+; growth_increment: VA 0x4361b0..0x436228 (end exclusive)
+; Original EXE SHA256 5dd5c38e09aefbdc2cadd970aefb14a2e64b0560e943d8ef0fbdfddb77a4e1f7
+004361b0: 56                       push     esi
+004361b1: 8bf1                     mov      esi, ecx
+004361b3: 837e3c05                 cmp      dword ptr [esi + 0x3c], 5
+004361b7: 740d                     je       0x4361c6
+004361b9: a160e94900               mov      eax, dword ptr [0x49e960]
+004361be: f7d8                     neg      eax
+004361c0: 50                       push     eax
+004361c1: e88ae1ffff               call     0x434350
+004361c6: 68ff000000               push     0xff
+004361cb: 8bce                     mov      ecx, esi
+004361cd: e85ef4ffff               call     0x435630
+004361d2: 85c0                     test     eax, eax
+004361d4: 7c0e                     jl       0x4361e4
+004361d6: 50                       push     eax
+004361d7: b9183b4e00               mov      ecx, 0x4e3b18
+004361dc: e85fceffff               call     0x433040
+004361e1: ff403c                   inc      dword ptr [eax + 0x3c]
+004361e4: 6a01                     push     1
+004361e6: 6a00                     push     0
+004361e8: 8bce                     mov      ecx, esi
+004361ea: e871feffff               call     0x436060
+004361ef: 6a01                     push     1
+004361f1: 6a06                     push     6
+004361f3: 8bce                     mov      ecx, esi
+004361f5: e866feffff               call     0x436060
+004361fa: 6a01                     push     1
+004361fc: 6a03                     push     3
+004361fe: 8bce                     mov      ecx, esi
+00436200: e85bfeffff               call     0x436060
+00436205: 6a01                     push     1
+00436207: 6a07                     push     7
+00436209: 8bce                     mov      ecx, esi
+0043620b: e850feffff               call     0x436060
+00436210: 6a01                     push     1
+00436212: 6a08                     push     8
+00436214: 8bce                     mov      ecx, esi
+00436216: e845feffff               call     0x436060
+0043621b: 6a01                     push     1
+0043621d: 6a09                     push     9
+0043621f: 8bce                     mov      ecx, esi
+00436221: e83afeffff               call     0x436060
+00436226: 5e                       pop      esi
+00436227: c3                       ret      

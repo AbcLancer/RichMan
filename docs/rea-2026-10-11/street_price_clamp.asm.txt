@@ -1,0 +1,17 @@
+0042aea0: db058c8f5000             fild     dword ptr [0x508f8c]
+0042aea6: 8b4c2404                 mov      ecx, dword ptr [esp + 4]
+0042aeaa: d811                     fcom     dword ptr [ecx]
+0042aeac: dfe0                     fnstsw   ax
+0042aeae: f6c441                   test     ah, 0x41
+0042aeb1: 7504                     jne      0x42aeb7
+0042aeb3: d919                     fstp     dword ptr [ecx]
+0042aeb5: eb02                     jmp      0x42aeb9
+0042aeb7: ddd8                     fstp     st(0)
+0042aeb9: d901                     fld      dword ptr [ecx]
+0042aebb: d81d68544900             fcomp    dword ptr [0x495468]
+0042aec1: dfe0                     fnstsw   ax
+0042aec3: f6c441                   test     ah, 0x41
+0042aec6: 7506                     jne      0x42aece
+0042aec8: c7010000c842             mov      dword ptr [ecx], 0x42c80000
+0042aece: c3                       ret      
+0042aecf: 90                       nop      

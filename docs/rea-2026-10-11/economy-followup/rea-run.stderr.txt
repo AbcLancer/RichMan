@@ -1,0 +1,4 @@
+{"level":30,"time":1791813946437,"application":"rea","mode":"mcp","layer":"server","tool":"open_binary","durationMs":69.73,"status":"ok","msg":"MCP tool execution completed"}
+{"level":30,"time":1791814011184,"application":"rea","mode":"mcp","layer":"server","tool":"analyze_function","durationMs":64743.41,"status":"ok","msg":"MCP tool execution completed"}
+{"level":30,"time":1791814011212,"application":"rea","mode":"mcp","layer":"server","tool":"analyze_function","durationMs":19.76,"status":"ok","msg":"MCP tool execution completed"}
+{"level":30,"time":1791814011492,"application":"rea","mode":"mcp","layer":"server","tool":"close_binary","durationMs":263.12,"status":"ok","msg":"MCP tool execution completed"}

@@ -59,4 +59,6 @@ UI 高清图的像素尺寸增加，但 `ImageTexture.set_size_override()` 保�
 - 贴图检查：原透明度重建一致，输出边长增加 2～4 倍。
 - 对照截图：`docs/screenshots/visual-quality/role1-comparison.png`、`characters_original.png`、`characters_enhanced.png`；七张地图截图、UI 和卡牌截图也在该目录。
 
-曾用生成式图像编辑试做钱夫人图集，但输出改变了五官与透明区域，已弃用。当前实际接入的贴图全部使用用户确认的本地超分辨率处理。
+本页描述“上一轮高清修复”方案：其贴图使用用户确认的本地超分辨率处理。早期生成式钱夫人图集因五官与透明区域变化曾被弃用。
+
+用户随后要求单独制作以原版为参照的新资产。目前新增的“新版重绘”独立方案及三个版本的对照启动器见 [新版素材说明](remade-assets.md)。新版不覆盖本页的增强资产。

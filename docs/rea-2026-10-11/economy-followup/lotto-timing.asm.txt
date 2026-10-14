@@ -1,0 +1,76 @@
+0044d850: mov      eax, dword ptr [esp + 8]
+0044d854: push     esi
+0044d855: push     edi
+0044d856: mov      esi, ecx
+0044d858: mov      ecx, dword ptr [esp + 0xc]
+0044d85c: push     eax
+0044d85d: push     ecx
+0044d85e: mov      ecx, esi
+0044d860: call     0x457f10
+0044d865: mov      eax, dword ptr [esi + 0x68]
+0044d868: xor      edi, edi
+0044d86a: cmp      eax, edi
+0044d86c: jne      0x44d93f
+0044d872: cmp      dword ptr [esi + 0xe8], 1
+0044d879: jne      0x44d902
+0044d87f: fld      qword ptr [esi + 0xf0]
+0044d885: fcomp    qword ptr [0x495ff8]
+0044d88b: fnstsw   ax
+0044d88d: test     ah, 0x41
+0044d890: jne      0x44d89a
+0044d892: fld      qword ptr [0x495ff0]
+0044d898: jmp      0x44d8bb
+0044d89a: fld      qword ptr [esi + 0xf0]
+0044d8a0: fcomp    qword ptr [0x4955d0]
+0044d8a6: fnstsw   ax
+0044d8a8: test     ah, 0x41
+0044d8ab: jne      0x44d8b5
+0044d8ad: fld      qword ptr [0x495ff8]
+0044d8b3: jmp      0x44d8bb
+0044d8b5: fld      qword ptr [0x495c20]
+0044d8bb: fmul     qword ptr [esp + 0xc]
+0044d8bf: fsubr    qword ptr [esi + 0xf0]
+0044d8c5: fst      qword ptr [esi + 0xf0]
+0044d8cb: call     0x4853d4
+0044d8d0: test     eax, eax
+0044d8d2: jg       0x44d902
+0044d8d4: mov      dword ptr [esi + 0xf0], edi
+0044d8da: mov      ecx, esi
+0044d8dc: mov      dword ptr [esi + 0xf4], edi
+0044d8e2: call     0x44d7d0
+0044d8e7: mov      dword ptr [esi + 0x108], edi
+0044d8ed: mov      dword ptr [esi + 0x10c], edi
+0044d8f3: pop      edi
+0044d8f4: mov      dword ptr [esi + 0xe8], 2
+0044d8fe: pop      esi
+0044d8ff: ret      8
+0044d902: fld      qword ptr [esi + 0x108]
+0044d908: fcomp    qword ptr [0x495460]
+0044d90e: fnstsw   ax
+0044d910: test     ah, 1
+0044d913: jne      0x44d925
+0044d915: fld      qword ptr [esp + 0xc]
+0044d919: fadd     qword ptr [esi + 0x108]
+0044d91f: fstp     qword ptr [esi + 0x108]
+0044d925: fld      qword ptr [esi + 0x108]
+0044d92b: fcomp    qword ptr [0x4954b0]
+0044d931: fnstsw   ax
+0044d933: test     ah, 0x41
+0044d936: jne      0x44d93f
+0044d938: mov      ecx, esi
+0044d93a: call     0x44e0a0
+0044d93f: pop      edi
+0044d940: pop      esi
+0044d941: ret      8
+0044d944: nop      
+0044d945: nop      
+0044d946: nop      
+0044d947: nop      
+0044d948: nop      
+0044d949: nop      
+0044d94a: nop      
+0044d94b: nop      
+0044d94c: nop      
+0044d94d: nop      
+0044d94e: nop      
+0044d94f: nop      

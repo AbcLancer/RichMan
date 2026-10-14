@@ -1,0 +1,113 @@
+{
+  "tool": "Capstone 5.0.7 + pefile 2024.8.26, static disassembly, not REA deep analysis",
+  "binary": "D:\\Projects\\reference\\Rich6\\rich6.exe",
+  "sha256": "5dd5c38e09aefbdc2cadd970aefb14a2e64b0560e943d8ef0fbdfddb77a4e1f7",
+  "image_base": "0x400000",
+  "regions": {
+    "status_accessors": {
+      "start": "0x435f80",
+      "end_exclusive": "0x436140",
+      "file_offset": 221056,
+      "bytes_sha256": "a355689a6db619bf150e87cbf3ecf88ebc1a3853f92fa4217978b821189e80ee",
+      "file": "status_accessors.asm.txt"
+    },
+    "building_lookup_and_change": {
+      "start": "0x41ce10",
+      "end_exclusive": "0x41d3d0",
+      "file_offset": 118288,
+      "bytes_sha256": "0e88ce361636dfab4c4d62633fc52ce79c0068f7ca0e88154b5081471258d144",
+      "file": "building_lookup_and_change.asm.txt"
+    },
+    "price_street_adjust": {
+      "start": "0x42ead0",
+      "end_exclusive": "0x42ebc0",
+      "file_offset": 191184,
+      "bytes_sha256": "f7dd71b5c6a76c30ff349e4b97dff6ab5243ab816398959c6134de295007ed43",
+      "file": "price_street_adjust.asm.txt"
+    },
+    "clear_vehicle": {
+      "start": "0x428950",
+      "end_exclusive": "0x428c90",
+      "file_offset": 166224,
+      "bytes_sha256": "cc78e294acf5ad164eb2b5f1ad5a221dcfc8c098fc10cca475d09f533433cd91",
+      "file": "clear_vehicle.asm.txt"
+    },
+    "random_range": {
+      "start": "0x405130",
+      "end_exclusive": "0x405190",
+      "file_offset": 20784,
+      "bytes_sha256": "2e2790fe9f33b7fc3cede8c1462a37d5cf4a2d7cba767c064097e7e0e5b79bea",
+      "file": "random_range.asm.txt"
+    },
+    "card_combination": {
+      "start": "0x41ee80",
+      "end_exclusive": "0x41f1a0",
+      "file_offset": 126592,
+      "bytes_sha256": "9ea423125b09f54ad56f28876d7ce4d378f70659595b6133a1576dc5f94ba0b7",
+      "file": "card_combination.asm.txt"
+    },
+    "pet_database": {
+      "start": "0x433000",
+      "end_exclusive": "0x434050",
+      "file_offset": 208896,
+      "bytes_sha256": "073e569dc5a262fece97cd17663a70a8d904df7156a4f653c8d9fbb29b60c0ca",
+      "file": "pet_database.asm.txt"
+    },
+    "player_card_inventory": {
+      "start": "0x434a00",
+      "end_exclusive": "0x435160",
+      "file_offset": 215552,
+      "bytes_sha256": "894f679375788e4d8a578195d0d1a73505871e4aa682fd916306df68d8394448",
+      "file": "player_card_inventory.asm.txt"
+    },
+    "player_pet_inventory": {
+      "start": "0x435630",
+      "end_exclusive": "0x435f80",
+      "file_offset": 218672,
+      "bytes_sha256": "eae8ba38025222b5aee535754f058f575f8c434f18ef808339dbfa9eb66bb0c5",
+      "file": "player_pet_inventory.asm.txt"
+    },
+    "pet_energy_tables": {
+      "start": "0x432bf0",
+      "end_exclusive": "0x432f80",
+      "file_offset": 207856,
+      "bytes_sha256": "da5c2475efa9a49d00c41eb1ae3cdc6f234d34cb4f8af7a3715936caded78756",
+      "file": "pet_energy_tables.asm.txt"
+    },
+    "street_price_mutation": {
+      "start": "0x42e990",
+      "end_exclusive": "0x42ead0",
+      "file_offset": 190864,
+      "bytes_sha256": "85b15376a008cb5a3ab6c17984b325b1f7845cdf901a54f5ae930cfb2ee4a5e8",
+      "file": "street_price_mutation.asm.txt"
+    },
+    "lottery_ui_entry": {
+      "start": "0x44d4c0",
+      "end_exclusive": "0x44dd00",
+      "file_offset": 316608,
+      "bytes_sha256": "353c1d14fc9561784213f3a86ca359af1682083854110d4d2e036d9c3adf2374",
+      "file": "lottery_ui_entry.asm.txt"
+    },
+    "pet_initialization_decay": {
+      "start": "0x431ea0",
+      "end_exclusive": "0x432120",
+      "file_offset": 204448,
+      "bytes_sha256": "408158bca0abbd4dc5d7790802efbcebf697fecf92ace6ae2b3d7a18acf41782",
+      "file": "pet_initialization_decay.asm.txt"
+    },
+    "street_price_clamp": {
+      "start": "0x42aea0",
+      "end_exclusive": "0x42aed0",
+      "file_offset": 175776,
+      "bytes_sha256": "6a650430df6b39f527e9fb6caad510d648f5dc6b3891a71844820150a1b25db7",
+      "file": "street_price_clamp.asm.txt"
+    },
+    "player_action_permissions": {
+      "start": "0x4362b0",
+      "end_exclusive": "0x436570",
+      "file_offset": 221872,
+      "bytes_sha256": "a222dc2ed28054777039c37c3238f8ee045cc4fc2b3e8e4936679c5ac3f0b7d1",
+      "file": "player_action_permissions.asm.txt"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"path\":\"D:\\\\Projects\\\\reference\\\\Rich6\\\\rich6.exe\",\"format\":\"pe\",\"kind\":\"executable\",\"sha256\":\"5dd5c38e09aefbdc2cadd970aefb14a2e64b0560e943d8ef0fbdfddb77a4e1f7\",\"architecture\":\"x86\"}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "path": "D:\\Projects\\reference\\Rich6\\rich6.exe",
+      "format": "pe",
+      "kind": "executable",
+      "sha256": "5dd5c38e09aefbdc2cadd970aefb14a2e64b0560e943d8ef0fbdfddb77a4e1f7",
+      "architecture": "x86"
+    }
+  }
+}

@@ -1,0 +1,327 @@
+004362b0: 56                       push     esi
+004362b1: 8bf1                     mov      esi, ecx
+004362b3: 817e3c2c010000           cmp      dword ptr [esi + 0x3c], 0x12c
+004362ba: 7448                     je       0x436304
+004362bc: 8b8678010000             mov      eax, dword ptr [esi + 0x178]
+004362c2: 3b0568e94900             cmp      eax, dword ptr [0x49e968]
+004362c8: 7c3a                     jl       0x436304
+004362ca: 6a02                     push     2
+004362cc: 8bce                     mov      ecx, esi
+004362ce: e80dfdffff               call     0x435fe0
+004362d3: 85c0                     test     eax, eax
+004362d5: 752d                     jne      0x436304
+004362d7: 6a04                     push     4
+004362d9: 8bce                     mov      ecx, esi
+004362db: e800fdffff               call     0x435fe0
+004362e0: 85c0                     test     eax, eax
+004362e2: 7520                     jne      0x436304
+004362e4: 6a03                     push     3
+004362e6: 8bce                     mov      ecx, esi
+004362e8: e8f3fcffff               call     0x435fe0
+004362ed: 85c0                     test     eax, eax
+004362ef: 7513                     jne      0x436304
+004362f1: 8b0d78015000             mov      ecx, dword ptr [0x500178]
+004362f7: e8c4460200               call     0x45a9c0
+004362fc: f7d8                     neg      eax
+004362fe: 1bc0                     sbb      eax, eax
+00436300: f7d8                     neg      eax
+00436302: 5e                       pop      esi
+00436303: c3                       ret      
+00436304: 33c0                     xor      eax, eax
+00436306: 5e                       pop      esi
+00436307: c3                       ret      
+00436308: 90                       nop      
+00436309: 90                       nop      
+0043630a: 90                       nop      
+0043630b: 90                       nop      
+0043630c: 90                       nop      
+0043630d: 90                       nop      
+0043630e: 90                       nop      
+0043630f: 90                       nop      
+00436310: 56                       push     esi
+00436311: 8bf1                     mov      esi, ecx
+00436313: 837e3c02                 cmp      dword ptr [esi + 0x3c], 2
+00436317: 742c                     je       0x436345
+00436319: 6a02                     push     2
+0043631b: e8c0fcffff               call     0x435fe0
+00436320: 85c0                     test     eax, eax
+00436322: 7521                     jne      0x436345
+00436324: 6a03                     push     3
+00436326: 8bce                     mov      ecx, esi
+00436328: e8b3fcffff               call     0x435fe0
+0043632d: 85c0                     test     eax, eax
+0043632f: 7514                     jne      0x436345
+00436331: 8b460c                   mov      eax, dword ptr [esi + 0xc]
+00436334: 8b9098000000             mov      edx, dword ptr [eax + 0x98]
+0043633a: 33c9                     xor      ecx, ecx
+0043633c: 85d2                     test     edx, edx
+0043633e: 0f95c1                   setne    cl
+00436341: 5e                       pop      esi
+00436342: 8bc1                     mov      eax, ecx
+00436344: c3                       ret      
+00436345: 33c0                     xor      eax, eax
+00436347: 5e                       pop      esi
+00436348: c3                       ret      
+00436349: 90                       nop      
+0043634a: 90                       nop      
+0043634b: 90                       nop      
+0043634c: 90                       nop      
+0043634d: 90                       nop      
+0043634e: 90                       nop      
+0043634f: 90                       nop      
+00436350: 56                       push     esi
+00436351: 8bf1                     mov      esi, ecx
+00436353: 817e3c2c010000           cmp      dword ptr [esi + 0x3c], 0x12c
+0043635a: 742c                     je       0x436388
+0043635c: 6a02                     push     2
+0043635e: e87dfcffff               call     0x435fe0
+00436363: 85c0                     test     eax, eax
+00436365: 7521                     jne      0x436388
+00436367: 6a03                     push     3
+00436369: 8bce                     mov      ecx, esi
+0043636b: e870fcffff               call     0x435fe0
+00436370: 85c0                     test     eax, eax
+00436372: 7514                     jne      0x436388
+00436374: 8b460c                   mov      eax, dword ptr [esi + 0xc]
+00436377: 8b9098000000             mov      edx, dword ptr [eax + 0x98]
+0043637d: 33c9                     xor      ecx, ecx
+0043637f: 85d2                     test     edx, edx
+00436381: 0f95c1                   setne    cl
+00436384: 5e                       pop      esi
+00436385: 8bc1                     mov      eax, ecx
+00436387: c3                       ret      
+00436388: 33c0                     xor      eax, eax
+0043638a: 5e                       pop      esi
+0043638b: c3                       ret      
+0043638c: 90                       nop      
+0043638d: 90                       nop      
+0043638e: 90                       nop      
+0043638f: 90                       nop      
+00436390: 56                       push     esi
+00436391: 8bf1                     mov      esi, ecx
+00436393: 837e3c02                 cmp      dword ptr [esi + 0x3c], 2
+00436397: 742c                     je       0x4363c5
+00436399: 6a02                     push     2
+0043639b: e840fcffff               call     0x435fe0
+004363a0: 85c0                     test     eax, eax
+004363a2: 7521                     jne      0x4363c5
+004363a4: 6a04                     push     4
+004363a6: 8bce                     mov      ecx, esi
+004363a8: e833fcffff               call     0x435fe0
+004363ad: 85c0                     test     eax, eax
+004363af: 7514                     jne      0x4363c5
+004363b1: 6a03                     push     3
+004363b3: 8bce                     mov      ecx, esi
+004363b5: e826fcffff               call     0x435fe0
+004363ba: 85c0                     test     eax, eax
+004363bc: 7507                     jne      0x4363c5
+004363be: b801000000               mov      eax, 1
+004363c3: 5e                       pop      esi
+004363c4: c3                       ret      
+004363c5: 33c0                     xor      eax, eax
+004363c7: 5e                       pop      esi
+004363c8: c3                       ret      
+004363c9: 90                       nop      
+004363ca: 90                       nop      
+004363cb: 90                       nop      
+004363cc: 90                       nop      
+004363cd: 90                       nop      
+004363ce: 90                       nop      
+004363cf: 90                       nop      
+004363d0: 56                       push     esi
+004363d1: 8bf1                     mov      esi, ecx
+004363d3: 6a02                     push     2
+004363d5: e806fcffff               call     0x435fe0
+004363da: 85c0                     test     eax, eax
+004363dc: 7521                     jne      0x4363ff
+004363de: 6a04                     push     4
+004363e0: 8bce                     mov      ecx, esi
+004363e2: e8f9fbffff               call     0x435fe0
+004363e7: 85c0                     test     eax, eax
+004363e9: 7514                     jne      0x4363ff
+004363eb: 6a03                     push     3
+004363ed: 8bce                     mov      ecx, esi
+004363ef: e8ecfbffff               call     0x435fe0
+004363f4: 85c0                     test     eax, eax
+004363f6: 7507                     jne      0x4363ff
+004363f8: b801000000               mov      eax, 1
+004363fd: 5e                       pop      esi
+004363fe: c3                       ret      
+004363ff: 33c0                     xor      eax, eax
+00436401: 5e                       pop      esi
+00436402: c3                       ret      
+00436403: 90                       nop      
+00436404: 90                       nop      
+00436405: 90                       nop      
+00436406: 90                       nop      
+00436407: 90                       nop      
+00436408: 90                       nop      
+00436409: 90                       nop      
+0043640a: 90                       nop      
+0043640b: 90                       nop      
+0043640c: 90                       nop      
+0043640d: 90                       nop      
+0043640e: 90                       nop      
+0043640f: 90                       nop      
+00436410: a1302a4f00               mov      eax, dword ptr [0x4f2a30]
+00436415: 85c0                     test     eax, eax
+00436417: 7403                     je       0x43641c
+00436419: 33c0                     xor      eax, eax
+0043641b: c3                       ret      
+0043641c: 8b0d743b4e00             mov      ecx, dword ptr [0x4e3b74]
+00436422: 33c0                     xor      eax, eax
+00436424: 85c9                     test     ecx, ecx
+00436426: 0f94c0                   sete     al
+00436429: c3                       ret      
+0043642a: 90                       nop      
+0043642b: 90                       nop      
+0043642c: 90                       nop      
+0043642d: 90                       nop      
+0043642e: 90                       nop      
+0043642f: 90                       nop      
+00436430: d905a08f5000             fld      dword ptr [0x508fa0]
+00436436: dc99c8010000             fcomp    qword ptr [ecx + 0x1c8]
+0043643c: dfe0                     fnstsw   ax
+0043643e: f6c441                   test     ah, 0x41
+00436441: 7406                     je       0x436449
+00436443: b801000000               mov      eax, 1
+00436448: c3                       ret      
+00436449: 33c0                     xor      eax, eax
+0043644b: c3                       ret      
+0043644c: 90                       nop      
+0043644d: 90                       nop      
+0043644e: 90                       nop      
+0043644f: 90                       nop      
+00436450: 56                       push     esi
+00436451: 8bf1                     mov      esi, ecx
+00436453: 837e3c02                 cmp      dword ptr [esi + 0x3c], 2
+00436457: 7437                     je       0x436490
+00436459: e8d2ffffff               call     0x436430
+0043645e: 85c0                     test     eax, eax
+00436460: 752e                     jne      0x436490
+00436462: 6a02                     push     2
+00436464: 8bce                     mov      ecx, esi
+00436466: e875fbffff               call     0x435fe0
+0043646b: 85c0                     test     eax, eax
+0043646d: 7521                     jne      0x436490
+0043646f: 6a04                     push     4
+00436471: 8bce                     mov      ecx, esi
+00436473: e868fbffff               call     0x435fe0
+00436478: 85c0                     test     eax, eax
+0043647a: 7514                     jne      0x436490
+0043647c: 6a03                     push     3
+0043647e: 8bce                     mov      ecx, esi
+00436480: e85bfbffff               call     0x435fe0
+00436485: 85c0                     test     eax, eax
+00436487: 7507                     jne      0x436490
+00436489: b801000000               mov      eax, 1
+0043648e: 5e                       pop      esi
+0043648f: c3                       ret      
+00436490: 33c0                     xor      eax, eax
+00436492: 5e                       pop      esi
+00436493: c3                       ret      
+00436494: 90                       nop      
+00436495: 90                       nop      
+00436496: 90                       nop      
+00436497: 90                       nop      
+00436498: 90                       nop      
+00436499: 90                       nop      
+0043649a: 90                       nop      
+0043649b: 90                       nop      
+0043649c: 90                       nop      
+0043649d: 90                       nop      
+0043649e: 90                       nop      
+0043649f: 90                       nop      
+004364a0: 83793c02                 cmp      dword ptr [ecx + 0x3c], 2
+004364a4: 7411                     je       0x4364b7
+004364a6: 6a0b                     push     0xb
+004364a8: e833fbffff               call     0x435fe0
+004364ad: 85c0                     test     eax, eax
+004364af: 7506                     jne      0x4364b7
+004364b1: b801000000               mov      eax, 1
+004364b6: c3                       ret      
+004364b7: 33c0                     xor      eax, eax
+004364b9: c3                       ret      
+004364ba: 90                       nop      
+004364bb: 90                       nop      
+004364bc: 90                       nop      
+004364bd: 90                       nop      
+004364be: 90                       nop      
+004364bf: 90                       nop      
+004364c0: 8b81c0010000             mov      eax, dword ptr [ecx + 0x1c0]
+004364c6: 85c0                     test     eax, eax
+004364c8: 7447                     je       0x436511
+004364ca: 81793c2c010000           cmp      dword ptr [ecx + 0x3c], 0x12c
+004364d1: 743e                     je       0x436511
+004364d3: a1842a4e00               mov      eax, dword ptr [0x4e2a84]
+004364d8: 8d0440                   lea      eax, [eax + eax*2]
+004364db: 8d0480                   lea      eax, [eax + eax*4]
+004364de: c1e005                   shl      eax, 5
+004364e1: 05801b4e00               add      eax, 0x4e1b80
+004364e6: 3bc8                     cmp      ecx, eax
+004364e8: 7421                     je       0x43650b
+004364ea: 6a0b                     push     0xb
+004364ec: e8effaffff               call     0x435fe0
+004364f1: 85c0                     test     eax, eax
+004364f3: 751c                     jne      0x436511
+004364f5: 8b0ddc2e5000             mov      ecx, dword ptr [0x502edc]
+004364fb: dd4108                   fld      qword ptr [ecx + 8]
+004364fe: dc1d60544900             fcomp    qword ptr [0x495460]
+00436504: dfe0                     fnstsw   ax
+00436506: f6c401                   test     ah, 1
+00436509: 7406                     je       0x436511
+0043650b: b801000000               mov      eax, 1
+00436510: c3                       ret      
+00436511: 33c0                     xor      eax, eax
+00436513: c3                       ret      
+00436514: 90                       nop      
+00436515: 90                       nop      
+00436516: 90                       nop      
+00436517: 90                       nop      
+00436518: 90                       nop      
+00436519: 90                       nop      
+0043651a: 90                       nop      
+0043651b: 90                       nop      
+0043651c: 90                       nop      
+0043651d: 90                       nop      
+0043651e: 90                       nop      
+0043651f: 90                       nop      
+00436520: 56                       push     esi
+00436521: 8bf1                     mov      esi, ecx
+00436523: 8b463c                   mov      eax, dword ptr [esi + 0x3c]
+00436526: 3d2c010000               cmp      eax, 0x12c
+0043652b: 7435                     je       0x436562
+0043652d: 83f806                   cmp      eax, 6
+00436530: 7430                     je       0x436562
+00436532: 85c0                     test     eax, eax
+00436534: 752c                     jne      0x436562
+00436536: 6a02                     push     2
+00436538: e8a3faffff               call     0x435fe0
+0043653d: 85c0                     test     eax, eax
+0043653f: 7521                     jne      0x436562
+00436541: 6a03                     push     3
+00436543: 8bce                     mov      ecx, esi
+00436545: e896faffff               call     0x435fe0
+0043654a: 85c0                     test     eax, eax
+0043654c: 7514                     jne      0x436562
+0043654e: 8b460c                   mov      eax, dword ptr [esi + 0xc]
+00436551: 8b9098000000             mov      edx, dword ptr [eax + 0x98]
+00436557: 33c9                     xor      ecx, ecx
+00436559: 85d2                     test     edx, edx
+0043655b: 0f95c1                   setne    cl
+0043655e: 5e                       pop      esi
+0043655f: 8bc1                     mov      eax, ecx
+00436561: c3                       ret      
+00436562: 33c0                     xor      eax, eax
+00436564: 5e                       pop      esi
+00436565: c3                       ret      
+00436566: 90                       nop      
+00436567: 90                       nop      
+00436568: 90                       nop      
+00436569: 90                       nop      
+0043656a: 90                       nop      
+0043656b: 90                       nop      
+0043656c: 90                       nop      
+0043656d: 90                       nop      
+0043656e: 90                       nop      
+0043656f: 90                       nop      

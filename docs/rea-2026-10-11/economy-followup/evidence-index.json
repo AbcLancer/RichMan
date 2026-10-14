@@ -1,0 +1,3357 @@
+{
+  "target": "D:/Projects/reference/Rich6/rich6.exe",
+  "target_sha256": "5dd5c38e09aefbdc2cadd970aefb14a2e64b0560e943d8ef0fbdfddb77a4e1f7",
+  "provider": "REA owned stdio session / installed Ghidra",
+  "evidence_scope": "static decompilation; supplementary raw PE disassembly explicitly identified",
+  "records": [
+    {
+      "requested_address": "0x41a8b0",
+      "evidence_id": "ev_1704273c9a33f9a2bbcb1edecfeefe3dbbfca88289f95f5b0d8bdfefb0884c34",
+      "actual_procedure": {
+        "address": "0x41a7c0",
+        "name": "FUN_0041a7c0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x41a7c0",
+              "end": "0x41a8c1"
+            }
+          ],
+          "total_bytes": 258,
+          "span_bytes": 258,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0041a7c0(void * this, char * param_1, uint param_2, int param_3)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x41a8b0.json",
+      "sha256": "17e5ac3f7d46e76c3e1529c01becb8dd2617fcda36e80764c7b568db8f065f68"
+    },
+    {
+      "requested_address": "0x41a8e0",
+      "evidence_id": "ev_67d586d0a9ea0a124e4d2e01f0e9286a4cc53bfbc5657c91284bd85caaa229c0",
+      "actual_procedure": {
+        "address": "0x41a8e0",
+        "name": "FUN_0041a8e0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x41a8e0",
+              "end": "0x41a905"
+            }
+          ],
+          "total_bytes": 38,
+          "span_bytes": 38,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __fastcall FUN_0041a8e0(undefined4 * param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x41a8e0.json",
+      "sha256": "1bec4b0e1ae1222e48a702964bf70c2ca0ae6eaf62985d4b0dc79203bd8b443f"
+    },
+    {
+      "requested_address": "0x41a950",
+      "evidence_id": "ev_a8e9a1c5497e554098c80e98a08496d0dde653676fcd05f812c0a5effc26be4e",
+      "actual_procedure": {
+        "address": "0x41a950",
+        "name": "FUN_0041a950",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x41a950",
+              "end": "0x41a9a4"
+            }
+          ],
+          "total_bytes": 85,
+          "span_bytes": 85,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined4 __thiscall FUN_0041a950(void * this, undefined4 param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x41a950.json",
+      "sha256": "a8a26bfe918a957433e7ecb1c394ae854360a7b3f821f100816b502d9e2cc928"
+    },
+    {
+      "requested_address": "0x41a9d0",
+      "evidence_id": "ev_ea62090f3812e790ed282b9f5bb3fae6a651555071513a8d09163d9e42475e11",
+      "actual_procedure": {
+        "address": "0x41a9d0",
+        "name": "FUN_0041a9d0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x41a9d0",
+              "end": "0x41aa63"
+            }
+          ],
+          "total_bytes": 148,
+          "span_bytes": 148,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0041a9d0(void * this, undefined4 param_1, float param_2)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x41a9d0.json",
+      "sha256": "555d78792a4bba51bed92b52ea076fb8b3c8aa8095eca404b88ccb6a55405a39"
+    },
+    {
+      "requested_address": "0x41aa80",
+      "evidence_id": "ev_77fb73050bee24b5c38c07719fae60f0ba4e9da70c14221ba7ee8e1c5ad676b3",
+      "actual_procedure": {
+        "address": "0x41aa80",
+        "name": "FUN_0041aa80",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x41aa80",
+              "end": "0x41aaed"
+            }
+          ],
+          "total_bytes": 110,
+          "span_bytes": 110,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0041aa80(void * this, undefined4 param_1, undefined4 param_2)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x41aa80.json",
+      "sha256": "46dfa3900c3b14e4ab67c033d3812a6bc77175c1ccbf402642f9c6861eb55f64"
+    },
+    {
+      "requested_address": "0x41c2f0",
+      "evidence_id": "ev_d94da80a784dc87f8034876e2130247ea1a2f635c126b523579df622d85bbfec",
+      "actual_procedure": {
+        "address": "0x41c2f0",
+        "name": "FUN_0041c2f0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x41c2f0",
+              "end": "0x41c309"
+            }
+          ],
+          "total_bytes": 26,
+          "span_bytes": 26,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "int __fastcall FUN_0041c2f0(int param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x41c2f0.json",
+      "sha256": "bc226294cb4b37866cd81e91e8fc22f96e92cc6f6f3d12637c2a0a0de8bfa954"
+    },
+    {
+      "requested_address": "0x41d800",
+      "evidence_id": "ev_50a3791ac5c65a9d923cd021b78b5093785d5b26e8172762d68b7057fcd6be5a",
+      "actual_procedure": {
+        "address": "0x41d800",
+        "name": "FUN_0041d800",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x41d800",
+              "end": "0x41d9d4"
+            }
+          ],
+          "total_bytes": 469,
+          "span_bytes": 469,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0041d800(void * this, int param_1, int param_2)",
+        "locals": [
+          {
+            "description": "undefined4 local_10 @ Stack[-0x10]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_14 @ Stack[-0x14]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_18 @ Stack[-0x18]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_1c @ Stack[-0x1c]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_30 @ Stack[-0x30]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_8 @ Stack[-0x8]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c @ Stack[-0xc]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x41d800.json",
+      "sha256": "be9fe401395c2679f2856f19506107239abc1ca336705660967d7399a45ae3f4"
+    },
+    {
+      "requested_address": "0x41d9e0",
+      "evidence_id": "ev_593f84f3ac3e34a5c9e3c5a404121dfd5bcbbaabb0477d12fb40f0df6f156e46",
+      "actual_procedure": {
+        "address": "0x41d9e0",
+        "name": "FUN_0041d9e0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x41d9e0",
+              "end": "0x41da7f"
+            }
+          ],
+          "total_bytes": 160,
+          "span_bytes": 160,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0041d9e0(void * this, int param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x41d9e0.json",
+      "sha256": "7f8e56c1c0267d416b61439f20c40af3b2e7f2063a94ac98db1f14c575d90e9a"
+    },
+    {
+      "requested_address": "0x41e420",
+      "evidence_id": "ev_708f51d641a90d4fc3c542b3c3f96bcefa9e45e4c8503903e7c8be864dd94c9e",
+      "actual_procedure": {
+        "address": "0x41e420",
+        "name": "FUN_0041e420",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x41e420",
+              "end": "0x41e45d"
+            }
+          ],
+          "total_bytes": 62,
+          "span_bytes": 62,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "int __thiscall FUN_0041e420(void * this, int param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x41e420.json",
+      "sha256": "be75538248e84d9e9d4be23b0a00be910a7b91a7c659b6ed3d9b08fe15e32e45"
+    },
+    {
+      "requested_address": "0x41eab0",
+      "evidence_id": "ev_2ecddf16c0b536e48e61e2c71d003b3bdf86a30b0cc7d50dfc87ffdc6155124e",
+      "actual_procedure": {
+        "address": "0x41ea80",
+        "name": "FUN_0041ea80",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x41ea80",
+              "end": "0x41eabf"
+            }
+          ],
+          "total_bytes": 64,
+          "span_bytes": 64,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0041ea80(void * this, int param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x41eab0.json",
+      "sha256": "6ebb972d9b2f248d50bc6b7b2033e258c3af53628509f887483d3dff9402a192"
+    },
+    {
+      "requested_address": "0x41ebf0",
+      "evidence_id": "ev_0c40591d5dfb2b1e5168d61a86b2c2d514f781a4ef2b10aeb35d150527d12246",
+      "actual_procedure": {
+        "address": "0x41ebf0",
+        "name": "FUN_0041ebf0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x41ebf0",
+              "end": "0x41ec65"
+            }
+          ],
+          "total_bytes": 118,
+          "span_bytes": 118,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0041ebf0(void * this, int param_1, int * param_2, int param_3, int param_4)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x41ebf0.json",
+      "sha256": "5d49f4039a9f73fc64341601048aeef0062f80178cb4133e4062d2575f719317"
+    },
+    {
+      "requested_address": "0x41ec80",
+      "evidence_id": "ev_1164383c28ff782e86856b02b4a2677f06b8df2e06d30ef139c8dac9de1df005",
+      "actual_procedure": {
+        "address": "0x41ec70",
+        "name": "FUN_0041ec70",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x41ec70",
+              "end": "0x41ed44"
+            }
+          ],
+          "total_bytes": 213,
+          "span_bytes": 213,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "short __thiscall FUN_0041ec70(void * this, int param_1)",
+        "locals": [
+          {
+            "description": "undefined local_800 @ Stack[-0x800]:1",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_804 @ Stack[-0x804]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x41ec80.json",
+      "sha256": "e17266b3a07e4bb27d18e03c7d5d47a7614ba87b4b40fce7e061ce73450ed8c8"
+    },
+    {
+      "requested_address": "0x41ee60",
+      "evidence_id": "ev_ae25cd37af97688b6d75b67ac73135f26122420703f137a39fa4f3dfe88edf68",
+      "actual_procedure": {
+        "address": "0x41ee60",
+        "name": "FUN_0041ee60",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x41ee60",
+              "end": "0x41ee73"
+            }
+          ],
+          "total_bytes": 20,
+          "span_bytes": 20,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0041ee60(void * this, short * param_1, int param_2)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x41ee60.json",
+      "sha256": "5ca8e5205ab3a6615c7d449e45aebee3d90df200d1dce32861aae68cc8b6847c"
+    },
+    {
+      "requested_address": "0x41f010",
+      "evidence_id": "ev_c08fe417ba080202ee0b686a2c78616990fd4b5e56fce948dd3e0df6e0cf0300",
+      "actual_procedure": {
+        "address": "0x41f010",
+        "name": "FUN_0041f010",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x41f010",
+              "end": "0x41f031"
+            }
+          ],
+          "total_bytes": 34,
+          "span_bytes": 34,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "int __thiscall FUN_0041f010(void * this, int param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x41f010.json",
+      "sha256": "d8bcb1bcd3a27f530a72e3d86aa9d30db73d4540f64254dccd0cd521ee52313e"
+    },
+    {
+      "requested_address": "0x429780",
+      "evidence_id": "ev_e57f030d91fcda481d372cf6e2f26da27a49242244baf935715725ad7176479e",
+      "actual_procedure": {
+        "address": "0x429780",
+        "name": "FUN_00429780",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x429780",
+              "end": "0x4297f9"
+            }
+          ],
+          "total_bytes": 122,
+          "span_bytes": 122,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_00429780(void * this, int param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x429780.json",
+      "sha256": "358cd6e1877a2be801e446bbafcaede46d0690757bbf2a415da252a9ea4c8d81"
+    },
+    {
+      "requested_address": "0x4299c0",
+      "evidence_id": "ev_0bc81e63ed8436a760c27a46dcf56524472912f24c4fb69b93522a5116bc26b8",
+      "actual_procedure": {
+        "address": "0x4299c0",
+        "name": "FUN_004299c0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x4299c0",
+              "end": "0x429a64"
+            }
+          ],
+          "total_bytes": 165,
+          "span_bytes": 165,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __fastcall FUN_004299c0(int param_1)",
+        "locals": [
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x4299c0.json",
+      "sha256": "03cf9e009fcbb7021e89aef0800c9e1f69d0be0b5c7007208f934a04c2c6d07a"
+    },
+    {
+      "requested_address": "0x429a70",
+      "evidence_id": "ev_f6ea37e986653c59ce2a0ebe37df819e27f7deaa94f9ea5533ae2074d842fc11",
+      "actual_procedure": {
+        "address": "0x429a70",
+        "name": "FUN_00429a70",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x429a70",
+              "end": "0x429b8f"
+            }
+          ],
+          "total_bytes": 288,
+          "span_bytes": 288,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_00429a70(void * this, double param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x429a70.json",
+      "sha256": "96994cf6de70142bb62510586efd75ceecb06e8060e0d7836a74bb388f9f01f1"
+    },
+    {
+      "requested_address": "0x429ab0",
+      "evidence_id": "ev_8f5b6d9cae6a1b542dd73cc9c03626614c28fbfdd820d1f07b89234a78e1804b",
+      "actual_procedure": {
+        "address": "0x429a70",
+        "name": "FUN_00429a70",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x429a70",
+              "end": "0x429b8f"
+            }
+          ],
+          "total_bytes": 288,
+          "span_bytes": 288,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_00429a70(void * this, double param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x429ab0.json",
+      "sha256": "f95c8acab8055159f822e9690fe3c38ae980085d0fd31acbedc514e9d3c7e3b6"
+    },
+    {
+      "requested_address": "0x429c60",
+      "evidence_id": "ev_63bc02c104e0eb1732e26cff981c6a34211187c11bf8d46aaca848a92b72c00d",
+      "actual_procedure": {
+        "address": "0x429c60",
+        "name": "FUN_00429c60",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x429c60",
+              "end": "0x429c92"
+            }
+          ],
+          "total_bytes": 51,
+          "span_bytes": 51,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined4 __cdecl FUN_00429c60(int * param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x429c60.json",
+      "sha256": "c247b9d6582ab006fea7c3dec60f4031269aa13cda8fbc92a1c4e5c7a7fbe547"
+    },
+    {
+      "requested_address": "0x429ca0",
+      "evidence_id": "ev_2f9727dd2509a34509ea3a3974596422efbaad2e7bb62c75c9c4faa6a2d4192a",
+      "actual_procedure": {
+        "address": "0x429ca0",
+        "name": "FUN_00429ca0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x429ca0",
+              "end": "0x429ccc"
+            }
+          ],
+          "total_bytes": 45,
+          "span_bytes": 45,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "int __thiscall FUN_00429ca0(void * this, int param_1, int * param_2)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x429ca0.json",
+      "sha256": "bf96b1a493a78ffcdf11d12ca6d52bfdfc3ccfd253450b198a7b48e4da9aa9ff"
+    },
+    {
+      "requested_address": "0x429cd0",
+      "evidence_id": "ev_e85604552a6e380a416981f6412881202f4b9467473c28a9d44e8939e62ccb3d",
+      "actual_procedure": {
+        "address": "0x429cd0",
+        "name": "FUN_00429cd0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x429cd0",
+              "end": "0x429ce1"
+            }
+          ],
+          "total_bytes": 18,
+          "span_bytes": 18,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __fastcall FUN_00429cd0(int param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x429cd0.json",
+      "sha256": "ed8a8afe5837aca8b7879e3cd742990667aadf084c42b89b25dae8ecb24bf27b"
+    },
+    {
+      "requested_address": "0x429d20",
+      "evidence_id": "ev_adc6ae5090d5b1900a2b70fc93eff074e4af18b33fd5a0aad0894ca96da15b32",
+      "actual_procedure": {
+        "address": "0x429d20",
+        "name": "FUN_00429d20",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x429d20",
+              "end": "0x429da1"
+            }
+          ],
+          "total_bytes": 130,
+          "span_bytes": 130,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined4 __fastcall FUN_00429d20(int param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x429d20.json",
+      "sha256": "b402bd1443ff3d7c8c9553c79ade81a16d12b80e98d5d1f1fb0a9d98adf556b6"
+    },
+    {
+      "requested_address": "0x429e00",
+      "evidence_id": "ev_8951158cde39fec25c192193276d1a1661bac3875416366f43ae22d2d67352e1",
+      "actual_procedure": {
+        "address": "0x429df0",
+        "name": "FUN_00429df0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x429df0",
+              "end": "0x429e5f"
+            }
+          ],
+          "total_bytes": 112,
+          "span_bytes": 112,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_00429df0(void * this, byte * param_1, int param_2)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x429e00.json",
+      "sha256": "a7f3f623904e6ab5b8ec34b998e5b5392448120d6daf554d2acca14446b7192b"
+    },
+    {
+      "requested_address": "0x42aea0",
+      "evidence_id": "ev_c34119921b3579aa2e933a4ccd65d25c6e229a8776830b813a85c5fb8cbda18f",
+      "actual_procedure": {
+        "address": "0x42aea0",
+        "name": "FUN_0042aea0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42aea0",
+              "end": "0x42aece"
+            }
+          ],
+          "total_bytes": 47,
+          "span_bytes": 47,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __cdecl FUN_0042aea0(float * param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x42aea0.json",
+      "sha256": "89b3bebcde3501004d18ea8a38c3934917a0c96bce84824612b93f69bf588ab4"
+    },
+    {
+      "requested_address": "0x42b1b0",
+      "evidence_id": "ev_aa70334d69cc8d2e7f81f486d45233ff42b6a33f1d0ba6137c7d6f5251489f6d",
+      "actual_procedure": {
+        "address": "0x42b1b0",
+        "name": "FUN_0042b1b0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42b1b0",
+              "end": "0x42b1be"
+            }
+          ],
+          "total_bytes": 15,
+          "span_bytes": 15,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "int __thiscall FUN_0042b1b0(void * this, int param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x42b1b0.json",
+      "sha256": "f2c2cbc496f569e7c1686790c199df35917355af9bdbce4472a9e5b476cacadb"
+    },
+    {
+      "requested_address": "0x42b260",
+      "evidence_id": "ev_4c7f9e736f101edaaaa4ed36a08c2fe4a9a5169df0e037c120483287cdb3b161",
+      "actual_procedure": {
+        "address": "0x42b260",
+        "name": "FUN_0042b260",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42b260",
+              "end": "0x42b315"
+            }
+          ],
+          "total_bytes": 182,
+          "span_bytes": 182,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "int __thiscall FUN_0042b260(void * this, int param_1, int param_2)",
+        "locals": [
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x42b260.json",
+      "sha256": "fd8ca8b9054a792f656fef86d90284a3de48d3e4da748b0aeac6060460e3484a"
+    },
+    {
+      "requested_address": "0x42b320",
+      "evidence_id": "ev_850e6d89c77d08321786484b2213a51ac9327e164bbce8e8381b4cc58d7ddd62",
+      "actual_procedure": {
+        "address": "0x42b320",
+        "name": "FUN_0042b320",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42b320",
+              "end": "0x42b448"
+            }
+          ],
+          "total_bytes": 297,
+          "span_bytes": 297,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0042b320(void * this, int param_1, float * param_2, float * param_3)",
+        "locals": [
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_8 @ Stack[-0x8]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c @ Stack[-0xc]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x42b320.json",
+      "sha256": "c0fd40b2f0ffbd6c701db062b945f65cc6857f4e24170548b90028c67a497289"
+    },
+    {
+      "requested_address": "0x42b510",
+      "evidence_id": "ev_602aad2e07395c08a7b295ac4399becf4bcc201aadd07e21e6b702801e2f883e",
+      "actual_procedure": {
+        "address": "0x42b510",
+        "name": "FUN_0042b510",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42b510",
+              "end": "0x42b626"
+            }
+          ],
+          "total_bytes": 279,
+          "span_bytes": 279,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined4 __thiscall FUN_0042b510(void * this, uint param_1, byte * param_2)",
+        "locals": [
+          {
+            "description": "undefined4 local_10 @ Stack[-0x10]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_14 @ Stack[-0x14]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_8 @ Stack[-0x8]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c @ Stack[-0xc]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x42b510.json",
+      "sha256": "0d53ef7fbc600dbda4168ea8afd0bc444ddf8f5bfda7d038dd57d2ac8cfacfed"
+    },
+    {
+      "requested_address": "0x42b8b0",
+      "evidence_id": "ev_2880ff61d6765970e9ddbe72a36095e29477f5a750c44a6952e7aa95b0d3ad0e",
+      "actual_procedure": {
+        "address": "0x42b8b0",
+        "name": "FUN_0042b8b0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42b8b0",
+              "end": "0x42b9b7"
+            }
+          ],
+          "total_bytes": 264,
+          "span_bytes": 264,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "longlong __thiscall FUN_0042b8b0(void * this, int param_1)",
+        "locals": [
+          {
+            "description": "undefined8 local_14 @ Stack[-0x14]:8",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined8 local_1c @ Stack[-0x1c]:8",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_8 @ Stack[-0x8]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c @ Stack[-0xc]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x42b8b0.json",
+      "sha256": "647f5daf63646a1d31164ef4a1730a9dffb97204c48b1fcb0329be4a85f05dea"
+    },
+    {
+      "requested_address": "0x42b990",
+      "evidence_id": "ev_5cb66a8ec72e18877e0b8371f11d1558131e3c13bb7e78b6d73c3dfcf18e686c",
+      "actual_procedure": {
+        "address": "0x42b8b0",
+        "name": "FUN_0042b8b0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42b8b0",
+              "end": "0x42b9b7"
+            }
+          ],
+          "total_bytes": 264,
+          "span_bytes": 264,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "longlong __thiscall FUN_0042b8b0(void * this, int param_1)",
+        "locals": [
+          {
+            "description": "undefined8 local_14 @ Stack[-0x14]:8",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined8 local_1c @ Stack[-0x1c]:8",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_8 @ Stack[-0x8]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c @ Stack[-0xc]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x42b990.json",
+      "sha256": "a07a7d5de259d89b085fbfb0e18b9cfe3f222bfbe91eaabb83414578d2f539c4"
+    },
+    {
+      "requested_address": "0x42b9e0",
+      "evidence_id": "ev_381cd85170a3459c26145dc28dda3b4cf09f584b21b85fe697d9ee84efb64cfe",
+      "actual_procedure": {
+        "address": "0x42b9c0",
+        "name": "FUN_0042b9c0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42b9c0",
+              "end": "0x42bb16"
+            }
+          ],
+          "total_bytes": 343,
+          "span_bytes": 343,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "longlong __thiscall FUN_0042b9c0(void * this, int param_1)",
+        "locals": [
+          {
+            "description": "undefined4 local_20 @ Stack[-0x20]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_24 @ Stack[-0x24]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_28 @ Stack[-0x28]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_2c @ Stack[-0x2c]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined8 local_34 @ Stack[-0x34]:8",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined8 local_3c @ Stack[-0x3c]:8",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_40 @ Stack[-0x40]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_44 @ Stack[-0x44]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x42b9e0.json",
+      "sha256": "6d0979a1409b799ae1915c361578aff8617df6da8eb72952888f3e47e8ffaa91"
+    },
+    {
+      "requested_address": "0x42bfb3",
+      "evidence_id": "ev_cf5c9cca40b55a955af89357546bacab068fe386ae7a43db63208f9e68155fc4",
+      "actual_procedure": {
+        "address": "0x42bf90",
+        "name": "FUN_0042bf90",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42bf90",
+              "end": "0x42c032"
+            }
+          ],
+          "total_bytes": 163,
+          "span_bytes": 163,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "longlong __thiscall FUN_0042bf90(void * this, int param_1)",
+        "locals": [
+          {
+            "description": "undefined4 local_100 @ Stack[-0x100]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x42bfb3.json",
+      "sha256": "0080204bbac24c9dceec6f394717742e758fdd6f857c77d67004144113ad9b8c"
+    },
+    {
+      "requested_address": "0x42bff1",
+      "evidence_id": "ev_dd1234053adbdc39bdf490dc4c638330f00f048e5e8df2ad8e4a46b3b51f1859",
+      "actual_procedure": {
+        "address": "0x42bf90",
+        "name": "FUN_0042bf90",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42bf90",
+              "end": "0x42c032"
+            }
+          ],
+          "total_bytes": 163,
+          "span_bytes": 163,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "longlong __thiscall FUN_0042bf90(void * this, int param_1)",
+        "locals": [
+          {
+            "description": "undefined4 local_100 @ Stack[-0x100]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x42bff1.json",
+      "sha256": "dc6a3bdaa52e7f41d7ebb31a7dbc2edaf014a203b21d41da06b329fb14cb5302"
+    },
+    {
+      "requested_address": "0x42e760",
+      "evidence_id": "ev_1c5ef4bb3d70e2ea38ef58d30980ce3305b13251ed625932806d1205091b9baf",
+      "actual_procedure": {
+        "address": "0x42e720",
+        "name": "FUN_0042e720",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42e720",
+              "end": "0x42e764"
+            }
+          ],
+          "total_bytes": 69,
+          "span_bytes": 69,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "int __thiscall FUN_0042e720(void * this, int param_1, int param_2)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x42e760.json",
+      "sha256": "a4ddccc139bd38715cc8ac0332b564af6584f9ac9a7406fec163e67b852e573f"
+    },
+    {
+      "requested_address": "0x42e880",
+      "evidence_id": "ev_4795c791897cac871a04b8b8d247031d34d386ecdd0714827a0b94ee270725e9",
+      "actual_procedure": {
+        "address": "0x42e870",
+        "name": "FUN_0042e870",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42e870",
+              "end": "0x42e98d"
+            }
+          ],
+          "total_bytes": 286,
+          "span_bytes": 286,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0042e870(void * this, float param_1, int param_2, int param_3)",
+        "locals": [
+          {
+            "description": "undefined4 local_10 @ Stack[-0x10]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_14 @ Stack[-0x14]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_8 @ Stack[-0x8]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c @ Stack[-0xc]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x42e880.json",
+      "sha256": "c91acb99e375aadccaed5252176f0a4db0cb477c40aaa462bbf2470f3d971b6a"
+    },
+    {
+      "requested_address": "0x42e9e0",
+      "evidence_id": "ev_2c4fbdd230634843dd569e2fa54c4ed8f0f807e7f47139e71b1da8d55ffde3dc",
+      "actual_procedure": {
+        "address": "0x42e9e0",
+        "name": "FUN_0042e9e0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42e9e0",
+              "end": "0x42ea59"
+            }
+          ],
+          "total_bytes": 122,
+          "span_bytes": 122,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __stdcall FUN_0042e9e0(float param_1, int param_2)",
+        "locals": [
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x42e9e0.json",
+      "sha256": "b6aab29a2edd870e89cd1d7f7b800c004d5dee086fd041c2e22d72493f3dce09"
+    },
+    {
+      "requested_address": "0x42ea60",
+      "evidence_id": "ev_3d21dc16ffa40ce0647f02a7daa83b66f900edf50b9782dec53ff28f5aeaaaf4",
+      "actual_procedure": {
+        "address": "0x42ea60",
+        "name": "FUN_0042ea60",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42ea60",
+              "end": "0x42eaca"
+            }
+          ],
+          "total_bytes": 107,
+          "span_bytes": 107,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0042ea60(void * this, float param_1, int param_2, int param_3)",
+        "locals": [
+          {
+            "description": "undefined4 local_38 @ Stack[-0x38]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_3c @ Stack[-0x3c]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_40 @ Stack[-0x40]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x42ea60.json",
+      "sha256": "e4ed9f992604f82f12fa718a8b64b029f8d9e81e8056319ffbbae74a6bc25e10"
+    },
+    {
+      "requested_address": "0x42ead0",
+      "evidence_id": "ev_12d99b777bc00772d42e6673874c8a4105116f6ee36aa7ac1d35b93e4726df44",
+      "actual_procedure": {
+        "address": "0x42ead0",
+        "name": "FUN_0042ead0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42ead0",
+              "end": "0x42eb31"
+            }
+          ],
+          "total_bytes": 98,
+          "span_bytes": 98,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __stdcall FUN_0042ead0(uint param_1, int param_2)",
+        "locals": [
+          {
+            "description": "undefined4 local_3c @ Stack[-0x3c]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_40 @ Stack[-0x40]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x42ead0.json",
+      "sha256": "5363c05225f5a2e76228652210da24c47bedd34b5be691fcbbb76eb74b9e6dd7"
+    },
+    {
+      "requested_address": "0x42ed40",
+      "evidence_id": "ev_2cccb7165551999e0f0ce0c3fe5bd09e4ffe591f4ff0eddc352f8725f1b1a27c",
+      "actual_procedure": {
+        "address": "0x42ed40",
+        "name": "FUN_0042ed40",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42ed40",
+              "end": "0x42ee06"
+            }
+          ],
+          "total_bytes": 199,
+          "span_bytes": 199,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "int __thiscall FUN_0042ed40(void * this, int param_1, int param_2, int param_3)",
+        "locals": [
+          {
+            "description": "undefined4 local_400 @ Stack[-0x400]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_404 @ Stack[-0x404]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_408 @ Stack[-0x408]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_40c @ Stack[-0x40c]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x42ed40.json",
+      "sha256": "bd9b7faf9f472ba69aa3a78ba57d391a9b45b75a3a117be8676cfcd715488735"
+    },
+    {
+      "requested_address": "0x42edc0",
+      "evidence_id": "ev_ccd73934b5a550bc16ae4b336db242f341af82ecedfbc27cbd3fcbf0b45cc996",
+      "actual_procedure": {
+        "address": "0x42ed40",
+        "name": "FUN_0042ed40",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42ed40",
+              "end": "0x42ee06"
+            }
+          ],
+          "total_bytes": 199,
+          "span_bytes": 199,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "int __thiscall FUN_0042ed40(void * this, int param_1, int param_2, int param_3)",
+        "locals": [
+          {
+            "description": "undefined4 local_400 @ Stack[-0x400]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_404 @ Stack[-0x404]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_408 @ Stack[-0x408]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_40c @ Stack[-0x40c]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x42edc0.json",
+      "sha256": "e26e0b5e102bbf461cc935897530dc6504b2b22b0c7d552aa48e13189acb74a3"
+    },
+    {
+      "requested_address": "0x42ef20",
+      "evidence_id": "ev_640172649bb191b05df1a2519c45565e5633d76119b2dc93f3870b435cc20e88",
+      "actual_procedure": {
+        "address": "0x42eeb0",
+        "name": "FUN_0042eeb0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42eeb0",
+              "end": "0x42f109"
+            }
+          ],
+          "total_bytes": 602,
+          "span_bytes": 602,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __fastcall FUN_0042eeb0(int param_1)",
+        "locals": [
+          {
+            "description": "undefined local_40 @ Stack[-0x40]:1",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_68 @ Stack[-0x68]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_6c @ Stack[-0x6c]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_70 @ Stack[-0x70]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined local_a0 @ Stack[-0xa0]:1",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_a4 @ Stack[-0xa4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_a8 @ Stack[-0xa8]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_ac @ Stack[-0xac]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_b0 @ Stack[-0xb0]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_b4 @ Stack[-0xb4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_b8 @ Stack[-0xb8]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_bc @ Stack[-0xbc]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c0 @ Stack[-0xc0]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c4 @ Stack[-0xc4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c8 @ Stack[-0xc8]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_cc @ Stack[-0xcc]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x42ef20.json",
+      "sha256": "edeabf3707e3586ac3b3f2bddd82e5bff757fbc3180e4a7abf32c193c42239db"
+    },
+    {
+      "requested_address": "0x42ef77",
+      "evidence_id": "ev_a75ef6d151f2c1eed88545a1233744994fa37610d005aef2ae4af9fc5d5a2e7e",
+      "actual_procedure": {
+        "address": "0x42eeb0",
+        "name": "FUN_0042eeb0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42eeb0",
+              "end": "0x42f109"
+            }
+          ],
+          "total_bytes": 602,
+          "span_bytes": 602,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __fastcall FUN_0042eeb0(int param_1)",
+        "locals": [
+          {
+            "description": "undefined local_40 @ Stack[-0x40]:1",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_68 @ Stack[-0x68]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_6c @ Stack[-0x6c]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_70 @ Stack[-0x70]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined local_a0 @ Stack[-0xa0]:1",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_a4 @ Stack[-0xa4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_a8 @ Stack[-0xa8]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_ac @ Stack[-0xac]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_b0 @ Stack[-0xb0]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_b4 @ Stack[-0xb4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_b8 @ Stack[-0xb8]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_bc @ Stack[-0xbc]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c0 @ Stack[-0xc0]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c4 @ Stack[-0xc4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c8 @ Stack[-0xc8]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_cc @ Stack[-0xcc]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x42ef77.json",
+      "sha256": "ff3adbcdfc327a18b2f691edcebdd0f3f42f95fc963cb319ef7fdbc5c3a876e9"
+    },
+    {
+      "requested_address": "0x431300",
+      "evidence_id": "ev_7562be1a59a56f8878274a8e5d5e9ee0346110d3655376d4912d99eee7aaae39",
+      "actual_procedure": {
+        "address": "0x431300",
+        "name": "FUN_00431300",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x431300",
+              "end": "0x431339"
+            }
+          ],
+          "total_bytes": 58,
+          "span_bytes": 58,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "bool __cdecl FUN_00431300(undefined4 param_1, void * param_2)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x431300.json",
+      "sha256": "bd91dbe35fc509603d70c47963c95464841c3682d7edbf2781cd5688b0267c9e"
+    },
+    {
+      "requested_address": "0x431340",
+      "evidence_id": "ev_807f239bb03c8419dcaa05c944c49b9e9de288ed6832a6c19c89462103e42a14",
+      "actual_procedure": {
+        "address": "0x431340",
+        "name": "FUN_00431340",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x431340",
+              "end": "0x4313cc"
+            }
+          ],
+          "total_bytes": 141,
+          "span_bytes": 141,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "bool __cdecl FUN_00431340(void * param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x431340.json",
+      "sha256": "854c77714041245375354163d148c610b4204e474f8cc7aa837b9180ca0d13b1"
+    },
+    {
+      "requested_address": "0x431e80",
+      "evidence_id": "ev_16a20462bf002626bd0ab754a74c40238fa423da461dc4d5cbb64c85d8331a70",
+      "actual_procedure": {
+        "address": "0x431e80",
+        "name": "FUN_00431e80",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x431e80",
+              "end": "0x431e8f"
+            }
+          ],
+          "total_bytes": 16,
+          "span_bytes": 16,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined * __cdecl FUN_00431e80(int param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x431e80.json",
+      "sha256": "5b73dc7a36172097c0a8e4a48bf4ab89970a1f67bcbbfe350ded63b384310aca"
+    },
+    {
+      "requested_address": "0x433510",
+      "evidence_id": "ev_90f0b7ceea0fa1cb9ba0d25e574c566f5b4b90cf04afe978e1e741e481dcb996",
+      "actual_procedure": {
+        "address": "0x433510",
+        "name": "FUN_00433510",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x433510",
+              "end": "0x433525"
+            }
+          ],
+          "total_bytes": 22,
+          "span_bytes": 22,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "int __cdecl FUN_00433510(int param_1, int param_2)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x433510.json",
+      "sha256": "fbd5a12b97eefff805470133e19c13fb5fbc723c7fd3a3e9613a8c3f423ef27c"
+    },
+    {
+      "requested_address": "0x433540",
+      "evidence_id": "ev_c2d8d1bf6407bb97929aebf04be7e98257f566ba694c1da589616a16d9c7cd02",
+      "actual_procedure": {
+        "address": "0x433540",
+        "name": "FUN_00433540",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x433540",
+              "end": "0x433594"
+            }
+          ],
+          "total_bytes": 85,
+          "span_bytes": 85,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __cdecl FUN_00433540(int * param_1, int param_2)",
+        "locals": [
+          {
+            "description": "undefined4 local_24 @ Stack[-0x24]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x433540.json",
+      "sha256": "d5ae260104c4d5e2d687b868d02651e36db5b4109d8deb2b86c8a8566a88eb09"
+    },
+    {
+      "requested_address": "0x439220",
+      "evidence_id": "ev_a9bdacbc13b74477dc0b6c2b8b00772fe69a4387760b3f2d0fc7ae0969de81cd",
+      "actual_procedure": {
+        "address": "0x439160",
+        "name": "FUN_00439160",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x439160",
+              "end": "0x439525"
+            }
+          ],
+          "total_bytes": 966,
+          "span_bytes": 966,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined4 __cdecl FUN_00439160(int * param_1, undefined4 param_2, int param_3)",
+        "locals": [
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x439220.json",
+      "sha256": "ad0c46a5fe5589545cf356053bce47d53541f2cc04270a3507055bc075e767d2"
+    },
+    {
+      "requested_address": "0x439530",
+      "evidence_id": "ev_5e5e1d7baed3b3d857e7bd2c23ffa91825b68b1d93ab22e227bb44a6f513e4c5",
+      "actual_procedure": {
+        "address": "0x439530",
+        "name": "FUN_00439530",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x439530",
+              "end": "0x439b16"
+            }
+          ],
+          "total_bytes": 1511,
+          "span_bytes": 1511,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined4 __cdecl FUN_00439530(int param_1, void * param_2, int param_3)",
+        "locals": [
+          {
+            "description": "undefined local_60 @ Stack[-0x60]:1",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_80 @ Stack[-0x80]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_84 @ Stack[-0x84]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_88 @ Stack[-0x88]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_8c @ Stack[-0x8c]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_90 @ Stack[-0x90]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_94 @ Stack[-0x94]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_98 @ Stack[-0x98]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_9c @ Stack[-0x9c]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x439530.json",
+      "sha256": "c5a92a804bfdc05e05bab546e211fb8360cdd4581f44a96f69d5e5ef388309de"
+    },
+    {
+      "requested_address": "0x43f270",
+      "evidence_id": "ev_52aff2bc90f763544de8346bf57b3d4d3bd54110d0a1075b527c50f4d18377e7",
+      "actual_procedure": {
+        "address": "0x43f270",
+        "name": "FUN_0043f270",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x43f270",
+              "end": "0x43f2b1"
+            }
+          ],
+          "total_bytes": 66,
+          "span_bytes": 66,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "void * __fastcall FUN_0043f270(void * param_1)",
+        "locals": [
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x43f270.json",
+      "sha256": "f8a4f3d54e04a58de1951779278cd757e5fe5868efd5f2a6f18452d5d5b82572"
+    },
+    {
+      "requested_address": "0x440700",
+      "evidence_id": "ev_95dfdaf59a8d85bc20465131ee55557f5f905cc9ec1b17dcabfcecb8e3137b05",
+      "actual_procedure": {
+        "address": "0x440700",
+        "name": "FUN_00440700",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x440700",
+              "end": "0x440867"
+            }
+          ],
+          "total_bytes": 360,
+          "span_bytes": 360,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "longlong __thiscall FUN_00440700(void * this, undefined4 param_1)",
+        "locals": [
+          {
+            "description": "undefined8 local_10 @ Stack[-0x10]:8",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_14 @ Stack[-0x14]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x440700.json",
+      "sha256": "98abd1b09b004a597bbed8a20e20f692289e2660dc9acd467f9722b7f8152a4d"
+    },
+    {
+      "requested_address": "0x440950",
+      "evidence_id": "ev_104792379571972b8c6f5532c8bff402689d0a33b378133cef4a5d17439b32eb",
+      "actual_procedure": {
+        "address": "0x440950",
+        "name": "FUN_00440950",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x440950",
+              "end": "0x4409a0"
+            }
+          ],
+          "total_bytes": 81,
+          "span_bytes": 81,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "int __thiscall FUN_00440950(void * this, undefined4 * param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x440950.json",
+      "sha256": "60dad12db4f048149a7fdb313ef4bab6a4051b7e476486e140b18f5113d08641"
+    },
+    {
+      "requested_address": "0x440df0",
+      "evidence_id": "ev_6ea2003a6b75357de262cfc57c72ece91ab8382bfe21943e1fc568f9ef30d5b5",
+      "actual_procedure": {
+        "address": "0x440cd0",
+        "name": "FUN_00440cd0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x440cd0",
+              "end": "0x440ebc"
+            }
+          ],
+          "total_bytes": 493,
+          "span_bytes": 493,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined4 __fastcall FUN_00440cd0(undefined4 * param_1)",
+        "locals": [
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_8 @ Stack[-0x8]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c @ Stack[-0xc]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x440df0.json",
+      "sha256": "8c8d09bb356dc21c0d1122e0a474da86cc4713851f6c6a9b56a5d99dd86ef01a"
+    },
+    {
+      "requested_address": "0x441050",
+      "evidence_id": "ev_030fc8ba2531c0c425d42e7c04431d9e4d7e81c527fead94dfe8b27ec54bf602",
+      "actual_procedure": {
+        "address": "0x441020",
+        "name": "FUN_00441020",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x441020",
+              "end": "0x441135"
+            }
+          ],
+          "total_bytes": 278,
+          "span_bytes": 278,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __fastcall FUN_00441020(void * param_1)",
+        "locals": [
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x441050.json",
+      "sha256": "a4d4e366849c88c29968771506d15b1b4f0f59d21fd1779878ba380ff5e5a586"
+    },
+    {
+      "requested_address": "0x441170",
+      "evidence_id": "ev_4681777640d5adaf1ce2379d96dfc87c886a338a277d4b6d64ec5d1b66c3e5d4",
+      "actual_procedure": {
+        "address": "0x441170",
+        "name": "FUN_00441170",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x441170",
+              "end": "0x44134c"
+            }
+          ],
+          "total_bytes": 477,
+          "span_bytes": 477,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_00441170(void * this, double param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x441170.json",
+      "sha256": "553c532298ddbfc5597f39ec9248d27c0d934374ec4fb6ca5ce04eb9cd840f16"
+    },
+    {
+      "requested_address": "0x441290",
+      "evidence_id": "ev_f934f8cd1afb536f58aae8af8d5e3ee89cde5467d283e8a1a2e9f8e056cadcc0",
+      "actual_procedure": {
+        "address": "0x441170",
+        "name": "FUN_00441170",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x441170",
+              "end": "0x44134c"
+            }
+          ],
+          "total_bytes": 477,
+          "span_bytes": 477,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_00441170(void * this, double param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x441290.json",
+      "sha256": "896831f0513c7e3278e231495f043c424440d9d9ca38cfe10fcbf1440db40c2d"
+    },
+    {
+      "requested_address": "0x441360",
+      "evidence_id": "ev_877dba03cc1e2735003f4100b09d24defe3cf070acf16c38e87e275158e33fb9",
+      "actual_procedure": {
+        "address": "0x441360",
+        "name": "FUN_00441360",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x441360",
+              "end": "0x441409"
+            }
+          ],
+          "total_bytes": 170,
+          "span_bytes": 170,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __fastcall FUN_00441360(void * param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x441360.json",
+      "sha256": "5f06e7f67f27545ec31c12352cff079cdd72953c5773a5fa6fec7f71ba1cabff"
+    },
+    {
+      "requested_address": "0x4418b0",
+      "evidence_id": "ev_41c241373bf6b5fdc356d21335035a539c30b76f3884a227aa8f17fbbc69e868",
+      "actual_procedure": {
+        "address": "0x4418b0",
+        "name": "FUN_004418b0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x4418b0",
+              "end": "0x4418fb"
+            }
+          ],
+          "total_bytes": 76,
+          "span_bytes": 76,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "int __fastcall FUN_004418b0(void * param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x4418b0.json",
+      "sha256": "d01236ff4b31f90be63bf32b4528377664bc88aaf78d3c2eb3a329570093dc94"
+    },
+    {
+      "requested_address": "0x441b20",
+      "evidence_id": "ev_9c631b7036f5cc09d3061d0c31b37b0a6d8e500daa5b9df0e59f70ec723e5a03",
+      "actual_procedure": {
+        "address": "0x441b20",
+        "name": "FUN_00441b20",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x441b20",
+              "end": "0x441ced"
+            }
+          ],
+          "total_bytes": 462,
+          "span_bytes": 462,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_00441b20(void * this, void * param_1)",
+        "locals": [
+          {
+            "description": "undefined local_100 @ Stack[-0x100]:1",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined local_200 @ Stack[-0x200]:1",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined local_240 @ Stack[-0x240]:1",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined local_244 @ Stack[-0x244]:1",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_248 @ Stack[-0x248]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_24c @ Stack[-0x24c]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_250 @ Stack[-0x250]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x441b20.json",
+      "sha256": "0e892113491f2386ed5730faa60ab4003a5762f439bb259154efb28f21963f03"
+    },
+    {
+      "requested_address": "0x441cf0",
+      "evidence_id": "ev_edf559bf5a306ef0991b05454768a11e15b6a593adaea66f60e71589bb5c911b",
+      "actual_procedure": {
+        "address": "0x441cf0",
+        "name": "FUN_00441cf0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x441cf0",
+              "end": "0x4420e0"
+            }
+          ],
+          "total_bytes": 1009,
+          "span_bytes": 1009,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined4 __stdcall FUN_00441cf0(undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4, undefined4 param_5, undefined4 param_6, undefined4 param_7, undefined4 param_8, undefined4 param_9)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x441cf0.json",
+      "sha256": "aeeda089607ccae31b3f3865ee0d4f5389efc23f01c6f2ffd2295d5b56345403"
+    },
+    {
+      "requested_address": "0x442c7f",
+      "evidence_id": "ev_a77beb420f397523a1ab33e384707558109c2c05a26bea949cefe4c7388cf95e",
+      "actual_procedure": {
+        "address": "0x4429d0",
+        "name": "FUN_004429d0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x4429d0",
+              "end": "0x442cfb"
+            }
+          ],
+          "total_bytes": 812,
+          "span_bytes": 812,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __fastcall FUN_004429d0(int param_1)",
+        "locals": [
+          {
+            "description": "undefined4 local_108 @ Stack[-0x108]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_11c @ Stack[-0x11c]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_120 @ Stack[-0x120]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_128 @ Stack[-0x128]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_50 @ Stack[-0x50]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_58 @ Stack[-0x58]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined local_88 @ Stack[-0x88]:1",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined local_c8 @ Stack[-0xc8]:1",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_d4 @ Stack[-0xd4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_d8 @ Stack[-0xd8]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_e0 @ Stack[-0xe0]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_e4 @ Stack[-0xe4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_f0 @ Stack[-0xf0]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_f4 @ Stack[-0xf4]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x442c7f.json",
+      "sha256": "2fe657bb422678ee806fa6a3f80dec91da7b06a805926466c1006fa782e9483c"
+    },
+    {
+      "requested_address": "0x442d00",
+      "evidence_id": "ev_9cc619de797f206e60cd076267f96630297ecf710958be9a3f701485d7ef8564",
+      "actual_procedure": {
+        "address": "0x442d00",
+        "name": "FUN_00442d00",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x442d00",
+              "end": "0x442f74"
+            }
+          ],
+          "total_bytes": 629,
+          "span_bytes": 629,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_00442d00(void * this, undefined4 param_1, undefined4 param_2)",
+        "locals": [
+          {
+            "description": "undefined4 local_400 @ Stack[-0x400]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_800 @ Stack[-0x800]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c00 @ Stack[-0xc00]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c04 @ Stack[-0xc04]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c08 @ Stack[-0xc08]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c0c @ Stack[-0xc0c]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c10 @ Stack[-0xc10]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x442d00.json",
+      "sha256": "1afa81d3b13551b15b9bb0ba7530a891c3cf2b27101ee35a43e417fdd2321be4"
+    },
+    {
+      "requested_address": "0x443090",
+      "evidence_id": "ev_233c8b17b92687d0952bb2197a80da108fec6c3e4c2cf99b6e5433676246816b",
+      "actual_procedure": {
+        "address": "0x443080",
+        "name": "FUN_00443080",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x443080",
+              "end": "0x4432c1"
+            }
+          ],
+          "total_bytes": 578,
+          "span_bytes": 578,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __stdcall FUN_00443080(void)",
+        "locals": [
+          {
+            "description": "undefined4 local_res0 @ Stack[0x0]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x443090.json",
+      "sha256": "3b84364907d8987776c398057ab443824c8529bf6049ca0ab59591be634edb7b"
+    },
+    {
+      "requested_address": "0x443220",
+      "evidence_id": "ev_b804c6bf908d6af6157fe5a28d3a3fa24a3f2551908d08ba6e686392e125c16b",
+      "actual_procedure": {
+        "address": "0x443080",
+        "name": "FUN_00443080",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x443080",
+              "end": "0x4432c1"
+            }
+          ],
+          "total_bytes": 578,
+          "span_bytes": 578,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __stdcall FUN_00443080(void)",
+        "locals": [
+          {
+            "description": "undefined4 local_res0 @ Stack[0x0]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x443220.json",
+      "sha256": "3082e13cc839ae20e78ba0dc1a7c62c9b709dc2bdba98c702a84e780f6070d0e"
+    },
+    {
+      "requested_address": "0x443310",
+      "evidence_id": "ev_b2045e8050288915f3faa799b51c3f13941bc5d879b513c5066410dcfdf0befa",
+      "actual_procedure": {
+        "address": "0x443310",
+        "name": "FUN_00443310",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x443310",
+              "end": "0x443359"
+            }
+          ],
+          "total_bytes": 74,
+          "span_bytes": 74,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_00443310(void * this, uint param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x443310.json",
+      "sha256": "13b0f792627707183aa79c9b9a354ee01d76e94a3b594a065f03482d40fe22de"
+    },
+    {
+      "requested_address": "0x443350",
+      "evidence_id": "ev_64655b794fb1cc36192a204c805473a05ac70239c658117959f6abdaf86ee4f1",
+      "actual_procedure": {
+        "address": "0x443310",
+        "name": "FUN_00443310",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x443310",
+              "end": "0x443359"
+            }
+          ],
+          "total_bytes": 74,
+          "span_bytes": 74,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_00443310(void * this, uint param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x443350.json",
+      "sha256": "388028c49eb0edcc16ae99ebfd741584c4e28932dfc7afd9448f3601941c8eda"
+    },
+    {
+      "requested_address": "0x44a8ea",
+      "evidence_id": "ev_5b7f2367d448aba5f2ce96156da823ba5a421da0d67ee2ec4c8ba61e3e242e15",
+      "actual_procedure": {
+        "address": "0x44a8a0",
+        "name": "FUN_0044a8a0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x44a8a0",
+              "end": "0x44aa77"
+            }
+          ],
+          "total_bytes": 472,
+          "span_bytes": 472,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined4 * __stdcall FUN_0044a8a0(void)",
+        "locals": [
+          {
+            "description": "undefined local_4 @ Stack[-0x4]:1",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_8 @ Stack[-0x8]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c @ Stack[-0xc]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x44a8ea.json",
+      "sha256": "6f3f546b75e657e02c3ea42bd1d3a35f6158c7ac70abdb3ec862cbccbaeac231"
+    },
+    {
+      "requested_address": "0x44c936",
+      "evidence_id": "ev_beea9f7e75a66785b0e932623f2c340d1b55361ddb262f6b7dd9940324a7214e",
+      "actual_procedure": {
+        "address": "0x44c8e0",
+        "name": "FUN_0044c8e0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x44c8e0",
+              "end": "0x44cc4a"
+            }
+          ],
+          "total_bytes": 875,
+          "span_bytes": 875,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined4 * __fastcall FUN_0044c8e0(undefined4 * param_1)",
+        "locals": [
+          {
+            "description": "undefined local_10c @ Stack[-0x10c]:1",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_110 @ Stack[-0x110]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_114 @ Stack[-0x114]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_118 @ Stack[-0x118]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_11c @ Stack[-0x11c]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_120 @ Stack[-0x120]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c @ Stack[-0xc]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x44c936.json",
+      "sha256": "5391141a7b97ab33b647aef7853f85632f1709400b5ceba563039d5c026e0225"
+    },
+    {
+      "requested_address": "0x44d0b0",
+      "evidence_id": "ev_6e389ede4630a17cb28fb4c9e164966bfc796f8c8db1ecd2ba157b4d77e591cb",
+      "actual_procedure": {
+        "address": "0x44d0b0",
+        "name": "FUN_0044d0b0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x44d0b0",
+              "end": "0x44d180"
+            }
+          ],
+          "total_bytes": 209,
+          "span_bytes": 209,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __fastcall FUN_0044d0b0(int param_1)",
+        "locals": [
+          {
+            "description": "undefined4 local_c @ Stack[-0xc]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x44d0b0.json",
+      "sha256": "86f1e38ce6f2ddc1da23d5966bedeb60002594541f9ee56b1b05c680c7d2bdf4"
+    },
+    {
+      "requested_address": "0x44d1c0",
+      "evidence_id": "ev_076644f4c1a6fd3b162a3569f49539b77e55ba5d83e0a5af066baeeccb81d76a",
+      "actual_procedure": {
+        "address": "0x44d1c0",
+        "name": "FUN_0044d1c0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x44d1c0",
+              "end": "0x44d224"
+            }
+          ],
+          "total_bytes": 101,
+          "span_bytes": 101,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0044d1c0(void * this, int * param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x44d1c0.json",
+      "sha256": "facf18e4841fe6d1b8ebb0cf29d49e73c07fdcd91f6136995615f3134c58c0a1"
+    },
+    {
+      "requested_address": "0x44d51a",
+      "evidence_id": "ev_56d107c3828c9c366a0b4f898467f04d28e1c9e3c56eeb7056693c64e69dc951",
+      "actual_procedure": {
+        "address": "0x44d4c0",
+        "name": "FUN_0044d4c0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x44d4c0",
+              "end": "0x44d69f"
+            }
+          ],
+          "total_bytes": 480,
+          "span_bytes": 480,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined4 * __stdcall FUN_0044d4c0(void)",
+        "locals": [
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_8 @ Stack[-0x8]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c @ Stack[-0xc]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_res0 @ Stack[0x0]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x44d51a.json",
+      "sha256": "ca4d9f446c5b5f8d15c535aa00a1f07fbaf69ef7f14b597cedbe2c2437019e69"
+    },
+    {
+      "requested_address": "0x44d800",
+      "evidence_id": "ev_db3c94fa0826a40f2af4825e4df9e72a30109472c9f7c0c8330b9c45c445ef00",
+      "actual_procedure": {
+        "address": "0x44d7d0",
+        "name": "FUN_0044d7d0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x44d7d0",
+              "end": "0x44d84f"
+            }
+          ],
+          "total_bytes": 128,
+          "span_bytes": 128,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __fastcall FUN_0044d7d0(int param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x44d800.json",
+      "sha256": "62a72c207149a5da0f6f69129bb9fc85b945c9bae3e9073cd63aee96959ed250"
+    },
+    {
+      "requested_address": "0x44d950",
+      "evidence_id": "ev_b3699448b5aeaab8cc03ee35fe2c53eb650452f4d782bb5aa62d6f73fa2e44bd",
+      "actual_procedure": {
+        "address": "0x44d950",
+        "name": "FUN_0044d950",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x44d950",
+              "end": "0x44d9fe"
+            }
+          ],
+          "total_bytes": 175,
+          "span_bytes": 175,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0044d950(void * this, uint param_1, float * param_2, float * param_3, float * param_4, float * param_5)",
+        "locals": [
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x44d950.json",
+      "sha256": "6fdeedcd1bd36b4dd12692c871847a9fb4390abcb4f5fbdcd9f6dc56fbf7093e"
+    },
+    {
+      "requested_address": "0x44e0a0",
+      "evidence_id": "ev_2c26a5e8e462e406b7fccb1b24f74ffdd86e0f9444ef149195ccab46f5c25b70",
+      "actual_procedure": {
+        "address": "0x44e0a0",
+        "name": "FUN_0044e0a0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x44e0a0",
+              "end": "0x44e11e"
+            }
+          ],
+          "total_bytes": 127,
+          "span_bytes": 127,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __fastcall FUN_0044e0a0(int param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x44e0a0.json",
+      "sha256": "5fbb83ddea56896a5072bb496520623ed0e6fef4ac6d043d108d8abc3a482f40"
+    },
+    {
+      "requested_address": "0x44e120",
+      "evidence_id": "ev_bf3c6fa6c92cafaace082822315c1a250004becb6e8210661793a52a0bda29d9",
+      "actual_procedure": {
+        "address": "0x44e120",
+        "name": "FUN_0044e120",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x44e120",
+              "end": "0x44e27c"
+            }
+          ],
+          "total_bytes": 349,
+          "span_bytes": 349,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0044e120(void * this, int * param_1)",
+        "locals": [
+          {
+            "description": "undefined local_68 @ Stack[-0x68]:1",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_6c @ Stack[-0x6c]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_70 @ Stack[-0x70]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_74 @ Stack[-0x74]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_78 @ Stack[-0x78]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x44e120.json",
+      "sha256": "01d44017571e78212887230fccfe955128e42d42e328ccf734a724acdd82b034"
+    },
+    {
+      "requested_address": "0x44e320",
+      "evidence_id": "ev_95e215e94f70b0c2bc7fa1cd103fe48a1cad60e722bfabe0f80fec64d15f18b9",
+      "actual_procedure": {
+        "address": "0x44e280",
+        "name": "FUN_0044e280",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x44e280",
+              "end": "0x44e3c0"
+            }
+          ],
+          "total_bytes": 321,
+          "span_bytes": 321,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined4 * __fastcall FUN_0044e280(undefined4 * param_1)",
+        "locals": [
+          {
+            "description": "undefined4 local_10 @ Stack[-0x10]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_14 @ Stack[-0x14]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c @ Stack[-0xc]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x44e320.json",
+      "sha256": "26f4282d7ff12483f8d8ea72b820e1c12128c4963c0f0e6a39bd100a23cf899e"
+    },
+    {
+      "requested_address": "0x44e400",
+      "evidence_id": "ev_2fcc31c28f5ba8d694d06ab1af587588fe8a3bbe5312f88e72c36debeb8eb6c2",
+      "actual_procedure": {
+        "address": "0x44e3e0",
+        "name": "FUN_0044e3e0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x44e3e0",
+              "end": "0x44e494"
+            }
+          ],
+          "total_bytes": 181,
+          "span_bytes": 181,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0044e3e0(void * this, short * param_1, int param_2)",
+        "locals": [
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x44e400.json",
+      "sha256": "02252593d7ac3b6e35ee6349d5de4dd24cca38aaedec42f319c50d5b4358523c"
+    },
+    {
+      "requested_address": "0x44f000",
+      "evidence_id": "ev_7f93e1782880ce6add1e52a7788999bbd38c10f6979a67106751683df65a5b59",
+      "actual_procedure": {
+        "address": "0x44efc0",
+        "name": "FUN_0044efc0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x44efc0",
+              "end": "0x44f110"
+            }
+          ],
+          "total_bytes": 337,
+          "span_bytes": 337,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined4 * __fastcall FUN_0044efc0(undefined4 * param_1)",
+        "locals": [
+          {
+            "description": "undefined4 local_10 @ Stack[-0x10]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_14 @ Stack[-0x14]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          },
+          {
+            "description": "undefined4 local_c @ Stack[-0xc]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x44f000.json",
+      "sha256": "99201212525ff136274b32a68eb36ef0a3b850ea54feb937c9cdb7117bd92c5d"
+    },
+    {
+      "requested_address": "0x44f150",
+      "evidence_id": "ev_2f920c8741ed949682403b0292b0d1d36cf820a3fb8e233c867a1a7a4a622313",
+      "actual_procedure": {
+        "address": "0x44f150",
+        "name": "FUN_0044f150",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x44f150",
+              "end": "0x44f1f2"
+            }
+          ],
+          "total_bytes": 163,
+          "span_bytes": 163,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __fastcall FUN_0044f150(int param_1)",
+        "locals": [
+          {
+            "description": "undefined4 local_4 @ Stack[-0x4]:4",
+            "provenance": "ghidra-function-database"
+          }
+        ]
+      },
+      "result_file": "rea-function-0x44f150.json",
+      "sha256": "e3b321b577bd73b49546a9c66146eb818a6ff279590fb9e07c9847fbf446b536"
+    },
+    {
+      "requested_address": "0x44f200",
+      "evidence_id": "ev_3a0cde2aa5b71a939cc8aeecd59e3213ad09adf125c3d9aa7e61e93b5f44ab9d",
+      "actual_procedure": {
+        "address": "0x44f200",
+        "name": "FUN_0044f200",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x44f200",
+              "end": "0x44f21d"
+            }
+          ],
+          "total_bytes": 30,
+          "span_bytes": 30,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0044f200(void * this, int param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x44f200.json",
+      "sha256": "5c6fe14925f75a4ac9141337c8b73d68c9be21392bc591f1d2ed2377428c7395"
+    },
+    {
+      "requested_address": "0x44f290",
+      "evidence_id": "ev_a8f9e32460cd4c1690099837ca250b2b830d6fef448945f2633807a58dbc98a5",
+      "actual_procedure": {
+        "address": "0x44f290",
+        "name": "FUN_0044f290",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x44f290",
+              "end": "0x44f2e2"
+            }
+          ],
+          "total_bytes": 83,
+          "span_bytes": 83,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __fastcall FUN_0044f290(int param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x44f290.json",
+      "sha256": "452c488fbd3ad70890b90d883a3f1b90abe35eac4ed6c4a4402f662927450a86"
+    },
+    {
+      "requested_address": "0x44f350",
+      "evidence_id": "ev_58bef72bb792bded8d91f77106ec350fc70a98cf85d10912934089b395e945bc",
+      "actual_procedure": {
+        "address": "0x44f2f0",
+        "name": "FUN_0044f2f0",
+        "classification": {
+          "external": false,
+          "thunk": false,
+          "thunk_target": null,
+          "provenance": "ghidra-function-manager"
+        },
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x44f2f0",
+              "end": "0x44f50d"
+            }
+          ],
+          "total_bytes": 542,
+          "span_bytes": 542,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "signature": "undefined __thiscall FUN_0044f2f0(void * this, int * param_1)",
+        "locals": []
+      },
+      "result_file": "rea-function-0x44f350.json",
+      "sha256": "85ff16577936f9e360099d644f8c55a968670b498425033abef55c6a361c1db2"
+    }
+  ]
+}

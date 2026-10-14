@@ -1,0 +1,17 @@
+{
+  "source_sha256": "5dd5c38e09aefbdc2cadd970aefb14a2e64b0560e943d8ef0fbdfddb77a4e1f7",
+  "max_table_va": "0x49e738 + type * 4",
+  "max_energy": {
+    "2": 15,
+    "3": 15,
+    "4": 20,
+    "5": 20,
+    "6": 30,
+    "7": 20,
+    "8": 15,
+    "9": 20,
+    "10": 15
+  },
+  "damage_percent_scale_va": "0x495bd8",
+  "damage_percent_scale": 0.009999999776482582
+}

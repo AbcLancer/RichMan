@@ -1,0 +1,44 @@
+; Static VA region 0x405130..0x405190, may include adjacent helpers. Not original source.
+; Binary SHA256 5dd5c38e09aefbdc2cadd970aefb14a2e64b0560e943d8ef0fbdfddb77a4e1f7
+00405130: a1e8cc4a00               mov      eax, dword ptr [0x4acce8]
+00405135: 8d0c40                   lea      ecx, [eax + eax*2]
+00405138: 8d1488                   lea      edx, [eax + ecx*4]
+0040513b: 8b4c2404                 mov      ecx, dword ptr [esp + 4]
+0040513f: c1e204                   shl      edx, 4
+00405142: 03d0                     add      edx, eax
+00405144: c1e208                   shl      edx, 8
+00405147: 2bd0                     sub      edx, eax
+00405149: 8d8490c39e2600           lea      eax, [eax + edx*4 + 0x269ec3]
+00405150: a3e8cc4a00               mov      dword ptr [0x4acce8], eax
+00405155: c1f810                   sar      eax, 0x10
+00405158: 56                       push     esi
+00405159: 8b74240c                 mov      esi, dword ptr [esp + 0xc]
+0040515d: 25ff7f0000               and      eax, 0x7fff
+00405162: 2bf1                     sub      esi, ecx
+00405164: 99                       cdq      
+00405165: 46                       inc      esi
+00405166: f7fe                     idiv     esi
+00405168: 5e                       pop      esi
+00405169: 8bc2                     mov      eax, edx
+0040516b: 03c1                     add      eax, ecx
+0040516d: c3                       ret      
+0040516e: 90                       nop      
+0040516f: 90                       nop      
+00405170: e83b010000               call     0x4052b0
+00405175: d9442408                 fld      dword ptr [esp + 8]
+00405179: d8642404                 fsub     dword ptr [esp + 4]
+0040517d: dec9                     fmulp    st(1)
+0040517f: d8442404                 fadd     dword ptr [esp + 4]
+00405183: c3                       ret      
+00405184: 90                       nop      
+00405185: 90                       nop      
+00405186: 90                       nop      
+00405187: 90                       nop      
+00405188: 90                       nop      
+00405189: 90                       nop      
+0040518a: 90                       nop      
+0040518b: 90                       nop      
+0040518c: 90                       nop      
+0040518d: 90                       nop      
+0040518e: 90                       nop      
+0040518f: 90                       nop      
