@@ -419,3 +419,22 @@
     （Godot 会中断函数、**不产生 `[FAIL]`**）→ 症状是**总数莫名变少**。
     2026-09-27 踩过：`_fresh_sim()` **只造 2 个玩家**，我的多人连锁测试取 `players[3]` 越界，
     289 条掉成 273 条。**加断言段落前先确认要几个玩家。**
+106. **⭐⭐ `.bat` 三条铁律（2026-10-14 立）**：
+    ① **换行必须 CRLF** —— Windows cmd 解析 LF-only 批处理时 **`goto :label` 找不到标签**
+       （`PACKAGE.bat` 用了 `:check`/`:pack`/`:done`，踩到即失效）。
+    ② **含中文必须 GBK**（UTF-8 会被 cp936 从中间切断、静默失效）—— 这条 git 管不了。
+    ③ 仓库已加 **`.gitattributes`：`*.bat text eol=crlf`** —— 因为本机 `core.autocrlf=true`，
+       不加这条 CRLF 会以 LF 形态存库、别人 clone 出来又是坏的。
+    验编码/换行的小脚本：读成 bytes 数 `\r\n` vs `\n`，再试 `decode('gbk')` / `decode('utf-8')`。
+107. **⭐ 不提交的产物（已进 .gitignore）**：
+    `rea-function-*.json`（逐函数反汇编原始产物，**208 个 / 121 MB**，可用
+    `tools/r6_disassemble_range.py` 重跑）；`.tmp-*`（临时诊断日志）；
+    `game/assets/`、`samples/`、`docs/original-readable|orig-logic|orig-scene/`、`docs/screenshots/`。
+    ⚠️ **但 `docs/rea-*/` 下的 `*.md` 结论、`config-*.json` 参数索引、`*.asm.txt`、`*.c`
+    是要提交的** —— 别一股脑把整个目录忽略掉。
+108. **⚠️ gitignore 的 `*` 不跨 `/`**：`docs/rea-*/rea-function-*.json` **匹配不到**
+    `docs/rea-2026-10-11/economy-followup/rea-function-*.json`（多一层子目录）→
+    规则形同虚设。2026-10-14 因此差点把 **121 MB 提交进库**
+    （症状：`git diff --cached --stat` 显示 `400 files changed, 1,863,822 insertions`）。
+    写法用**不限路径的 `rea-function-*.json`**；改完**必须用 `git check-ignore -v <路径>` 实测**。
+    经验：`git add` 前后都看一眼 `--stat` 的总文件数与插入行数，异常大就是漏了忽略规则。
