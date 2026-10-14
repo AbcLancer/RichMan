@@ -34,9 +34,89 @@ var estate_month := 0
 
 
 ## 空地产格价格 = `Empty_Grid_PriceFactor`(200) × 地价指数
-func empty_plot_price() -> int:
+func empty_plot_price(idx: int = -1) -> int:
 	return int(round(float(Rules.get_val("economy.empty_grid_price_factor", 200))
-		* estate_index))
+		* estate_index * _land_factor(idx) / 10.0))
+
+## Native cells own these factors independently of ownership (42e870/42e9e0).
+## Keep physical corner frontages on one key, including before anyone buys land.
+var land_factors: Dictionary = {}
+var economy_factors: Dictionary = {"industry": 1.0, "shop": 1.0, "uptown": 1.0}
+var _environment_signature: Array = []
+
+func _refresh_land_environment() -> void:
+	if map == null or map.original_layout.is_empty(): return
+	var buildings: Array = []
+	var signature: Array = []
+	for key in unique_plot_keys():
+		var estate: Dictionary = plots[key]
+		if int(estate.get("level", 0)) <= 0: continue
+		var road: Dictionary = map.original_layout.roads[int(key)]
+		var cell := int(estate.get("build_cell", -1))
+		if cell < 0: cell = int(road.cell)
+		var grade := Rules.house_grade(str(estate.get("type", "")), int(estate.level))
+		buildings.append({"block": int(road.block), "cell": cell, "grade": grade})
+		signature.append([int(road.block), cell, str(grade.get("file", ""))])
+	if signature == _environment_signature: return
+	_environment_signature = signature
+	var seen := {}
+	for idx in range(map.tile_count()):
+		if not map.is_plot(idx): continue
+		var key := _land_key(idx)
+		if seen.has(key): continue
+		seen[key] = true
+		var road: Dictionary = map.original_layout.roads[idx]
+		var bid := int(road.block)
+		if bid < 0: continue
+		var width := int(map.original_layout.blocks[bid].width)
+		var cell := int(road.cell)
+		var target := Vector2(cell % width + .5, cell / width + .5)
+		var initial := clampf(10.0 + float(street_index.get(map.street_of(idx), 0)), 5.0, 100.0)
+		var state: Dictionary = land_factors.get(key, {"price": initial, "rent": initial}).duplicate()
+		state.price = float(state.get("rent", initial))
+		state.environment = {"industry": 0.0, "shop": 0.0, "uptown": 0.0}
+		# 41d9e0 resets derived price from the baseline, then 41d800 contributes
+		# each building in its own block with radial linear falloff.
+		for building in buildings:
+			if int(building.block) != bid: continue
+			var grade: Dictionary = building.grade
+			var side := float(grade.get("w", 1))
+			var center := Vector2(int(building.cell) % width + side * .5,
+				int(int(building.cell) / width) + side * .5)
+			var radius := (side + 1.0) * 1.5
+			var weight := maxf(0.0, 1.0 - center.distance_to(target) / radius)
+			state.price = clampf(float(state.price) + float(grade.get("price_effect", 0)) * weight, 5.0, 100.0)
+			for type_id in ["industry", "shop", "uptown"]:
+				state.environment[type_id] += float(grade.get("add_" + type_id, 0)) * weight
+		land_factors[key] = state
+
+func _land_key(idx: int) -> int:
+	return int(map.plot_frontages(idx)[0]) if map != null and map.is_plot(idx) else idx
+
+func _land_factor(idx: int) -> float:
+	if idx < 0 or map == null: return 10.0
+	_refresh_land_environment()
+	var initial := clampf(10.0 + float(street_index.get(map.street_of(idx), 0)), 5.0, 100.0)
+	return float(land_factors.get(_land_key(idx), {"price": initial}).get("price", initial))
+
+func _change_land_factors(delta: float, percentage: bool, street: String = "") -> int:
+	var seen := {}
+	var changed := 0
+	for idx in range(map.tile_count()):
+		if not map.is_plot(idx) or (street != "" and map.street_of(idx) != street): continue
+		var key := _land_key(idx)
+		if seen.has(key): continue
+		seen[key] = true
+		var old := _land_factor(idx)
+		var state: Dictionary = land_factors.get(key, {"price": old, "rent": old}).duplicate()
+		var price := old + (absf(old) * delta if percentage else delta)
+		# Native updates price first, then uses that new price for rent's increment.
+		var rent := float(state.get("rent", old)) + (absf(price) * delta if percentage else delta)
+		state.price = clampf(price, 5.0, 100.0)
+		state.rent = clampf(rent, 5.0, 100.0)
+		land_factors[key] = state
+		if not is_equal_approx(old, float(state.price)): changed += 1
+	return changed
 
 
 ## 相对的物价倍数（房租等按它放大；指数 10 = 1.0 倍）
@@ -44,19 +124,34 @@ func price_scale() -> float:
 	return estate_index / 10.0
 
 
-## 每个月涨一次物价指数（老板 2026-09-27）
+## Native 43f270 / 4418b0 averages active company assets, not stock quotes.
+## 441170 raises the integer world index to floor(current / initial), capped at9.
+## Keep tenths internally for existing snapshots; native whole-index values are10..90.
+var initial_company_assets := 0
+
+func _company_asset_average() -> int:
+	# 440cd0 stores player-company count at +0c; 4418b0 excludes virtual firms.
+	var total := 0
+	var count := 0
+	for p in players.values():
+		if not bool(p.alive): continue
+		total += int(p.money) + stock_portfolio_value(p) + estate_value(p)
+		count += 1
+	return maxi(1, int(total / maxi(1, count)))
+
 func _tick_estate_index() -> void:
-	var mon := int(road_day / MONTH_DAYS)
-	if mon <= estate_month:
+	var current := _company_asset_average()
+	if initial_company_assets <= 0:
+		initial_company_assets = current
 		return
-	var step := maxi(1, mon - estate_month)          # 一次跨多月就补涨几次
-	estate_month = mon
-	var lo := float(Rules.get_val("economy.estate_price_index_min", 5))
-	estate_index = maxf(lo, estate_index + float(step))
-	log_message.emit("[物价] 第 %d 个月，地价指数涨到 %.0f（地价 %d 元/格）" % [
-		mon, estate_index, empty_plot_price()])
-	_ev("estate_index_up", null, {"month": mon, "index": estate_index,
-		"price": empty_plot_price()})
+	var index := mini(9, int(current / initial_company_assets))
+	if float(index) <= price_scale(): return
+	var previous := price_scale()
+	estate_index = float(index * 10)
+	var date := calendar_at_day(road_day)
+	log_message.emit("[物价] 公司平均资产增长，物价指数涨到%d" % index)
+	_ev("estate_index_up", null, {"month": date.month, "year": date.year,
+		"index": index, "price": empty_plot_price(), "delta": index - previous})
 const EMPTY_PLOT_RENT := 250        # Empty_Grid_RentFactor(25) × 地价因子(10)
 const START_MONEY := 500000         # 对齐 Player_Com_Capital 量级
 const START_HP := 3000
@@ -84,31 +179,90 @@ const DICE_PER_ROLL_MAX := 2
 ## ⚠️ 我们原来是把 `moving` 一设就走、骰子只是「同时」显示数字，节奏是错的
 ##    （老板 2026-09-26 反馈）。这个值要和表现层的 `DIE_FLY_TIME` 对齐。
 const ROLL_ANIM_SECONDS := 1.15
+const ENTRY_SECONDS := 2.8
+
+## The authority chooses distinct random starting road nodes once, before play.
+func begin_entry() -> void:
+	initial_company_assets = _company_asset_average()
+	var available: Array = range(map.tile_count())
+	var chosen: Array = []
+	var spacing := maxi(2, map.tile_count() / maxi(player_ids().size() * 5, 1))
+	for id in player_ids():
+		if available.is_empty(): break
+		var candidates: Array = []
+		for road in available:
+			var spaced := true
+			for prior in chosen:
+				if _tile_distance(int(road), int(prior)) < spacing: spaced = false; break
+			if spaced: candidates.append(road)
+		if candidates.is_empty(): candidates = available
+		var tile := int(candidates[rng.randi_range(0, candidates.size() - 1)])
+		available.erase(tile)
+		chosen.append(tile)
+		var p: Dictionary = players[id]
+		p.tile = tile
+		p.moving = 0
+		p.progress = 0.0
+		p.entry_started = time
+		p.entry_until = time + ENTRY_SECONDS
+		p.move_after = p.entry_until
+		_clear_chance(p)
 
 ## ---- 卡片目标类型 ----
 ## 提示文案来自原版 `config/String.txt` 1101..1106（Rules.card_target_prompt）。
 ## ⚠ 这张「哪张卡点谁」的映射是**推导**出来的（依据每张卡的说明文字 + 作用对象），
 ##   原版配置里没有这张表 → 代码改动必须同步这里。
-##   player = 需要玩家真的点一个对手；street/plot/road = 取「当前所在格」即可；
-##   stock/card = 对应子系统（股票 / 卡片组合）尚未实现。
+##   player = 点选对手；road = 显式选路点（飞弹还支持点击相邻地产平台）；
+##   street/plot = 当前仍有取当前格或自动挑地的实现，待逐张对齐；stock/card = 专用选择流程。
 const CARD_TARGET := {
 	"qiongshen": "player", "shuaishen": "player", "abduct": "player",
 	"tax": "player", "rob": "player", "sharewealth": "player",
-	"tudigong": "plot", "rebuild": "plot", "upgrade": "plot", "monster": "plot",
-	"buyland": "plot", "missile": "plot", "nuke": "plot",
+	"tudigong": "plot", "rebuild": "plot", "upgrade": "building", "monster": "building",
+	"buyland": "plot", "missile": "road", "nuke": "road",
 	"tianshi": "street", "emo": "street", "priceup": "street",
 	"pricedown": "street", "seize": "street",
-	"mine": "road", "roadblock": "road", "clear": "road",
+	"roadblock": "road",
 	"redcard": "stock", "blackcard": "stock",
 	"copy": "card", "gem": "card",
 }
 
 ## 需要玩家真的点一个对手才能用的卡（只有这一类的使用是两步：选卡 → 选人）
 func card_target(card_id: String) -> String:
-	return str(CARD_TARGET.get(card_id, ""))
+	return str(CARD_TARGET.get(Rules.base_card_id(card_id), ""))
 
 func card_needs_player(card_id: String) -> bool:
 	return card_target(card_id) == "player"
+
+func card_map_candidates(pid: int, card_id: String) -> Array:
+	if card_target(card_id) != "building": return card_road_candidates(pid, card_id)
+	var p: Dictionary = players.get(pid, {})
+	var out: Array = []
+	if p.is_empty(): return out
+	for index in unique_plot_keys():
+		var plot: Dictionary = plots[index]
+		if _tile_distance(int(p.tile), int(index)) > CARD_TARGET_MAX_TILES: continue
+		if card_id == "upgrade":
+			if int(plot.owner) != pid or construction_plan(pid, int(index)).is_empty(): continue
+		elif int(plot.level) <= 0: continue
+		out.append(int(index))
+	return out
+
+func rebuild_plan(pid: int, index: int, house_type: String) -> Dictionary:
+	if not plots.has(index) or int(plots[index].get("level", 0)) <= 0: return {}
+	if int(plots[index].get("owner", -1)) < 0: return {}
+	# 原版 0x41fa20 把普通建筑类别 0..2 改成特殊类别 3..5，保留
+	# 地块尺寸，特殊建筑内部等级固定为 1。House.txt 的 d1/d2/d3
+	# 用 1/2/3 表示占地尺寸，故这里的 level 必须等于 footprint。
+	if not Rules.primary_types().has(str(plots[index].get("type", ""))): return {}
+	if not ["special1", "special2", "special3"].has(house_type): return {}
+	var old_type := str(plots[index].get("type", ""))
+	var old_level := int(plots[index].get("level", 1))
+	var old_space := Rules.house_footprint(Rules.house_file(old_type, old_level))
+	var space := clampi(int(plots[index].get("footprint", old_space)), 1, 3)
+	var grade := Rules.house_grade(house_type, space)
+	if grade.is_empty() or Rules.house_footprint(str(grade.get("file", ""))) != space: return {}
+	return {"type": house_type, "level": space, "name": str(grade.get("name", "")),
+		"cost": 0, "building_grade": 1, "footprint": space, "members": plots[index].get("members", [index])}
 
 ## 还没做的子系统对应的卡 → **不消耗**（宁可留着，也别让玩家白扔一张卡）。
 ## ✅ 2026-09-26：**红卡 / 黑卡**（股票系统上线）与**复制卡**（本轮）都已解开 → 现在**没有了**，
@@ -131,6 +285,8 @@ var map: MapData = null
 var players: Dictionary = {}     # peer_id:int -> Dictionary
 var plots: Dictionary = {}       # tile_index:int -> Dictionary {owner, level, type}
 var time: float = 0.0
+var pending_card_impacts: Array = []
+var pending_road_clears: Array = []
 var tick_count: int = 0
 var running: bool = false
 var winner: int = -1
@@ -170,6 +326,12 @@ var rng := RandomNumberGenerator.new()
 
 func setup(m: MapData, seed_val: int = 0) -> void:
 	map = m
+	initial_company_assets = 0
+	land_factors.clear()
+	_environment_signature.clear()
+	economy_factors = {"industry": 1.0, "shop": 1.0, "uptown": 1.0}
+	pending_card_impacts.clear()
+	pending_road_clears.clear()
 	if seed_val == 0:
 		rng.randomize()
 	else:
@@ -184,6 +346,7 @@ func setup(m: MapData, seed_val: int = 0) -> void:
 ## + `config/String.txt` 2201..2209（技能名）+ `config/Info.txt` 202（持有上限 5 位）。
 ## 由 `tools/build_pet_data.py` 编译成 `res://data/rules/pets.json`。
 const PET_DATA_PATH := "res://data/rules/pets.json"
+const PET_SHOP_PRICE_PATH := "res://data/rules/pet_shop_prices.json"
 
 var pets_data: Dictionary = {}
 var _pet_index: Dictionary = {}          # id -> 该只的 record
@@ -203,6 +366,12 @@ func _load_pets() -> void:
 		_pet_index.clear()
 		for r in pets_data.get("pets", []):
 			_pet_index[str((r as Dictionary).get("id", ""))] = r
+		if FileAccess.file_exists(PET_SHOP_PRICE_PATH):
+			var prices: Variant = JSON.parse_string(FileAccess.get_file_as_string(PET_SHOP_PRICE_PATH))
+			if prices is Dictionary:
+				for pet_id in prices:
+					if _pet_index.has(str(pet_id)) and (prices[pet_id] is float or prices[pet_id] is int):
+						(_pet_index[str(pet_id)] as Dictionary)["buy_price"] = maxi(0, int(prices[pet_id]))
 
 
 ## 全部 9 只（精灵屋货架 / 持有面板都读它）
@@ -238,7 +407,8 @@ func _pet_val(pet_id: String, key: String, level: int) -> float:
 	return float(arr[i])
 
 
-## 1 级价格（点券）。⚠ Info.txt 203 的 <NUMBER> 原版没给值 → 取 Pet.txt「消耗点数」第 1 级
+## 请神购买价（点券），与技能消耗分开；优先读可编辑的 pet_shop_prices.json。
+## 七只已有原版截图或玩家实测，两只仍待核对。
 func pet_price(pet_id: String) -> int:
 	return int(pet_record(pet_id).get("buy_price", 0))
 
@@ -248,7 +418,7 @@ func pet_seconds(pet_id: String, level: int) -> float:
 	return _pet_val(pet_id, "seconds", level)
 
 
-## 发动一次消耗的点券（Pet.txt「消耗点数」列）
+## 发动一次消耗的宠物内部能量（435910 / 432bf0），不是玩家点券。
 func pet_cost(pet_id: String, level: int) -> int:
 	return int(_pet_val(pet_id, "points", level))
 
@@ -259,7 +429,7 @@ func pet_cost(pet_id: String, level: int) -> int:
 func pet_index_of(p: Dictionary, pet_id: String) -> int:
 	var arr: Array = p.get("pets", [])
 	for i in range(arr.size()):
-		if str((arr[i] as Dictionary).get("id", "")) == pet_id:
+		if pet_token(arr[i]) == pet_id or str((arr[i] as Dictionary).get("id", "")) == pet_id:
 			return i
 	return -1
 
@@ -290,12 +460,15 @@ func add_pet(p: Dictionary, pet_id: String) -> int:
 		_ev("pet_full", p, {"pet": pet_id, "max": max_pets()})
 		log_message.emit("%s 已经拥有 %d 位小神仙，不能再请了" % [p["name"], max_pets()])
 		return 1
-	# ⚠️ 新来的小神仙体力是 **0**（要自己走步攒），**不能给满** ——
-	#   给满会让它在下次抵达时**立刻发动技能**（其中「降级」那类会直接拆掉场上的房子）。
-	#   想吃满体力就用**喂食**（`act_feed_card` 会把体力充满）。
-	(p["pets"] as Array).append({"id": pet_id, "level": 1, "cool": 0.0, "fullness": 0.0})
-	if str(p.get("pet_active", "")) == "":
-		p["pet_active"] = pet_id        # 第一只自动「出战」（显示在角色面板的精灵栏位）
+	# Newly acquired pets have enough energy to stay, but still need feeding
+	# before their first skill. Hunger eventually makes them leave.
+	var added := {"id": pet_id, "level": 1, "growth": 0,
+		"uid": "%s:%s:%s:%s" % [p.id, pet_id, tick_count, p.get("pet_serial", 0)]}
+	p["pet_serial"] = int(p.get("pet_serial", 0)) + 1
+	_set_pet_energy(added, float(int(pet_max_energy(added)) * 5 / 10))
+	(p["pets"] as Array).append(added)
+	if str(p.get("pet_active", "")) in ["", "none"]:
+		p["pet_active"] = pet_token(added)        # 第一只自动「出战」（面板与世界跟随强调显示）
 	log_message.emit("%s 得到小神仙「%s」" % [p["name"], pet_name(pet_id)])
 	_ev("get_pet", p, {"pet": pet_id, "name": pet_name(pet_id)})
 	return 0
@@ -303,39 +476,57 @@ func add_pet(p: Dictionary, pet_id: String) -> int:
 
 ## 设「出战」的小神仙（原版：点角色面板的精灵栏位打开**仓库**，在里面选一只使用）。
 ##
-## ⚠ 「出战」的**玩法含义**没有明文依据 —— 原版截图只能看出「可以选择要使用的精灵」。
-##   这里取最保守的做法：只影响**角色面板精灵栏位显示哪一只**，特技仍然是全部生效。
-##   登记在 `docs/alignment-gap.md`。
+## 用户确认：同时只有选中的一只精灵跟随并发动技能；其他精灵保留在背包。
 func act_set_active_pet(id: int, pet_id: String) -> bool:
 	var p: Dictionary = players.get(id, {})
 	if p.is_empty():
 		return false
-	if pet_record(pet_id).is_empty() or pet_index_of(p, pet_id) < 0:
+	if pet_index_of(p, pet_id) < 0:
 		return false
-	p["pet_active"] = pet_id
+	var selected: Dictionary = p.pets[pet_index_of(p, pet_id)]
+	p["pet_active"] = pet_token(selected)
+	pet_id = str(selected.id)
 	log_message.emit("%s 把「%s」设为出战" % [p["name"], pet_name(pet_id)])
 	_ev("pet_active", p, {"pet": pet_id, "name": pet_name(pet_id)})
 	return true
 
+func act_release_pet(id: int, pet_id: String) -> bool:
+	var p: Dictionary = players.get(id, {})
+	if p.is_empty(): return false
+	var index := pet_index_of(p, pet_id)
+	if index < 0: return false
+	var released: Dictionary = p.pets[index]
+	var was_active := pet_token(active_pet(p)) == pet_token(released)
+	(p.pets as Array).remove_at(index)
+	if was_active: p["pet_active"] = "none"
+	pet_id = str(released.id)
+	log_message.emit("%s 放生了「%s」" % [p.name, pet_name(pet_id)])
+	_ev("pet_released", p, {"pet": pet_id, "pet_name": pet_name(pet_id)})
+	return true
+
 
 ## 当前出战的小神仙（没设过就取第一只；一只都没有返回空字典）
+func pet_token(pet: Dictionary) -> String:
+	return str(pet.get("uid", pet.get("id", "")))
+
 func active_pet(p: Dictionary) -> Dictionary:
 	var pets: Array = p.get("pets", [])
-	if pets.is_empty():
-		return {}
 	var want := str(p.get("pet_active", ""))
+	if want == "none": return {}
 	for e in pets:
-		if str((e as Dictionary).get("id", "")) == want:
-			return e
-	return pets[0]
+		if pet_token(e) == want or str(e.get("id", "")) == want: return e
+	return pets[0] if not pets.is_empty() else {}
 
 
-## 精灵屋购买（Info.txt 203：「<BABYNAME>价格<NUMBER>点券 确认要购买吗？」）
 func act_buy_pet(id: int, pet_id: String) -> bool:
 	var p: Dictionary = players.get(id, {})
 	if p.is_empty() or not bool(p["alive"]):
 		return false
 	if pet_record(pet_id).is_empty():
+		return false
+	var shelf: Array = p.get("pet_shop_stock", [])
+	if bool(p.get("pet_shop_open", false)) and not shelf.has(pet_id):
+		_ev("pet_shop_refused", p, {"pet": pet_id, "reason": "这只小神仙已售出"})
 		return false
 	var price := pet_price(pet_id)
 	if int(p["credit"]) < price:
@@ -348,9 +539,22 @@ func act_buy_pet(id: int, pet_id: String) -> bool:
 		return false
 	p["credit"] = int(p["credit"]) - price
 	add_pet(p, pet_id)
+	if bool(p.get("pet_shop_open", false)):
+		shelf[shelf.find(pet_id)] = ""       # 保留空货位，其他头像不挪位
 	log_message.emit("%s 花 %d 点券请到「%s」" % [p["name"], price, pet_name(pet_id)])
-	_ev("buy_pet", p, {"pet": pet_id, "price": price})
+	_ev("buy_pet", p, {"pet": pet_id, "price": price, "stock": shelf.duplicate()})
 	return true
+
+func _new_pet_shop_stock() -> Array:
+	var ids: Array = []
+	for record in pet_catalog():
+		ids.append(str((record as Dictionary).get("id", "")))
+	for i in range(ids.size() - 1, 0, -1):
+		var j := rng.randi_range(0, i)
+		var swap = ids[i]
+		ids[i] = ids[j]
+		ids[j] = swap
+	return ids.slice(0, 4)
 
 
 # ------------------------------------------------------- 卡片商店（用点券买卡）
@@ -368,27 +572,33 @@ func card_price(card_id: String) -> int:
 
 ## 货架上摆哪 8 张（原版 `uitex/other/cardshop.tga` 是 2 列 × 4 行 = 8 格）
 const CARD_SHOP_SLOTS := 8
-## 卡片商店的**持久货架**（买走的卡从这里移除，见 `act_buy_card`）
+## 兼容旧存档的货架；正常到访货架保存在各玩家 card_shop_stock 中。
 var card_shop_stock: Array = []
+var card_shop_initialized := false
 
 
-func _shop_stock() -> Array:
-	## ⚠️ 货架**必须持久**（`card_shop_stock`）—— 原来这里每次都 `shuffle()` 现洗一副，
-	## 于是**买走的卡还在货架上**，玩家能对着同一格反复买同一张卡。
-	## 老板 2026-09-27：「那个卡片商店，我买了的卡应该移除掉，不然我不就可以不停买了吗」。
-	if card_shop_stock.is_empty():
+func _shop_stock(pid: int = 1) -> Array:
+	var p: Dictionary = players.get(pid, {})
+	if p.has("card_shop_stock"): return (p.card_shop_stock as Array).duplicate()
+	# 同次到访反复查询不刷新；原版每次抵达时才抽取新货架。
+	if not card_shop_initialized and card_shop_stock.is_empty():
 		refill_card_shop()
+	card_shop_initialized = true
 	return card_shop_stock.duplicate()
 
 
-## 洗一副牌上架（进游戏时一次；卖空之后**不自动补货** —— 原版没有补货的明文，
-## 卖光就是卖光，`Info.txt` 里「售完」的语气也是这样）
+## 原版 439530 -> 41ee60：每次抵达取八张普通卡，同次售完不补。
 func refill_card_shop() -> void:
+	card_shop_initialized = true
 	var all: Array = Rules.cards()
 	var ids: Array = []
-	for c in all:
+	for c in all.slice(0, 40): # 41ee60 -> 41ed50(-1): original indices0..39.
 		ids.append(str(c.get("id", "")))
-	ids.shuffle()
+	for i in range(ids.size() - 1, 0, -1):
+		var j := rng.randi_range(0, i)
+		var swap = ids[i]
+		ids[i] = ids[j]
+		ids[j] = swap
 	card_shop_stock = ids.slice(0, mini(CARD_SHOP_SLOTS, ids.size()))
 
 
@@ -398,6 +608,8 @@ func act_buy_card(id: int, card_id: String) -> bool:
 	if p.is_empty() or not bool(p["alive"]):
 		return false
 	if Rules.card_by_id(card_id).is_empty():
+		return false
+	if not _shop_stock(id).has(card_id):
 		return false
 	var price := card_price(card_id)
 	if int(p["credit"]) < price:
@@ -416,9 +628,12 @@ func act_buy_card(id: int, card_id: String) -> bool:
 		return false
 	_report_card_push(p, res, Rules.card_name(card_id))
 	# ⭐ 买走 → **从货架上移除**（老板 2026-09-27；不然可以对着同一格反复买）
-	card_shop_stock.erase(card_id)
+	if p.has("card_shop_stock"):
+		p.card_shop_stock[(p.card_shop_stock as Array).find(card_id)] = ""
+	else:
+		card_shop_stock.erase(card_id)
 	log_message.emit("%s 花 %d 点券买下「%s」（货架剩 %d 张）" % [p["name"], price,
-		Rules.card_name(card_id), card_shop_stock.size()])
+		Rules.card_name(card_id), _shop_stock(id).size()])
 	_ev("buy_card", p, {"card": card_id, "name": Rules.card_name(card_id), "price": price})
 	return true
 
@@ -437,46 +652,63 @@ func _random_other(p: Dictionary) -> Dictionary:
 	return cand[rng.randi_range(0, cand.size() - 1)]
 
 
-## 每次「抵达格子」之后给小神仙一次发动机会。
-##
-## 规则（**推导**，依据 = Pet.txt 的两列数字的语义 + Info.txt 191..196 的受害者文案）：
-##   · 冷却：同一只小神仙两次发动之间要隔 `seconds[level-1]` 秒（即时制那一行）
-##   · 花费：每次发动消耗 `points[level-1]` **点券**（Pet.txt「消耗点数」列）——
-##     这就是点券的第二个出口；点券不够就不发动（不扣也不发动）
-##   · 条件不满足（例如没有可拆的对手房）时**不扣点券、不进冷却**，换下一只试
-func _tick_pets(p: Dictionary) -> void:
-	if pets_data.is_empty():
-		return
-	for e in (p["pets"] as Array).duplicate():
-		var d: Dictionary = e
-		var pid := str(d.get("id", ""))
-		if pid == "":
-			continue
-		var lv := int(d.get("level", 1))
-		if time < float(d.get("cool", 0.0)):
-			continue
-		# **饱食度满**才能发动（老板 2026-09-27：「饱食度满了可以使用一次技能」）
-		if float(d.get("fullness", 0.0)) < PET_FULLNESS_MAX:
-			continue
-		var cost := pet_cost(pid, lv)
-		if int(p["credit"]) < cost:
-			continue
-		if not _pet_apply(p, pid, lv):
-			continue
-		p["credit"] = int(p["credit"]) - cost
-		d["cool"] = time + pet_seconds(pid, lv)
-		d["fullness"] = 0.0                        # 发动一次 → 饱食度清零，要再喂
-		log_message.emit("  （%s 发动「%s」，耗 %d 点券，剩 %d）" % [
-			pet_name(pid), pet_skill(pid), cost, int(p["credit"])])
-		_ev("pet_skill", p, {"pet": pid, "name": pet_name(pid), "level": lv,
-			"skill": pet_skill(pid), "effect": str(pet_record(pid).get("effect", "")),
-			"cost": cost, "seconds": pet_seconds(pid, lv), "credit": int(p["credit"])})
-		# ⚠️ **发动不再升级** —— 升级改由时间驱动（每月一级，见 `_tick_pet_aging()`）。
-		#   老板 2026-09-27 修正：「小神仙是随时间升级的，每个月升一级」。
+## Skills are manually triggered at full energy. Pet.txt seconds describe the
+## effect duration; there is no cooldown between skills once fed again.
+func _tick_pets(_p: Dictionary) -> void:
+	# Skills are released by the player; merely arriving must not consume a
+	# full energy bar before the visible skill button can be pressed.
+	pass
+
+func pet_skill_candidates(id: int) -> Array:
+	var p: Dictionary = players.get(id, {})
+	var result: Array = []
+	if p.is_empty(): return result
+	for oid in player_ids():
+		if int(oid) == id: continue
+		var q: Dictionary = players[oid]
+		if bool(q.get("alive", false)) and _tile_distance(int(p.tile), int(q.tile)) <= 2:
+			result.append(int(oid))
+	return result
+
+func pet_skill_block_reason(id: int) -> String:
+	var p: Dictionary = players.get(id, {})
+	if time < float(p.get("entry_until", 0.0)): return "角色正在乘降落伞入场"
+	if p.is_empty() or not bool(p.get("alive", false)): return "角色当前无法行动"
+	if time < float(p.effects.get("hospital_until", 0.0)): return "住院期间不能发动技能"
+	if time < float(p.effects.get("hotel_until", 0.0)): return "酒店住宿期间不能发动技能"
+	if time < float(p.effects.get("sleep_until", 0.0)): return "睡眠期间不能发动技能"
+	var pet := active_pet(p)
+	if pet.is_empty(): return "没有出战的小神仙"
+	if not pet_skill_ready(pet): return "饱食度不足：%d/100，请从手牌菜单喂食" % int(pet.get("fullness", 0.0))
+
+	return ""
+
+func act_pet_skill(id: int, feedback := true, target: int = -1) -> bool:
+	var p: Dictionary = players.get(id, {})
+	var reason := pet_skill_block_reason(id)
+	if reason == "":
+		var pet := active_pet(p)
+		var pet_id := str(pet.id)
+		var level := int(pet.level)
+		if pet_id in ["hutu", "qiongshen"] and target < 0:
+			if feedback: _ev("need_pet_target", p, {"pet": pet_id, "candidates": pet_skill_candidates(id)})
+			return false
+		if _pet_apply(p, pet_id, level, target):
+			var cost := pet_cost(pet_id, level)
+			_set_pet_energy(pet, pet_energy(pet) - float(cost))
+			pet.skill_at = time
+			log_message.emit("%s 发动%s，消耗%d能量" % [pet_name(pet_id), pet_skill(pet_id), cost])
+			_ev("pet_skill", p, {"pet": pet_id, "name": pet_name(pet_id), "level": level,
+				"skill": pet_skill(pet_id), "effect": str(pet_record(pet_id).get("effect", "")),
+				"cost": cost, "seconds": pet_seconds(pet_id, level), "credit": int(p.credit)})
+			return true
+		else: reason = "当前没有符合条件的技能目标，能量已保留"
+	if feedback: _ev("pet_skill_refused", p if not p.is_empty() else null, {"reason": reason})
+	return false
 
 
-## 真正施加特技。返回 false = 条件不满足（不消耗、不进冷却）。
-func _pet_apply(p: Dictionary, pet_id: String, lv: int) -> bool:
+## 真正施加特技。返回 false = 条件不满足（不消耗）。
+func _pet_apply(p: Dictionary, pet_id: String, lv: int, target: int = -1) -> bool:
 	var secs := pet_seconds(pet_id, lv)
 	var eff := str(pet_record(pet_id).get("effect", ""))
 	var here := int(p["tile"])
@@ -484,50 +716,45 @@ func _pet_apply(p: Dictionary, pet_id: String, lv: int) -> bool:
 	match eff:
 		# 小财神「免费技 免付房租」（String.txt 2204 / Info.txt 194）
 		"free_rent":
-			p["effects"]["no_rent_until"] = maxf(
-				float(p["effects"].get("no_rent_until", 0.0)), time + secs)
+			_clear_attached_gods(p)
+			p["effects"]["no_rent_until"] = time + secs
 			log_message.emit("%s 的小财神显灵：%.0f 秒内免付租金" % [p["name"], secs])
 		# 小穷神「穷神技 罚金加倍」（2201 / Info.txt 191）
 		"curse_rent_double":
-			var t := _random_other(p)
-			if t.is_empty():
+			var t: Dictionary = players.get(target, {})
+			if not pet_skill_candidates(me).has(target) or _protected(t):
 				return false
-			t["effects"]["rent_pay_double_until"] = maxf(
-				float(t["effects"].get("rent_pay_double_until", 0.0)), time + secs)
+			_clear_attached_gods(t)
+			t["effects"]["rent_pay_double_until"] = time + secs
 			log_message.emit("%s 的小穷神附上 %s：%.0f 秒内罚金加倍" % [p["name"], t["name"], secs])
 			_ev("pet_curse", t, {"pet": pet_id, "from": me, "seconds": secs})
-		# 糊涂鬼「梦游技 强迫梦游」（2202 / Info.txt 192）：周围对手冬眠
+		# 糊涂鬼：选择一位附近对手，让电脑接管指定步数。
 		"sleep_nearby":
-			var n := 0
-			for oid in player_ids():
-				if int(oid) == me:
-					continue
-				var q: Dictionary = players[oid]
-				if not bool(q["alive"]):
-					continue
-				if _tile_distance(int(q["tile"]), here) > 2:
-					continue
-				q["effects"]["sleep_until"] = maxf(
-					float(q["effects"]["sleep_until"]), time + secs)
-				q["moving"] = 0
-				n += 1
-				_ev("sleep", q, {"pet": pet_id, "seconds": secs})
-			if n == 0:
-				return false
-			log_message.emit("%s 的糊涂鬼让周围 %d 人梦游 %.0f 秒" % [p["name"], n, secs])
+			if not pet_skill_candidates(me).has(target): return false
+			var q: Dictionary = players[target]
+			if _protected(q): return false
+			_clear_attached_gods(q)
+			q["moving"] = 0
+			q["progress"] = 0.0
+			var steps := int((pet_record(pet_id).get("turn_times", []) as Array)[clampi(lv - 1, 0, 3)])
+			q["effects"]["sleepwalk_steps"] = maxi(int(q["effects"].get("sleepwalk_steps", 0)), steps)
+			_clear_chance(q)
+			log_message.emit("%s 的糊涂鬼让 %s 梦游 %d 步" % [p.name, q.name, steps])
+			_ev("sleepwalk", q, {"pet": pet_id, "by": me, "steps": steps})
 		# 小恶魔「拆除技 拆除房屋」（2203 / Info.txt 193）
 		"demolish_enemy":
-			var ei := _enemy_plot_best(me)
-			if ei < 0 or int(plots[ei]["level"]) <= 0:
+			var ei := here
+			if not plots.has(ei) or int(plots[ei]["level"]) <= 0:
 				return false
-			_downgrade_estate(int(ei))
-			log_message.emit("%s 的小恶魔把 %s 拆了一级" % [p["name"], map.street_of(ei)])
+			for _i in range(int(secs)):
+				if int(plots[ei].level) > 0: _downgrade_estate(ei)
+			log_message.emit("%s 的小恶魔把 %s 拆除 %d 级" % [p["name"], map.street_of(ei), int(secs)])
 			_ev("downgrade", p, {"idx": ei, "level": int(plots[ei]["level"]),
 				"street": map.street_of(ei), "pet": pet_id})
 		# 小土神「土神技 强制占地」（2205 / Info.txt 196）
 		"seize_enemy_plot":
-			var si := _enemy_plot_best(me)
-			if si < 0:
+			var si := here
+			if not plots.has(si) or int(plots[si].owner) == me or (int(plots[si].level) > 0 and Rules.house_footprint(Rules.house_file(str(plots[si].type), int(plots[si].level))) > int(secs)):
 				return false
 			var old := int(plots[si]["owner"])
 			plots[si]["owner"] = me
@@ -537,29 +764,41 @@ func _pet_apply(p: Dictionary, pet_id: String, lv: int) -> bool:
 				"from": old, "pet": pet_id})
 		# 雪精灵「加盖技 升级房屋」（2206）
 		"free_upgrade":
-			var ui := _own_plot_to_upgrade(me)
-			if ui < 0:
-				return false
-			force_upgrade(me, ui, true)
-			log_message.emit("%s 的雪精灵把 %s 升了一级" % [p["name"], map.street_of(ui)])
+			var ui := here
+			if not plots.has(ui) or int(plots[ui].level) <= 0: return false
+			var owner := int(plots[ui].owner)
+			if not force_upgrade(owner, ui, true): return false
+			for _i in range(1, int(secs)): force_upgrade(owner, ui, true)
+			log_message.emit("%s 的雪精灵为 %s 加盖最多 %d 级" % [p["name"], map.street_of(ui), int(secs)])
 		# 花仙子「无敌技 无敌状态」（2207）
 		"invincible":
-			p["effects"]["invincible_until"] = maxf(
-				float(p["effects"]["invincible_until"]), time + secs)
+			_clear_attached_gods(p)
+			p["effects"]["invincible_until"] = time + secs
 			log_message.emit("%s 的花仙子让主人无敌 %.0f 秒" % [p["name"], secs])
 		# 小赌神「骰子技 遥控骰子」（2208）—— 只备一次，掷骰时消费
 		"max_dice":
-			p["effects"]["pet_max_dice"] = int(p["effects"].get("pet_max_dice", 0)) + 1
-			log_message.emit("%s 的小赌神准备好遥控下一次骰子" % p["name"])
+			if bool(p.get("pending_steps", false)) or int(p.get("moving", 0)) > 0: return false
+			p["pending_steps"] = true
+			p["pending_steps_source"] = "dushen"
+			_clear_chance(p)
+			_ev("card_choose_steps", p, {"pet": pet_id})
 		# 小怪兽「PK技 攻击小神仙」（2209 / Info.txt 195）
 		"attack_pet":
-			var tp := _random_other(p)
-			if tp.is_empty() or (tp["pets"] as Array).is_empty():
-				return false
-			var lost: Dictionary = (tp["pets"] as Array).pop_back()
-			log_message.emit("%s 的小怪兽打跑了 %s 的「%s」" % [
-				p["name"], tp["name"], pet_name(str(lost.get("id", "")))])
-			_ev("pet_attacked", tp, {"pet": str(lost.get("id", "")), "from": me})
+			for other_id in player_ids():
+				var other: Dictionary = players[other_id]
+				# Native query parameter is 6. Its road-distance conversion
+				# remains provisional until the selector unit is established.
+				if int(other_id) == me or not bool(other.alive) or _protected(other): continue
+				if _tile_distance(here, int(other.tile)) > 6: continue
+				var victim := active_pet(other)
+				if victim.is_empty() or str(victim.id) == "guaishou": continue
+				var damage := int(pet_max_energy(victim) * float(secs) / 100.0)
+				if int(victim.level) == 4: damage = int(damage * 80 / 100)
+				_set_pet_energy(victim, pet_energy(victim) - float(damage))
+				_ev("pet_attacked", other, {"pet": str(victim.id), "from": me, "damage": damage,
+					"voice_line": 8 if pet_energy(victim) <= 0.0 else 6})
+				if pet_energy(victim) <= 0.0: _pet_leave(other, victim, "attack")
+
 		_:
 			return false
 	return true
@@ -633,6 +872,7 @@ func _init_player_company(p: Dictionary) -> void:
 	h[cname] = int(h.get(cname, 0)) + self_sh
 	p["holdings"] = h
 	p["company"] = cname
+	p["stock_cost_basis"] = {cname: unit * self_sh}
 
 
 ## 建「虚拟公司」（地图配置里的那 6 家）
@@ -714,6 +954,11 @@ func _tick_stocks() -> void:
 ## ⚠️ 「玩家公司的利润」原版没写怎么算 → 取「这一个月里股价涨幅 × 总股数」，登记为推断。
 const MONTH_DAYS := 30
 
+static func calendar_at_day(elapsed_days: int) -> Dictionary:
+	var days := maxi(0, elapsed_days)
+	return {"day": days % MONTH_DAYS + 1, "month": (days / MONTH_DAYS) % 12 + 1,
+		"year": days / (MONTH_DAYS * 12) + 1}
+
 
 func _pay_dividends() -> void:
 	for nm in stocks.keys():
@@ -774,6 +1019,9 @@ func act_buy_stock(id: int, comp: String, shares: int) -> bool:
 	var p: Dictionary = players.get(id, {})
 	if p.is_empty() or not bool(p["alive"]) or shares <= 0 or not stocks.has(comp):
 		return false
+	if road_day < stock_closed_until_day:
+		_ev("stock_closed", p, {"days": stock_closed_until_day - road_day})
+		return false
 	var price := stock_price(comp)
 	var cost := int(ceil(price * float(shares)))
 	var fee := int(ceil(float(cost) * stock_charge_rate()))
@@ -783,6 +1031,11 @@ func act_buy_stock(id: int, comp: String, shares: int) -> bool:
 		return false
 	p["money"] = int(p["money"]) - need
 	var h: Dictionary = p.get("holdings", {})
+	var basis: Dictionary = p.get("stock_cost_basis", {})
+	# An old save without historical costs must not report an invented average.
+	if basis.has(comp) or int(h.get(comp, 0)) == 0:
+		basis[comp] = float(basis.get(comp, 0.0)) + cost
+	p["stock_cost_basis"] = basis
 	h[comp] = int(h.get(comp, 0)) + shares
 	p["holdings"] = h
 	log_message.emit("%s 买进 %s %d 股（%.1f 元 × %d = %d 元，手续费 %d）" % [
@@ -798,6 +1051,9 @@ func act_sell_stock(id: int, comp: String, shares: int) -> bool:
 	var p: Dictionary = players.get(id, {})
 	if p.is_empty() or shares <= 0 or not stocks.has(comp):
 		return false
+	if road_day < stock_closed_until_day:
+		_ev("stock_closed", p, {"days": stock_closed_until_day - road_day})
+		return false
 	shares = mini(shares, holding_of(id, comp))
 	if shares <= 0:
 		_ev("stock_no_holding", p, {"company": comp})
@@ -807,6 +1063,9 @@ func act_sell_stock(id: int, comp: String, shares: int) -> bool:
 	var fee := int(ceil(float(gross) * stock_charge_rate()))
 	p["money"] = int(p["money"]) + gross - fee
 	var h: Dictionary = p.get("holdings", {})
+	var basis: Dictionary = p.get("stock_cost_basis", {})
+	if basis.has(comp): basis[comp] = float(basis[comp]) * float(int(h.get(comp, 0)) - shares) / maxi(1, int(h.get(comp, 0)))
+	p["stock_cost_basis"] = basis
 	h[comp] = int(h.get(comp, 0)) - shares
 	p["holdings"] = h
 	log_message.emit("%s 卖出 %s %d 股（得 %d 元，手续费 %d）" % [
@@ -920,45 +1179,58 @@ func _news_cfg(key: String, dflt):
 
 func _fire_global_news(idx: int) -> void:
 	var art := idx                       # 插画序号（无力据，按事件序号取）
+	var number := 0
+	var road_name := ""
+	var changed_land := -1
 	match idx:
 		1:   # 股市低迷不振，重挫崩盘
 			_news_all_stocks(-float(_news_cfg("stock_down", 1.0)))
 		2:   # 股市气势如虹，全面上涨
 			_news_all_stocks(float(_news_cfg("stock_up", 0.5)))
 		8:   # 外来投资增加，地价上涨 N%
-			_news_all_plots(1.0 + float((_news_cfg("all_price_up", [0.1, 0.3]) as Array)[0]))
-		9:   # 经济萧条，所有房租下降 N%
-			_news_all_plots(1.0 - float((_news_cfg("all_price_down", [0.1, 0.2]) as Array)[1]))
+			var rise := _random_news_factor("all_price_up", [0.1, 0.3])
+			number = int(round(rise * 100.0))
+			changed_land = _news_all_plots(1.0 + rise)
+		9:   # 外来投资减少，所有地价下跌 N%
+			var fall := _random_news_factor("all_price_down", [0.1, 0.2])
+			number = int(round(fall * 100.0))
+			changed_land = _news_all_plots(1.0 - fall)
 		10:  # 政府向每位市民发放一张卡片
 			for pid in player_ids():
-				_push_card(players[pid], _random_card())
+				_give_random_card(players[pid], "政府")
 		3:   # 甲3 专家预测**商业**景气繁荣 → 商业区房租抬高
-			_news_type_rent("shop", 1.0 + float((_news_cfg("shop_rent_up", [0.1, 0.3]) as Array)[0]))
+			var shop_rise := _random_news_factor("shop_rent_up", [0.1, 0.3])
+			number = int(round(shop_rise * 100.0))
+			_news_type_rent("shop", 1.0 + shop_rise)
 		4:   # 甲4 专家预测**工业**景气回升
-			_news_type_rent("industry",
-				1.0 + float((_news_cfg("industry_price_up", [0.1, 0.3]) as Array)[0]))
+			var industry_rise := _random_news_factor("industry_price_up", [0.1, 0.3])
+			number = int(round(industry_rise * 100.0))
+			_news_type_rent("industry", 1.0 + industry_rise)
 		5:   # 甲5 专家预测**房地产**买气回升
-			_news_type_rent("uptown",
-				1.0 + float((_news_cfg("uptown_price_up", [0.1, 0.3]) as Array)[0]))
+			var house_rise := _random_news_factor("uptown_price_up", [0.1, 0.3])
+			number = int(round(house_rise * 100.0))
+			_news_type_rent("uptown", 1.0 + house_rise)
 		6:   # 甲6 股市暂停交易 N 天
 			var mc: Array = _news_cfg("market_close_days", [1, 5]) as Array
-			stock_closed_until_day = road_day + rng.randi_range(int(mc[0]), int(mc[1]))
+			number = rng.randi_range(int(mc[0]), int(mc[1]))
+			stock_closed_until_day = road_day + number
 		7:   # 甲7 银行加发存款利息 N％ → 现金按利率生息
 			var ir: Array = _news_cfg("interest_rate_pct", [5, 15]) as Array
 			var pct := rng.randi_range(int(ir[0]), int(ir[1]))
+			number = pct
 			for pid2 in player_ids():
 				var pp: Dictionary = players[pid2]
 				pp["money"] = int(pp["money"]) + int(round(float(pp["money"]) * pct / 100.0))
 		11:  # 甲11 发生地震，部分建筑倒塌 → 随机几处房屋降 1 级
 			var quake := 0
-			var keys: Array = plots.keys()
+			var keys: Array = unique_plot_keys()
 			keys.shuffle()
 			for k in keys:
 				if quake >= 3:
 					break
 				var qp: Dictionary = plots[k]
 				if int(qp.get("level", 0)) > 1:
-					qp["level"] = int(qp["level"]) - 1
+					_downgrade_estate(int(k))
 					quake += 1
 		12:  # 甲12 近日大雨，<ROAD>地价下跌！
 			var streets: Array = []
@@ -968,30 +1240,38 @@ func _fire_global_news(idx: int) -> void:
 					streets.append(st2)
 			if not streets.is_empty():
 				var hit := str(streets[rng.randi_range(0, streets.size() - 1)])
-				for i3 in range(map.tile_count()):
-					if str(map.street_of(i3)) == hit and plots.has(i3):
-						var rp: Dictionary = plots[i3]
-						rp["level"] = maxi(1, int(rp.get("level", 1)))
+				road_name = hit
+				_change_land_factors(-0.1, true, hit)
 				log_message.emit("[新闻] 近日大雨，%s 地价下跌！" % hit)
 		13:  # ⭐ 甲13 公开拍卖<ROAD>一处公有土地（Info.txt 4001/4002/4003）
-			start_auction()
+			if start_auction(): road_name = map.street_of(int(auction.get("tile", -1)))
 		14:  # 甲14 经济萧条，所有租金下降 N％
-			_news_all_plots(1.0 - float((_news_cfg("all_price_down", [0.1, 0.2]) as Array)[1]))
+			var rent_fall := float((_news_cfg("all_price_down", [0.1, 0.2]) as Array)[1])
+			number = int(round(rent_fall * 100.0))
+			_news_all_rents(1.0 - rent_fall)
 		_:
 			pass                          # 剩下的只播新闻、不改状态
-	var msg := Rules.info_string(3000 + idx)
+	var msg := Rules.info_fill(3000 + idx, {"number": str(number), "road": road_name})
+	if changed_land == 0:
+		msg = "地价已达%s，本次没有变化。" % ("上限" if idx == 8 else "下限")
 	log_message.emit("[新闻] %s" % msg.replace("\n", ""))
 	_ev("global_news", null, {"idx": idx, "text": msg, "art": art,
-		"info_id": 3000 + idx})
+		"info_id": 3000 + idx, "changed_land": changed_land, "number": number})
 
 
 ## 新闻「某一类房屋的租金一起涨 / 跌」（甲3/甲4/甲5）
+func _random_news_factor(key: String, fallback: Array) -> float:
+	var limits: Array = _news_cfg(key, fallback)
+	return rng.randf_range(float(limits[0]), float(limits[1]))
+
 func _news_type_rent(type_id: String, ratio: float) -> void:
-	for i in plots.keys():
-		var pl: Dictionary = plots[i]
-		if str(pl.get("type", "")) != type_id:
-			continue
-		pl["rent_mul"] = float(pl.get("rent_mul", 1.0)) * ratio
+	# 42fd00/42fd70/42fde0 add to a world factor, including future buildings.
+	economy_factors[type_id] = float(economy_factors.get(type_id, 1.0)) + ratio - 1.0
+
+
+func _news_all_rents(ratio: float) -> void:
+	for type_id in economy_factors:
+		economy_factors[type_id] = float(economy_factors[type_id]) * ratio
 
 
 ## 新闻「所有股票一起涨 / 跌」
@@ -1004,43 +1284,47 @@ func _news_all_stocks(ratio: float) -> void:
 
 
 ## 新闻「所有地价 / 房租一起变」—— 直接按倍率调地块的地价系数
-func _news_all_plots(mul: float) -> void:
-	for k in unique_plot_keys():
-		var pl: Dictionary = plots[k]
-		var v := float(pl.get("price_mul", 1.0)) * mul
-		pl["price_mul"] = clampf(v, 0.3, 3.0)
+func _news_all_plots(mul: float) -> int:
+	return _change_land_factors(mul - 1.0, true)
 
 
 # ------------------------------------------------------------ 拉霸（老虎机）
 
-## 原版「拉霸」= 老虎机（`Info.txt` 66「请投注」；素材 `uitex/casino/`：
-## 拱形面板底图 / 兔子女郎 / 拉杆 / `+1000`·`+5000`·`+10000` 三档下注 /
-## 滚轮符号 `7`·苹果·香蕉·财神）。
-## 参数 = `realtime.json` 的 `events.casino_fee` / `casino_top_rate` / `casino_middle_rate`。
-##
-## ⚠️ **赔率算法原版没写**（只给了 top / middle 两个倍率）→ 取
-##    「三同 = 注额 ×(1+top)；两同 = 注额 ×(1+middle)；否则输掉注额」，登记为推断。
-const CASINO_SYMBOLS := ["sym7", "sym_apple", "sym_banana", "sym_god"]
+## REA 44c8e0 / 44d230 / 429c60: 三种符号，按财神/香蕉/7数量派彩。
+## 三财神17倍、三7五倍、三香蕉3倍、两财神2倍，其余0。
+## Casino_Fee/TopRate/MiddleRate 配置不是这条原版执行路径的赔率。
+const CASINO_SYMBOLS := ["sym_god", "sym_banana", "sym7"] # 44c8e0 image order.
 
-var casino: Dictionary = {}          # {pid: {bet, reels, last}}
+func casino_multiplier(reels: Array) -> int:
+	# 44d230 counts the stopped symbols; 429c60 evaluates those counts.
+	var gods := reels.count("sym_god")
+	if gods == 3: return 17
+	if reels.count("sym7") == 3: return 5
+	if reels.count("sym_banana") == 3: return 3
+	if gods == 2: return 2
+	return 0
+
+var casino: Dictionary = {}          # {pid: {bet, reels, last, open, played}}
 
 
 func _casino_of(pid: int) -> Dictionary:
 	if not casino.has(pid):
-		casino[pid] = {"bet": 0, "reels": [], "last": ""}
+		casino[pid] = {"bet": 0, "reels": [], "last": "", "open": false, "played": false}
 	return casino[pid]
 
 
 ## 加注（原版那三个 `+1000` / `+5000` / `+10000` 按钮）
 func act_casino_bet(id: int, amount: int) -> bool:
 	var p: Dictionary = players.get(id, {})
-	if p.is_empty() or amount <= 0 or not bool(p["alive"]):
+	if p.is_empty() or amount not in [1000, 5000, 10000] or not bool(p["alive"]):
+		return false
+	var st := _casino_of(id)
+	if not bool(st.get("open", false)) or bool(st.get("played", false)) or int(st.get("bet", 0)) > 0:
 		return false
 	if int(p["money"]) < amount:
 		_ev("insufficient_money", p, {"need": amount, "have": int(p["money"])})
 		return false
 	p["money"] = int(p["money"]) - amount
-	var st := _casino_of(id)
 	st["bet"] = int(st["bet"]) + amount
 	_ev("casino_bet", p, {"amount": amount, "bet": int(st["bet"])})
 	return true
@@ -1052,6 +1336,8 @@ func act_casino_pull(id: int) -> bool:
 	if p.is_empty():
 		return false
 	var st := _casino_of(id)
+	if not bool(st.get("open", false)) or bool(st.get("played", false)):
+		return false
 	if int(st["bet"]) <= 0:
 		_ev("casino_need_bet", p, {})
 		return false
@@ -1061,76 +1347,136 @@ func act_casino_pull(id: int) -> bool:
 	st["reels"] = reels
 	var bet := int(st["bet"])
 	st["bet"] = 0
+	st["played"] = true
+	st["open"] = false
 	var same := 0
 	if reels[0] == reels[1] and reels[1] == reels[2]:
 		same = 3
 	elif reels[0] == reels[1] or reels[1] == reels[2] or reels[0] == reels[2]:
 		same = 2
-	var win := 0
-	if same == 3:
-		win = int(round(float(bet) * (1.0 + float(Rules.get_val("events.casino_top_rate", 1.0)))))
-	elif same == 2:
-		win = int(round(float(bet)
-			* (1.0 + float(Rules.get_val("events.casino_middle_rate", 0.3)))))
+	var multiplier := casino_multiplier(reels)
+	var win := bet * multiplier
 	if win > 0:
 		p["money"] = int(p["money"]) + win
 	st["last"] = "赢 %d" % win if win > 0 else "没中"
-	_ev("casino_result", p, {"reels": reels, "bet": bet, "win": win, "same": same})
+	_ev("casino_result", p, {"reels": reels, "bet": bet, "win": win, "same": same, "multiplier": multiplier})
 	log_message.emit("%s 拉霸：%s → %s" % [p["name"], str(reels),
 		("赢 %d 元" % win) if win > 0 else "没中"])
 	return true
 
+func act_casino_exit(id: int) -> bool:
+	var p: Dictionary = players.get(id, {})
+	if p.is_empty(): return false
+	var st := _casino_of(id)
+	if not bool(st.get("open", false)): return false
+	var refund := int(st.get("bet", 0))
+	if refund > 0: p["money"] = int(p["money"]) + refund
+	st["bet"] = 0
+	st["open"] = false
+	_ev("casino_exit", p, {"refund": refund})
+	return true
 
-## 小神仙的**饱食度**（老板 2026-09-27 的原版观察，机制与上一轮我做的**完全不同**）：
-##
-##   · **升级靠时间**：**每月（30 天）升一级** —— 不是走步、也不是发动
-##   · **喂食只增加饱食度**（不升级）
-##   · **饱食度满** → 才能**使用一次**技能；用完清零，要再喂
-##   · **等级影响技能效果**（`Pet.txt` 的秒数/次数随级数走，见 `pet_seconds()`）
-##
-## ⚠️ 推断项（配置里没有）：饱食度上限 **100**、**一张卡 +50**（喂两张够用一次技能）、每月按 `MONTH_DAYS`
+
+## Native energy: 431ea0 initial half, 431f50 active-only decay/full freeze,
+## 435910 skill cost. fullness remains a percentage mirror for old saves/UI.
 const PET_FULLNESS_MAX := 100.0
-const PET_FEED_PER_CARD := 50.0
+const PET_START_FULLNESS := 50.0
+const PET_HUNGER_PER_DAY := 1.0 # legacy percentage constant; native decay uses energy below.
+const PET_ENERGY_MAX := {"qiongshen": 15.0, "hutu": 15.0, "emo": 20.0,
+	"caishen": 20.0, "tushen": 30.0, "jingling": 20.0, "huaxian": 15.0,
+	"dushen": 20.0, "guaishou": 15.0}
+
+func pet_max_energy(e: Dictionary) -> float:
+	var id := str(e.get("id", ""))
+	return float(pet_record(id).get("max_energy", PET_ENERGY_MAX.get(id, 20.0)))
+
+func pet_energy(e: Dictionary) -> float:
+	var mx := pet_max_energy(e)
+	# Old snapshots only have a percentage. Legacy writes to that mirror are
+	# also accepted by diagnostic fixtures and converted once on access.
+	if not e.has("energy") or not is_equal_approx(float(e.get("fullness", 0.0)), float(e.get("energy_percent", -1.0))):
+		var percent := float(e.get("fullness", PET_START_FULLNESS))
+		# Old ready was latched while the bar decayed; recover its actual full
+		# state once, then rely exclusively on the new energy value.
+		if not e.has("energy") and bool(e.get("ready", false)): percent = 100.0
+		_set_pet_energy(e, percent * mx / 100.0)
+	return float(e.energy)
+
+func _set_pet_energy(e: Dictionary, value: float) -> void:
+	e["max_energy"] = pet_max_energy(e)
+	e["energy"] = clampf(value, 0.0, float(e.max_energy))
+	e["fullness"] = 100.0 * float(e.energy) / float(e.max_energy)
+	e["energy_percent"] = e.fullness
+	e["ready"] = is_equal_approx(float(e.energy), float(e.max_energy))
+
+func pet_anxious(e: Dictionary) -> bool:
+	return not e.is_empty() and pet_energy(e) <= 3.0
 const PET_LEVEL_CAP := 4               # Pet.txt 每只 4 级
+const CARD_TARGET_MAX_TILES := 5 # Existing selection boundary; native units unresolved.
+const MISSILE_AIM_MAX_TILES := 20
 
 
 ## 饱食度进度 0..1（UI 画条用）
 func pet_fullness_ratio(e: Dictionary) -> float:
-	return clampf(float(e.get("fullness", 0.0)) / PET_FULLNESS_MAX, 0.0, 1.0)
+	return pet_energy(e) / pet_max_energy(e)
 
 
-## 时间驱动升级：每过一个月，**所有**小神仙各升 1 级（上限 4）
-## 老板 2026-09-27：「小神仙是随时间升级的，每个月升一级」
-func _tick_pet_aging() -> void:
-	var want := int(road_day / MONTH_DAYS)
+func pet_skill_ready(e: Dictionary) -> bool:
+	return not e.is_empty() and is_equal_approx(pet_energy(e), pet_max_energy(e))
+
+
+func pet_feed_value(card_id: String) -> float:
+	# Native 41c530 / 43b672: card +0x11c goes directly to 432410.
+	# card.crd +0x224 matches the printed badge: 1..5 internal energy points.
+	return float(clampi(Rules.card_badge(card_id), 1, 5))
+
+func _tick_pet_hunger(dt: float) -> void:
+	# Native 431f50: update game hours / (consume_days * 24).
+	var hours := dt * 24.0 / maxf(Rules.seconds_per_day(), 0.001)
+	var loss := hours / (maxf(float(Rules.get_val("pet.consume_interval_days", 3)), 0.001) * 24.0)
 	for pid in player_ids():
 		var p: Dictionary = players[pid]
-		var last := int(p.get("pet_age_month", 0))
-		if want <= last:
+		var pet := active_pet(p)
+		if pet.is_empty() or pet_skill_ready(pet): continue
+		_set_pet_energy(pet, pet_energy(pet) - loss)
+		if pet_energy(pet) <= 0.0: _pet_leave(p, pet)
+
+func _pet_leave(p: Dictionary, pet: Dictionary, cause: String = "hunger") -> void:
+	var token := pet_token(pet)
+	(p.pets as Array).erase(pet)
+	if str(p.get("pet_active", "")) == token or str(p.get("pet_active", "")) == str(pet.id):
+		p["pet_active"] = "none"
+	log_message.emit("%s 的 %s 能量耗尽离开了" % [p.name, pet_name(str(pet.id))])
+	_ev("pet_flew_away", p, {"pet": str(pet.id), "pet_name": pet_name(str(pet.id)),
+		"cause": cause, "voice_line": 9 if cause == "hunger" else 0})
+
+
+func _tick_pet_aging() -> void:
+	# Native growth belongs to the active instance, not the calendar month.
+	# _advance records native road-crossing flags; this consumes the progress.
+	for pid in player_ids():
+		_try_pet_levelup(players[pid])
+
+
+func card_road_candidates(pid: int, card_id: String) -> Array:
+	var p: Dictionary = players.get(pid, {})
+	var out: Array = []
+	if p.is_empty() or map == null: return out
+	for tile in range(map.tiles.size()):
+		if card_id in ["missile", "nuke"]:
+			# Follow road points for aiming; `range` still controls blast radius.
+			if _tile_distance(int(p["tile"]), tile) > MISSILE_AIM_MAX_TILES: continue
+			out.append(tile)
 			continue
-		p["pet_age_month"] = want
-		for e in (p["pets"] as Array):
-			var d: Dictionary = e
-			var lv := int(d.get("level", 1))
-			if lv >= PET_LEVEL_CAP:
-				continue
-			d["level"] = lv + 1
-			log_message.emit("%s 的 %s 长大到 %d 级" % [p["name"],
-				pet_name(str(d.get("id", ""))), lv + 1])
-			_ev("pet_levelup", p, {"pet": str(d.get("id", "")), "level": lv + 1,
-				"by": "age"})
+		if _tile_distance(int(p["tile"]), tile) > CARD_TARGET_MAX_TILES: continue
+		if card_id == "clear":
+			if _obstacle_at(tile).is_empty() and not road_objs.has(tile): continue
+		elif not _obstacle_at(tile).is_empty(): continue
+		out.append(tile)
+	return out
 
 
-## 「请选择对手」的**合法候选**（原版有**距离限制** —— 老板 2026-09-27 的实机截图里，
-## 只有**附近**的几个角色脚下亮起绿色光圈，远处的没有）。
-##
-## ⚠️ 原版配置里**没有**「选对手的最大距离」这一项（`Initvar_r.txt` 只有
-##   `Card_FeiDan_Range = 5` / `Card_JunFu_Range = 2` / `Card_HeDan_Range = 5` 这些**效果范围**）
-##   → 这里取 **5 格**（与飞弹卡的范围一致），属**推断**，已登记在 `docs/alignment-gap.md`。
-const CARD_TARGET_MAX_TILES := 5
-
-
-func card_target_candidates(pid: int) -> Array:
+func card_target_candidates(pid: int, card_id: String = "") -> Array:
 	var p: Dictionary = players.get(pid, {})
 	if p.is_empty():
 		return []
@@ -1143,29 +1489,24 @@ func card_target_candidates(pid: int) -> Array:
 			continue
 		if _tile_distance(int(p["tile"]), int(o["tile"])) > CARD_TARGET_MAX_TILES:
 			continue
+		if card_id == "rob" and (o.get("cards", []) as Array).is_empty(): continue
+		if card_id == "abduct" and ((o.get("pets", []) as Array).is_empty() or pet_count(p) >= max_pets()): continue
+		if card_id == "tax" and int(o.get("money", 0)) <= 0: continue
 		out.append(int(oid))
 	return out
 
 
 # ------------------------------------------------------------ 乐透
 
-## 乐透（`casino` 事件格）。参数出自 `Initvar_r.txt` 41..43（注释全是「进入**乐透**事件点…」）：
-##   · 进场交 `Event_Casino_Fee = 2500` → **计入奖池**
-##   · 挑一个 1..12 里**还没被选走**的号码
-##   · **头奖** = 奖池 × `Event_Casino_TopRate`(1.0)、**中奖** = 奖池 × `Event_Casino_MiddleRate`(0.3)
-##
-## 文案与时机取自 `Info.txt` 54..68：
-##   60「乐透奖金`<NUMBER>`元」（刚进入时）/ 61「请选择您的号码」/ 62「拜拜，祝您中奖」
-##   63「今日乐透开奖」（开奖时对所有人）/ 64「`<SOMEONE>`中乐透 奖金`<NUMBER>`元」
-##   65「SORRY 本月没有人中奖」/ 68「乐透号码已售完」
-##
-## ⚠️ **两处无明文、属推断**：
-##   ① 开奖周期 —— 老板说是「**每 15 天**」（`Initvar_r.txt` 里没有周期参数）
-##   ② 没人中奖时奖池**累积到下一期**（不清零）
+## REA 429df0: 买号码时付1000，进入不收费；44e120: 最多持有6个号码。
+## 429a70 / 41c2f0: 每月15日开奖；429d20: 中奖者获整个城市基金。
+## 无人中奖时号码和基金保留，中奖后429cd0才清空号码。
 const LOTTO_NUMBERS := 12
-const LOTTO_DRAW_DAYS := 15
+const LOTTO_DRAW_DAYS := 30
+const LOTTO_DRAW_DAY := 15 # 429a70 -> 41c2f0 (day-of-month), compared with 0x0f.
+const LOTTO_PLAYER_LIMIT := 6 # 44e120 checks 429ca0's owned-number count < 6.
 
-var lotto_prize := 0                      # 奖池
+var lotto_prize := 10000 # Native 41a8e0 city fund; lotto pays this shared fund.
 var lotto_numbers: Dictionary = {}        # 号码(int 1..12) -> 选了它的玩家 id
 var lotto_last_draw_day := 0
 
@@ -1177,15 +1518,31 @@ func lotto_free_numbers() -> Array:
 			out.append(i)
 	return out
 
+func lotto_pick_of(id: int) -> int:
+	for number in lotto_numbers:
+		if int(lotto_numbers[number]) == id: return int(number)
+	return -1
+
+func lotto_owned_count(id: int) -> int:
+	return lotto_numbers.values().count(id)
+
 
 ## 玩家挑一个号码（面板上点号格）
 func act_lotto_pick(id: int, n: int) -> bool:
 	var p: Dictionary = players.get(id, {})
 	if p.is_empty() or not bool(p["alive"]):
 		return false
-	if n < 1 or n > LOTTO_NUMBERS or lotto_numbers.has(n):
+	if not bool(p.get("lotto_can_pick", false)):
 		return false
+	if n < 1 or n > LOTTO_NUMBERS or lotto_numbers.has(n) or lotto_owned_count(id) >= LOTTO_PLAYER_LIMIT:
+		return false
+	# 429df0 charges 1000 only when a free number is actually registered.
+	if int(p.money) < 1000:
+		_ev("insufficient_money", p, {"need": 1000, "have": int(p.money)})
+		return false
+	_transfer(p, null, 1000, "乐透号码")
 	lotto_numbers[n] = id
+	p["lotto_can_pick"] = false
 	log_message.emit("%s 选了乐透号码 %d（当前奖金 %d 元）" % [p["name"], n, int(lotto_prize)])
 	_ev("lotto_pick", p, {"number": n, "prize": int(lotto_prize)})
 	return true
@@ -1195,8 +1552,8 @@ func act_lotto_pick(id: int, n: int) -> bool:
 func _lotto_draw() -> void:
 	var win_n := rng.randi_range(1, LOTTO_NUMBERS)
 	var winner := int(lotto_numbers.get(win_n, -1))
-	var top := int(round(float(lotto_prize)
-		* float(Rules.get_val("events.casino_top_rate", 1.0))))
+	if not players.has(winner): winner = -1
+	var top := int(lotto_prize)
 	var amount := 0
 	var winner_name := ""
 	if winner >= 0 and players.has(winner):
@@ -1204,15 +1561,16 @@ func _lotto_draw() -> void:
 		players[winner]["money"] = int(players[winner]["money"]) + amount
 		winner_name = str(players[winner]["name"])
 	for pid in player_ids():
+		players[pid]["lotto_can_pick"] = false
 		_ev("lotto_draw", players[pid], {"number": win_n, "prize": int(lotto_prize),
 			"winner": winner, "winner_name": winner_name, "amount": amount})
 	if winner >= 0:
 		log_message.emit("[乐透] 开奖号码 %d，%s 中了 %d 元" % [win_n, winner_name, amount])
 		lotto_prize = 0
 	else:
-		# Info.txt 65「SORRY 本月没有人中奖」→ 奖池**累积到下一期**（推断）
+		# 429d20 returns zero when the drawn number has no owner; no reset follows.
 		log_message.emit("[乐透] 开奖号码 %d，没有人中奖（奖金累积到下一期）" % win_n)
-	lotto_numbers.clear()
+	if winner >= 0: lotto_numbers.clear()
 
 
 ## 小神仙台词（原版 `Info.txt` 的 `PETSAY` 段）。
@@ -1291,7 +1649,7 @@ func act_auction_bid(id: int, delta: int) -> bool:
 	if not auction_active():
 		return false
 	var p: Dictionary = players.get(id, {})
-	if p.is_empty() or not bool(p["alive"]):
+	if p.is_empty() or not bool(p["alive"]) or (auction.get("passed", []) as Array).has(id):
 		return false
 	if delta < AUCTION_MIN_INC:
 		# Info.txt 4002「SORRY 加价不得少于100元。」
@@ -1319,7 +1677,8 @@ func act_auction_pass(id: int) -> bool:
 	var p: Dictionary = players.get(id, {})
 	if p.is_empty():
 		return false
-	auction["passed"] = (auction.get("passed", []) as Array) + [id]
+	if not (auction.get("passed", []) as Array).has(id):
+		auction["passed"] = (auction.get("passed", []) as Array) + [id]
 	_ev("auction_pass", p, {"tile": int(auction["tile"])})
 	return true
 
@@ -1340,12 +1699,12 @@ func _auction_settle() -> void:
 	var pl: Dictionary = players[best]
 	pl["money"] = int(pl["money"]) - price
 	var t: Dictionary = map.tile(idx)
-	plots[idx] = {"owner": best, "level": 1, "type": ""}   # 拿到地，房型等他建
-	plots[idx]["type"] = ""
+	_bind_plot(idx, {"owner": best, "level": 0, "type": "",
+		"paid_base": float(price) / maxf(price_scale(), .001)})
 	# 拿到地就要选房型（复用建筑卡片那套）
 	if not players.has(-1):
 		pl["last_plot"] = idx
-		pl["last_plot_kind"] = "build"
+		pl["last_plot_kind"] = "upgrade"
 	for pid in player_ids():
 		_ev("auction_end", players[pid], {"tile": idx, "price": price, "winner": best,
 			"name": str(pl["name"]),
@@ -1380,18 +1739,72 @@ func stamina_regen() -> float:
 func stamina_min_start() -> float:
 	return float(map.stamina.get("min_to_start", STAMINA_MIN_START)) if map != null else STAMINA_MIN_START
 
-## 现在能不能出发（呼吸 / 体力两项都够）。表现层用它决定 GO 钮亮不亮。
+## 掷骰的统一门槛；UI 使用快照时刻，服务端使用当前时刻。
+func _roll_block_code(p: Dictionary, at_time: float = -1.0) -> String:
+	if p.is_empty() or not bool(p.get("alive", false)):
+		return "unavailable"
+	var now := time if at_time < 0.0 else at_time
+	if now < float(p.get("entry_until", 0.0)):
+		return "entry"
+	if int(p.get("moving", 0)) > 0:
+		return "moving"
+	var effects: Dictionary = p.get("effects", {})
+	if now < float(effects.get("sleep_until", 0.0)):
+		return "sleep"
+	if now < float(effects.get("hospital_until", 0.0)):
+		return "hospital"
+	if now < float(effects.get("hotel_until", 0.0)): return "hotel"
+	if now < float(effects.get("alien_until", 0.0)):
+		return "alien"
+	if int(effects.get("sleepwalk_steps", 0)) > 0:
+		return "sleepwalk"
+	if bool(p.get("pending_steps", false)): return "choose_steps"
+	if float(p.get("stamina", 0.0)) < stamina_min_start():
+		return "stamina"
+	return ""
+
+## 返回空串表示可以掷骰，其余值可直接作为 GO 钮的等待提示。
+func roll_block_reason(p: Dictionary, at_time: float = -1.0) -> String:
+	var now := time if at_time < 0.0 else at_time
+	match _roll_block_code(p, now):
+		"": return ""
+		"entry": return "等待角色降落（还需 %.1f 秒）" % (float(p.get("entry_until", 0.0)) - now)
+		"moving": return "角色正在移动"
+		"choose_steps": return "请选择前进步数"
+		"sleep": return "%s：冬眠中（还需 %.1f 秒）" % [
+			str(p["effects"].get("sleep_source", "冬眠效果")),
+			float(p["effects"].get("sleep_until", 0.0)) - now]
+		"hospital": return "住院中（还需 %.1f 秒）" % (float(p["effects"].get("hospital_until", 0.0)) - now)
+		"hotel": return "酒店住宿中（还需 %.1f 秒）" % (float(p["effects"].get("hotel_until", 0.0)) - now)
+		"alien": return "被外星人带走（还需 %.1f 秒）" % (float(p["effects"].get("alien_until", 0.0)) - now)
+		"sleepwalk": return "梦游中：电脑接管剩余 %d 步" % int(p["effects"].get("sleepwalk_steps", 0))
+		"stamina": return "体力不足（%.0f/%.0f），歇一会儿" % [float(p.get("stamina", 0.0)), stamina_min_start()]
+	return "当前无法掷骰"
+
 func can_start_walk(p: Dictionary) -> bool:
-	if not bool(p["alive"]) or int(p["moving"]) > 0:
-		return false
-	if time < float(p["effects"]["sleep_until"]):
-		return false
-	return float(p.get("stamina", 0.0)) >= stamina_min_start()
+	return _roll_block_code(p) == ""
+
+## 业主处于异常状态时地产边框变黑，并且暂时不收租。
+static func owner_abnormal(p: Dictionary, now: float) -> bool:
+	var effects: Dictionary = p.get("effects", {})
+	for key in ["rest_until", "sleep_until", "hospital_until", "alien_until", "hotel_until"]:
+		if float(effects.get(key, 0.0)) > now:
+			return true
+	if int(effects.get("sleepwalk_steps", 0)) > 0 or bool(p.get("_dream_arrival", false)): return true
+	return false
 
 ## `want_role`：玩家在**角色选择界面**挑的角色序号（1..12）。
 ## 0 或不合法 → 按加入顺序自动分配（原行为）。角色序号对应 `Role.txt` 行序与 `sound/player/roleN`。
 func add_player(id: int, pname: String, want_role: int = 0) -> Dictionary:
 	var idx := players.size()
+	var role := want_role if want_role >= 1 and want_role <= 12 else idx % 12 + 1
+	var used: Array = []
+	for existing in players.values(): used.append(int(existing.get("role", 0)))
+	for offset in range(12):
+		var candidate := (role - 1 + offset) % 12 + 1
+		if not used.has(candidate):
+			role = candidate
+			break
 	var p := {
 		"id": id,
 		"name": pname,
@@ -1402,6 +1815,9 @@ func add_player(id: int, pname: String, want_role: int = 0) -> Dictionary:
 		"stamina": stamina_max(),
 		# 小神仙（精灵屋请来的）。每项 = {"id","level","cool"}，见 Pet.txt / pets.json
 		"pets": [],
+		"pet_shop_stock": [],
+		"pet_shop_open": false,
+		"lotto_can_pick": false,
 		# 走满多少步给小神仙升级：原版 Initvar_r.txt「Pet_Upgrade_Steps = 300
 		# 宠物每走多少步（此值 × 级数）升级」
 		"pet_steps": 0,
@@ -1427,7 +1843,10 @@ func add_player(id: int, pname: String, want_role: int = 0) -> Dictionary:
 		"company": "",
 		"effects": {
 			"invincible_until": 0.0,      # 绝对时刻（秒）
+			"rest_until": 0.0,            # 挂机休息；点击 GO 可以立即唤醒
 			"sleep_until": 0.0,           # 绝对时刻（秒）
+			"sleepwalk_steps": 0,        # 糊涂鬼：电脑接管剩余行走步数
+			"alien_until": 0.0,           # 新闻事件外星人绑架（异常状态）
 			"invisible_until": 0.0,       # 绝对时刻（秒，隐形卡 Card_YinXing_Ticks = 72）
 			"rush_until": 0.0,            # 绝对时刻（秒，暴走卡：加速且不走体力）
 			"no_rent_steps": 0,           # 剩余步数（免费卡 / Card_MianFei_Steps）
@@ -1435,14 +1854,14 @@ func add_player(id: int, pname: String, want_role: int = 0) -> Dictionary:
 			"rent_pay_double_until": 0.0, # 绝对时刻（小穷神「穷神技」：被附身者付双倍罚金）
 			"pet_max_dice": 0,            # 小赌神「骰子技 遥控骰子」：下次掷骰取最大点数的次数
 			"rent_double_steps": 0,       # 剩余步数（穷神卡 / Card_QiongShen_Steps）
-			"free_upgrade_steps": 0,      # 剩余步数（福神卡 / Card_FuShen_Steps = 30）
+			"free_upgrade_steps": 0,      # 福神剩余步数：抵达自有建筑自动升级，不免手动造价
 			"no_upgrade_steps": 0,        # 剩余步数（衰神卡 / Card_ShuaiShen_Steps = 30）
 		},
 		"pending_steps": false,   # 骰子卡：等玩家点「走几步」（String.txt 9016「自由选择前进的步数」）
 		"last_plot": -1,
 		"last_plot_kind": "",     # "buy" / "upgrade" —— 本次抵达留下的**一次性**机会
 		"last_roll": 0,
-		"role": (want_role if want_role >= 1 and want_role <= 12 else idx + 1),
+		"role": role,
 	}
 	players[id] = p
 	# 以自己的「缺省公司」上市（Role.txt 第 6 列）+ 初始持有本公司 2000 股
@@ -1452,8 +1871,9 @@ func add_player(id: int, pname: String, want_role: int = 0) -> Dictionary:
 
 
 func _ev(kind: String, p, extra: Dictionary = {}) -> void:
-	## 发一条语义事件（表现层据此配音效与语音）
+	## 发一条带权威时间的语义事件（表现层播放特效、音效、语音与动作）。
 	var d: Dictionary = extra.duplicate()
+	d["t"] = time
 	if p != null and p is Dictionary:
 		d["pid"] = int(p["id"])
 		d["role"] = int(p.get("role", 1))
@@ -1478,6 +1898,16 @@ func step(dt: float) -> void:
 	var t_before := time
 	time += dt
 	tick_count += 1
+	for clear in pending_road_clears.duplicate():
+		if time < float(clear.at): continue
+		_remove_obstacle(int(clear.idx))
+		road_objs.erase(int(clear.idx))
+		pending_road_clears.erase(clear)
+	for impact in pending_card_impacts.duplicate():
+		if time >= float(impact["at"]):
+			pending_card_impacts.erase(impact)
+			_damage_area(int(impact["idx"]), int(impact["range"]), int(impact["damage"]),
+				int(impact["owner"]), str(impact["card"]))
 
 	# 天数推进 → 路边物体生成。
 	# 节奏是**推断**：原版权重表只写了各类型的相对几率，没写判定频率；这里取「每天 roll 一次」，
@@ -1488,23 +1918,37 @@ func step(dt: float) -> void:
 		_spawn_road_obj()
 		_tick_stocks()              # 每天开盘：股价按 Stock_OpenPrice_Min/Max 波动
 		_maybe_global_news()        # 全局新闻（甲1..甲14）
-		# 乐透开奖：每 LOTTO_DRAW_DAYS 天一次
-		if road_day >= lotto_last_draw_day + LOTTO_DRAW_DAYS:
+		# 429a70 maintains a minimum city fund before checking the 15th-day draw.
+		lotto_prize = maxi(lotto_prize, int(10000.0 * price_scale()))
+		# 每月15日开奖。
+		if road_day > lotto_last_draw_day and road_day % LOTTO_DRAW_DAYS == LOTTO_DRAW_DAY - 1:
 			lotto_last_draw_day = road_day
 			_lotto_draw()
 		# 拍卖：到点结算
 		_tick_auction()
-		# 小神仙：时间驱动升级（每月一级）
+		# Active pet growth accumulator; calendar alone does not level pets.
 		_tick_pet_aging()
-		# 物价指数：每月上涨（老板 2026-09-27）
-		_tick_estate_index()
+		# World index follows company assets, independently of calendar.
 		if road_day % MONTH_DAYS == 0:
 			_pay_dividends()        # 每 30 天（一个月）分红一次
+	_tick_estate_index()
+	lotto_prize = maxi(lotto_prize, int(10000.0 * price_scale()))
+	_tick_pet_hunger(dt)
 
 	for id in player_ids():
 		var p: Dictionary = players[id]
 		if not p["alive"]:
 			continue
+		if time < float(p.get("entry_until", 0.0)): continue
+		if float(p["effects"].get("hospital_until", 0.0)) > 0.0:
+			p["stamina"] = minf(stamina_max(), float(p.get("stamina", 0.0))
+				+ maxf(stamina_regen(), 7.0) * dt)
+			if float(p["stamina"]) + 0.001 < stamina_max(): continue
+			p["effects"]["hospital_until"] = 0.0
+			p["stamina"] = stamina_max()
+			_ev("hospital_release", p)
+		if time < float(p["effects"].get("hotel_until", 0.0)): continue
+		if time < float(p["effects"].get("alien_until", 0.0)): continue
 
 		# 体力随时间恢复（原版「每秒恢复体力」）—— 睡着了也恢复
 		p["stamina"] = minf(stamina_max(),
@@ -1517,7 +1961,8 @@ func step(dt: float) -> void:
 			p["speed"] = MOVE_SPEED
 
 		# 睡眠 / 冬眠状态
-		if time < float(p["effects"]["sleep_until"]):
+		if time < maxf(float(p["effects"].get("rest_until", 0.0)),
+				float(p["effects"]["sleep_until"])):
 			continue
 
 		if p["moving"] > 0:
@@ -1527,21 +1972,29 @@ func step(dt: float) -> void:
 			if seg > 0.0:
 				_advance(p, seg)
 		else:
-			p["idle"] = float(p["idle"]) + dt
+			if float(p["stamina"]) + 0.001 < stamina_max():
+				p["idle"] = 0.0
+			else:
+				p["idle"] = float(p["idle"]) + dt
 			if float(p["idle"]) >= IDLE_SLEEP_SECONDS:
 				p["idle"] = 0.0
 				var delay := rng.randf_range(6.0, 12.0)
-				p["effects"]["sleep_until"] = time + delay
+				p["effects"]["rest_until"] = time + delay
 				log_message.emit("%s 打了个盹，%.0f 秒后继续" % [p["name"], delay])
 				_ev("sleep", p)
 
 func _advance(p: Dictionary, dt: float) -> void:
 	var step_dist: float = float(p["speed"]) * dt
 	p["progress"] = float(p["progress"]) + step_dist
+	var crossed_road := false
 	while float(p["progress"]) >= 1.0 and int(p["moving"]) > 0:
+		crossed_road = true
 		p["progress"] = float(p["progress"]) - 1.0
+		var previous_tile := int(p["tile"])
 		p["tile"] = _wrap(int(p["tile"]) + int(p["dir"]))
+		p["lotto_can_pick"] = false
 		p["moving"] = int(p["moving"]) - 1
+		p["walked_this_move"] = int(p.get("walked_this_move", 0)) + 1
 		_tick_step_effects(p)
 		# 每前进 1 格扣体力（原版「每走一步消耗体力」）。
 		# ⚠️ 出发门槛（min_to_start）只在 act_roll 判定；已经上路的不因为半路见底而原地卡住
@@ -1554,14 +2007,9 @@ func _advance(p: Dictionary, dt: float) -> void:
 		if not ob.is_empty():
 			_remove_obstacle(int(ob["idx"]))
 			if str(ob["kind"]) == "mine":
-				if float(p["effects"]["invincible_until"]) <= time:
-					# ⚠ 伤害值取规则表（Initvar_r.txt 的 Mine_Exp_HPDec = 1000），
-					#   不要再写死常量 —— 这里原来硬编码 300，是 bug。
-					p["stamina"] = maxf(0.0, float(p.get("stamina", 0.0))
-						- float(Rules.get_val("hp.mine_damage", 1000)))
-					p["effects"]["sleep_until"] = time + 3.0
-					log_message.emit("%s 踩到地雷，损失体力并停留 3 秒" % p["name"])
+				if not _protected(p):
 					_ev("mine", p, {"idx": int(p["tile"]), "owner": int(ob["owner"])})
+					_send_to_hospital(p, float(Rules.get_val("hp.mine_damage", 1000)), "mine")
 				p["moving"] = 0
 				p["progress"] = 0.0
 			else:
@@ -1584,7 +2032,20 @@ func _advance(p: Dictionary, dt: float) -> void:
 		#   埃及的 2 格传送平台在路径上相邻、世界里却隔 13.9 单位（≈3 格），正是传送门的两端。
 		elif _event_key(int(p["tile"])) == "platform" \
 				and not bool(p.get("_teleported", false)):
-			_teleport_platform(p, int(p["tile"]))
+			if _teleport_platform(p, int(p["tile"])) < 0 and map.name == "aiji" \
+					and _event_key(previous_tile) == "platform":
+				# 埃及的 24/25 是一张地毯的两端；路径索引相邻但世界坐标相隔很远。
+				# 让视觉动画把人从上一格载过来，走线结算仍按原路径索引。
+				p["progress"] = 0.0
+				p["move_after"] = time + 1.0
+				_ev("platform", p, {"idx": previous_tile, "to": int(p["tile"]), "visual_only": true})
+				break
+	# Native 423b90 returns bit 2 if this update crosses a road boundary;
+	# 433d40 -> 4361b0 adds one to the equipped pet's own growth field.
+	# Multiple boundaries in one unusually large update still return one flag.
+	if crossed_road:
+		var pet := active_pet(p)
+		if not pet.is_empty(): pet["growth"] = int(pet.get("growth", 0)) + 1
 	if int(p["moving"]) <= 0:
 		p["moving"] = 0
 		p["progress"] = 0.0
@@ -1601,31 +2062,25 @@ func _tick_step_effects(p: Dictionary) -> void:
 	for k in STEP_EFFECTS:
 		if int(e[k]) > 0:
 			e[k] = int(e[k]) - 1
-		# 小神仙的**饱食度**由「喂食」增加（不在走路时攒），升级由**时间**驱动
-		# —— 见 `_tick_pet_aging()`（老板 2026-09-27 修正的机制）
+	if int(e.get("sleepwalk_steps", 0)) > 0:
+		p["_dream_arrival"] = true
+		e["sleepwalk_steps"] = int(e["sleepwalk_steps"]) - 1
+		if int(e["sleepwalk_steps"]) == 0:
+			_ev("sleepwalk_end", p)
+	# Pet growth is recorded by _advance; elapsed time does not add growth.
 
 
 ## 走够步数就把一只小神仙升一级。门槛 = Pet_Upgrade_Steps × 当前等级。
 func _try_pet_levelup(p: Dictionary) -> void:
-	var pets: Array = p["pets"]
-	if pets.is_empty():
-		p["pet_steps"] = 0
-		return
-	var base: int = int(Rules.get_val("pet.upgrade_steps_per_level", 300))
-	var cap: int = int(Rules.get_val("road.crystal_max_pet_level", 4))   # 上限 4 级（Pet.txt）
-	var steps: int = int(p.get("pet_steps", 0))
-	for pet in pets:
-		var lv: int = int(pet["level"])
-		if lv >= cap:
-			continue
-		if steps >= base * lv:
-			pet["level"] = lv + 1
-			p["pet_steps"] = 0
-			log_message.emit("%s 的「%s」走满 %d 步，升到 %d 级" % [
-				p["name"], pet_name(str(pet["id"])), base * lv, lv + 1])
-			_ev("pet_levelup", p, {"pet": str(pet["id"]), "level": lv + 1,
-				"steps": base * lv})
-			return
+	var pet := active_pet(p)
+	if pet.is_empty(): return
+	var level := int(pet.get("level", 1))
+	var threshold := int(Rules.get_val("pet.upgrade_steps_per_level", 300)) * level
+	if level >= PET_LEVEL_CAP or int(pet.get("growth", 0)) < threshold: return
+	pet["level"] = level + 1
+	pet["growth"] = 0
+	_ev("pet_levelup", p, {"pet": str(pet.id), "level": level + 1, "by": "growth"})
+
 
 func _wrap(i: int) -> int:
 	var n := map.tile_count()
@@ -1668,14 +2123,16 @@ func _push_away_occupants(p: Dictionary) -> void:
 		return
 	var cur: Dictionary = p
 	var guard := 0
+	var displaced: Array[Dictionary] = []
 	while guard < players.size() + 2:
 		guard += 1
 		var victim := _occupant_at(int(cur["tile"]), int(cur["id"]))
 		if victim.is_empty():
-			return                      # 前面没人了 → 连锁结束
+			break                     # 前面没人了 → 连锁结束
 		var from := int(victim["tile"])
-		var dest := _wrap(from + 1)
+		var dest := _wrap(from + int(cur.get("dir", 1)))
 		victim["tile"] = dest
+		victim["lotto_can_pick"] = false
 		victim["progress"] = 0.0
 		victim["idle"] = 0.0
 		# ① 朝向跟挤他的人一致
@@ -1685,15 +2142,37 @@ func _push_away_occupants(p: Dictionary) -> void:
 		log_message.emit("%s 被 %s 挤到 %d 格" % [victim["name"], cur["name"], dest])
 		_ev("pushed_away", victim, {"by": int(cur["id"]), "by_name": str(cur["name"]),
 			"from": from, "tile": dest})
-		# 落到新格：是别人的地就要付房租（空手被挤过去也得付）
-		var t: Dictionary = map.tile(dest)
-		if str(t.get("kind", "")) == "plot" \
-				and int(plots.get(dest, {}).get("owner", -1)) >= 0:
-			_resolve_plot(victim, dest, t)
+		displaced.append({"player": victim, "tile": dest})
 		cur = victim                    # ③ 接着往前连锁
-	
+	# 等连锁挤人完成后，从队尾向前结算，避免同格临时状态影响事件。
+	for i in range(displaced.size() - 1, -1, -1):
+		var landing: Dictionary = displaced[i]
+		_resolve_pushed_landing(landing["player"], int(landing["tile"]))
+
+func _resolve_pushed_landing(p: Dictionary, idx: int) -> void:
+	if int(p["tile"]) != idx:
+		return
+	if road_objs.has(idx):
+		var obj: Dictionary = road_objs[idx]
+		road_objs.erase(idx)
+		_pick_road_obj(p, str(obj["kind"]), idx)
+	if int(p["tile"]) != idx:
+		return
+	var t: Dictionary = map.tile(idx)
+	match str(t.get("kind", "")):
+		"event":
+			# 商店、乐透和拉霸需要主动选择；财神、点券、问号等自动事件照常触发。
+			if str(t.get("event", "")) not in ["cardshop", "pethouse", "casino", "labar"]:
+				_resolve_event(p, idx, t)
+		"plot":
+			# 被挤到别人的地产仍须交租；空地和自家地产不给购买、升级机会。
+			var owner := int(plots.get(idx, {}).get("owner", -1))
+			if owner >= 0 and owner != int(p["id"]):
+				_resolve_plot(p, idx, t)
+	_clear_chance(p)
 
 func _arrive(p: Dictionary) -> void:
+	if float(p["effects"].get("hospital_until", 0.0)) > time: return
 	var idx: int = int(p["tile"])
 	var t: Dictionary = map.tile(idx)
 	# 原版**不允许多人站在同一格** —— 后到的人把先到的人往前挤一格。
@@ -1719,19 +2198,102 @@ func _arrive(p: Dictionary) -> void:
 			pass
 	# 格子结算完之后再给小神仙一次发动机会（它们的效果不再回头触发本函数）
 	_tick_pets(p)
+	p["_dream_arrival"] = false
 
 func _clear_chance(p: Dictionary) -> void:
 	p["last_plot"] = -1
 	p["last_plot_kind"] = ""
 
+## Native 438ab0: state 7 auto-upgrades eligible OWN buildings before the normal
+## construction choice. It neither spends money nor consumes that manual choice.
+func _apply_fushen_arrival(p: Dictionary, idx: int, plot: Dictionary) -> bool:
+	if int(p.effects.get("free_upgrade_steps", 0)) <= 0 or int(plot.owner) != int(p.id): return false
+	var kind := str(plot.get("type", ""))
+	var level := int(plot.get("level", 0))
+	if level <= 0 or kind.begins_with("special") or Rules.house_next_level(kind, level) == 0: return false
+	var plan := construction_plan(int(p.id), idx, kind)
+	if plan.is_empty(): return false
+	_commit_construction(idx, plan, 0)
+	_ev("upgrade", p, {"idx": idx, "level": int(plan.level), "cost": 0,
+		"street": map.street_of(idx), "type": kind, "forced": true, "by_god": "fushen"})
+	return true
+
+## Native 439160 -> 438d70. Special buildings are services, not fallback rent.
+## 423250 resets move+8c; 423b90 increments it for each actual crossed road.
+func _resolve_special_building(p: Dictionary, idx: int, plot: Dictionary) -> bool:
+	var kind := str(plot.get("type", ""))
+	if not kind.begins_with("special"): return false
+	var file := Rules.house_file(kind, int(plot.get("level", 0)))
+	var owner := int(plot.get("owner", -1))
+	var own := owner == int(p.id)
+	var beneficiary: Variant = players.get(owner, null)
+	var walked := maxi(0, int(p.get("walked_this_move", 0)))
+	var number := 0
+	var card := ""
+	match file:
+		"d201": # Club transfers coupons from visitor to owner; it never gives a card.
+			if not own:
+				number = mini(int(p.credit), walked)
+				p.credit = int(p.credit) - number
+				if beneficiary != null: beneficiary.credit = int(beneficiary.credit) + number
+		"d202": # Bank fee: visitor cash * actual steps * 2%, truncation.
+			if not own:
+				number = int(float(p.money) * float(walked) * 0.02)
+				_transfer(p, beneficiary, number, "银行手续费")
+		"d203": # Hotel charges steps * 10000 and puts the visitor away for 48 hours.
+			if not own:
+				number = walked * 10000
+				if number > 0:
+					_transfer(p, beneficiary, number, "酒店住宿")
+					p.effects["hotel_until"] = time + 2.0 * Rules.seconds_per_day()
+		"d101": # Fountain restores the character's HP/stamina completely.
+			number = int(stamina_max() - float(p.stamina))
+			p.stamina = stamina_max()
+		"d102": # Chain stores charge exponentially by owner's stores across the map.
+			if not own:
+				var count := 0
+				for key in unique_plot_keys():
+					var other: Dictionary = plots[key]
+					if int(other.owner) == owner and Rules.house_file(str(other.get("type", "")), int(other.level)) == "d102": count += 1
+				number = mini(160000, 10000 * int(pow(2.0, maxi(0, count - 1))))
+				_transfer(p, beneficiary, number, "连锁店消费")
+		"d103":
+			p.stamina = stamina_max()
+			var pet := active_pet(p)
+			if not pet.is_empty(): _set_pet_energy(pet, pet_max_energy(pet))
+		"d301": # Its environmental price change is applied by the estate model.
+			pass
+		"d302": # MP is the equipped little god's energy, not character stamina.
+			var pet := active_pet(p)
+			if not pet.is_empty(): _set_pet_energy(pet, pet_max_energy(pet))
+		"d303":
+			var research := rng.randi_range(1, 3) if own else 1
+			# 41ed50 category 2 selects original indices 0..7; visitor -1 selects 0..39.
+			card = "gem" if research == 2 else ("nuke" if research == 3 else Rules.card_id_at(rng.randi_range(1, 8 if own else 40)))
+			if Rules.card_by_id(card).is_empty(): card = _random_card()
+			var gained := _push_card(p, card)
+			if bool(gained.get("added", false)): _report_card_push(p, gained, Rules.card_name(card))
+			else: card = ""
+	_ev("special_building", p, {"idx": idx, "file": file, "owner": owner,
+		"number": number, "card": card, "pet_present": not active_pet(p).is_empty(),
+		"name": str(Rules.house_grade(kind, int(plot.level)).get("name", ""))})
+	return true
+
 func _resolve_plot(p: Dictionary, idx: int, t: Dictionary) -> void:
 	var street: String = t.get("street", "")
+	var dreamwalking := bool(p.get("_dream_arrival", false)) or int(p["effects"].get("sleepwalk_steps", 0)) > 0
 	if not plots.has(idx):
+		if dreamwalking:
+			_ev("sleepwalk_pass_plot", p, {"idx": idx, "street": street})
+			return
+		if int(p["effects"].get("no_upgrade_steps", 0)) > 0:
+			_ev("buy_blocked", p, {"idx": idx, "street": street})
+			return
 		# 空地：原版 Info.txt id 91「<ROAD>\n购买价格<NUMBER>元\n是否购买」
 		p["last_plot"] = idx
 		p["last_plot_kind"] = "buy"
 		log_message.emit("%s 抵达 %s（空地，可购买）" % [p["name"], street])
-		_ev("arrive_empty", p, {"idx": idx, "street": street, "price": empty_plot_price()})
+		_ev("arrive_empty", p, {"idx": idx, "street": street, "price": empty_plot_price(idx)})
 		return
 
 	var plot: Dictionary = plots[idx]
@@ -1739,7 +2301,15 @@ func _resolve_plot(p: Dictionary, idx: int, t: Dictionary) -> void:
 	var level: int = int(plot["level"])
 	var ptype: String = str(plot.get("type", ""))
 
+	# Native 439160 routes all special buildings through 438d70 and returns before rent.
+	if _resolve_special_building(p, idx, plot): return
+	_apply_fushen_arrival(p, idx, plot)
+	level = int(plot["level"])
+
 	if owner == int(p["id"]):
+		if dreamwalking:
+			_ev("sleepwalk_pass_plot", p, {"idx": idx, "street": street})
+			return
 		# ---- 回到自己地产：原版 id 93「<ROAD>\n升级费用<NUMBER>元\n是否升级」 ----
 		# 触发点权威依据：
 		#   id 1050（福神）批注「附身者**进入自己土地时**显示」
@@ -1751,12 +2321,11 @@ func _resolve_plot(p: Dictionary, idx: int, t: Dictionary) -> void:
 				"type": ptype, "blocked": true})
 			log_message.emit("  衰神附身中，无法升级")
 			return
-		var target := level + 1
-		var mx := max_level(ptype)
-		if level >= mx:
+		var target := Rules.house_next_level(ptype, level)
+		if level > 0 and target == 0:
 			_ev("arrive_own", p, {"idx": idx, "street": street, "level": level,
 				"type": ptype, "maxed": true})
-			log_message.emit("  已是最高等级（%s）" % str(Rules.house_grade(ptype, mx).get("name", "")))
+			log_message.emit("  已是最高等级（%s）" % str(Rules.house_grade(ptype, level).get("name", "")))
 			return
 		p["last_plot"] = idx
 		p["last_plot_kind"] = "upgrade"
@@ -1764,19 +2333,23 @@ func _resolve_plot(p: Dictionary, idx: int, t: Dictionary) -> void:
 		var opts: Array = buildable_types() if ptype == "" else []
 		_ev("arrive_own", p, {"idx": idx, "street": street, "level": level, "type": ptype,
 			"target": target, "cost": cost, "options": opts,
-			"free": int(p["effects"]["free_upgrade_steps"]) > 0})
+			"free": false})
 		log_message.emit("  可升级到 %d 级%s，费用 %d 元" % [
 			target, "（需选择房型）" if ptype == "" else "", cost])
 		return
 
 	# ---- 踩到别人的地：交租（原版 id 94）----
+	if owner_abnormal(players.get(owner, {}), time):
+		log_message.emit("%s 的业主处于异常状态，%s 暂不收租" % [p["name"], street])
+		_ev("free_rent", p, {"idx": idx, "street": street, "owner_abnormal": owner})
+		return
 	# 免费卡按**步数**、小财神「免费技」按**秒**（Pet.txt 即时制那一行）—— 语义不同，
 	# Info.txt 1051 也把「免费状态」单独列了一条，所以两个字段并存。
 	if int(p["effects"]["no_rent_steps"]) > 0:
 		log_message.emit("%s 使用免费卡，免付过路费" % p["name"])
 		_ev("free_rent", p, {"idx": idx, "street": street})
 		return
-	if float(p["effects"].get("no_rent_until", 0.0)) > time:
+	if float(p["effects"].get("no_rent_until", 0.0)) > time or float(p["effects"].get("invisible_until", 0.0)) > time:
 		log_message.emit("%s 的小财神显灵，免付租金" % p["name"])
 		_ev("free_rent", p, {"idx": idx, "street": street, "by_pet": "caishen"})
 		return
@@ -1788,11 +2361,8 @@ func _resolve_plot(p: Dictionary, idx: int, t: Dictionary) -> void:
 		_ev("sealed_rent", p, {"idx": idx, "street": street, "until": sealed_until})
 		return
 
-	var rent := _rent_of(level, ptype)
-	# 涨价卡 / 降价卡（9021/9022）：街道地价系数直接作用在租金上
-	var bang := int(street_index.get(street, 0))
-	if bang != 0:
-		rent = int(round(float(rent) * (1.0 + float(bang) / 100.0)))
+	var rent := plot_rent(idx)
+	var joint := joint_rent_members(idx)
 	if int(p["effects"]["rent_double_steps"]) > 0:
 		rent *= 2
 		log_message.emit("%s 处于穷神状态，租金加倍" % p["name"])
@@ -1806,38 +2376,89 @@ func _resolve_plot(p: Dictionary, idx: int, t: Dictionary) -> void:
 	_transfer(p, players.get(owner), rent, "%s 的 %s" % [players[owner]["name"], street])
 	log_message.emit("%s 向 %s 支付过路费 %d 元" % [p["name"], players[owner]["name"], rent])
 	_ev("pay_rent", p, {"idx": idx, "street": street, "amount": rent, "to": owner,
-		"level": level, "type": ptype})
+		"level": level, "type": ptype, "joint_members": joint})
 
 ## 该等级被踩到时的过路费（元）。等级 0 = 尚未建设的空地。
 func _rent_of(level: int, type_id: String = "") -> int:
 	if level <= 0:
-		return EMPTY_PLOT_RENT
-	# 房租跟着**物价指数**一起涨（老板 2026-09-27：每月物价指数上涨）。
+		return int(round(EMPTY_PLOT_RENT * price_scale()))
+	# 原版房租乘整数世界物价指数；它由公司资产增长驱动。
 	# `price_scale()` = 指数 / 10 —— 指数 10 时就是 House.txt 原价。
-	return int(round(float(Rules.house_rent(type_id, level)) * price_scale()))
+	return int(round(float(Rules.house_rent(type_id, level)) * price_scale()
+		* float(economy_factors.get(type_id, 1.0))))
+
+func _single_plot_rent(idx: int) -> int:
+	var estate: Dictionary = plots.get(idx, {})
+	if estate.is_empty(): return 0
+	var owner: Dictionary = players.get(int(estate.get("owner", -1)), {})
+	if owner.is_empty() or owner_abnormal(owner, time): return 0
+	if float(street_seal.get(map.street_of(idx), 0.0)) > time: return 0
+	var level := int(estate.get("level", 0))
+	var type_id := str(estate.get("type", ""))
+	var coefficient := 0.0
+	var cells := {}
+	for member in estate.get("members", [idx]): cells[_land_key(int(member))] = true
+	for cell in cells: coefficient += _land_factor(int(cell))
+	coefficient /= maxi(1, cells.size())
+	if level > 0:
+		var environment := 0.0
+		for cell in cells:
+			environment += float(land_factors.get(int(cell), {}).get("environment", {}).get(type_id, 0.0))
+		environment /= maxi(1, cells.size())
+		coefficient = maxf(1.0, environment + (10.0 if type_id == "industry" else coefficient))
+	var amount := float(_rent_of(level, type_id)) * coefficient / 10.0 * float(estate.get("rent_mul", 1.0))
+	return int(snappedf(amount, 0.000001)) # Stable truncation across JSON float roundtrips.
+
+func joint_rent_members(idx: int) -> Array:
+	var estate: Dictionary = plots.get(idx, {})
+	if estate.is_empty(): return []
+	if int(estate.get("level", 0)) <= 0: return [idx]
+	var result: Array = []
+	for key in unique_plot_keys():
+		var other: Dictionary = plots[key]
+		if map.street_of(int(key)) == map.street_of(idx) \
+				and int(other.get("owner", -1)) == int(estate.get("owner", -1)) \
+				and str(other.get("type", "")) == str(estate.get("type", "")) \
+				and int(other.get("level", 0)) > 0:
+			result.append(int(key))
+	return result
+
+func plot_rent(idx: int) -> int:
+	var rent := 0
+	for member in joint_rent_members(idx): rent += _single_plot_rent(int(member))
+	return rent
 
 ## 路面事件（权威表 = 原版 config/Roadevent.txt 的 1..16，地图 JSON 的 event 字段即这张表的 key）
 func _resolve_event(p: Dictionary, idx: int, t: Dictionary) -> void:
 	var eid: String = t.get("event", "")
 	var ename: String = t.get("name", eid)
+	# Dreamwalking still triggers automatic road events. It cannot open a shop
+	# or a minigame that requires decisions from the absent player.
+	if (bool(p.get("_dream_arrival", false)) or int(p.effects.get("sleepwalk_steps", 0)) > 0) \
+			and eid in ["cardshop", "pethouse", "casino", "labar"]:
+		_ev("sleepwalk_pass_event", p, {"eid": eid, "ename": ename})
+		return
 	match eid:
 		"hospital":
-			# Event_Hospital_MinTime/MaxTime 在即时制下为 0，此处给固定 8 秒以示差异
-			p["effects"]["sleep_until"] = time + 8.0
-			log_message.emit("%s 进入%s，住院 8 秒" % [p["name"], ename])
+			# 普通路点没有伤害，不应把医院路点误写成冬眠状态。
+			# 爆炸等受伤仍由 _send_to_hospital 按体力恢复处理。
+			log_message.emit("%s 经过%s" % [p["name"], ename])
 			_ev("hospital", p, {"eid": eid})
 		"platform":
 			# 传送平台（原版 Roadevent.txt 事件 1）。
 			# ⚠ 主体逻辑在 `_advance` 的逐格循环里（**经过就传送**），这里只是「刚好停在上面」的
 			#   兜底；本段行走已经传过就不再传（否则 A→B 再 B→A 会原地打转）。
-			if not bool(p.get("_teleported", false)) and _teleport_platform(p, idx) < 0:
+			if map.name != "aiji" and not bool(p.get("_teleported", false)) and _teleport_platform(p, idx) < 0:
 				log_message.emit("%s 站在传送平台上，但本图没有第二处平台" % p["name"])
 		"cardshop":
 			# 卡片商店：**用点券买卡**（Info.txt 41「卡片商店 您有<NUMBER>点券」/
 			# 42「您没有点券 不能进入卡片商店」）。这里是「开架」——
 			# 真正的购买走 act_buy_card()，由 UI 的商店面板发指令（uitex/other/cardshop.tga）。
+			# 439530 requests eight fresh instances via 41ee60 on every arrival.
+			refill_card_shop()
+			p.card_shop_stock = card_shop_stock.duplicate()
 			_ev("cardshop_open", p, {"eid": eid, "credit": int(p["credit"]),
-				"stock": _shop_stock(), "have": int(p["credit"])})
+				"stock": _shop_stock(int(p.id)), "have": int(p["credit"])})
 			log_message.emit("%s 走进%s（点券 %d）" % [p["name"], ename, int(p["credit"])])
 		"cardpt":
 			# 卡片点：**站上去再补 1 张**（逐格循环里路过时已经给过 1 张了）
@@ -1854,15 +2475,10 @@ func _resolve_event(p: Dictionary, idx: int, t: Dictionary) -> void:
 			var amount := int(eid.substr(6))
 			p["credit"] = int(p["credit"]) + amount
 			log_message.emit("%s 在%s获得 %d 点券" % [p["name"], ename, amount])
-			_ev("credit", p, {"eid": eid, "amount": amount})
+			_ev("credit", p, {"eid": eid, "ename": ename, "amount": amount})
 		"tvnews":
-			# 电视台：上新闻拿奖励（XinWen 系列，奖励区间 Event_News_BonusMin/Max）
-			var lo := int(Rules.get_val("events.news_bonus_min", 1000))
-			var hi := int(Rules.get_val("events.news_bonus_max", 10000))
-			var bonus := _round100(rng.randi_range(lo, hi))
-			p["money"] = int(p["money"]) + bonus
-			log_message.emit("%s 上了%s，获得通告费 %d 元" % [p["name"], ename, bonus])
-			_ev("news", p, {"eid": eid, "amount": bonus})
+			# 问号／电视台事件使用原版 Info.txt「命运1..19」结果表。
+			_resolve_fate(p)
 		"labar":
 			# **拉霸（老虎机）** —— `labar` 就是「拉霸」的拼音（台语对老虎机的叫法）。
 			# 打开面板让玩家自己下注（原版截图 records/老虎机.png：
@@ -1871,6 +2487,15 @@ func _resolve_event(p: Dictionary, idx: int, t: Dictionary) -> void:
 			# ⚠️ 2026-09-27 **纠正**：上一轮我把这一支写在了 `casino` 格上 —— 错了。
 			#   `casino` 格是**乐透**（`Event_Casino_*` 三项参数的注释都写着「进入**乐透**事件点…」），
 			#   `labar` 格才是拉霸。两台的素材也不同：拉霸 = `uitex/casino/`，乐透 = `uitex/casino2/`。
+			var slot := _casino_of(int(p["id"]))
+			# 位置被挤走等异常离开后，下一次进入先退还未拉杆的旧注。
+			if int(slot.get("bet", 0)) > 0:
+				p["money"] = int(p["money"]) + int(slot["bet"])
+			slot["open"] = true
+			slot["played"] = false
+			slot["bet"] = 0
+			slot["reels"] = []
+			slot["last"] = ""
 			_ev("casino_open", p, {"eid": eid})
 		"capital":
 			# 市政府：按市政基金征收 / 发放（Event_CityFund_MinValue）
@@ -1878,17 +2503,21 @@ func _resolve_event(p: Dictionary, idx: int, t: Dictionary) -> void:
 			if rng.randi_range(0, 1) == 0:
 				_transfer(p, null, fund, ename)
 				log_message.emit("%s 在%s缴纳市政基金 %d 元" % [p["name"], ename, fund])
+				_ev("capital_result", p, {"amount": -fund})
 			else:
 				p["money"] = int(p["money"]) + fund
 				log_message.emit("%s 在%s领到市政补助 %d 元" % [p["name"], ename, fund])
 				_ev("win_money", p, {"eid": eid, "amount": fund})
+				_ev("capital_result", p, {"amount": fund})
 		"pethouse":
 			# 精灵屋：**用点券买**（Info.txt 201「精灵屋 请选购小神仙」/ 202 上限 5 位 /
 			# 203「<BABYNAME>价格<NUMBER>点券 确认要购买吗？」）。
 			# 这里是「开店」——真正的购买走 act_buy_pet()，由 UI 的商店面板发指令。
+			p["pet_shop_stock"] = _new_pet_shop_stock()
+			p["pet_shop_open"] = true
 			log_message.emit("%s 走进%s，点券 %d" % [p["name"], ename, int(p["credit"])])
 			_ev("pethouse_open", p, {"eid": eid, "credit": int(p["credit"]),
-				"owned": pet_count(p), "max": max_pets()})
+				"owned": pet_count(p), "max": max_pets(), "stock": p["pet_shop_stock"].duplicate()})
 		"game_a", "game_b":
 			# 游戏点：记忆游戏，按成绩给点券（Event_MemoryGame_CreditMin/Max）
 			var lo2 := int(Rules.get_val("events.memory_game_credit_min", 1))
@@ -1896,27 +2525,114 @@ func _resolve_event(p: Dictionary, idx: int, t: Dictionary) -> void:
 			var g := rng.randi_range(lo2, hi2)
 			p["credit"] = int(p["credit"]) + g
 			log_message.emit("%s 在%s玩了一把，赢得 %d 点券" % [p["name"], ename, g])
-			_ev("credit", p, {"eid": eid, "amount": g})
+			_ev("credit", p, {"eid": eid, "ename": ename, "amount": g})
 		"casino":
-			# **乐透**（`Initvar_r.txt` 第 41..43 行：
-			#   `Event_Casino_Fee = 2500`   //**进入乐透事件点**扣除得钱
-			#   `Event_Casino_TopRate = 1.0`  //**进入乐透事件点**头奖得钱比例
-			#   `Event_Casino_MiddleRate = 0.3` //**进入乐透事件点**中奖得钱比例）
-			# 玩法：交入场费（**计入奖池**）→ 挑一个还没被选走的号码（1..12）→ 等开奖。
-			var fee := int(Rules.get_val("events.casino_fee", 2500))
+			# 429df0 only charges after a valid number purchase.
+			var fee := 1000
 			if int(p["money"]) < fee:
 				_ev("insufficient_money", p, {"need": fee, "have": int(p["money"])})
-			elif lotto_free_numbers().is_empty():
+			elif lotto_free_numbers().is_empty() or lotto_owned_count(int(p.id)) >= LOTTO_PLAYER_LIMIT:
 				_ev("lotto_sold_out", p, {})            # Info.txt 68「乐透号码已售完」
 			else:
-				_transfer(p, null, fee, ename)
-				lotto_prize = int(lotto_prize) + fee
+				p["lotto_can_pick"] = true
 				log_message.emit("%s 进了乐透，奖金累积到 %d 元" % [p["name"], int(lotto_prize)])
 				_ev("lotto_open", p, {"prize": int(lotto_prize), "fee": fee,
-					"numbers": lotto_numbers.duplicate()})
+					"numbers": lotto_numbers.duplicate(), "picked": -1})
 		_:
 			log_message.emit("%s 抵达 %s" % [p["name"], ename])
 			_ev("event", p, {"eid": eid, "ename": ename})
+
+## 问号路点：原版 Info.txt 3220..3238「命运1..19」。每条文案必须对应
+## 已经写入权威状态的结果；无可作用目标时明确说明本次未产生变化。
+func _resolve_fate(p: Dictionary) -> void:
+	var fate := rng.randi_range(1, 19)
+	var number := 0
+	var road_name := ""
+	var message := ""
+	if fate <= 9:
+		var lo := int(Rules.get_val("events.news_bonus_min", 1000))
+		var hi := int(Rules.get_val("events.news_bonus_max", 10000))
+		number = _round100(rng.randi_range(lo, hi))
+		if fate <= 4:
+			p["money"] = int(p["money"]) + number
+			_ev("win_money", p, {"amount": number, "eid": "tvnews"})
+		else:
+			number = mini(number, int(p["money"]))
+			p["money"] = int(p["money"]) - number
+			_ev("lose_money", p, {"amount": number, "eid": "tvnews"})
+	match fate:
+		10:
+			var proceeds := 0
+			for company in (p.get("holdings", {}) as Dictionary).keys():
+				var shares := int(p["holdings"][company])
+				proceeds += int(float(shares) * stock_price(str(company)))
+				p["holdings"][company] = 0
+				_check_chairman(p, str(company))
+			p["money"] = int(p["money"]) + proceeds
+			message = "变卖所有股票，获得%d元。" % proceeds
+		11:
+			_send_to_hospital(p, stamina_max(), "fate")
+		12:
+			p["effects"]["alien_until"] = time + 3.0 * Rules.seconds_per_day()
+			p["moving"] = 0
+			p["progress"] = 0.0
+			_clear_chance(p)
+		13:
+			var count := (p["cards"] as Array).size()
+			p["cards"] = []
+			p["card_locks"] = {}
+			message = "变卖所有卡片，共失去%d张。" % count
+		14, 15, 19:
+			var owned: Array = []
+			for key in unique_plot_keys():
+				if int(plots[key].get("owner", -1)) == int(p["id"]): owned.append(key)
+			if owned.is_empty():
+				message = "命运事件：没有可受影响的地产，本次没有变化。"
+			elif fate == 14:
+				var taken := int(owned[rng.randi_range(0, owned.size() - 1)])
+				road_name = map.street_of(taken)
+				for key in plots.keys():
+					if int(plots[key].get("anchor", key)) == taken: plots.erase(key)
+			elif fate == 15:
+				var damaged := int(owned[rng.randi_range(0, owned.size() - 1)])
+				road_name = map.street_of(damaged)
+				_downgrade_estate(damaged)
+			else:
+				owned.shuffle()
+				var raised := 0
+				for key in owned.slice(0, 3):
+					var level := int(plots[key].get("level", 0))
+					var next := Rules.house_next_level(str(plots[key].get("type", "")), level)
+					if next > 0:
+						plots[key]["level"] = next
+						plots[key]["building_grade"] = Rules.house_local_grade(str(plots[key].type), next)
+						raised += 1
+				message = "福神显灵，%d栋房屋等级上升。" % raised
+		16:
+			var before := (p["cards"] as Array).size()
+			for i in range(3): _give_random_card(p, "命运事件")
+			message = "意外得到%d张卡片。" % maxi(0, (p["cards"] as Array).size() - before)
+		17, 18:
+			var pets: Array = p["pets"]
+			if pets.is_empty():
+				message = "命运事件：没有携带小神仙，本次没有变化。"
+			else:
+				var index := rng.randi_range(0, pets.size() - 1)
+				var pet_id := str(pets[index].get("id", ""))
+				if fate == 17:
+					var old := int(pets[index].get("level", 1))
+					pets[index]["level"] = mini(PET_LEVEL_CAP, old + 1)
+					message = "%s受到精灵祝福，升到%d级。" % [pet_name(pet_id), int(pets[index]["level"])]
+				else:
+					pets.remove_at(index)
+					if str(p.get("pet_active", "")) == pet_id:
+						p["pet_active"] = str(active_pet(p).get("id", ""))
+					message = "幽灵出现，%s受惊飞走。" % pet_name(pet_id)
+	if message == "":
+		message = Rules.info_fill(3219 + fate, {"number": str(number), "road": road_name})
+	log_message.emit("%s 遇到命运事件：%s" % [p["name"], message.replace("\n", "")])
+	_ev("fate", p, {"eid": "tvnews", "fate": fate, "text": message,
+		"amount": number})
 
 ## 给玩家一张随机卡（卡片商店 / 卡片点共用）
 # ------------------------------------------------------------ 手牌（卡片栏）
@@ -1989,6 +2705,10 @@ func act_lock_card(id: int, card_id: String) -> bool:
 ## 手牌是不是锁着的
 func card_locked(p: Dictionary, card_id: String) -> bool:
 	return bool((p.get("card_locks", {}) as Dictionary).get(card_id, false))
+
+func _prune_card_lock(p: Dictionary, card_id: String) -> void:
+	if not (p.get("cards", []) as Array).has(card_id):
+		(p.get("card_locks", {}) as Dictionary).erase(card_id)
 
 
 ## 给卡时的统一日志/事件（满栏顶卡、全锁定拿不到）
@@ -2073,6 +2793,8 @@ func _transfer(from_p, to_p, amount: int, reason: String) -> void:
 		from_p["money"] = int(from_p["money"]) - amount
 	if to_p != null:
 		to_p["money"] = int(to_p["money"]) + amount
+	elif from_p != null:
+		lotto_prize += amount
 	# 破产判定
 	for id in player_ids():
 		var q: Dictionary = players[id]
@@ -2101,37 +2823,44 @@ func _check_winner() -> void:
 
 # ------------------------------------------------------------- 玩家动作（校验）
 
-func act_roll(id: int, dice_count: int = 1) -> bool:
+func act_roll(id: int, dice_count: int = 1, dreamwalk_auto: bool = false) -> bool:
 	## 掷骰 —— 即时制下掷出后角色连续移动。
 	## dice_count = 一次同时掷几颗（原版 GO 钮左侧的骰子选择器，见 DICE_PER_ROLL_MAX）。
 	var p: Dictionary = players.get(id, {})
-	if p.is_empty() or not p["alive"] or int(p["moving"]) > 0:
+	var blocked := _roll_block_code(p)
+	if blocked != "" and blocked != "stamina" and not (dreamwalk_auto and blocked == "sleepwalk"):
 		return false
-	if time < float(p["effects"]["sleep_until"]):
-		return false
+	# 挂机惩罚由玩家主动结束；即使当前体力不足，也先退出休息动画。
+	if float(p["effects"].get("rest_until", 0.0)) > time:
+		p["effects"]["rest_until"] = 0.0
+		p["idle"] = 0.0
+		_ev("wake", p)
 	# 原版「自己走所需要最小体力值」——体力不够不给出发
-	if float(p.get("stamina", 0.0)) < stamina_min_start():
+	if float(p.get("stamina", 0.0)) < stamina_min_start() and not dreamwalk_auto:
 		var missing := stamina_min_start() - float(p.get("stamina", 0.0))
 		log_message.emit("%s 体力不足（%.0f/%.0f），还要歇 %.0f 秒" % [
 			p["name"], float(p["stamina"]), stamina_max(),
 			missing / maxf(stamina_regen(), 0.001)])
 		_ev("no_stamina", p, {"stamina": float(p["stamina"]), "need": stamina_min_start()})
 		return false
+	# 卡片造成的冬眠/梦游仍按倒计时生效。
 	var d := clampi(dice_count, 1, DICE_PER_ROLL_MAX)
-	# 小赌神「骰子技 遥控骰子」（String.txt 2208）：下一掷必出最大点数
+	# Migrate a pending activation from older saves to the same step chooser.
 	var remote := int(p["effects"].get("pet_max_dice", 0)) > 0
 	if remote:
 		p["effects"]["pet_max_dice"] = int(p["effects"]["pet_max_dice"]) - 1
+		p["pending_steps"] = true
+		p["pending_steps_source"] = "dushen"
+		_ev("card_choose_steps", p, {"pet": "dushen"})
+		return true
 	var faces: Array = []
 	var n := 0
 	for i in d:
-		var f := 6 if remote else rng.randi_range(1, 6)
+		var f := rng.randi_range(1, 6)
 		faces.append(f)
 		n += f
-	if remote:
-		log_message.emit("%s 的小赌神遥控骰子 → %d 点" % [p["name"], n])
-		_ev("pet_dice", p, {"n": n, "faces": faces})
 	p["moving"] = n
+	p["walked_this_move"] = 0
 	p["idle"] = 0.0
 	# 先播掷骰动画（抛出 → 抛物线落下 → 定格），这段时间角色站着不动；
 	# step() 里按这个时刻放行。原版就是这个节奏（老板 2026-09-26 反馈）
@@ -2178,23 +2907,40 @@ func construction_plan(id: int, idx: int, want_type: String = "") -> Dictionary:
 	if not plots.has(idx):
 		return {}
 	var kind := str(plots[idx].get("type", ""))
+	var desired_level := 0
 	if kind.is_empty():
 		var allowed := buildable_types()
-		kind = want_type if allowed.has(want_type) else (str(allowed[0]) if not allowed.is_empty() else "uptown")
-	return PlotAssembly.plan(map, plots, id, idx, kind)
+		var parts := want_type.split(":")
+		var requested := parts[0]
+		kind = requested if allowed.has(requested) else (str(allowed[0]) if not allowed.is_empty() else "uptown")
+		if parts.size() == 2 and parts[1].is_valid_int() and requested == kind:
+			desired_level = int(parts[1])
+			var grades := Rules.house_grades(kind)
+			if desired_level < 1 or desired_level > grades.size() or int(grades[desired_level - 1].level) != desired_level:
+				return {}
+	return PlotAssembly.plan(map, plots, id, idx, kind, desired_level)
 
 func upgrade_cost(p: Dictionary, idx: int, want_type: String = "") -> int:
-	if int(p["effects"]["free_upgrade_steps"]) > 0:
-		return 0
 	var plan := construction_plan(int(p["id"]), idx, want_type)
 	return int(plan.get("cost", 0))
 
-func _commit_construction(idx: int, plan: Dictionary) -> void:
+func _commit_construction(idx: int, plan: Dictionary, paid_cost: int = 0) -> void:
+	lotto_prize += paid_cost
 	var estate: Dictionary = plots[idx]
+	var seen: Array = []
+	var paid_base := 0.0
+	for member in plan.members:
+		var old: Dictionary = plots.get(int(member), {})
+		var old_anchor := int(old.get("anchor", member))
+		if seen.has(old_anchor): continue
+		seen.append(old_anchor)
+		paid_base += float(old.get("paid_base", 200.0))
+	estate["paid_base"] = paid_base + float(paid_cost) / maxf(price_scale(), .001)
 	if int(estate.level) == 0:
 		estate["build_start_level"] = int(plan.level)
 	estate["type"] = plan.type
 	estate["level"] = plan.level
+	estate["building_grade"] = Rules.house_local_grade(str(plan.type), int(plan.level))
 	estate["anchor"] = plan.anchor
 	estate["members"] = plan.members.duplicate()
 	estate["footprint"] = plan.footprint
@@ -2210,25 +2956,47 @@ func unique_plot_keys() -> Array:
 			result.append(anchor)
 	return result
 
+func stock_portfolio_value(p: Dictionary) -> int:
+	var total := 0.0
+	for company in (p.get("holdings", {}) as Dictionary):
+		total += float(p["holdings"][company]) * stock_price(str(company))
+	return int(round(total))
+
+func estate_value(p: Dictionary) -> int:
+	var total := 0
+	for key in unique_plot_keys():
+		var estate: Dictionary = plots[key]
+		if int(estate.get("owner", -1)) != int(p.get("id", -1)): continue
+		total += estate_asset_value(int(key))
+	return total
+
+func estate_asset_value(idx: int) -> int:
+	return plot_value(idx) if plots.has(idx) else 0
+
 func act_buy(id: int) -> bool:
 	## 买下**本次抵达**的空地（原版 id 91）。买地只拿到「空地」，
 	## 房屋要等下一次抵达时用升级/建设来做（原版 id 88 把「空地」和「升级」并列）。
 	var p: Dictionary = players.get(id, {})
 	if p.is_empty() or not p["alive"]:
 		return false
+	if int(p["effects"].get("sleepwalk_steps", 0)) > 0: return false
+	if int(p["effects"].get("no_upgrade_steps", 0)) > 0:
+		_ev("buy_blocked", p, {"idx": int(p.get("last_plot", -1))})
+		return false
 	if int(p["last_plot"]) < 0 or str(p.get("last_plot_kind", "")) != "buy":
 		return false
 	var idx: int = int(p["last_plot"])
 	if plots.has(idx):
 		return false
-	var price := empty_plot_price()
+	var price := empty_plot_price(idx)
 	if int(p["money"]) < price:
 		log_message.emit("%s 资金不足，无法购地" % p["name"])
 		_ev("insufficient_money", p, {"idx": idx, "need": price, "have": int(p["money"])})
 		return false
 	p["money"] = int(p["money"]) - price
+	lotto_prize += price
 	# type 为空 = 还没建房（原版 id 92 的「选择房屋」发生在建设时）
-	plots[idx] = {"owner": id, "level": 0, "type": ""}
+	_bind_plot(idx, {"owner": id, "level": 0, "type": "", "paid_base": float(price) / maxf(price_scale(), .001)})
 	_clear_chance(p)
 	log_message.emit("%s 以 %d 元买下 %s（空地，下次再来才能盖房）" % [
 		p["name"], price, map.street_of(idx)])
@@ -2246,6 +3014,7 @@ func act_upgrade(id: int, want_type: String = "") -> bool:
 	var p: Dictionary = players.get(id, {})
 	if p.is_empty() or not p["alive"]:
 		return false
+	if int(p["effects"].get("sleepwalk_steps", 0)) > 0: return false
 	var idx: int = int(p["last_plot"])
 	if idx < 0 or str(p.get("last_plot_kind", "")) != "upgrade":
 		return false
@@ -2264,8 +3033,8 @@ func act_upgrade(id: int, want_type: String = "") -> bool:
 	var ptype := str(plot.get("type", ""))
 	if ptype == "":
 		var al := buildable_types()
-		if want_type != "" and al.has(want_type):
-			ptype = want_type
+		if want_type != "" and al.has(want_type.split(":")[0]):
+			ptype = want_type.split(":")[0]
 		elif al.size() == 1:
 			ptype = str(al[0])          # 只有一种房屋时不询问（原版 id 92 批注）
 		else:
@@ -2276,20 +3045,20 @@ func act_upgrade(id: int, want_type: String = "") -> bool:
 	var lv: int = int(plot["level"])
 	if lv >= max_level(ptype):
 		return false
-	var plan := construction_plan(id, idx, ptype)
+	var plan := construction_plan(id, idx, want_type if lv == 0 and want_type != "" else ptype)
 	if plan.is_empty():
 		log_message.emit("需要相邻且同属自己的空地，才能扩建该建筑")
 		_ev("upgrade_blocked", p, {"idx": idx, "reason": "需要相邻且同属自己的空地"})
 		return false
 	var target := int(plan.level)
-	var cost := upgrade_cost(p, idx, ptype)
+	var cost := int(plan.cost)
 	if int(p["money"]) < cost:
 		log_message.emit("%s 资金不足，无法升级（需 %d 元）" % [p["name"], cost])
 		_ev("insufficient_money", p, {"idx": idx, "need": cost, "have": int(p["money"])})
 		return false
 
 	p["money"] = int(p["money"]) - cost
-	_commit_construction(idx, plan)
+	_commit_construction(idx, plan, cost)
 	_clear_chance(p)
 	var gname := str(Rules.house_grade(ptype, target).get("name", "%d 级" % target))
 	log_message.emit("%s 将 %s 建到 %s（%d 元）" % [p["name"], map.street_of(idx), gname, cost])
@@ -2326,7 +3095,7 @@ func force_upgrade(owner_id: int, idx: int, free_cost: bool,
 	if int(p["money"]) < cost:
 		return false
 	p["money"] = int(p["money"]) - cost
-	_commit_construction(idx, plan)
+	_commit_construction(idx, plan, cost)
 	_ev("upgrade", p, {"idx": idx, "level": int(plan.level), "cost": cost,
 		"street": map.street_of(idx), "type": str(plan.type), "forced": true})
 	return true
@@ -2365,13 +3134,19 @@ func _enemy_plot_best(id: int) -> int:
 ## 购地卡强制购买时按这个价付给原主。
 func plot_value(idx: int) -> int:
 	if not plots.has(idx):
-		return empty_plot_price()
+		return empty_plot_price(idx)
 	var pl: Dictionary = plots[idx]
-	var v := empty_plot_price() * (pl.get("members", [idx]) as Array).size()
+	var cells := {}
+	for member in pl.get("members", [idx]): cells[map.plot_frontages(int(member))[0]] = true
+	var factor := 0.0
+	for cell in cells: factor += _land_factor(int(cell))
+	# 42b320 averages the footprint's coefficients instead of counting entrances.
+	factor /= maxi(1, cells.size())
+	var v := float(Rules.get_val("economy.empty_grid_price_factor", 200)) * estate_index * factor / 10.0
 	var tp := str(pl.get("type", ""))
 	for lv in range(maxi(1, mini(int(pl.get("build_start_level", 1)), int(pl["level"]))), int(pl["level"]) + 1):
-		v += Rules.house_upgrade_cost(tp, lv)
-	return v
+		v += Rules.house_upgrade_cost(tp, lv) * price_scale() * (1.0 if tp == "industry" else factor / 10.0)
+	return int(round(v * float(pl.get("price_mul", 1.0))))
 
 
 ## 这张卡**此刻**能不能用？0 = 能用；非 0 = 原版 String.txt 的原因文案编号：
@@ -2387,7 +3162,11 @@ func plot_value(idx: int) -> int:
 ##   只有这九条可用于此。登记在 docs/ui-audit.md §12。
 func card_usable(id: int, card_id: String) -> int:
 	var p: Dictionary = players.get(id, {})
+	if time < float(p.get("entry_until", 0.0)): return 61
 	if p.is_empty() or not bool(p["alive"]):
+		return 61
+	if time < float(p["effects"].get("hotel_until", 0.0)): return 61
+	if time < float(p["effects"].get("hospital_until", 0.0)):
 		return 61
 	# ⚠ 不拦「正在走」—— 即时制下角色一直在走，而原版的停留卡（9040「原地停留一次」）
 	#   正是**走着的时候**用的（强制停下）。只有「骰子卡正在等你点步数」才是真正的
@@ -2395,6 +3174,10 @@ func card_usable(id: int, card_id: String) -> int:
 	if bool(p.get("pending_steps", false)):
 		return 61
 	if CARD_UNSUPPORTED.has(card_id):
+		return 67
+	if Rules.base_card_id(card_id) == "gem":
+		for other in p.cards:
+			if Rules.can_gem_combine(str(other)): return 0
 		return 67
 	# 复制卡：手里得有**别的**卡可复制（`String.txt` 67「没有可以组合的卡片」）
 	if card_id == "copy":
@@ -2416,7 +3199,7 @@ func card_usable(id: int, card_id: String) -> int:
 	var here := int(p["tile"])
 	var owned := plots.has(here)
 	var enemy_here := owned and int(plots[here]["owner"]) != id
-	var street := map.street_of(here)
+	var street := _current_street(here)
 	match eff:
 		# ---- String.txt 63 批注点名的那两组：目标必须是**对手的地产** ----
 		# （空地本来就能直接买，所以这两张卡只对「已有主的地」才有意义）
@@ -2429,14 +3212,21 @@ func card_usable(id: int, card_id: String) -> int:
 			if not enemy_here:
 				return 63
 		# ---- 要有「自己的地」才能操作的 ----
-		"upgrade_building", "change_building_type":
+		"change_building_type":
+			if not plots.has(here): return 65
+			if int(plots[here].level) <= 0: return 65
+			if not Rules.primary_types().has(str(plots[here].type)): return 65
+		"upgrade_building":
 			if _own_plot_to_upgrade(id) < 0 and not _has_own_plot(id):
 				return 64                  # String.txt 64「只能用于自己的地产」
 			if eff == "upgrade_building" and _own_plot_to_upgrade(id) < 0:
 				return 65                  # 自己的房子都满级了 / 一栋都没有
 		"auto_upgrade":
-			if _own_plot_to_upgrade(id) < 0:
-				return 65                  # 没有可升级的房屋
+			var can_upgrade := false
+			for k in _street_plots(street):
+				if int(plots[k]["level"]) > 0 and int(plots[k]["level"]) < Rules.house_max_level(str(plots[k]["type"])):
+					can_upgrade = true
+			if not can_upgrade: return 65
 		# ---- 要有「可破坏的目标」的 ----
 		"auto_downgrade":
 			var n := 0
@@ -2446,20 +3236,19 @@ func card_usable(id: int, card_id: String) -> int:
 			if n == 0:
 				return 65                  # String.txt 65「没有建筑」
 		"downgrade_building":
-			if _enemy_plot_best(id) < 0:
+			if card_map_candidates(id, card_id).is_empty():
 				return 65
 		"destroy_buildings", "nuke":
-			var r := int(Rules.card_by_id(card_id).get("range", 5))
-			var h := 0
-			for k in plots.keys():
-				if _tile_distance(int(k), here) <= r and int(plots[k]["level"]) > 0:
-					h += 1
-			if h == 0:
-				return 65
+			if card_road_candidates(id, card_id).is_empty(): return 61
 		# ---- 要有路面道具可清 ----
 		"remove_obstacle":
-			if not _has_obstacle_ahead(p, 3):
-				return 61
+			var found := false
+			for step_ahead in range(1, 8):
+				var road_ahead := _wrap(here + int(p["dir"]) * step_ahead)
+				if not _obstacle_at(road_ahead).is_empty() or road_objs.has(road_ahead):
+					found = true
+					break
+			if not found: return 61
 	return 0
 
 
@@ -2480,7 +3269,7 @@ func _has_obstacle_ahead(p: Dictionary, n: int) -> bool:
 func act_use_card(id: int, card_id: String, target: int = -1,
 		target_name: String = "") -> bool:
 	## 使用一张手牌。
-	## target = 需要「点选对手」时的目标玩家 id（其余卡忽略；见 CARD_TARGET）。
+	## target = player 卡的目标玩家 id，或 road 卡的目标道路节点索引。
 	## target_name = 需要「点选一种股票」时的目标**公司名**（红卡 / 黑卡）。
 	## 返回 false 一律**不消耗**卡片 —— 条件不满足时把卡留着，别让玩家白扔。
 	var p: Dictionary = players.get(id, {})
@@ -2511,20 +3300,38 @@ func act_use_card(id: int, card_id: String, target: int = -1,
 	# 需要点选对手的卡：先要一个合法目标（String.txt 1101「请选择对手」）
 	if card_needs_player(card_id):
 		var tp: Dictionary = players.get(target, {})
-		if tp.is_empty() or int(target) == id or not bool(tp["alive"]):
+		if tp.is_empty() or not card_target_candidates(id, card_id).has(target):
 			_ev("need_card_target", p, {"card": card_id, "name": cname,
 				"target_kind": "player", "prompt": Rules.card_target_prompt("player")})
 			return false
 
+	if card_target(card_id) == "road" and not card_road_candidates(id, card_id).has(target):
+		_ev("need_card_target", p, {"card": card_id, "name": cname,
+			"target_kind": "road", "prompt": "请选择亮绿圈的路点"})
+		return false
+	if card_target(card_id) == "building" and target >= 0 and not card_map_candidates(id, card_id).has(target):
+		_ev("card_unavailable", p, {"card": card_id, "name": cname, "code": 65})
+		return false
 	var c := Rules.card_by_id(card_id)
-	if not _apply_card(p, card_id, c, p["effects"], target, target_name):
+	# Reserve the consumed slot: effects can replace the hand array.
+	var original_hand := arr.duplicate()
+	arr.remove_at(at)
+	if not _apply_card(p, Rules.base_card_id(card_id), c, p["effects"], target, target_name):
+		p["cards"] = original_hand
 		# 门禁过了但效果没生效（典型：对手身上没东西可抢）→ 也要给反馈，不静默
 		_ev("card_unavailable", p, {"card": card_id, "name": cname, "code": 61})
 		return false
-	arr.remove_at(at)                       # 只有真的生效才把卡拿走
+	_prune_card_lock(p, card_id)
 	log_message.emit("%s 使用 %s" % [p["name"], cname])
+	var result := "%s 使用了%s" % [p["name"], cname]
+	if Rules.base_card_id(card_id) in ["shuaishen", "qiongshen"]:
+		result = "%s 已被%s附身：%d 步内%s" % [players[target]["name"], cname.trim_suffix("卡"),
+			int(c.get("steps", 30)), "不能购地或升级" if Rules.base_card_id(card_id) == "shuaishen" else "过路费加倍"]
+	elif card_id in ["missile", "nuke"]:
+		result = "%s已发射，目标：%s（路点 %d）" % [cname, map.street_of(target), target]
 	_ev("use_card", p, {"card": card_id, "name": cname,
-		"effect": str(c.get("effect", "")), "target": target})
+		"effect": str(c.get("effect", "")), "target": target,
+		"result": result})
 	return true
 
 
@@ -2538,6 +3345,7 @@ func act_discard_card(id: int, card_id: String) -> bool:
 	if at < 0:
 		return false
 	arr.remove_at(at)
+	_prune_card_lock(p, card_id)
 	log_message.emit("%s 丢弃了 %s" % [p["name"], Rules.card_name(card_id)])
 	_ev("discard_card", p, {"card": card_id, "name": Rules.card_name(card_id)})
 	return true
@@ -2545,10 +3353,9 @@ func act_discard_card(id: int, card_id: String) -> bool:
 
 ## 「喂食」：把一张卡喂给小神仙 → **只增加饱食度**（**不升级**）。
 ##
-## 老板 2026-09-27 的修正：「**喂食只会增加饱食度**，饱食度满了可以使用一次技能；
-##   小神仙是**随时间升级**的，**每个月升一级**，等级影响技能效果」。
+## Feeding adds the native card record value directly as internal energy.
 ## ⚠️ 上一轮我做成「喂食让等级 +1」，那是错的，已改。
-## ⚠️ 推断项：一张卡 +`PET_FEED_PER_CARD`(50)，上限 `PET_FULLNESS_MAX`(100)。
+## 原版卡片字段决定喂食量 1..5 内部能量；显示比例依该宠物上限换算。
 func act_feed_card(id: int, card_id: String) -> bool:
 	var p: Dictionary = players.get(id, {})
 	if p.is_empty() or not bool(p["alive"]):
@@ -2560,29 +3367,24 @@ func act_feed_card(id: int, card_id: String) -> bool:
 	var at: int = (p["cards"] as Array).find(card_id)
 	if at < 0:
 		return false
-	# 挑**最饿**（饱食度最低）的那只喂；全都吃饱了就别浪费卡
-	var best := -1
-	var best_f := PET_FULLNESS_MAX + 1.0
-	for i in range(pets.size()):
-		var f := float((pets[i] as Dictionary).get("fullness", 0.0))
-		if f >= PET_FULLNESS_MAX:
-			continue
-		if f < best_f:
-			best_f = f
-			best = i
+	# 只喂当前出战的精灵；吃饱时保留卡片。
+	var current_pet := active_pet(p)
+	var best := pets.find(current_pet) if not current_pet.is_empty() and not pet_skill_ready(current_pet) else -1
 	if best < 0:
-		_feed_refuse(p, "小神仙都吃饱了")
+		_feed_refuse(p, "当前出战的小神仙已经吃饱了")
 		return false
 	(p["cards"] as Array).remove_at(at)
+	_prune_card_lock(p, card_id)
 	var d: Dictionary = pets[best]
-	d["fullness"] = minf(PET_FULLNESS_MAX,
-		float(d.get("fullness", 0.0)) + PET_FEED_PER_CARD)
+	var gained := pet_feed_value(card_id)
+	_set_pet_energy(d, pet_energy(d) + gained)
 	var full := float(d["fullness"]) >= PET_FULLNESS_MAX
+	if full: d["ready"] = true
 	log_message.emit("%s 把「%s」喂给 %s（饱食度 %d/%d%s）" % [p["name"],
 		Rules.card_name(card_id), pet_name(str(d["id"])), int(d["fullness"]),
 		int(PET_FULLNESS_MAX), "，可以发动技能了" if full else ""])
 	_ev("feed_card", p, {"card": card_id, "pet": str(d["id"]),
-		"fullness": int(d["fullness"]), "full": full})
+		"gained": int(gained), "fullness": int(d["fullness"]), "full": full})
 	return true
 
 
@@ -2596,16 +3398,20 @@ func act_walk(id: int, steps: int) -> bool:
 	var p: Dictionary = players.get(id, {})
 	if p.is_empty() or not p["alive"] or int(p["moving"]) > 0:
 		return false
+	if _roll_block_code(p) != "choose_steps": return false
 	if not bool(p.get("pending_steps", false)):
 		return false
 	p["pending_steps"] = false
 	var n := clampi(steps, 1, 6)
 	p["moving"] = n
+	p["walked_this_move"] = 0
 	p["idle"] = 0.0
 	p["move_after"] = time + ROLL_ANIM_SECONDS   # 同掷骰：先把骰子抛出来定格再走
 	p["last_roll"] = n
 	p["last_faces"] = [n]
-	log_message.emit("%s 用骰子卡前进 %d 步" % [p["name"], n])
+	var source := "小赌神" if str(p.get("pending_steps_source", "")) == "dushen" else "骰子卡"
+	p.erase("pending_steps_source")
+	log_message.emit("%s 用%s前进 %d 步" % [p["name"], source, n])
 	_ev("roll", p, {"n": n, "dice": 1, "faces": [n], "by_card": "dice"})
 	return true
 
@@ -2615,14 +3421,25 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 		target: int, target_name: String = "") -> bool:
 	var pid := int(p["id"])
 	var here := int(p["tile"])
-	var street := map.street_of(here)
+	var street := _current_street(here)
 	var eff := str(c.get("effect", ""))
+	if eff == "combine_card":
+		if not Rules.can_gem_combine(target_name): return false
+		var chosen := (p.cards as Array).find(target_name)
+		if chosen < 0: return false
+		(p.cards as Array).remove_at(chosen)
+		var output_card := Rules.gem_result(target_name)
+		if not bool(_push_card(p, output_card).get("added", false)): return false
+		_ev("combine_card", p, {"card": output_card, "name": Rules.card_name(output_card)})
+		return true
 	# ---- 复制卡（String.txt 9032「复制一张相同的卡片」）----
 	# 把手里**另一张**同名卡再复制一份（自己这张会被消耗掉）
 	if eff == "copy_card":
 		var hand: Array = p["cards"]
-		var other := ""
+		var other := target_name if hand.has(target_name) and target_name != "copy" else ""
+		if target_name != "" and other == "": return false
 		for cc in hand:
+			if other != "": break
 			if str(cc) != card_id:
 				other = str(cc)
 				break
@@ -2646,24 +3463,33 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 	match eff:
 		# ---------------- 自身状态 ----------------
 		"no_rent":
+			_clear_attached_gods(p)
 			e["no_rent_steps"] = int(c.get("steps", 20))
 			log_message.emit("%s 免费卡：%d 步内免付房租" % [p["name"], int(e["no_rent_steps"])])
 		"immune":
+			_clear_attached_gods(p)
 			e["invincible_until"] = time + float(c.get("seconds", 72))
 			log_message.emit("%s 进入无敌状态 %.0f 秒" % [p["name"], float(c.get("seconds", 72))])
 		"invisible":
+			_clear_attached_gods(p)
 			e["invisible_until"] = time + float(c.get("seconds", 72))
 			log_message.emit("%s 进入隐形状态 %.0f 秒" % [p["name"], float(c.get("seconds", 72))])
 		"move":
+			if int(p["moving"]) == 0: p["walked_this_move"] = 0
 			p["moving"] = int(p["moving"]) + int(c.get("distance", 1))
 			p["idle"] = 0.0
 		"reverse_direction":
 			p["dir"] = -int(p["dir"])
 		"double_speed":
-			# 暴走卡（9015「不消耗体力疯狂前进」）
-			e["rush_until"] = time + 12.0
+			# Native 41f970: (closed random 1..6 + 6) * 3, doubled when enhanced.
+			e["rush_until"] = time + 60.0
 			p["speed"] = MOVE_SPEED * 2.0
-			log_message.emit("%s 暴走 12 秒（不耗体力）" % p["name"])
+			var distance := (rng.randi_range(1, 6) + 6) * 3 * (2 if bool(c.get("enhanced", false)) else 1)
+			if int(p["moving"]) == 0: p["walked_this_move"] = 0
+			p["moving"] = int(p["moving"]) + distance
+			p["idle"] = 0.0
+			p["move_after"] = time
+			log_message.emit("%s 暴走前进 %d 格（不耗体力）" % [p["name"], distance])
 		"reroll":
 			# 骰子卡：把「走几步」交给玩家点（UI 弹 1..6）
 			p["pending_steps"] = true
@@ -2673,19 +3499,17 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 			# 汉堡卡（9034「补充自己的体力」）—— 原版的 HP 就是即时制的「体力」
 			var inc := float(c.get("hp", 500))
 			p["stamina"] = minf(stamina_max(), float(p.get("stamina", 0.0)) + inc)
-			p["hp"] = int(p["hp"]) + int(inc)
 			log_message.emit("%s 吃掉汉堡，体力 +%d" % [p["name"], int(inc)])
 		"gain_money":
+			_clear_attached_gods(p)
 			var amt := rng.randi_range(int(c.get("min", 10000)), int(c.get("max", 50000)))
 			p["money"] = int(p["money"]) + amt
 			var nr := int(c.get("no_rent_steps", 0))
 			if nr > 0:
 				e["no_rent_steps"] = nr      # 财神卡额外给「N 步内免付房租」
+				_status_feedback(p, p, card_id, "财神附身：免付过路费", nr)
 			log_message.emit("%s 得到 %d 元" % [p["name"], amt])
 			_ev("win_money", p, {"amount": amt, "card": card_id})
-		"gain_gems":
-			p["gems"] = int(p.get("gems", 0)) + 1
-			log_message.emit("%s 得到 1 颗宝石（共 %d）" % [p["name"], int(p["gems"])])
 		"summon_stock_god":
 			# 请神卡（9007「召唤一位小神仙」）—— 从 Pet.txt 的 **9 只**里随机来一位。
 			# 已有该位则升一级；满 5 位且没有该位 → 用不了（Info.txt 202）。
@@ -2702,13 +3526,21 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 		"rent_double":
 			# 穷神卡（9003「指定穷神附身的对象」）
 			var t1: Dictionary = players[target]
+			if _protected(t1): return false
+			_clear_attached_gods(t1)
 			t1["effects"]["rent_double_steps"] = int(c.get("steps", 30))
+			var loss := rng.randi_range(int(c.get("target_lose_min", 10000)), int(c.get("target_lose_max", 30000)))
+			_transfer(t1, p, loss, "穷神卡")
+			_status_feedback(p, t1, card_id, "穷神附身：过路费加倍", int(c.get("steps", 30)))
 			log_message.emit("%s 让穷神附上 %s：%d 步内房租加倍" % [
 				p["name"], t1["name"], int(c.get("steps", 30))])
 		"no_upgrade":
 			# 衰神卡（9004「指定衰神附身的对象」）
 			var t2: Dictionary = players[target]
+			if _protected(t2): return false
+			_clear_attached_gods(t2)
 			t2["effects"]["no_upgrade_steps"] = int(c.get("steps", 30))
+			_status_feedback(p, t2, card_id, "衰神附身：不能购地或升级", int(c.get("steps", 30)))
 			log_message.emit("%s 让衰神附上 %s：%d 步内不能升级" % [
 				p["name"], t2["name"], int(c.get("steps", 30))])
 		"steal_ratio":
@@ -2728,13 +3560,14 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 				return false
 			var ci := rng.randi_range(0, tc.size() - 1)
 			var stolen: String = str(tc[ci])
-			tc.remove_at(ci)
 			var res := _push_card(p, stolen)
 			if not bool(res["added"]):
 				log_message.emit("%s 的卡片栏满了（全锁着），抢来的「%s」没放下" % [
 					p["name"], Rules.card_name(stolen)])
 				_ev("hand_full", p, {"card": stolen})
 				return false
+			tc.remove_at(ci)
+			_prune_card_lock(t4, stolen)
 			_report_card_push(p, res, Rules.card_name(stolen))
 			log_message.emit("%s 抢走了 %s 的「%s」" % [
 				p["name"], t4["name"], Rules.card_name(stolen)])
@@ -2755,8 +3588,19 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 			if pet_count(p) >= max_pets():
 				_ev("pet_full", p, {"pet": "", "max": max_pets()})
 				return false
-			var stolen_pet: Dictionary = tps.pop_back()
-			var spid := str(stolen_pet.get("id", ""))
+			var stolen_pet := active_pet(t6)
+			if stolen_pet.is_empty() or _protected(t6): return false
+			tps.erase(stolen_pet)
+			var spid := str(stolen_pet.id)
+			t6["pet_active"] = "none"
+			# Four reserve slots are separate from the equipped slot.
+			if active_pet(p).is_empty() and pet_count(p) >= 4:
+				tps.append(stolen_pet)
+				t6["pet_active"] = pet_token(stolen_pet)
+				return false
+			if not stolen_pet.has("uid"):
+				stolen_pet["uid"] = "%s:%s:%s:stolen" % [target, spid, tick_count]
+			if p.pets.is_empty(): p["pet_active"] = "none"
 			(p["pets"] as Array).append(stolen_pet)
 			log_message.emit("%s 诱拐了 %s 的「%s」（%d 级）" % [
 				p["name"], t6["name"], pet_name(spid), int(stolen_pet.get("level", 1))])
@@ -2767,6 +3611,7 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 		"raise_estate_index", "lower_estate_index":
 			var d := int(c.get("amount", 5))
 			var delta := d if eff == "raise_estate_index" else -d
+			_change_land_factors(float(delta), false, street)
 			street_index[street] = int(street_index.get(street, 0)) + delta
 			log_message.emit("%s：%s 地价 %+d%%（现 %+d%%）" % [
 				p["name"], street, delta, int(street_index[street])])
@@ -2774,10 +3619,13 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 				"value": int(street_index[street]), "card": card_id})
 		"seal_building":
 			# 查封卡（9031「当前街道暂停收取房租」，Card_ChaFeng_Days = 5 天）
+			var affected := _street_plots(street)
+			if affected.is_empty(): return false
 			var days := float(c.get("days", 5))
-			street_seal[street] = time + days * Rules.seconds_per_day()
-			log_message.emit("%s 查封了 %s（%.0f 天内不收租）" % [p["name"], street, days])
-			_ev("seal", p, {"street": street, "until": street_seal[street], "card": card_id})
+			street_seal[street] = maxf(time, float(street_seal.get(street, 0.0))) + days * Rules.seconds_per_day()
+			log_message.emit("%s 查封了 %s 全部 %d 处地产（%.0f 天内不收租）" % [p["name"], street, affected.size(), days])
+			_ev("seal", p, {"street": street, "until": street_seal[street], "card": card_id,
+				"count": affected.size()})
 		"auto_downgrade":
 			# 恶魔卡（9006「袭击一条街道的所有房屋」）
 			var cnt := 0
@@ -2827,33 +3675,34 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 
 		# ---------------- 升级 / 拆除 / 改建（原逻辑保留）----------------
 		"free_upgrade":
+			_clear_attached_gods(p)
 			e["free_upgrade_steps"] = int(c.get("steps", 30))
+			_status_feedback(p, p, card_id, "福神附身：抵达自动加盖", int(e["free_upgrade_steps"]))
 			var n := int(c.get("cards_gained", 0))
 			for _i in range(n):
 				var res := _push_card(p, _random_card())
 				if not bool(res["added"]):
 					break                      # 全锁着就不硬塞了
 				_report_card_push(p, res, "")
-			log_message.emit("%s 福神附身：%d 步内免费加盖，得 %d 张卡" % [
+			log_message.emit("%s 福神附身：%d 步内抵达自动加盖，得 %d 张卡" % [
 				p["name"], int(e["free_upgrade_steps"]), n])
 		"auto_upgrade":
-			var ti := _own_plot_to_upgrade(pid)
-			if ti < 0:
-				log_message.emit("%s 使用天使卡，但没有可升级的房屋" % p["name"])
-				return false
-			force_upgrade(pid, ti, true)
-			log_message.emit("%s 的天使把 %s 升了一级" % [p["name"], map.street_of(ti)])
+			var upgraded := 0
+			for ti in _street_plots(street):
+				if int(plots[ti]["level"]) > 0 and force_upgrade(int(plots[ti]["owner"]), int(ti), true):
+					upgraded += 1
+			if upgraded == 0: return false
+			log_message.emit("%s 的天使让 %s 的 %d 栋房屋升级" % [p["name"], street, upgraded])
 		"upgrade_building":
-			var ti2 := _own_plot_to_upgrade(pid)
+			var ti2 := target if target >= 0 else _own_plot_to_upgrade(pid)
 			if ti2 < 0:
 				log_message.emit("%s 使用升级卡，但没有可升级的房屋" % p["name"])
 				return false
-			force_upgrade(pid, ti2, true)
+			if not force_upgrade(pid, ti2, true): return false
 			log_message.emit("%s 用升级卡把 %s 升了一级" % [p["name"], map.street_of(ti2)])
 		"downgrade_building":
 			# 怪兽卡（9019「袭击一栋房屋」）：优先拆**当前格**的对手房，否则挑最好的
-			var ei := here if (plots.has(here) and int(plots[here]["owner"]) != pid) \
-				else _enemy_plot_best(pid)
+			var ei := target if target >= 0 else _enemy_plot_best(pid)
 			if ei < 0 or not plots.has(ei) or int(plots[ei]["level"]) <= 0:
 				return false
 			_downgrade_estate(int(ei))
@@ -2861,30 +3710,18 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 			_ev("downgrade", p, {"idx": ei, "level": int(plots[ei]["level"]),
 				"street": map.street_of(ei), "card": card_id})
 		"change_building_type":
-			var mi := here if (plots.has(here) and int(plots[here]["owner"]) == pid) else -1
-			if mi < 0:
-				for k in plots.keys():
-					if int(plots[k]["owner"]) == pid:
-						mi = int(k)
-						break
-			if mi < 0:
-				return false
-			var al := buildable_types()
-			var cur := str(plots[mi].get("type", ""))
-			var ic := al.find(cur)
-			var nxt := str(al[(ic + 1) % al.size()]) if al.size() > 0 else "uptown"
-			var lv: int = int(plots[mi]["level"])
-			plots[mi]["type"] = nxt
-			if lv > 0:
-				var fit := mini(lv, max_level(nxt))
-				var space := int(plots[mi].get("footprint", 1))
-				while fit > 1 and Rules.house_footprint(Rules.house_file(nxt, fit)) > space:
-					fit -= 1
-				plots[mi]["level"] = fit
-			log_message.emit("%s 用改建卡把 %s 改成%s" % [
-				p["name"], map.street_of(mi), Rules.house_type_cn(nxt)])
-			_ev("rebuild", p, {"idx": mi, "type": nxt, "level": int(plots[mi]["level"]),
-				"card": card_id})
+			if target_name == "": return false
+			var plan := rebuild_plan(pid, here, target_name)
+			if plan.is_empty(): return false
+			var rebuilt: Dictionary = plots[here]
+			rebuilt["type"] = str(plan.type)
+			rebuilt["level"] = int(plan.level)
+			rebuilt["building_grade"] = 1
+			for member in plan.members:
+				plots[int(member)] = rebuilt
+			log_message.emit("%s 用改建卡把 %s 改成%s" % [p["name"], street, str(plan.name)])
+			_ev("rebuild", p, {"idx": here, "type": str(plan.type), "level": int(plan.level),
+				"name": str(plan.name), "card": card_id})
 		"force_stop":
 			p["moving"] = 0
 			p["progress"] = 0.0
@@ -2895,25 +3732,36 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 
 		# ---------------- 路面道具 / 爆炸 ----------------
 		"place_mine":
-			_add_obstacle(_wrap(here - int(p["dir"])), "mine", pid)
+			# String.txt 9023 and 0x41ff10: one road node behind, opposite current direction.
+			target = _wrap(here - int(p.dir))
+			if not _obstacle_at(target).is_empty() or road_objs.has(target): return false
+			_add_obstacle(target, "mine", pid)
 			log_message.emit("%s 在身后放了一颗地雷" % p["name"])
 		"place_roadblock":
-			_add_obstacle(_wrap(here + int(p["dir"])), "roadblock", pid)
+			_add_obstacle(target, "roadblock", pid)
 			log_message.emit("%s 在前面放了一个路障" % p["name"])
 		"remove_obstacle":
-			# 清除卡（9039「清除前方道路垃圾」）
-			var removed := _clear_obstacles_ahead(p, 3)
-			if removed == 0:
-				return false
-			log_message.emit("%s 清除了前方 %d 处路障" % [p["name"], removed])
+			# 原版 0x4209c0 传入前进方向和长度 7，并启动推土机。
+			var cleared := 0
+			var path: Array = []
+			for step_ahead in range(1, 8):
+				var road_ahead := _wrap(here + int(p["dir"]) * step_ahead)
+				path.append(road_ahead)
+				cleared += int(not _obstacle_at(road_ahead).is_empty()) + int(road_objs.has(road_ahead))
+
+			if cleared == 0: return false
+			for i in range(path.size()):
+				pending_road_clears.append({"idx": path[i], "at": time + float(i + 1) / 2.0})
+			_ev("clear_road", p, {"from_idx": here, "path": path, "removed": cleared})
+			log_message.emit("%s 的推土机清除了前方 7 格中的 %d 处路面道具" % [p["name"], cleared])
 		"destroy_buildings", "nuke":
 			# 飞弹卡（9027）/ 核弹卡（9042）
 			var r := int(c.get("range", 5))
 			var dec := int(c.get("max_damage", c.get("hp_dec", 0)))
-			var hits := _damage_area(here, r, dec, pid)
-			if hits == 0:
-				return false
-			log_message.emit("%s 引爆，波及 %d 处" % [p["name"], hits])
+			pending_card_impacts.append({"idx": target, "range": r, "damage": dec,
+				"owner": pid, "card": card_id, "at": time + 1.0})
+			_ev("missile_launch", p, {"idx": target, "from_idx": here,
+				"card": card_id, "seconds": 1.0})
 		"sleep_target":
 			# 冬眠卡（9028「周围人进入冬眠状态」）
 			var secs := float(c.get("seconds", 10))
@@ -2924,10 +3772,14 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 				var q: Dictionary = players[oid]
 				if not bool(q["alive"]):
 					continue
-				q["effects"]["sleep_until"] = maxf(float(q["effects"]["sleep_until"]), time + secs)
+				if _protected(q): continue
+				_clear_attached_gods(q)
+				q["effects"]["sleep_until"] = time + secs
+				q["effects"]["sleep_source"] = "%s 的冬眠卡" % str(p["name"])
 				q["moving"] = 0
 				n2 += 1
-				_ev("sleep", q, {"card": card_id, "seconds": secs})
+				_ev("sleep", q, {"card": card_id, "seconds": secs,
+					"by": pid, "by_name": str(p["name"])})
 			if n2 == 0:
 				return false
 			log_message.emit("%s 的冬眠卡让 %d 人睡了 %.0f 秒" % [p["name"], n2, secs])
@@ -2951,6 +3803,15 @@ func _street_plots(street: String) -> Array:
 		if map.street_of(int(k)) == street:
 			out.append(int(k))
 	return out
+
+func _current_street(index: int) -> String:
+	var direct := map.street_of(index)
+	if direct != "": return direct
+	for distance in range(1, map.tile_count()):
+		for near in [_wrap(index - distance), _wrap(index + distance)]:
+			var name := map.street_of(int(near))
+			if name != "": return name
+	return ""
 
 ## 环形棋盘上的最短格距
 func _tile_distance(a: int, b: int) -> int:
@@ -3061,21 +3922,34 @@ func _chest_gain() -> int:
 ## 复用卡片那套 effect 字段：财神=按秒的免租、穷神=按秒的罚金加倍、
 ## 衰神=按步数的不能升级、福神=按步数的免费加盖（原版这两项的步数就是 30）。
 func _attach_god(p: Dictionary, kind: String) -> void:
-	var secs: float = float(Rules.get_val("road.god_seconds", 30.0))
+	_clear_attached_gods(p)
 	var e: Dictionary = p["effects"]
+	var amount := 0
+	var cards := 0
 	match kind:
 		"caishen":
-			e["no_rent_until"] = maxf(float(e.get("no_rent_until", 0.0)), time + secs)
+			e["no_rent_steps"] = int(Rules.get_val("card.caishen_steps", 30))
+			var cfg := Rules.card_by_id("caishen")
+			amount = rng.randi_range(int(cfg.get("min", 10000)), int(cfg.get("max", 50000)))
+			p["money"] = int(p["money"]) + amount
 		"qiongshen":
-			e["rent_pay_double_until"] = maxf(
-				float(e.get("rent_pay_double_until", 0.0)), time + secs)
+			e["rent_double_steps"] = int(Rules.get_val("card.qiongshen_steps", 30))
+			var cfg := Rules.card_by_id("qiongshen")
+			amount = mini(int(p["money"]), rng.randi_range(int(cfg.get("target_lose_min", 10000)),
+				int(cfg.get("target_lose_max", 30000))))
+			p["money"] = int(p["money"]) - amount
 		"shuaishen":
-			e["no_upgrade_steps"] = maxi(int(e.get("no_upgrade_steps", 0)), 30)
+			e["no_upgrade_steps"] = int(Rules.get_val("card.shuaishen_steps", 30))
 		"fushen":
-			e["free_upgrade_steps"] = maxi(int(e.get("free_upgrade_steps", 0)), 30)
+			e["free_upgrade_steps"] = int(Rules.get_val("card.fushen_steps", 30))
+			for _i in range(int(Rules.get_val("card.fushen_numcard", 5))):
+				var gained := _push_card(p, _random_card())
+				if not bool(gained.get("added", false)): break
+				cards += 1
+				_report_card_push(p, gained, "福神")
 	log_message.emit("%s 被%s附身" % [p["name"], god_cn(kind)])
 	_ev("road_god", p, {"idx": int(p["tile"]), "god": kind, "god_cn": god_cn(kind),
-		"seconds": secs})
+		"amount": amount, "cards": cards})
 
 
 func god_cn(kind: String) -> String:
@@ -3097,7 +3971,7 @@ func _pick_road_obj(p: Dictionary, kind: String, idx: int) -> void:
 		# 73 拾到卡片 → 得到<CARDNAME>
 		"card":
 			_give_random_card(p, "")
-		# 71 / 78 魔戒：身上有小神仙才能升一级，上限 4 级（逆向自 0x431170）
+		# 魔戒：升一级，同时补满能量；满级的小神仙仍可获得一次技能能量。
 		"crystal":
 			var pets: Array = p["pets"]
 			if pets.is_empty():
@@ -3107,14 +3981,14 @@ func _pick_road_obj(p: Dictionary, kind: String, idx: int) -> void:
 			var pi: int = rng.randi_range(0, pets.size() - 1)
 			var lv: int = int(pets[pi]["level"])
 			var cap: int = int(Rules.get_val("road.crystal_max_pet_level", 4))
-			if lv >= cap:
-				log_message.emit("%s 得到魔戒，但小神仙已是最高等级" % p["name"])
-				_ev("road_crystal", p, {"idx": idx, "leveled": false, "level": lv})
-				return
-			pets[pi]["level"] = lv + 1
-			log_message.emit("%s 得到魔戒：%s 升到 %d 级" % [
-				p["name"], pet_name(str(pets[pi]["id"])), lv + 1])
-			_ev("road_crystal", p, {"idx": idx, "leveled": true, "level": lv + 1,
+			var leveled := lv < cap
+			if leveled: pets[pi]["level"] = lv + 1
+			_set_pet_energy(pets[pi], pet_max_energy(pets[pi]))
+			pets[pi]["ready"] = true
+			log_message.emit("%s 得到魔戒：%s 能量已满%s" % [
+				p["name"], pet_name(str(pets[pi]["id"])), "，升到 %d 级" % (lv + 1) if leveled else ""])
+			_ev("road_crystal", p, {"idx": idx, "leveled": leveled,
+				"level": int(pets[pi]["level"]), "recharged": true,
 				"pet": str(pets[pi]["id"])})
 		# 74 吃到汉堡 体力上升（HanBao_Inc_HP = 1000）
 		"hanbao":
@@ -3143,12 +4017,12 @@ func _pick_road_obj(p: Dictionary, kind: String, idx: int) -> void:
 			_ev("road_chest", p, {"idx": idx, "gain": gain})
 		# 76 遇到炸弹鬼 体力受损
 		"bomb":
-			if float(p["effects"]["invincible_until"]) > time:
+			if _protected(p):
 				return
 			var dec: float = float(Rules.get_val("road.bomb_hp_dec", 500))
-			p["stamina"] = maxf(0.0, float(p.get("stamina", 0.0)) - dec)
 			log_message.emit("%s 遇到炸弹鬼，体力 -%.0f" % [p["name"], dec])
 			_ev("road_bomb", p, {"idx": idx, "dec": int(dec)})
+			_send_to_hospital(p, dec, "bomb")
 		# 77 遇到小偷 遗失<NUMBER>元（逆向自 0x4313d0：现金的 rand(1..10)%）
 		"thief":
 			var pct: Array = Rules.get_val("road.thief_loss_pct", [1, 10]) as Array
@@ -3197,24 +4071,82 @@ func _clear_obstacles_ahead(p: Dictionary, n: int) -> int:
 			c += 1
 	return c
 
-## 以 idx 为中心、半径 radius 内的房屋各降一级，并给范围内玩家扣体力
-func _damage_area(idx: int, radius: int, hp_dec: int, owner_id: int) -> int:
+func _native_road_position(idx: int) -> Vector3:
+	# The recovered road records preserve their original, unscaled XYZ positions.
+	# Use them directly: the terrain affine can scale X and Z differently.
+	if not map.original_layout.is_empty():
+		var raw: Array = map.original_layout["roads"][_wrap(idx)].get("position", [])
+		if raw.size() == 3: return Vector3(float(raw[0]), float(raw[1]), float(raw[2]))
+		return map.route_position_3d(idx, 1, 0.0) / float(map.original_layout.get("world_scale", .036))
+	# Fallback maps lack native coordinates: normalize one road spacing to 100.
+	var spacing := map.pos_of(0).distance_to(map.pos_of(1))
+	return map.route_position_3d(idx, 1, 0.0) * (100.0 / maxf(spacing, 0.001))
+
+func _clear_attached_gods(p: Dictionary) -> void:
+	for effect in STEP_EFFECTS + ["sleepwalk_steps", "invincible_until", "sleep_until",
+		"invisible_until", "no_rent_until", "rent_pay_double_until"]:
+		p["effects"][effect] = 0
+
+func _protected(p: Dictionary) -> bool:
+	var e: Dictionary = p.get("effects", {})
+	return float(e.get("invincible_until", 0.0)) > time or float(e.get("invisible_until", 0.0)) > time
+
+func _status_feedback(caster: Dictionary, target: Dictionary, card: String, message: String, steps: int) -> void:
+	_ev("card_status_applied", target, {"caster": int(caster["id"]), "card": card,
+		"steps": steps, "message": "%s：%s（%d 步）" % [target["name"], message, steps]})
+
+func _hospital_road_tile() -> int:
+	for i in range(map.tiles.size()):
+		if str(map.tile(i).get("event", "")) == "hospital": return i
+	return -1
+
+func _send_to_hospital(p: Dictionary, damage: float, cause: String) -> void:
+	if damage <= 0.0: return
+	p["stamina"] = maxf(0.0, float(p.get("stamina", 0.0)) - damage)
+	p["moving"] = 0
+	p["progress"] = 0.0
+	p["pending_steps"] = false
+	p["move_after"] = 0.0
+	_clear_chance(p)
+	var hospital_tile := _hospital_road_tile()
+	if hospital_tile >= 0: p["tile"] = hospital_tile
+	var seconds := (stamina_max() - float(p["stamina"])) / maxf(stamina_regen(), 7.0)
+	p["effects"]["hospital_until"] = time + maxf(seconds, 0.1)
+	_ev("hospital", p, {"card": cause, "seconds": int(ceil(seconds)),
+		"idx": hospital_tile, "message": "%s 受伤住院，恢复体力后从医院出发" % p["name"]})
+
+## rich6.exe 4287c0/43a6a0: Euclidean player radius range*50, linear missile
+## damage; nuclear fixed damage. 41e110: missile -1 level, nuclear -1000 levels.
+func _damage_area(idx: int, radius: int, hp_dec: int, owner_id: int, card: String = "missile") -> int:
 	var hits := 0
 	for k in unique_plot_keys():
-		if _estate_in_radius(int(k), idx, radius) and int(plots[k]["level"]) > 0:
+		if _estate_in_radius(int(k), idx, int(radius / 2)) and int(plots[k]["level"]) > 0:
+			if card == "nuke": plots[k]["level"] = 1
 			_downgrade_estate(int(k))
+			_ev("downgrade", players.get(owner_id, null), {"idx": int(k), "card": card,
+				"level": int(plots[k]["level"])})
 			hits += 1
+	for offset in range(-int(radius / 2), int(radius / 2) + 1):
+		var road := _wrap(idx + offset)
+		_remove_obstacle(road)
+		road_objs.erase(road)
+	var center := _native_road_position(idx)
 	for oid in player_ids():
 		var q: Dictionary = players[oid]
 		if not bool(q["alive"]):
 			continue
-		if float(q["effects"]["invincible_until"]) > time:
+		if _protected(q):
 			continue                       # 无敌卡期间不吃伤害
-		if _tile_distance(int(q["tile"]), idx) <= radius and hp_dec > 0:
-			q["stamina"] = maxf(0.0, float(q.get("stamina", 0.0)) - float(hp_dec))
-			hits += 1
+		if float(q["effects"].get("hospital_until", 0)) > time: continue
+		var distance := center.distance_to(_native_road_position(int(q["tile"]))) / maxf(1.0, radius * 50.0)
+		if distance < 1.0 and hp_dec > 0:
+			var damage := hp_dec if card == "nuke" else int((1.0 - distance) * hp_dec)
+			_ev("card_damage", q, {"card": card, "damage": damage, "caster": owner_id})
+			if damage > 0:
+				_send_to_hospital(q, float(damage), card)
+				hits += 1
 	_ev("blast", players.get(owner_id, null),
-		{"idx": idx, "radius": radius, "hp_dec": hp_dec, "hits": hits})
+		{"idx": idx, "radius": radius, "hp_dec": hp_dec, "hits": hits, "card": card})
 	return hits
 
 
@@ -3223,6 +4155,21 @@ func _damage_area(idx: int, radius: int, hp_dec: int, owner_id: int) -> int:
 func to_dict() -> Dictionary:
 	return {
 		"t": time,
+		"tick": tick_count,
+		"rng_seed": rng.seed,
+		"rng_state": rng.state,
+		"estate_index": estate_index,
+		"initial_company_assets": initial_company_assets,
+		"estate_month": estate_month,
+		"land_factors": land_factors.duplicate(true),
+		"economy_factors": economy_factors.duplicate(true),
+		"environment_signature": _environment_signature.duplicate(true),
+		"road_last_day": _road_last_day.duplicate(true),
+		"lotto_prize": lotto_prize,
+		"lotto_numbers": lotto_numbers.duplicate(true),
+		"lotto_last_draw_day": lotto_last_draw_day,
+		"card_impacts": pending_card_impacts.duplicate(true),
+		"road_clears": pending_road_clears.duplicate(true),
 		"run": running,
 		"win": winner,
 		"players": players.duplicate(true),
@@ -3236,15 +4183,46 @@ func to_dict() -> Dictionary:
 		# 拉霸状态（`casino`）也要进快照 —— 否则联机时客户端的面板永远是空的
 		"casino": casino.duplicate(true),
 		"card_shop": card_shop_stock.duplicate(),
+		"card_shop_initialized": card_shop_initialized,
 		"stock_closed": stock_closed_until_day,
 		"auction": auction.duplicate(true),
 	}
 
 func apply_dict(d: Dictionary) -> void:
 	time = float(d.get("t", time))
+	tick_count = int(d.get("tick", tick_count))
+	if d.has("rng_seed"): rng.seed = int(d["rng_seed"])
+	if d.has("rng_state"): rng.state = int(d["rng_state"])
+	estate_index = float(d.get("estate_index", estate_index))
+	initial_company_assets = int(d.get("initial_company_assets", initial_company_assets))
+	estate_month = int(d.get("estate_month", estate_month))
+	land_factors = {}
+	_environment_signature = d.get("environment_signature", []).duplicate(true)
+	for key in d.get("land_factors", {}):
+		land_factors[int(key)] = d.land_factors[key].duplicate(true)
+	economy_factors = d.get("economy_factors", {"industry": 1.0, "shop": 1.0, "uptown": 1.0}).duplicate(true)
+	_road_last_day = d.get("road_last_day", _road_last_day).duplicate(true)
+	lotto_prize = int(d.get("lotto_prize", lotto_prize))
+	var saved_lotto: Dictionary = d.get("lotto_numbers", lotto_numbers)
+	lotto_numbers = {}
+	for number in saved_lotto:
+		lotto_numbers[int(number)] = int(saved_lotto[number])
+	lotto_last_draw_day = int(d.get("lotto_last_draw_day", lotto_last_draw_day))
+	pending_card_impacts = d.get("card_impacts", []).duplicate(true)
+	pending_road_clears = d.get("road_clears", []).duplicate(true)
 	running = bool(d.get("run", running))
 	winner = int(d.get("win", -1))
-	players = d.get("players", players)
+	var saved_players: Dictionary = d.get("players", players)
+	players = {}
+	for key in saved_players: players[int(key)] = saved_players[key]
+	for pid in player_ids():
+		var e: Dictionary = players[pid].get("effects", {})
+		var invisible := float(e.get("invisible_until", 0.0))
+		# Previous invisible wrote two identical extra timers. Migrate those
+		# generated timers, leaving unrelated hospital/rest timers intact.
+		if invisible > time:
+			for field in ["invincible_until", "no_rent_until"]:
+				if is_equal_approx(float(e.get(field, 0.0)), invisible): e[field] = 0.0
 	street_index = d.get("street_index", street_index)
 	street_seal = d.get("street_seal", street_seal)
 	obstacles = d.get("obstacles", obstacles)
@@ -3264,10 +4242,67 @@ func apply_dict(d: Dictionary) -> void:
 	road_objs = rf
 	road_day = int(d.get("road_day", road_day))
 	stocks = d.get("stocks", stocks)
-	casino = d.get("casino", casino)
+	var saved_casino: Dictionary = d.get("casino", casino)
+	casino = {}
+	for key in saved_casino: casino[int(key)] = saved_casino[key]
 	card_shop_stock = d.get("card_shop", card_shop_stock)
+	card_shop_initialized = bool(d.get("card_shop_initialized", not card_shop_stock.is_empty()))
 	auction = d.get("auction", auction)
 	stock_closed_until_day = int(d.get("stock_closed", stock_closed_until_day))
+	_normalize_plot_frontages()
+	for key in unique_plot_keys():
+		var estate: Dictionary = plots[key]
+		estate["building_grade"] = Rules.house_local_grade(str(estate.get("type", "")), int(estate.get("level", 0)))
+	for pid in player_ids():
+		for pet in players[pid].get("pets", []): pet_energy(pet)
+
+func _bind_plot(idx: int, estate: Dictionary) -> void:
+	var members := map.plot_frontages(idx)
+	if members.size() > 1:
+		estate["anchor"] = int(members[0])
+		estate["members"] = members
+	for member in members: plots[int(member)] = estate
+
+## Repair old saves that sold two entrances of one lot separately. Preserve
+## developed property first, then the lowest original anchor deterministically.
+## Return the rejected duplicate investment once; subsequent snapshots are stable.
+func _normalize_plot_frontages() -> void:
+	if map == null: return
+	var visited := {}
+	for idx in plots.keys():
+		if visited.has(idx): continue
+		var frontages := map.plot_frontages(int(idx))
+		if frontages.size() < 2: continue
+		var members: Array = frontages.duplicate()
+		var estates := {}
+		var cursor := 0
+		while cursor < members.size():
+			var key := int(members[cursor])
+			cursor += 1
+			visited[key] = true
+			for other in map.plot_frontages(key):
+				if not members.has(other): members.append(other)
+			if not plots.has(key): continue
+			var estate: Dictionary = plots[key]
+			estates[int(estate.get("anchor", key))] = estate
+			for other in estate.get("members", [key]):
+				if not members.has(int(other)): members.append(int(other))
+		var keys := estates.keys()
+		keys.sort()
+		var chosen := int(keys[0])
+		for key in keys:
+			if int(estates[key].get("level", 0)) > int(estates[chosen].get("level", 0)): chosen = int(key)
+		var winner_estate: Dictionary = estates[chosen]
+		for key in keys:
+			if int(key) == chosen: continue
+			var owner := int(estates[key].get("owner", -1))
+			if players.has(owner):
+				players[owner]["money"] = int(players[owner]["money"]) + int(round(
+					float(estates[key].get("paid_base", 200.0)) * price_scale()))
+		members.sort()
+		winner_estate["anchor"] = int(members[0])
+		winner_estate["members"] = members
+		for member in members: plots[int(member)] = winner_estate
 
 func _estate_in_radius(key: int, center: int, radius: int) -> bool:
 	for member in plots[key].get("members", [key]):
@@ -3277,11 +4312,20 @@ func _estate_in_radius(key: int, center: int, radius: int) -> bool:
 
 func _downgrade_estate(idx: int) -> void:
 	var estate: Dictionary = plots[idx]
-	estate["level"] = maxi(0, int(estate.level) - 1)
+	var old_size := Rules.house_footprint(Rules.house_file(str(estate.get("type", "")), int(estate.level)))
+	var kind := str(estate.get("type", ""))
+	var local := maxi(0, Rules.house_local_grade(kind, int(estate.level)) - 1)
+	estate["level"] = Rules.house_asset_level(kind, old_size, local)
+	estate["building_grade"] = local
 	if int(estate.level) == 0:
+		var reset_cells := {}
 		for member in estate.get("members", [idx]):
+			var frontages := map.plot_frontages(int(member))
+			if reset_cells.has(frontages[0]): continue
+			reset_cells[frontages[0]] = true
 			var empty := estate.duplicate(true)
-			for key in ["anchor", "members", "footprint", "build_cell", "build_start_level"]:
+			for key in ["anchor", "members", "footprint", "build_cell", "build_start_level", "building_grade"]:
 				empty.erase(key)
 			empty["type"] = ""
-			plots[int(member)] = empty
+			empty["paid_base"] = float(empty_plot_price()) / price_scale()
+			_bind_plot(int(member), empty)

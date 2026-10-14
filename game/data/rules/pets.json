@@ -1,10 +1,10 @@
 {
   "_source": "F:\\游戏\\Rich6\\config\\Pet.txt（9 只 × 4 级：即时制秒数 / 回合制次数 / 消耗点数）+ config\\String.txt 2201..2209（技能名）+ config\\Info.txt 202（持有上限 5 位）",
-  "_columns": "seconds / turn_times / points 都是**4 个等级**的值，下标 0 = 1 级。即时制用 seconds。",
+  "_columns": "seconds / turn_times are level strength; points is pet energy cost, proven by 435910 / 432d40 / 432bf0. Four entries per field.",
   "_inferred": {
-    "buy_price": "Info.txt 203「<BABYNAME>价格<NUMBER>点券」没给具体值 → 取 Pet.txt『消耗点数』第 1 级值（唯一可用数字）。属推断。",
-    "effect": "原版只有中文技能名，`effect` 是按技能名 + Info.txt 191..196 的受害者文案对上来的映射，属推断。",
-    "seconds_semantics": "解释为『特技持续 / 冷却秒数』：发动后该小神仙要等seconds[level-1] 秒才能再发动。"
+    "buy_price": "九种一星售价由原版433510和只读PE表逐种核验，独立于技能消耗。",
+    "effect": "Dispatch targets verified against native 435910; unresolved range units, eligibility and failed-action refund are recorded in docs/rea-2026-10-11/alignment-worklist.md.",
+    "seconds_semantics": "即时制效果持续秒数；技能没有冷却，重新喂满即可再发动。糊涂鬼使用 turn_times 作为梦游步数。"
   },
   "max_owned": 5,
   "max_owned_source": "Info.txt 202「您已拥有5位小神仙，此时不能请神！」",
@@ -36,7 +36,9 @@
         7,
         8
       ],
-      "buy_price": 5
+      "buy_price": 40,
+      "buy_price_source": "REA 433510; 49e860 table[type*4+1]*4; 2026-10-12",
+      "max_energy": 15
     },
     {
       "id": "hutu",
@@ -65,7 +67,9 @@
         9,
         10
       ],
-      "buy_price": 7
+      "buy_price": 40,
+      "buy_price_source": "REA 433510; 49e860 table[type*4+1]*4; 2026-10-12",
+      "max_energy": 15
     },
     {
       "id": "emo",
@@ -94,7 +98,9 @@
         7,
         8
       ],
-      "buy_price": 5
+      "buy_price": 80,
+      "buy_price_source": "REA 433510; 49e860 table[type*4+1]*4; 2026-10-12",
+      "max_energy": 20
     },
     {
       "id": "caishen",
@@ -123,7 +129,9 @@
         7,
         8
       ],
-      "buy_price": 5
+      "buy_price": 100,
+      "buy_price_source": "REA 433510; 49e860 table[type*4+1]*4; 2026-10-12",
+      "max_energy": 20
     },
     {
       "id": "tushen",
@@ -152,7 +160,9 @@
         12,
         18
       ],
-      "buy_price": 18
+      "buy_price": 60,
+      "buy_price_source": "REA 433510; 49e860 table[type*4+1]*4; 2026-10-12",
+      "max_energy": 30
     },
     {
       "id": "jingling",
@@ -181,7 +191,9 @@
         9,
         11
       ],
-      "buy_price": 5
+      "buy_price": 40,
+      "buy_price_source": "REA 433510; 49e860 table[type*4+1]*4; 2026-10-12",
+      "max_energy": 20
     },
     {
       "id": "huaxian",
@@ -210,7 +222,9 @@
         6,
         6
       ],
-      "buy_price": 6
+      "buy_price": 60,
+      "buy_price_source": "REA 433510; 49e860 table[type*4+1]*4; 2026-10-12",
+      "max_energy": 15
     },
     {
       "id": "dushen",
@@ -239,7 +253,9 @@
         3,
         2
       ],
-      "buy_price": 5
+      "buy_price": 80,
+      "buy_price_source": "REA 433510; 49e860 table[type*4+1]*4; 2026-10-12",
+      "max_energy": 20
     },
     {
       "id": "guaishou",
@@ -268,7 +284,10 @@
         5,
         6
       ],
-      "buy_price": 5
+      "buy_price": 60,
+      "buy_price_source": "REA 433510; 49e860 table[type*4+1]*4; 2026-10-12",
+      "max_energy": 15
     }
-  ]
+  ],
+  "_native_energy_source": "rich6.exe SHA-256 and max-energy table values: docs/rea-2026-10-11/pet-energy-constants.json"
 }

@@ -87,10 +87,41 @@ func cards() -> Array:
 	return data.get("cards", [])
 
 func card_by_id(id: String) -> Dictionary:
+	if id.begins_with("boost:"):
+		var base := base_card_id(id)
+		if not GEM_SAME.has(base): return {}
+		var upgraded := card_by_id(base).duplicate(true)
+		upgraded["id"] = id
+		upgraded["enhanced"] = true
+		for field in GEM_FIELDS.get(base, []): upgraded[field] = float(upgraded.get(field, 0)) * 2.0
+		return upgraded
 	for c in cards():
 		if c.get("id", "") == id:
 			return c
 	return {}
+
+## Native callbacks 41f1a0/41f270/41f310/41f480 use an explicit 1x/2x branch.
+# card.crd tail values, decoded by native 41e460/41f080 (all eight maps).
+const GEM_TRANSFORMS := {"upgrade": "tianshi", "monster": "emo", "buyland": "tudigong",
+    "free": "caishen", "invincible": "invisible", "missile": "nuke",
+    "tax": "qiongshen", "rob": "shuaishen"}
+const GEM_SAME := ["caishen", "fushen", "qiongshen", "shuaishen", "tianshi", "emo",
+    "qingshen", "run", "priceup", "pricedown", "hibernate", "redcard", "blackcard", "seize", "invisible"]
+# Only fields with confirmed callback multipliers belong here. Other enhanced
+# cards carry the native flag; unresolved effect fields are not blindly doubled.
+const GEM_FIELDS := {"caishen": ["min", "max", "no_rent_steps"], "fushen": ["steps"],
+	"qiongshen": ["steps", "target_lose_min", "target_lose_max"], "shuaishen": ["steps"], "seize": ["days"]}
+
+func base_card_id(id: String) -> String:
+	return id.trim_prefix("boost:")
+
+func can_gem_combine(id: String) -> bool:
+	return not id.begins_with("boost:") and (GEM_SAME.has(id) or GEM_TRANSFORMS.has(id))
+
+
+func gem_result(id: String) -> String:
+	if not can_gem_combine(id): return ""
+	return str(GEM_TRANSFORMS.get(id, "boost:" + id))
 
 
 # ------------------------------------------------- 原版界面字串（String.txt）
@@ -239,11 +270,12 @@ func _load_card_index() -> void:
 
 ## 卡面索引条目（含 ui_name / desc / badge / effect）
 func card_meta(id: String) -> Dictionary:
-	var e: Variant = _card_meta.get(id, {})
+	var e: Variant = _card_meta.get(base_card_id(id), {})
 	return e if e is Dictionary else {}
 
 ## 卡面中文名（优先用原版 String.txt 的标签，与卡面 art 一致）
 func card_name(id: String) -> String:
+	if id.begins_with("boost:"): return "强化" + card_name(base_card_id(id))
 	var m := card_meta(id)
 	if not m.is_empty():
 		return str(m.get("ui_name", m.get("name_tga", id)))
@@ -256,7 +288,7 @@ func card_desc(id: String) -> String:
 		return str(m.get("desc", ""))
 	return ""
 
-## 卡面左上角徽章数字（1..5，疑为点券售价；见 tools/build_card_assets.py 注释）
+## 卡面左上角徽章数字（1..5）；44e3e0/44e4c0 原版商店按等级×10点券定价。
 func card_badge(id: String) -> int:
 	return int(card_meta(id).get("badge", 0))
 
@@ -299,6 +331,12 @@ func pet_art(pet_id: String, kind: String, level: int = 1) -> String:
 		var i := clampi(level - 1, 0, files.size() - 1)
 		return "res://assets/pets/%s/%s" % [pet_id, str(files[i])]
 	return ""
+
+
+## Native 4321b0 -> 432910 -> 432830: 01/02/03 are HUD expressions,
+## independent of level. Stars represent level separately (447740).
+func pet_hud_art(pet_id: String, anxious: bool, ready: bool) -> String:
+	return pet_art(pet_id, "face", 2 if anxious else 3 if ready else 1)
 
 
 func pet_star(level: int) -> String:
@@ -352,6 +390,31 @@ func house_grade(type_id: String, level: int) -> Dictionary:
 	var i := clampi(level, 1, gs.size()) - 1
 	var g: Variant = gs[i]
 	return g if g is Dictionary else {}
+
+# The old list index remains the asset key for save compatibility. Native size
+# and local grade are distinct; an upgrade never crosses a size group.
+func house_local_grade(type_id: String, level: int) -> int:
+	if level <= 0: return 0
+	var side := house_footprint(house_file(type_id, level))
+	var local := 0
+	for g in house_grades(type_id):
+		if house_footprint(str(g.file)) == side: local += 1
+		if int(g.level) == level: return local
+	return 0
+
+func house_asset_level(type_id: String, side: int, local: int) -> int:
+	if local <= 0: return 0
+	var count := 0
+	for g in house_grades(type_id):
+		if house_footprint(str(g.file)) != side: continue
+		count += 1
+		if count == local: return int(g.level)
+	return 0
+
+func house_next_level(type_id: String, level: int) -> int:
+	if level <= 0: return house_asset_level(type_id, 1, 1)
+	return house_asset_level(type_id, house_footprint(house_file(type_id, level)),
+		house_local_grade(type_id, level) + 1)
 
 ## 该等级被踩到时付的过路费基数（元）
 func house_rent(type_id: String, level: int) -> int:

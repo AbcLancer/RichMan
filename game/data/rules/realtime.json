@@ -23,7 +23,7 @@
   "_per_map_override": "各 .r6m 头部自带相机参数：aiji 俯角 30°、paris 45°"
  },
  "hp": {
-  "hamburger_heal": 1000,
+  "hamburger_heal": 500,
   "mine_damage": 1000,
   "nuke_damage": 1000,
   "missile_max_damage": 700,
@@ -165,7 +165,8 @@
   {
    "id": "run",
    "name": "暴走卡",
-   "effect": "double_speed"
+   "effect": "double_speed",
+   "distance": 30
   },
   {
    "id": "dice",
@@ -265,7 +266,7 @@
   {
    "id": "gem",
    "name": "宝石卡",
-   "effect": "gain_gems"
+   "effect": "combine_card"
   },
   {
    "id": "hamburger",

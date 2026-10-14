@@ -27,6 +27,22 @@ var ground_texture: String = ""   # res://assets/terrain/<map>_ground.png（若�
 var has_real_layout: bool = false
 var original_layout: Dictionary = {}
 
+## Several road entrances can front the same physical cell at a corner.
+## Ownership is per block/cell, never per entrance.
+func plot_frontages(idx: int) -> Array:
+	var result: Array = [idx]
+	if not is_plot(idx) or original_layout.is_empty(): return result
+	var roads: Array = original_layout.get("roads", [])
+	if idx < 0 or idx >= roads.size(): return result
+	var road: Dictionary = roads[idx]
+	if int(road.get("block", -1)) < 0: return result
+	for other in roads:
+		var key := int(other.index)
+		if key != idx and is_plot(key) and int(other.block) == int(road.block) and int(other.cell) == int(road.cell):
+			result.append(key)
+	result.sort()
+	return result
+
 static func load_from(map_name: String) -> MapData:
 	var path := "res://data/maps/%s.json" % map_name
 	var f := FileAccess.open(path, FileAccess.READ)
