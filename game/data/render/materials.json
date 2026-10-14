@@ -1,0 +1,1256 @@
+{
+  "res://assets/original/textures/006538bbac41d734.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/01439ce42265577a.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0124
+  },
+  "res://assets/original/textures/02608aadb5401e4f.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/044f1334f91e1a75.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/068163c012f47c9d.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/076279d952ff3f22.png": {
+    "mode": "alpha",
+    "alpha_min": 38,
+    "alpha_max": 209,
+    "partial_fraction": 1.0
+  },
+  "res://assets/original/textures/0ce95535877edf30.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/0e54e893d4e0ca06.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/0e73173bb4038ceb.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0447
+  },
+  "res://assets/original/textures/0e7b0b4baa92dbad.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/0f2355d0121a4c23.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/0ff066af0bddae28.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/124f4a53409222d0.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/131b1a0b0cb1d13d.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/14628cead8d36e6f.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.1344
+  },
+  "res://assets/original/textures/1658bb69de92ed47.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0977
+  },
+  "res://assets/original/textures/16e599cf745d01d8.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/172cbb12130adff7.png": {
+    "mode": "alpha",
+    "alpha_min": 23,
+    "alpha_max": 255,
+    "partial_fraction": 0.9799
+  },
+  "res://assets/original/textures/19763d71fd351556.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/1a0c1db0078daa2d.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/1d5ec04fd5e2d902.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0083
+  },
+  "res://assets/original/textures/1de95fdbb34d0959.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/1ead6c3a7c9edd63.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/1f1dc59ea05ff8a8.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 0,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/1f8c4d883491ed3c.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/1fc809be5832bfb7.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/22fd6231c7477346.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/24e2e0a849309b89.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.219
+  },
+  "res://assets/original/textures/25119f3257f33cee.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0003
+  },
+  "res://assets/original/textures/26337370f648b9f9.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/26710f79b01faead.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/26f8327e0c4ff78a.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/28255643091b3b8a.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/29012db7406a1004.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/294a2453241a2df1.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/29a062488a82502d.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/2bc30939980bbb23.png": {
+    "mode": "alpha",
+    "alpha_min": 3,
+    "alpha_max": 255,
+    "partial_fraction": 0.8672
+  },
+  "res://assets/original/textures/2d480d0e774b33d2.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/2f53d54f3ebee487.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/2f996b1f9f014d76.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/308f0b23342bb82f.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/30f24da37d52ed67.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/312eff9c017525be.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0436
+  },
+  "res://assets/original/textures/359b9557c59e38e1.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/369caa5958f076dd.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/3e4d3b05918c90c9.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0196
+  },
+  "res://assets/original/textures/3e77ab4089dfd591.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/3eb60b92f66b5adc.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/3ee544b8c8ced839.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/3f611915f9cebbf4.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/3f9b3dc5f77ef47d.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/413793498aa470cb.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/41460b08cb2f1714.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/415a988a1cc5698b.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/4358e4a57f067334.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/43f449c3e0b2c7c0.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/453c6bec2a76ba8c.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/45859067d72b92ab.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/46511c0aba357cdd.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/46fef536d72c3f8e.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.1039
+  },
+  "res://assets/original/textures/47d5aba647ed49d9.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/48990c9b71288982.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/4a92d223f29311ae.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0278
+  },
+  "res://assets/original/textures/4b2036662f93dda6.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/4b4590405121946a.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/4be5ebd2271bbc77.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/507975e513812781.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/50e6a2e9f9e074c4.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/50f20f1304093dbf.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/51ac3856ebda3c4c.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.126
+  },
+  "res://assets/original/textures/51c45525c23cbb69.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0677
+  },
+  "res://assets/original/textures/525bd5f7b9be0c7b.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/53264ebf36501c54.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/53ab219087297a0c.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0393
+  },
+  "res://assets/original/textures/54225b9e56f1e0ad.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/577d61b0be903685.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/577fa068223d10f3.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/588ea387c4e0e862.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/58ac2e2f92e6c7c7.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/5b3cbc3140f00bf9.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/5ebff310b1f9c9a6.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/5fee4890306072ec.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/6042756303bfc3f3.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/609de5514e97f6b0.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/60d8bd48baf368d9.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/6108fbf8872e9de9.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/61576c1a29a50b35.png": {
+    "mode": "alpha",
+    "alpha_min": 14,
+    "alpha_max": 255,
+    "partial_fraction": 0.4204
+  },
+  "res://assets/original/textures/641824cd378dfbc8.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/646331a8b4f4a86c.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/6531a4c74e6a8ffe.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/66bf8ca47b5c2199.png": {
+    "mode": "alpha",
+    "alpha_min": 0,
+    "alpha_max": 182,
+    "partial_fraction": 1.0
+  },
+  "res://assets/original/textures/67385d601e03d0d0.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/696d613f5d64a851.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/6aab91c6b82b2bca.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0289
+  },
+  "res://assets/original/textures/6b29d6febbd9d67c.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/6e2363cbf5d0da69.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/6ff2941c8966efe8.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/7041567583b23ae7.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/72300bbfdeecded8.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/7269154796209b5b.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0134
+  },
+  "res://assets/original/textures/72e1c2016f1563ee.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/751b4a39d68f9b2f.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/76a5b89e551a46f1.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/78b1e0e2003d5fe1.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/7bc92333e6002d9e.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/7bfed4904fcacb5c.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/7db667aeafcf7ed2.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/7e5fbb0fddb2a667.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/7f575d7a9e88bb3e.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/7f584522cbf53f85.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/80bc0f07ef99f54e.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/810b54b4ea1edd44.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/824d8e13b28228b8.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/82d5526704e8c809.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/856fdf55ffa655cf.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/860a1a71ffc9e47c.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/889fcdb27426f447.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/88e48c669b1e174e.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0836
+  },
+  "res://assets/original/textures/894b3c9c6bd22856.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.1577
+  },
+  "res://assets/original/textures/8a08f4886734b6b5.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/8ebc0c47f10a8c2b.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/8ed50a08ef1733b3.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/910ad6e61152b634.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/922bf461d17dcbe5.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/973b47876433b631.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/97ddb53640f33d0f.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/980dc84a427dd4a1.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/987312d758c2395c.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/98b689a431bb94ed.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/9d29ed575aa44d09.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/9e8412dd2a0ca4de.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/9ffa1d867eb817c1.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/a211c4ca2cd36f53.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/a28a27373811e30a.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/a28a7be4a68de021.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/a2d95af11f2769ad.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/a366565d9e0a13ea.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/a36d69da33f96cdb.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/a5280f5246c7c6e9.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/a84da20c66b94689.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/ab12eaf7d2ea861e.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/af469d3ae54b6e7a.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/af83d103bf6c5c4d.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/afe9467676d76e7c.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/b01721d9050434a6.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/b2b41c37e7e7a0bc.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/b4a3b5371989637c.png": {
+    "mode": "alpha",
+    "alpha_min": 22,
+    "alpha_max": 255,
+    "partial_fraction": 0.9744
+  },
+  "res://assets/original/textures/b5c2ce117c61279b.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/b7a4ac9a0ea3cb84.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.1397
+  },
+  "res://assets/original/textures/b9472bef0820e6b2.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/bf89879e27e7d4e6.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/c1339e05fa8fd1a4.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/c7a8e72bbc8085cd.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/c8a32198f53ce383.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.307
+  },
+  "res://assets/original/textures/c8c7ba92b2668db9.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/c94cbd2db9644f00.png": {
+    "mode": "alpha",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.4175
+  },
+  "res://assets/original/textures/ca309aa21fe97ba0.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/ca6c5c5231b6f0a3.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/cbf09a0033b1d0c3.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/cc05425f83754f27.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/cc21a459efa6ed2b.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/cc8c339caccef0b1.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/cdcfaea658d31558.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/cfc5f17d9351121a.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.1574
+  },
+  "res://assets/original/textures/d114fa56879a9b2f.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/d234dd174736ed5e.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0508
+  },
+  "res://assets/original/textures/d2429ec74559e10f.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/d27a57784a9a6f82.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/d32d0ca7979e233e.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/d5afe830d0d59afa.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/d88e8d0757495dd6.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/d9001ab4650faae9.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/d9ea487d195606cd.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/dc6842d4c96ea4e0.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/dca3ddc3a1b7b47f.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/de1c30ef317b2b8a.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/de87c9859af7ca0a.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0682
+  },
+  "res://assets/original/textures/df3e473ad7f095cc.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/e05d3523c7d4f055.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/e21eed4cf305d3d7.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/e4b63ec80eb53cc7.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/e69daf896a4e7a4f.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/e84ee7a3fe31e258.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/e89193e1d46ade71.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/e8af0b2dc68d98be.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/ea8f6148ea775ed0.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/ed99b329a6cabc34.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/ee82619c3cfb6fda.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/ef2834ecaa979989.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/f01c6de633d88e95.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/f06abe049b94f6d0.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/f07e4dd2c583a035.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/f1b90b0bcc89c87d.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/f283c5151796860a.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/f3fb282457f2a6b9.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/f44252ef17cd8414.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/f44aa95149062548.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/f48a524afee44441.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/f530a843fe180fd1.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/f5e31ecdd024bdb6.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/f627442f9ad59c59.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/fac20945d53443da.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/fb6e58b16d8497f4.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/fbf0e1cae32f5a90.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0633
+  },
+  "res://assets/original/textures/fd3b158e213604fc.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/fd5cfff78b342357.png": {
+    "mode": "cutout",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/fd5efe248a411773.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/fe6e52a123b84b17.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  },
+  "res://assets/original/textures/fe773fe1b2a838da.png": {
+    "mode": "opaque",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "partial_fraction": 0.0
+  }
+}

@@ -1,0 +1,223 @@
+{
+  "UI/ConfirmationLayer/PurchaseConfirmation/VBoxContainer1/HBoxContainer1": {
+    "font": 16.0,
+    "rect": [
+      0.0,
+      99.0,
+      279.0,
+      30.0
+    ],
+    "reference": [
+      279.375,
+      135.0
+    ]
+  },
+  "UI/ConfirmationLayer/PurchaseConfirmation/VBoxContainer1/PromptText": {
+    "font": 31,
+    "rect": [
+      0.0,
+      0.0,
+      279.0,
+      87.0
+    ],
+    "reference": [
+      279.375,
+      135.0
+    ]
+  },
+  "UI/Control4/Control1/Label1": {
+    "font": 14,
+    "rect": [
+      14.0,
+      98.0,
+      81.0,
+      23.0
+    ],
+    "reference": [
+      206.25,
+      144.140625
+    ]
+  },
+  "UI/Control4/Control1/TextureRect2": {
+    "font": 16.0,
+    "rect": [
+      11.0,
+      10.0,
+      86.0,
+      86.0
+    ],
+    "reference": [
+      206.25,
+      139.96875
+    ]
+  },
+  "UI/Control4/Control2/PanelContainer1": {
+    "font": 16.0,
+    "rect": [
+      546.0,
+      597.0,
+      122.0,
+      125.0
+    ],
+    "reference": [
+      1280.0,
+      720.0
+    ]
+  },
+  "UI/Control4/Control4/Label1": {
+    "font": 20,
+    "rect": [
+      45.0,
+      293.0,
+      221.0,
+      28.0
+    ],
+    "reference": [
+      393.75,
+      393.75
+    ]
+  },
+  "UI/Control4/Control4/TextureButton4": {
+    "font": 16,
+    "rect": [
+      300.0,
+      255.0,
+      55.0,
+      102.0
+    ],
+    "reference": [
+      393.75,
+      393.75
+    ]
+  },
+  "UI/Control4/Control4/TextureRect2": {
+    "font": 16,
+    "rect": [
+      60.0,
+      230.0,
+      50.0,
+      50.0
+    ],
+    "reference": [
+      393.75,
+      393.75
+    ]
+  },
+  "UI/Control4/Control4/TextureRect3": {
+    "font": 16,
+    "rect": [
+      128.0,
+      230.0,
+      50.0,
+      50.0
+    ],
+    "reference": [
+      393.75,
+      393.75
+    ]
+  },
+  "UI/Control4/Control4/TextureRect4": {
+    "font": 16,
+    "rect": [
+      194.0,
+      230.0,
+      50.0,
+      50.0
+    ],
+    "reference": [
+      393.75,
+      393.75
+    ]
+  },
+  "UI/Control4/Control4/TextureRect5": {
+    "font": 16,
+    "rect": [
+      67.0,
+      51.0,
+      158.0,
+      158.0
+    ],
+    "reference": [
+      393.75,
+      393.75
+    ]
+  },
+  "UI/Control4/Control5/TextureButton1": {
+    "font": 16.0,
+    "rect": [
+      249.0,
+      292.0,
+      74.0,
+      37.0
+    ],
+    "reference": [
+      336.0,
+      336.0
+    ]
+  },
+  "UI/Control4/Control5/TextureRect2": {
+    "font": 16.0,
+    "rect": [
+      175.0,
+      18.0,
+      141.0,
+      282.0
+    ],
+    "reference": [
+      336.0,
+      336.0
+    ]
+  },
+  "UI/Control4/Control7/Button2": {
+    "font": 29.0,
+    "rect": [
+      439.0,
+      298.0,
+      197.0,
+      48.0
+    ],
+    "reference": [
+      1280.0,
+      720.0
+    ]
+  },
+  "UI/Control4/Control7/Label1": {
+    "font": 45.0,
+    "rect": [
+      535.0,
+      216.0,
+      199.0,
+      51.0
+    ],
+    "reference": [
+      1280.0,
+      720.0
+    ]
+  },
+  "UI/Control4/Control7/TextureRect2": {
+    "font": 16.0,
+    "rect": [
+      388.0,
+      57.0,
+      500.0,
+      500.0
+    ],
+    "reference": [
+      1280.0,
+      720.0
+    ]
+  },
+  "UI/Control4/VBoxContainer1": {
+    "font": 16.0,
+    "rect": [
+      1229.0,
+      203.0,
+      52.0,
+      187.0
+    ],
+    "reference": [
+      1280.0,
+      720.0
+    ]
+  }
+}

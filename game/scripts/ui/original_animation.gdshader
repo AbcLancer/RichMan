@@ -9,15 +9,10 @@ uniform int frame_a = 0;
 uniform int frame_b = 0;
 uniform float frame_mix = 0.0;
 uniform vec3 pivot = vec3(0.0);
+#include "res://scripts/ui/animation_pose.gdshaderinc"
 void vertex() {
-	vec3 a = texelFetch(position_frames, ivec2(VERTEX_ID, frame_a), 0).rgb;
-	vec3 b = texelFetch(position_frames, ivec2(VERTEX_ID, frame_b), 0).rgb;
-	VERTEX = mix(a, b, frame_mix) - pivot;
-	if (has_normals) {
-		vec3 na = texelFetch(normal_frames, ivec2(VERTEX_ID, frame_a), 0).rgb;
-		vec3 nb = texelFetch(normal_frames, ivec2(VERTEX_ID, frame_b), 0).rgb;
-		NORMAL = normalize(mix(na, nb, frame_mix));
-	}
+	VERTEX = animated_position(VERTEX_ID);
+	if (has_normals) { NORMAL = animated_normal(VERTEX_ID); }
 }
 void fragment() {
 	vec4 color = has_skin ? texture(skin, UV) : vec4(1.0);

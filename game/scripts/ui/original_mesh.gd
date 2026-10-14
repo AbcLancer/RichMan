@@ -16,6 +16,12 @@ var _pivot := Vector3.ZERO
 var _position_texture: ImageTexture
 var _normal_texture: ImageTexture
 var _normals: Array[PackedVector3Array] = []
+var animation_loop := true
+var motion_speed := 1.0
+var _pose := Vector3.ZERO
+var _previous_pose := Vector3.ZERO
+var _blend_elapsed := 1.0
+var _blend_duration := 0.16
 @export_file("*.json") var definition_path := ""
 
 func _validate_property(property: Dictionary) -> void:
@@ -59,7 +65,7 @@ func setup(info: Dictionary) -> void:
 		for i in range(nf):
 			_normals.append(normal_bytes.slice(i * nv * 12, (i + 1) * nv * 12).to_vector3_array())
 		_normal_texture = ImageTexture.create_from_image(Image.create_from_data(nv, nf, false, Image.FORMAT_RGBF, normal_bytes))
-	if nf > 1:
+	if nf > 1 or bool(info.get("additive", false)) or bool(info.get("effect_material", false)):
 		var bytes := PackedByteArray()
 		var bounds := AABB(_frames[0][0], Vector3.ZERO)
 		for frame in _frames:
@@ -77,11 +83,22 @@ func setup(info: Dictionary) -> void:
 		mat.alpha_scissor_threshold = 0.3
 		mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 		var path := str(info.surfaces[i].texture)
+		var alpha_mode := str(info.surfaces[i].get("alpha_mode", VisualQuality.alpha_mode(path)))
+		if alpha_mode == "alpha":
+			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_DEPTH_PRE_PASS
+		elif alpha_mode == "opaque":
+			mat.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
 		if not path.is_empty():
 			mat.albedo_texture = VisualQuality.texture(path)
-		if nf > 1:
+		if nf > 1 or bool(info.get("additive", false)) or bool(info.get("effect_material", false)):
 			var animated := ShaderMaterial.new()
-			animated.shader = preload("res://scripts/ui/original_animation.gdshader")
+			animated.shader = preload("res://scripts/ui/original_animation_blend.gdshader") if alpha_mode == "alpha" else preload("res://scripts/ui/original_animation.gdshader")
+			if bool(info.get("additive", false)):
+				animated.shader = preload("res://scripts/ui/original_effect.gdshader")
+			elif bool(info.get("effect_material", false)):
+				animated.shader = preload("res://scripts/ui/original_effect_alpha.gdshader")
+			elif VisualQuality.remade and not _normals.is_empty() and alpha_mode != "alpha":
+				animated.shader = preload("res://scripts/ui/remade_actor.gdshader")
 			animated.set_shader_parameter("position_frames", _position_texture)
 			animated.set_shader_parameter("pivot", _pivot)
 			animated.set_shader_parameter("has_normals", not _normals.is_empty())
@@ -92,33 +109,63 @@ func setup(info: Dictionary) -> void:
 				animated.set_shader_parameter("skin", mat.albedo_texture)
 			_materials.append(animated)
 		else:
+			if VisualQuality.remade and str(info.mesh).contains("/scenes/") and alpha_mode != "alpha" and mat.albedo_texture != null:
+				var detailed := ShaderMaterial.new()
+				detailed.shader = preload("res://scripts/ui/remade_environment.gdshader")
+				detailed.set_shader_parameter("skin", mat.albedo_texture)
+				for detail_name in ["grass", "sand", "stone", "wood"]:
+					detailed.set_shader_parameter(detail_name + "_detail", VisualQuality.texture("res://assets/remade/materials/%s.png" % detail_name))
+				_materials.append(detailed)
+				continue
+			if VisualQuality.remade and not _normals.is_empty():
+				mat.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+				mat.roughness = 0.2 if alpha_mode == "alpha" else 0.65
+				mat.metallic_specular = 0.65 if alpha_mode == "alpha" else 0.25
 			_materials.append(mat)
 	_times = info.get("times", [0])
-	_clips = info.get("clips", {})
+	_clips = {}
+	for key in info.get("clips", {}):
+		# MD2 frame names include padding: original exports have "run " / "sad ".
+		_clips[str(key).strip_edges().to_lower()] = info.clips[key]
+	_pose = Vector3.ZERO
+	_previous_pose = Vector3.ZERO
+	_blend_elapsed = 1.0
+	motion_speed = 1.0
+	animation_loop = true
 	_draw_frame(0)
 	set_process(nf > 1)
 
-func play(clip: String) -> void:
-	if _clip != clip and _clips.has(clip):
+func play(clip: String, loop := true, blend_time := 0.16) -> void:
+	clip = clip.strip_edges().to_lower()
+	if (_clip != clip or animation_loop != loop) and _clips.has(clip):
+		_previous_pose = _pose
+		_blend_elapsed = 0.0
+		_blend_duration = maxf(blend_time, 0.001)
 		_clip = clip
 		_clock = 0.0
+		animation_loop = loop
+
+func animation_duration(clip := "") -> float:
+	if _clips.has(clip): return float(_clips[clip].size()) / 12.0
+	return maxf(float(_times.back()) if not _times.is_empty() else 0.0, 0.01)
 
 func _process(delta: float) -> void:
 	if _frames.size() < 2:
 		return
-	_clock += delta * _speed
+	_clock += delta * _speed * motion_speed
+	_blend_elapsed += delta
 	var a := 0
 	var b := 0
 	var weight := 0.0
 	if _clips.has(_clip):
 		var sequence: Array = _clips[_clip]
-		var phase := fmod(_clock * 12.0, float(sequence.size()))
+		var phase := fmod(_clock * 12.0, float(sequence.size())) if animation_loop else minf(_clock * 12.0, float(sequence.size() - 1))
 		var index := int(phase)
 		a = int(sequence[index])
-		b = int(sequence[(index + 1) % sequence.size()])
+		b = int(sequence[(index + 1) % sequence.size()] if animation_loop else sequence[mini(index + 1, sequence.size() - 1)])
 		weight = phase - index
 	else:
-		var t := fmod(_clock, maxf(float(_times.back()), 0.01))
+		var t := fmod(_clock, maxf(float(_times.back()), 0.01)) if animation_loop else minf(_clock, float(_times.back()))
 		# Binary search avoids scanning every source key on every rendered frame.
 		var lo := 0
 		var hi := _times.size() - 1
@@ -131,11 +178,17 @@ func _process(delta: float) -> void:
 		a = lo
 		b = hi
 		weight = clampf((t - float(_times[a])) / maxf(float(_times[b]) - float(_times[a]), 0.00001), 0, 1)
+	_pose = Vector3(a, b, weight)
+	var blend := smoothstep(0.0, 1.0, minf(_blend_elapsed / _blend_duration, 1.0))
 	for material in _materials:
 		var animated := material as ShaderMaterial
 		animated.set_shader_parameter("frame_a", a)
 		animated.set_shader_parameter("frame_b", b)
 		animated.set_shader_parameter("frame_mix", weight)
+		animated.set_shader_parameter("previous_a", int(_previous_pose.x))
+		animated.set_shader_parameter("previous_b", int(_previous_pose.y))
+		animated.set_shader_parameter("previous_mix", _previous_pose.z)
+		animated.set_shader_parameter("pose_mix", blend)
 
 
 func _draw_frame(frame: int) -> void:
@@ -178,3 +231,20 @@ static func load_scene(parent: Node3D, map_name: String) -> bool:
 		instance.name = str(info.get("name", "Mesh" )).validate_node_name()
 		instance.position = instance._pivot
 	return true
+
+
+## GeometryInstance transparency does not affect our compatibility animation shaders.
+func set_opacity(value: float) -> void:
+	for material in _materials:
+		if material is ShaderMaterial:
+			if value < 1.0 and not material.has_meta("opaque_shader"):
+				material.set_meta("opaque_shader", material.shader)
+				material.shader = load("res://scripts/ui/original_actor_translucent.gdshader")
+			elif value >= 1.0 and material.has_meta("opaque_shader"):
+				material.shader = material.get_meta("opaque_shader")
+				material.remove_meta("opaque_shader")
+			if value < 1.0: material.set_shader_parameter("opacity", value)
+		elif material is StandardMaterial3D:
+			if not material.has_meta("opaque_mode"): material.set_meta("opaque_mode", material.transparency)
+			material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA if value < 1.0 else int(material.get_meta("opaque_mode"))
+			material.albedo_color.a = value

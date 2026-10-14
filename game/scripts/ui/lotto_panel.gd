@@ -18,14 +18,15 @@ class_name LottoPanel
 
 signal act(kind: String, number: int)
 
+const HEIGHT := 234.0 # Native 44d4c0; the exported texture includes 22 transparent top rows.
 const SIDE := 256.0                       # 底图原尺寸 = 原版面板尺寸（1024×768 下的 native）
 ## 号码格（量自底图）：第 1 格左上角 + 格宽 + 间距
-const CELL_X0 := 17.0
-const CELL_Y0 := 134.0
+const CELL_X0 := 14.0
+const CELL_Y0 := 94.0
 const CELL_W := 39.0
-const CELL_H := 40.0
-const CELL_DX := 42.8
-const CELL_DY := 41.0
+const CELL_H := 39.0
+const CELL_DX := 43.0
+const CELL_DY := 43.0
 
 var _scale := 1.0
 var _bg: TextureRect
@@ -37,17 +38,23 @@ var _title: Label
 var _picked := -1                         # 本机已选的号码
 var _open_numbers: Dictionary = {}        # 号码 -> 被谁选走（只用来把格子压暗）
 
+class NumberRing:
+	extends Control
+	func _draw() -> void:
+		draw_arc(size * .5, minf(size.x, size.y) * .37, 0, TAU, 48,
+			Color8(227, 34, 45), maxf(2.0, size.x * .075), true)
+
 
 func setup(ui_scale: float) -> void:
-	_scale = ui_scale
+	_scale = ui_scale * 1.4
 	visible = false
 	z_index = 46
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_build()
 	var vp := get_viewport().get_visible_rect()
 	var side := SIDE * _scale
-	size = Vector2(side, side)
-	position = Vector2((vp.size.x - side) * 0.5, (vp.size.y - side) * 0.5)
+	size = Vector2(side, HEIGHT * _scale)
+	position = Vector2((vp.size.x - side) * 0.5, (vp.size.y - HEIGHT * _scale) * 0.5)
 
 
 func _px(v: float) -> float:
@@ -84,7 +91,11 @@ func _cell_rect(n: int) -> Rect2:
 
 
 func _build() -> void:
-	_bg = _img("lotto_bg.png", Vector2.ZERO, Vector2(_px(SIDE), _px(SIDE)))
+	_bg = _img("lotto_bg.png", Vector2.ZERO, Vector2(_px(SIDE), _px(HEIGHT)))
+	var atlas := AtlasTexture.new()
+	atlas.atlas = _tex("lotto_bg.png")
+	atlas.region = Rect2(0, 22, SIDE, HEIGHT)
+	_bg.texture = atlas
 	# 兔子女郎：底图右侧是空的，把人立在右上（同原版——女郎从面板右边探出来）
 	_girl = _img("lotto_girl1.png", Vector2(_px(SIDE * 0.60), _px(-SIDE * 0.12)),
 		Vector2(_px(SIDE * 0.42), _px(SIDE * 0.84)))
@@ -93,21 +104,25 @@ func _build() -> void:
 	_title = Label.new()
 	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_title.autowrap_mode = TextServer.AUTOWRAP_OFF
 	_title.add_theme_font_size_override("font_size", maxi(9, int(round(_px(12.0)))))
 	_title.add_theme_color_override("font_color", Color8(120, 20, 40))
 	_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_title.position = Vector2(_px(SIDE * 0.06), _px(SIDE * 0.20))
-	_title.size = Vector2(_px(SIDE * 0.54), _px(SIDE * 0.26))
+	_title.position = Vector2(_px(17), _px(28))
+	_title.size = Vector2(_px(104), _px(51))
 	add_child(_title)
 
 	# 12 个号码格：标记 + 指针 + 透明按钮
 	for n in range(1, 13):
 		var r := _cell_rect(n)
-		var mk := _img("lotto_mark.png", r.position + r.size * 0.12, r.size * 0.76)
+		var mk := NumberRing.new()
+		mk.position = r.position
+		mk.size = r.size
+		mk.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(mk)
 		mk.visible = false
 		_marks.append(mk)
-		var cu := _img("lotto_cursor.png", r.position + Vector2(r.size.x * 0.30, -r.size.y * 1.05),
+		var cu := _img("lotto_cursor.png", r.position,
 			Vector2(r.size.x * 0.42, r.size.x * 0.42))
 		cu.visible = false
 		_cursors.append(cu)
@@ -130,8 +145,8 @@ func _build() -> void:
 	ex.texture_normal = _tex("lotto_exit.png")
 	ex.ignore_texture_size = true
 	ex.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-	ex.position = Vector2(_px(SIDE * 0.70), _px(SIDE * 0.78))
-	ex.size = Vector2(_px(SIDE * 0.22), _px(SIDE * 0.11))
+	ex.position = Vector2(_px(188), _px(177))
+	ex.size = Vector2(_px(55), _px(29))
 	ex.pressed.connect(func(): act.emit("exit", 0))
 	add_child(ex)
 
@@ -147,7 +162,19 @@ func _hover_box() -> StyleBoxFlat:
 
 func _show_cursor(n: int) -> void:
 	if n - 1 < _cursors.size():
-		(_cursors[n - 1] as TextureRect).visible = true
+		var cursor := _cursors[n - 1] as TextureRect
+		cursor.visible = true
+		_place_cursor(cursor)
+
+func _process(_delta: float) -> void:
+	if not visible: return
+	for cursor in _cursors:
+		if cursor.visible: _place_cursor(cursor)
+
+func _place_cursor(cursor: TextureRect) -> void:
+	# The original pencil points near its lower-right edge. Keep that nib on
+	# the actual mouse position instead of pinning the art above a cell.
+	cursor.position = get_local_mouse_position() - cursor.size * Vector2(.78, .86)
 
 
 func _hide_cursor(n: int) -> void:
@@ -156,46 +183,65 @@ func _hide_cursor(n: int) -> void:
 
 
 ## 打开面板（进乐透事件格时）
-func open(prize: int, taken: Dictionary) -> void:
+var _session := 0
+
+func open(prize: int, taken: Dictionary, own_number: int = -1) -> void:
+	_session += 1
 	visible = true
-	_picked = -1
+	_girl.texture = _tex("lotto_girl1.png")
+	_picked = own_number
+	for mark in _marks: mark.visible = false
+	for cursor in _cursors: cursor.visible = false
 	_open_numbers = taken.duplicate()
-	_apply_state(prize, "")
+	if own_number >= 1 and own_number <= _marks.size(): _marks[own_number - 1].visible = true
+	_apply_state(prize, "您已购买号码：%d\n等待开奖" % own_number if own_number >= 1 else "")
 
 
 ## 选完号码 / 开奖后的状态刷新
 func mark_picked(n: int) -> void:
 	_picked = n
 	_open_numbers[n] = -1
+	for i in range(_marks.size()): _marks[i].visible = i == n - 1
 	_apply_state(-1, "您的号码：%d" % n)
+	var ticket := _session
+	await get_tree().create_timer(2.0).timeout
+	if ticket == _session: close()
 
 
 ## 开奖展示：把中奖号码的标记亮起来
 func show_draw(win_n: int, winner_name: String, amount: int) -> void:
+	_session += 1
+	visible = true
+	_picked = win_n # Result view cannot accept another purchase.
+	for cursor in _cursors: cursor.visible = false
 	for n in range(1, 13):
-		(_marks[n - 1] as TextureRect).visible = (n == win_n)
+		(_marks[n - 1] as NumberRing).visible = (n == win_n)
 	var txt := "开奖号码 %d" % win_n
 	if winner_name != "":
-		txt += "\n%s 中了 %d 元" % [winner_name, amount]
+		txt += "\n%s\n奖金 %d" % [winner_name, amount]
 	else:
-		txt += "\nSORRY 本月没有人中奖"
+		txt += "\n本月无人中奖\n号码保留至下期"
 	_apply_state(-1, txt)
-	_girl.texture = _tex("lotto_girl2.png")
+	_girl.texture = _tex("lotto_girl2.png" if winner_name != "" else "lotto_girl3.png")
+	var ticket := _session
+	await get_tree().create_timer(3.0).timeout
+	if ticket == _session: close()
 
 
 func _apply_state(prize: int, extra: String) -> void:
 	if prize >= 0:
-		_title.text = "今日乐透开奖\n您的号码是\n（奖金 %d 元）" % prize
+		_title.text = "今日乐透开奖\n您的号码是\n奖池 %d" % prize
 	if extra != "":
 		_title.text = extra
 	# 已被选走的格子压暗（原版：选过的号码不再可选）
 	for n in range(1, 13):
 		var b: Button = _cells[n - 1]
 		var taken := n in _open_numbers and _picked != n
-		b.disabled = taken or n == _picked
+		b.disabled = taken or _picked >= 1
 		(_cells[n - 1] as Button).modulate = Color(1, 1, 1, 1) if not taken \
 			else Color(0.55, 0.55, 0.6, 0.85)
 
 
 func close() -> void:
+	_session += 1
 	visible = false

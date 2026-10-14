@@ -16,6 +16,7 @@ var _camera: Camera3D
 var _menu_root: Control
 var _lobby_root: Control
 var _hud: Control
+var _settlement: Control
 
 var _name_edit: LineEdit
 var _ip_edit: LineEdit
@@ -31,10 +32,10 @@ var _start_btn: Button
 var _lobby_hint: Label
 
 var _hud_money: HudNumber
-var _hud_deposit: HudNumber
-var _hud_houses: HudNumber
-var _hud_cards: HudNumber
-var _hud_credit: HudNumber
+var _hud_stock_value: HudNumber
+var _hud_estate_value: HudNumber
+var _hud_points: HudNumber
+var _hud_price_index: HudNumber
 var _hud_day: HudNumber
 var _hud_log: RichTextLabel
 var _btn_bldtype: OptionButton     # 空地首次建设时的房型（原版 Info.txt id 92「选择房屋」）
@@ -58,6 +59,7 @@ var _card_menu_at: int = -1                    # 菜单当前针对的 slot 下�
 var _card_menu_btns: Array = []
 var _clamp_btn: TextureButton                  # 卡片夹开关（uitex/other/clamp.png）
 var _card_pending: String = ""                 # 正在等「点选对手」的卡 id
+var _pet_target_pending := false               # 糊涂鬼：选择一位附近对手
 var _card_confirm_id: String = ""              # 正在等「是/否」二次确认的卡 id
 var _card_hint: Label                          # 「请选择对手」提示条
 
@@ -83,11 +85,15 @@ const CARD_MENU_W := 96.0
 var _topbar: PanelContainer
 var _pause_overlay: TextureRect
 var _paused: bool = false
+var _session_menu: CanvasLayer
+var _session_menu_box: VBoxContainer
+var _save_path := Net.SAVE_PATH
 var _minimap: Minimap
 ## 右下角功能区（原版「最下一栏是功能切换按钮」）：
 ##   ① 新闻 → 日志页 ② 股票 → 股票页 ③ 地图 → 小地图（**默认页**）
 ##   ④ 聊天区 → 聊天记录页 ⑤ 聊天 → 额外弹出聊天栏 ⑥ 最右下角 → 收起 / 展开
 var _br_box: Control = null
+var _follow_btn: Button = null
 var _br_map_panel: Control = null
 ## 地图面板的底框（切到别的页时要换成透明，但**面板本身得留着占位**）
 var _br_map_sb: StyleBox = null
@@ -108,6 +114,14 @@ var _news_pop: Control = null
 var _news_art: TextureRect = null
 var _news_text: Label = null
 var _news_left := 0.0
+var _lotto_results: Array[Dictionary] = []
+var _view_menu: PanelContainer
+var _data_view: Control
+var _estate_dismiss_button := 0
+var _event_dialog: Control = null
+var _event_dialog_art: TextureRect = null
+var _event_dialog_text: Label = null
+var _event_messages: Array = []
 ## 拉霸（老虎机）面板（原版 `uitex/casino/`；老板截图 records/老虎机.png）
 var _casino: CasinoPanel = null
 ## 乐透面板（`casino` 事件格；素材 `uitex/casino2/`）
@@ -127,10 +141,23 @@ var _pet_strip: Control = null
 ## 右下角常驻的**股票行情面板**（原版就在这里 —— 老板 2026-09-26 的原版截图）
 var _stock: StockPanel = null
 var _pet_slot: TextureRect = null          # 精灵栏里的**出战精灵头像**
-var _pet_bar: ProgressBar = null           # 精灵栏里的**体力条**（满了才能发动技能）
+var _pet_bar: ProgressBar = null           # 右下条：出战精灵饱食度（满了才能发动技能）
+var _pet_skill_btn: TextureButton = null   # 原版发光的小神仙技能图标
+var _money_reel: PanelContainer = null
+var _money_reel_digits: MoneyReelDigits = null
+var _money_reel_time := 0.0
+var _money_reel_amount := 0
 var _pet_strip_nodes: Array = []
 const PET_STRIP_PX := 44.0             # 每只小神仙图标的边长（native）
 var _char_avatar: TextureRect
+var _char_expression := "01"
+var _char_expression_t := 0.0
+var _char_identity: TextureButton
+var _pet_level_star: Label
+var _pet_anxious: Label
+var _stamina_bar_full := false
+var _used_card_face: TextureRect
+var _used_card_tween: Tween
 var _char_info: Label
 var _char_name: Label
 var _char_stat: Label
@@ -194,6 +221,8 @@ const GO_ANCHOR_NORM := Vector2(0.782, 0.508)
 # 一次性提示
 var _toast_lbl: Label
 var _toast_t: float = 0.0
+var _tile_info_panel: PanelContainer
+var _tile_info_label: Label
 
 
 var _snapshot: Dictionary = {}
@@ -285,6 +314,16 @@ func _ready() -> void:
 	_ui = CanvasLayer.new()
 	add_child(_ui)
 	_apply_ui_theme()
+	_cursor_open = load("res://assets/ui/frontend/other/cursor.png")
+	if _cursor_open != null:
+		var hand := _cursor_open.get_image()
+		var small := hand.duplicate()
+		small.resize(maxi(1, hand.get_width() - 3), maxi(1, hand.get_height() - 3), Image.INTERPOLATE_NEAREST)
+		var pressed_image := Image.create(hand.get_width(), hand.get_height(), false, Image.FORMAT_RGBA8)
+		pressed_image.fill(Color.TRANSPARENT)
+		pressed_image.blit_rect(small, Rect2i(Vector2i.ZERO, small.get_size()), Vector2i(1, 2))
+		_cursor_pressed = ImageTexture.create_from_image(pressed_image)
+		_set_hand_cursor(false)
 	_world = Node3D.new()
 	add_child(_world)
 	_setup_world()
@@ -292,6 +331,7 @@ func _ready() -> void:
 	_build_lobby()
 	_build_loading()
 	_build_hud()
+	_build_session_menu()
 	var workbench := UiWorkbench.new()
 	workbench.name = "UiWorkbench"
 	add_child(workbench)
@@ -311,6 +351,86 @@ func _ready() -> void:
 		var gallery := UiGallery.new()
 		set_meta("ui_gallery", gallery)
 		gallery.call_deferred("run", self)
+		return
+	if OS.get_cmdline_user_args().has("--card-flow-review"):
+		var review = load("res://scripts/ui/card_flow_review.gd").new()
+		set_meta("card_flow_review", review)
+		review.call_deferred("run", self)
+		return
+	if OS.get_cmdline_user_args().has("--effects-review"):
+		var review := EffectsReview.new()
+		set_meta("effects_review", review)
+		review.call_deferred("run", self)
+		return
+	if OS.get_cmdline_user_args().has("--card-pet-audit"):
+		var review = load("res://scripts/ui/card_pet_audit.gd").new()
+		set_meta("card_pet_audit", review)
+		review.call_deferred("run", self)
+		return
+	if OS.get_cmdline_user_args().has("--presentation-review"):
+		var review = load("res://scripts/ui/presentation_review.gd").new()
+		set_meta("presentation_review", review)
+		review.call_deferred("run", self)
+		return
+	if OS.get_cmdline_user_args().has("--settlement-shop-camera-review"):
+		var review = load("res://scripts/ui/settlement_shop_camera_review.gd").new()
+		set_meta("settlement_shop_camera_review", review)
+		review.call_deferred("run", self)
+		return
+	if OS.get_cmdline_user_args().has("--entry-card-review"):
+		var review = load("res://scripts/ui/entry_card_review.gd").new()
+		set_meta("entry_card_review", review)
+		review.call_deferred("run", self)
+		return
+	if OS.get_cmdline_user_args().has("--hud-card-review"):
+		var review = load("res://scripts/ui/hud_card_review.gd").new()
+		set_meta("hud_card_review", review)
+		review.call_deferred("run", self)
+		return
+	if OS.get_cmdline_user_args().has("--workbench-popup-review"):
+		var review = load("res://scripts/ui/workbench_popup_review.gd").new()
+		set_meta("workbench_popup_review", review)
+		review.call_deferred("run", self)
+		return
+	if OS.get_cmdline_user_args().has("--road-pet-hand-lotto-review"):
+		var review = load("res://scripts/ui/road_pet_hand_lotto_review.gd").new()
+		set_meta("road_pet_hand_lotto_review", review)
+		review.call_deferred("run", self)
+		return
+	if OS.get_cmdline_user_args().has("--workbench-calendar-review"):
+		var review = load("res://scripts/ui/workbench_calendar_review.gd").new()
+		set_meta("workbench_calendar_review", review)
+		review.call_deferred("run", self)
+		return
+	if OS.get_cmdline_user_args().has("--play-flow-review"):
+		var review = load("res://scripts/ui/play_flow_review.gd").new()
+		set_meta("play_flow_review", review)
+		review.call_deferred("run", self)
+		return
+	if OS.get_cmdline_user_args().has("--oct8-review"):
+		var review = load("res://scripts/ui/oct8_review.gd").new()
+		set_meta("oct8_review", review)
+		review.call_deferred("run", self)
+		return
+	if OS.get_cmdline_user_args().has("--oct7-review"):
+		var review = load("res://scripts/ui/oct7_review.gd").new()
+		set_meta("oct7_review", review)
+		review.call_deferred("run", self)
+		return
+	if OS.get_cmdline_user_args().has("--god-camera-build-review"):
+		var review = load("res://scripts/ui/god_camera_build_review.gd").new()
+		set_meta("god_camera_build_review", review)
+		review.call_deferred("run", self)
+		return
+	if OS.get_cmdline_user_args().has("--go-push-review"):
+		var review = load("res://scripts/ui/go_push_review.gd").new()
+		set_meta("go_push_review", review)
+		review.call_deferred("run", self)
+		return
+	if OS.get_cmdline_user_args().has("--casino-interaction-review"):
+		var review = load("res://scripts/ui/casino_interaction_review.gd").new()
+		set_meta("casino_interaction_review", review)
+		review.call_deferred("run", self)
 		return
 
 	if OS.get_cmdline_user_args().has("--demo"):
@@ -707,7 +827,12 @@ func _start_demo() -> void:
 
 
 func _process(delta: float) -> void:
+	if _paused: return
 	if screen == Screen.GAME:
+		if _money_reel_time > 0.0:
+			_money_reel_time -= delta
+			if _money_reel_time <= 0.0:
+				if _money_reel != null: _money_reel.hide()
 		_sync_action_ui()
 		_tick_dice(delta)
 		if _toast_t > 0.0:
@@ -719,10 +844,18 @@ func _process(delta: float) -> void:
 			_news_left -= delta
 			if _news_left <= 0.0 and _news_pop != null:
 				_news_pop.visible = false
+		if not _lotto_results.is_empty() and _news_left <= 0.0 and _lotto != null and not _lotto.visible \
+			and not (_event_dialog != null and _event_dialog.visible) \
+			and not (_pop != null and _pop.visible) and not shop_open() \
+			and not (_house_pick != null and _house_pick.visible):
+			var result: Dictionary = _lotto_results.pop_front()
+			_lotto.show_draw(int(result.get("number", 0)), str(result.get("winner_name", "")), int(result.get("amount", 0)))
 		# 拉霸面板：滚轮动画 + 下注额刷新
 		if _casino != null and _casino.visible and Net.sim != null:
 			var st: Dictionary = Net.sim._casino_of(multiplayer.get_unique_id())
 			_casino.tick(delta, int(st.get("bet", 0)), st.get("reels", []))
+		if _follow_btn != null and _board != null:
+			_follow_btn.visible = screen == Screen.GAME and _board.map != null and _board.is_overview()
 		# 加载界面：按时间推进进度条，走满后淡出
 		if _loading != null and _loading.visible:
 			_loading_t -= delta
@@ -733,6 +866,12 @@ func _process(delta: float) -> void:
 			if _loading_t <= 0.0:
 				_loading.visible = false
 		# 台词气泡：跟人走 + 到点收
+		if _char_expression_t > 0.0:
+			_char_expression_t = maxf(0.0, _char_expression_t - delta)
+			if _char_expression_t == 0.0:
+				_char_expression = "01"
+				var local: Dictionary = _snapshot.get("players", {}).get(multiplayer.get_unique_id(), {})
+				_char_avatar.texture = _role_texture(int(local.get("role", 1)) - 1, "01")
 		if _say_t > 0.0:
 			_say_t -= delta
 			if _say_t <= 0.0 and _say_bubble != null:
@@ -750,8 +889,8 @@ func _process(delta: float) -> void:
 		# 骰子卡的步数选择器：跟在角色头顶
 		_sync_step_picker()
 		# 「请选择对手」：每帧算鼠标指到了谁 → 脚下圆盘绿/红
-		if _card_pending != "" and Net.sim != null \
-				and Net.sim.card_target(_card_pending) == "player":
+		if Net.sim != null and (_pet_target_pending or (_card_pending != "" \
+				and Net.sim.card_target(_card_pending) == "player")):
 			var hv := _pick_hover_player()
 			if hv != _hover_player:
 				_hover_player = hv
@@ -823,19 +962,124 @@ func _capture(path: String) -> void:
 	var err := img.save_png(path)
 	print("[demo] 截图 %s -> %s" % [path, "OK" if err == OK else "失败 %d" % err])
 
+var _camera_drag_button := 0
+var _camera_drag_distance := 0.0
+var _camera_dragged_right := false
+var _right_click_had_overlay := false
+var _right_click_pressed_modal := false
+var _cursor_open: Texture2D
+var _cursor_pressed: Texture2D
+
+
+func _set_hand_cursor(pressed: bool) -> void:
+	var art := _cursor_pressed if pressed else _cursor_open
+	if art == null: return
+	Input.set_custom_mouse_cursor(art, Input.CURSOR_ARROW, Vector2.ZERO)
+	Input.set_custom_mouse_cursor(art, Input.CURSOR_POINTING_HAND, Vector2.ZERO)
+
+
+func _camera_drag_input(e: InputEvent) -> void:
+	if e is InputEventMouseButton and e.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT]:
+		if e.pressed:
+			_camera_drag_button = 0
+			_camera_drag_distance = 0.0
+			if e.button_index == MOUSE_BUTTON_RIGHT: _camera_dragged_right = false
+			if _pop.visible or _house_pick != null or shop_open() or _card_pending != "" or _pet_target_pending: return
+			var hovered := get_viewport().gui_get_hovered_control()
+			if hovered != null and hovered != _hud and hovered != _ui: return
+			_camera_drag_button = e.button_index
+		elif e.button_index == _camera_drag_button:
+			_camera_drag_button = 0
+		return
+	if e is InputEventMouseMotion and _camera_drag_button != 0:
+		_camera_drag_distance += e.relative.length()
+		if _camera_drag_distance < 4.0: return
+		if _camera_drag_button == MOUSE_BUTTON_RIGHT:
+			_camera_dragged_right = true
+			_board.drag_rotate(e.relative)
+		else:
+			_board.drag_pan(e.relative)
+		get_viewport().set_input_as_handled()
+
+
+func _input(e: InputEvent) -> void:
+	if is_instance_valid(_settlement) and _settlement.visible: return
+	if e is InputEventMouseButton and not e.pressed and int(e.button_index) == _estate_dismiss_button:
+		_estate_dismiss_button = 0
+		get_viewport().set_input_as_handled()
+		return
+	if screen == Screen.GAME and is_instance_valid(_board) and _board.estate_view \
+			and ((e is InputEventMouseButton and e.pressed) or e.is_action_pressed("ui_cancel")):
+		if e is InputEventMouseButton: _estate_dismiss_button = int(e.button_index)
+		_board.set_estate_view(false)
+		get_viewport().set_input_as_handled()
+		return
+	if is_instance_valid(_view_menu) and _view_menu.visible and e is InputEventMouseButton and e.pressed \
+			and not _view_menu.get_global_rect().has_point(e.position): _view_menu.hide()
+	if e is InputEventMouseButton and e.button_index == MOUSE_BUTTON_LEFT:
+		_set_hand_cursor(e.pressed)
+	if screen == Screen.GAME and _board != null and _board.map != null and not _paused \
+			and (_session_menu == null or not _session_menu.visible):
+		_camera_drag_input(e)
+		if e is InputEventMouseButton and e.button_index == MOUSE_BUTTON_RIGHT:
+			if e.pressed:
+				_right_click_pressed_modal = _pop != null and _pop.visible
+				_right_click_had_overlay = (_pop != null and _pop.visible) or _house_pick != null \
+					or shop_open() or (_tile_info_panel != null and _tile_info_panel.visible)
+			else:
+				if _pet_menu_right_opening:
+					_pet_menu_right_opening = false
+					get_viewport().set_input_as_handled()
+					return
+				if not _camera_dragged_right and (not _right_click_pressed_modal or _pop.visible):
+					var closed := _close_topmost()
+					if not closed and not _right_click_had_overlay: _show_tile_info_at(e.position)
+				_camera_dragged_right = false
+				get_viewport().set_input_as_handled()
+			return
+	if _card_pending != "" and Net.sim != null and _board != null \
+			and Net.sim.card_target(_card_pending) in ["road", "building"] \
+			and e is InputEventMouseMotion:
+		var cands: Array = Net.sim.card_map_candidates(multiplayer.get_unique_id(), _card_pending)
+		_board.set_road_target_hover(_board.nearest_card_tile_to_screen(e.position, cands,
+			Net.sim.card_target(_card_pending) == "building"))
+	if _session_menu != null and _session_menu.visible:
+		if e.is_action_pressed("ui_cancel"):
+			_close_session_menu()
+			get_viewport().set_input_as_handled()
+		return
+	if _paused and ((e is InputEventKey and e.pressed and not e.echo)
+			or (e is InputEventMouseButton and e.pressed)):
+		_set_paused(false)
+		get_viewport().set_input_as_handled()
+
 func _unhandled_input(e: InputEvent) -> void:
-	if screen == Screen.GAME and e.is_action_pressed("roll_dice"):
+	if _paused or (_session_menu != null and _session_menu.visible): return
+	if screen == Screen.GAME and e.is_action_pressed("roll_dice") and not _pop.visible and _card_pending == "" and not _pet_target_pending:
 		if _go_btn != null and _go_btn.visible:
 			_on_go_pressed()      # 空格 = 点 GO（带当前选的骰子颗数）
 	if screen != Screen.GAME:
 		return
+	if _card_pending != "" and Net.sim != null and Net.sim.card_target(_card_pending) in ["road", "building"] \
+			and e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
+		var tile := _board.nearest_card_tile_to_screen(e.position,
+			Net.sim.card_map_candidates(multiplayer.get_unique_id(), _card_pending),
+			_card_pending in ["missile", "nuke", "upgrade", "monster"])
+		if Net.sim.card_map_candidates(multiplayer.get_unique_id(), _card_pending).has(tile):
+			var card := _card_pending
+			_clear_card_target_mode()
+			Net.send_action("card", [card, tile])
+		else: _toast("请选择亮绿圈的路点")
+		get_viewport().set_input_as_handled()
+		return
 	# 「请选择对手」：左键点**脚下亮着绿圈**的那个人 = 选定
-	if _card_pending != "" and Net.sim != null \
-			and Net.sim.card_target(_card_pending) == "player" \
+	if Net.sim != null and (_pet_target_pending or (_card_pending != "" \
+			and Net.sim.card_target(_card_pending) == "player")) \
 			and e is InputEventMouseButton and e.pressed \
 			and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
-		var hv := _pick_hover_player()
-		var cands: Array = Net.sim.card_target_candidates(multiplayer.get_unique_id())
+		var hv := _pick_hover_player(e.position)
+		var cands: Array = Net.sim.pet_skill_candidates(multiplayer.get_unique_id()) if _pet_target_pending \
+			else Net.sim.card_target_candidates(multiplayer.get_unique_id(), _card_pending)
 		if hv >= 0 and cands.has(hv):
 			_on_avatar_clicked(hv)
 		else:
@@ -846,9 +1090,6 @@ func _unhandled_input(e: InputEvent) -> void:
 	# 右键：**二级界面统一从这里关**。
 	# 老板 2026-09-27：「二级界面都应该可以使用右键关闭」+ 原版 Info.txt 62 的批注
 	# 就是「点击右键界面消失」→ 按**从上层往下**的顺序关一个。
-	if e is InputEventMouseButton and e.pressed and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_RIGHT:
-		_close_topmost()
-		return
 	if e is InputEventKey and e.pressed and not e.echo:
 		match e.keycode:
 			KEY_L:
@@ -860,6 +1101,8 @@ func _unhandled_input(e: InputEvent) -> void:
 			KEY_M, KEY_TAB:
 				if _board != null and _board.map != null:
 					_board.set_overview(not _board.is_overview())
+			KEY_HOME:
+				if _board != null and _board.map != null: _board.set_overview(false)
 			KEY_S:
 				_toggle_sfx()
 			KEY_Q:
@@ -870,7 +1113,7 @@ func _unhandled_input(e: InputEvent) -> void:
 				# 和右键同一套：先把**最上面**那个二级界面关掉；
 				# 一层都没有了才退回主菜单（避免随手一按就退出对局）
 				if not _close_topmost():
-					_on_leave()
+					_open_session_menu()
 
 # ------------------------------------------------------------------ 3D 世界
 
@@ -1200,8 +1443,7 @@ func _open_solo_menu() -> void:
 	row.add_theme_constant_override("separation", maxi(10, int(round(60.0 * _ui_scale))))
 	col.add_child(row)
 	_big_round_icon("NEW", "新遊戲", row, func(): _open_map_select())
-	_big_round_icon("LOAD", "讀取遊戲", row, func():
-		_toast("存档系统还没做（原版这里读的是存档）"))
+	_big_round_icon("LOAD", "讀取遊戲", row, _load_game)
 	var back := Button.new()
 	back.text = "返回"
 	back.custom_minimum_size = Vector2(90.0, 30.0) * _ui_scale
@@ -1290,7 +1532,7 @@ func _open_map_select() -> void:
 	var slot := [Vector2(0, 0), Vector2(1, 0),
 		Vector2(-0.5, 1), Vector2(0.5, 1), Vector2(1.5, 1),
 		Vector2(0, 2), Vector2(1, 2)]
-	var maps := MapData.available_maps()
+	var maps := Frontend.MAPS
 	for i in range(mini(maps.size(), slot.size())):
 		var m := str(maps[i])
 		var md := MapData.load_from(m)
@@ -1391,24 +1633,23 @@ func _pick_map_hex(m: String) -> void:
 		ds.text = _map_blurb(m)
 
 
-## 每张图的介绍（⚠️ 原版这几段文案在 `Initvar`/`String` 里都没有，
-## 「埃及」那段是老板截图里给的，其余按关卡特产自己写，属**推断**）
+## Map descriptions transcribed from the original selection screen references.
 func _map_blurb(m: String) -> String:
 	match m:
 		"aiji":
 			return "埃及\n利用时空穿梭机来到古代埃及世界，本关任务是发展工业，胜利条件是令所有对手破产，成为埃及工业大亨。"
 		"china":
-			return "中国\n回到了古老的东方大地，发展商业、买下整条街，让所有对手破产，成为一方首富。"
+			return "中国\n美丽富饶的中华锦绣河山，本关可建设所有产业，胜利条件是让所有对手破产，成为中华大富翁。"
 		"japan":
-			return "日本\n竞争激烈的岛国商战，把握机会扩张地盘，令所有对手破产即获胜。"
+			return "日本\n高度现代化的岛国日本，本关可以建设所有产业，胜利条件是让所有对手破产，成为日本大富翁。"
 		"island":
-			return "海岛\n阳光沙滩上的度假天堂，靠旅游与地产赚取暴利，成为海岛之王。"
+			return "未来人工岛\n人类在海洋中建设的海上城市，本关任务是建设小型住宅，胜利条件是让对手破产，成为住宅业大亨。"
 		"paris":
-			return "巴黎\n浪漫之都只允许经营商业，用时尚与精品把对手挤出市场。"
+			return "法国\n欢迎来到风光明媚的法国巴黎，本关任务是发展商业，胜利条件是让所有对手破产，成为商业大亨。"
 		"space":
-			return "太空\n未来星轨站的奇幻商战，道路靠传送平台连接，胜者是最后的巨头。"
+			return "宇宙空间站\n未来世界宇宙激烈的星际大战，本关任务是利用飞弹、地雷等武器疯狂攻击对手，胜利条件是打败其他对手。"
 		"train":
-			return "铁路\n沿着铁路线一路买地，让对手无路可走、破产出局。"
+			return "美国\n美国西部拓荒时代，本关可发展所有产业，胜利条件是让对手破产，成为西部大亨。"
 		_:
 			return str(m)
 
@@ -1683,6 +1924,7 @@ func _build_menu() -> void:
 	_menu_root.add_child(_frontend)
 	_frontend.multiplayer_requested.connect(func(): _open_menu_more("mp"))
 	_frontend.system_requested.connect(func(): _open_menu_more("sys"))
+	_frontend.load_requested.connect(_load_game)
 	_frontend.message_requested.connect(func(message):
 		var dialog := AcceptDialog.new()
 		dialog.title = "大富翁 6"
@@ -2040,7 +2282,7 @@ const ATB_BAR_B := Rect2(90, 103, 76, 14)    # 右细条（原版留空）
 const UI_CHAR_X := 1.3                       # 面板左外边距
 const UI_CHAR_BOTTOM := 2.7                  # 面板底外边距
 const UI_CHAR_W := 220.0
-const UI_CHAR_H := 149.3
+const UI_CHAR_H := 153.75
 
 # --- 右下：小地图框 + 图标按钮条 ---
 const UI_BR_W := 292.0
@@ -2078,6 +2320,8 @@ const UI_POP_H := 160.0
 func _build_hud() -> void:
 	_ui_scale = maxf(get_viewport().get_visible_rect().size.y / 768.0, 0.3)
 	_hud = Control.new()
+	# Only actual widgets intercept clicks; empty HUD space belongs to the board.
+	_hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_hud.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_ui.add_child(_hud)
 
@@ -2114,6 +2358,7 @@ func _build_hud() -> void:
 	_auction.act.connect(_on_auction_action)
 	_build_shop()
 	_build_toast()
+	_build_event_dialog()
 
 
 ## 把「frame_atb.png 内部像素」换算到屏幕像素
@@ -2179,10 +2424,10 @@ func _build_topbar() -> void:
 	_topbar.add_child(row)
 
 	_hud_money = _top_counter(row, "coin1_money", false)
-	_hud_deposit = _top_counter(row, "coin2_stock", false)
-	_hud_houses = _top_counter(row, "coin3_house", false)
-	_hud_cards = _top_counter(row, "coin4_cards", false)
-	_hud_credit = _top_counter(row, "coin5_face", true)
+	_hud_stock_value = _top_counter(row, "coin2_stock", false)
+	_hud_estate_value = _top_counter(row, "coin3_house", false)
+	_hud_points = _top_counter(row, "coin4_cards", false)
+	_hud_price_index = _top_counter(row, "coin5_face", true)
 
 	var sp := Control.new()
 	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -2252,16 +2497,15 @@ func _top_btnstrip() -> Control:
 	holder.add_child(tex)
 	var zones := [
 		[0.00, 0.36, "暂停 / 继续", func(): _toggle_pause()],
-		[0.38, 0.70, "全盘视角 (Tab)", func():
-			if _board != null and _board.map != null:
-				_board.set_overview(not _board.is_overview())],
-		[0.72, 1.00, "全屏 (F11)", func(): _toggle_fullscreen()],
+		[0.38, 0.70, "查看数据", func(): _toggle_view_menu()],
+		[0.72, 1.00, "系统功能", func(): _open_session_menu()],
 	]
 	for z in zones:
 		var b := Button.new()
 		b.flat = true
 		b.focus_mode = Control.FOCUS_NONE
 		b.tooltip_text = z[2]
+		if z[2] == "查看数据": b.name = "ViewDataButton"
 		var x0 := float(z[0]) * UI_BTN_W * _ui_scale
 		var x1 := float(z[1]) * UI_BTN_W * _ui_scale
 		b.position = Vector2(x0, 0)
@@ -2272,10 +2516,55 @@ func _top_btnstrip() -> Control:
 	return holder
 
 
+func _toggle_view_menu() -> void:
+	if is_instance_valid(_view_menu) and _view_menu.visible:
+		_view_menu.hide()
+		return
+	if not is_instance_valid(_view_menu):
+		_view_menu = PanelContainer.new()
+		_view_menu.name = "ViewDataMenu"
+		_view_menu.z_index = 78
+		_view_menu.add_theme_stylebox_override("panel", _sb_round(Color8(180, 248, 250, 240), Color8(60, 125, 189), 6, 3, 2))
+		_hud.add_child(_view_menu)
+		var list := VBoxContainer.new()
+		_view_menu.add_child(list)
+		for item in ["股票", "地产图", "排行榜"]:
+			var choice: String = item
+			var button := Button.new()
+			button.text = choice
+			button.custom_minimum_size = Vector2(100, 34) * _ui_scale
+			button.add_theme_font_size_override("font_size", int(18 * _ui_scale))
+			button.add_theme_color_override("font_color", Color8(185, 26, 36))
+			button.pressed.connect(func() -> void: _open_data_view(choice))
+			list.add_child(button)
+	_view_menu.position = Vector2(get_viewport().get_visible_rect().size.x - 138 * _ui_scale, 29 * _ui_scale)
+	_view_menu.show()
+
+func _open_data_view(choice: String) -> void:
+	if is_instance_valid(_view_menu): _view_menu.hide()
+	if is_instance_valid(_data_view):
+		_data_view.hide()
+		_data_view.queue_free()
+		_data_view = null
+	if choice == "地产图":
+		_board.set_estate_view(true)
+		return
+	_data_view = load("res://scripts/ui/game_data_view.gd").new()
+	_hud.add_child(_data_view)
+	_data_view.setup(self, "stocks" if choice == "股票" else "ranking")
+
+
 ## 原版 ⏸ = 暂停游戏。用 SceneTree.paused 冻结世界与 Net/Sim，
 ## 但把 App 与 _ui 设成 ALWAYS，否则连"取消暂停"都点不了。
 func _toggle_pause() -> void:
-	_paused = not _paused
+	if Net.has_remote_peers():
+		_toast("联机对局继续运行，可按 ESC 打开游戏菜单")
+		return
+	_set_paused(not _paused)
+
+func _set_paused(value: bool) -> void:
+	_paused = value
+	Net.game_paused = value and Net.is_host
 	get_tree().paused = _paused
 	process_mode = Node.PROCESS_MODE_ALWAYS if _paused else Node.PROCESS_MODE_INHERIT
 	if _ui != null:
@@ -2287,6 +2576,71 @@ func _toggle_pause() -> void:
 
 
 ## 原版素材里就有「暂停 按任意键返回」这张图（uitex/other/pause.tga）
+func _build_session_menu() -> void:
+	_session_menu = CanvasLayer.new()
+	_session_menu.name = "GameMenu"
+	_session_menu.layer = 120
+	_session_menu.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(_session_menu)
+	var shade := ColorRect.new()
+	shade.color = Color(0, 0, 0, .6)
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_session_menu.add_child(shade)
+	var center := CenterContainer.new()
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	shade.add_child(center)
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel", _sb_round(Color8(25, 52, 92), Color8(130, 210, 240), 14, 20, 3))
+	center.add_child(panel)
+	_session_menu_box = VBoxContainer.new()
+	_session_menu_box.add_theme_constant_override("separation", 12)
+	panel.add_child(_session_menu_box)
+	_session_menu.hide()
+
+func _open_session_menu(confirm_leave := false) -> void:
+	if not Net.has_remote_peers(): _set_paused(true)
+	_pause_overlay.hide()
+	for child in _session_menu_box.get_children():
+		_session_menu_box.remove_child(child)
+		child.queue_free()
+	var title := Label.new()
+	title.text = "返回主菜单？未保存的进度会丢失" if confirm_leave else "游戏菜单"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_session_menu_box.add_child(title)
+	var entries: Array = [["Continue", "继续游戏", _close_session_menu]]
+	if confirm_leave:
+		entries.append(["Leave", "确认返回主菜单", _on_leave])
+	else:
+		if Net.is_host and not Net.has_remote_peers():
+			entries.append(["Save", "保存游戏", _save_game])
+		entries.append(["Return", "返回主菜单", func(): _open_session_menu(true)])
+	for entry in entries:
+		var button := Button.new()
+		button.name = entry[0]
+		button.text = entry[1]
+		button.custom_minimum_size = Vector2(320, 44)
+		button.pressed.connect(entry[2])
+		_session_menu_box.add_child(button)
+	_session_menu.show()
+
+func _close_session_menu() -> void:
+	if _session_menu != null: _session_menu.hide()
+	_set_paused(false)
+
+func _save_game() -> void:
+	var error := Net.save_singleplayer(_save_path)
+	_close_session_menu()
+	_toast("对局已保存，可从单人游戏 → 读取游戏继续" if error == OK else "保存失败（%d），对局仍保留" % error)
+
+func _load_game() -> void:
+	var error := Net.load_singleplayer(_save_path)
+	if error != OK:
+		var dialog := AcceptDialog.new()
+		dialog.dialog_text = "没有可读取的存档，或存档已损坏（%d）" % error
+		add_child(dialog)
+		dialog.confirmed.connect(dialog.queue_free)
+		dialog.popup_centered(Vector2i(430, 140))
+
 func _build_pause_overlay() -> void:
 	_pause_overlay = TextureRect.new()
 	_pause_overlay.set_anchors_preset(Control.PRESET_CENTER)
@@ -2399,49 +2753,41 @@ func _build_character_panel() -> void:
 	#   → 那块地方改成**直接显示头像**；原来贴在角色面板右侧那排小图标（`_pet_strip`）**去掉**。
 	var inf := _slot(ATB_INFO, k)
 	_pet_slot = TextureRect.new()
-	_pet_slot.position = inf.position + Vector2(3, 2) * _ui_scale
-	_pet_slot.size = inf.size - Vector2(6, 26) * _ui_scale
+	_pet_slot.position = inf.position
+	_pet_slot.size = inf.size
 	_pet_slot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_pet_slot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_pet_slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_char_panel.add_child(_pet_slot)
 
-	# 精灵栏的**体力条** —— 老板 2026-09-27：「小神仙**满体力条**应该是可以发动技能的」。
-	# 精灵栏的**饱食度条** —— 老板 2026-09-27：
-	#   「喂食只会增加饱食度，**饱食度满了可以使用一次技能**；小神仙随时间升级，每月一级」。
-	#   所以这条不是「体力」而是「饱食度」：喂食涨、发动技能清零。
-	_pet_bar = ProgressBar.new()
-	_pet_bar.show_percentage = false
-	_pet_bar.position = Vector2(inf.position.x + 3.0 * _ui_scale,
-		inf.position.y + inf.size.y - 23.0 * _ui_scale)
-	_pet_bar.size = Vector2(inf.size.x - 6.0 * _ui_scale, 7.0 * _ui_scale)
-	_pet_bar.min_value = 0.0
-	_pet_bar.max_value = 100.0
-	_pet_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_pet_bar.add_theme_stylebox_override("background", _sb_round(
-		Color8(30, 42, 72, 210), Color8(120, 170, 230), int(round(3.0 * _ui_scale)),
-		maxi(1, int(round(1.0 * _ui_scale))), 0.0))
-	_pet_bar.add_theme_stylebox_override("fill", _sb_round(
-		Color8(120, 224, 120), Color(0, 0, 0, 0), int(round(3.0 * _ui_scale)), 0, 0.0))
-	_char_panel.add_child(_pet_bar)
+	_pet_level_star = Label.new()
+	_pet_level_star.name = "PetLevelStars"
+	_pet_level_star.position = inf.position + Vector2(2, 46) * k
+	_pet_level_star.size = Vector2(68, 16) * k
+	_pet_level_star.add_theme_font_size_override("font_size", maxi(10, int(11 * k)))
+	_pet_level_star.add_theme_color_override("font_color", Color8(255, 214, 40))
+	_pet_level_star.add_theme_color_override("font_outline_color", Color8(92, 52, 8))
+	_pet_level_star.add_theme_constant_override("outline_size", 2)
+	_pet_level_star.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_char_panel.add_child(_pet_level_star)
+	_pet_anxious = Label.new()
+	_pet_anxious.name = "PetLowEnergy"
+	_pet_anxious.text = "!"
+	_pet_anxious.position = inf.position + Vector2(inf.size.x - 19 * k, 2 * k)
+	_pet_anxious.size = Vector2(17, 22) * k
+	_pet_anxious.add_theme_font_size_override("font_size", maxi(13, int(17 * k)))
+	_pet_anxious.add_theme_color_override("font_color", Color8(245, 58, 35))
+	_pet_anxious.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_char_panel.add_child(_pet_anxious)
 
-	_char_info = Label.new()
-	_char_info.position = Vector2(inf.position.x, inf.position.y + inf.size.y
-		- 15.0 * _ui_scale)
-	_char_info.size = Vector2(inf.size.x, 14.0 * _ui_scale)
-	_char_info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_char_info.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_char_info.add_theme_font_size_override("font_size", maxi(8, int(round(9.0 * k))))
-	_char_info.add_theme_color_override("font_color", Color8(28, 46, 92))
-	_char_info.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_char_panel.add_child(_char_info)
 	# 这块就是**精灵栏位** —— 点一下打开**精灵仓库**（选一只出战）。
 	# 老板 2026-09-26：「左下角角色右侧这个头像应该是精灵的栏位，点开之后是精灵的
 	# 仓库，可以选择要使用的精灵」。
 	var pbtn := Button.new()
+	pbtn.name = "PetInventoryButton"
 	pbtn.flat = true
 	pbtn.focus_mode = Control.FOCUS_NONE
-	pbtn.tooltip_text = "小神仙仓库（选一只出战）"
+	pbtn.tooltip_text = "左键打开小神仙栏；右键操作当前出战的小神仙"
 	pbtn.position = inf.position
 	pbtn.size = inf.size
 	pbtn.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
@@ -2449,7 +2795,31 @@ func _build_character_panel() -> void:
 	pbtn.add_theme_stylebox_override("hover", _sb_round(Color8(255, 255, 255, 70),
 		Color8(255, 226, 130), int(round(5.0 * _ui_scale)), 0, maxf(1.0, 1.5 * _ui_scale)))
 	pbtn.pressed.connect(func(): _open_pet_warehouse())
+	pbtn.gui_input.connect(func(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed \
+				and Net.sim != null:
+			var me: Dictionary = Net.sim.players.get(multiplayer.get_unique_id(), {})
+			var active: Dictionary = Net.sim.active_pet(me)
+			if not active.is_empty():
+				_show_pet_menu(Net.sim.pet_token(active), pbtn.get_global_rect())
+				_pet_menu_right_opening = true
+				pbtn.accept_event())
 	_char_panel.add_child(pbtn)
+
+	_pet_skill_btn = TextureButton.new()
+	_pet_skill_btn.name = "PetSkillQuick"
+	_pet_skill_btn.focus_mode = Control.FOCUS_NONE
+	_pet_skill_btn.position = inf.position + Vector2(inf.size.x - 21.0 * k, inf.size.y - 32.0 * k)
+	_pet_skill_btn.size = Vector2(34, 34) * k
+	_pet_skill_btn.texture_normal = _tex_or_null("res://assets/pets/dushen/icon1.png")
+	_pet_skill_btn.texture_hover = _pet_skill_btn.texture_normal
+	_pet_skill_btn.texture_pressed = _tex_or_null("res://assets/pets/dushen/icon2.png")
+	_pet_skill_btn.ignore_texture_size = true
+	_pet_skill_btn.stretch_mode = TextureButton.STRETCH_SCALE
+	_pet_skill_btn.visible = false
+	_pet_skill_btn.pressed.connect(_on_pet_skill_quick)
+	_sfx(_pet_skill_btn, true)
+	_char_panel.add_child(_pet_skill_btn)
 
 	# 名字（左 navy 胶囊）
 	var nm := _slot(ATB_NAME, k)
@@ -2466,20 +2836,22 @@ func _build_character_panel() -> void:
 	_char_name.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_char_panel.add_child(_char_name)
 
-	# 右 navy 胶囊（名次）
+	# 右 navy 胶囊：出战小神仙名称
 	var st := _slot(ATB_STAT, k)
 	_char_stat = Label.new()
 	_char_stat.position = st.position
 	_char_stat.size = st.size
 	_char_stat.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_char_stat.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_char_stat.add_theme_font_size_override("font_size", maxi(9, int(round(9.5 * k))))
+	_char_stat.add_theme_font_size_override("font_size", maxi(10, int(round(12.0 * k))))
 	_char_stat.add_theme_color_override("font_color", Color8(230, 240, 255))
 	_char_stat.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_char_panel.add_child(_char_stat)
 
-	_char_bar_a = _slot_bar(ATB_BAR_A, k, Color8(255, 236, 0))
-	_char_bar_b = _slot_bar(ATB_BAR_B, k, Color8(90, 220, 90))
+	_char_bar_a = _slot_bar(ATB_BAR_A, k, Color8(255, 48, 25))
+	_char_bar_b = _slot_bar(ATB_BAR_B, k, Color8(0, 205, 245))
+	_pet_bar = _char_bar_b
+	_char_info = _char_stat
 
 	# 齿轮按钮（叠在面板左下角，略压出边框 —— 同原版）
 	var g := TextureButton.new()
@@ -2487,15 +2859,16 @@ func _build_character_panel() -> void:
 	g.ignore_texture_size = true
 	g.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 	var gs := 24.0 * _ui_scale
-	g.position = Vector2(0.0, h - gs)
+	g.position = Vector2(0.0, nm.position.y + nm.size.y * .5 - gs * .5)
 	g.size = Vector2(gs, gs)
 	g.tooltip_text = "角色情报 (C)"
 	g.pressed.connect(func(): _toggle_log())
 	_sfx(g)
 	_char_panel.add_child(g)
+	_char_identity = g
 
 
-## 在 frame_atb 的细条槽里放一条填充（原版：左条亮黄，右条空）
+## 在原版细条槽内显示体力 / 出战精灵饱食度。
 func _slot_bar(r: Rect2, k: float, fill: Color) -> ProgressBar:
 	var s := _slot(r, k)
 	var pb := ProgressBar.new()
@@ -2524,6 +2897,17 @@ func _build_bottom_right() -> void:
 	_br_box.custom_minimum_size = Vector2(w, 0)
 	_br_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_hud.add_child(_br_box)
+	_follow_btn = Button.new()
+	_follow_btn.text = "跟随角色  Home"
+	_follow_btn.tooltip_text = "回到主角身边并恢复相机跟随（Home）"
+	_follow_btn.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_follow_btn.offset_left = -175.0 * _ui_scale
+	_follow_btn.offset_right = -12.0 * _ui_scale
+	_follow_btn.offset_top = 36.0 * _ui_scale
+	_follow_btn.offset_bottom = 65.0 * _ui_scale
+	_follow_btn.visible = false
+	_follow_btn.pressed.connect(func(): _board.set_overview(false))
+	_hud.add_child(_follow_btn)
 
 	var mp := PanelContainer.new()
 	mp.custom_minimum_size = Vector2(w, UI_BR_MAP_H * _ui_scale)
@@ -2631,6 +3015,7 @@ func _set_br_page(n: int) -> void:
 	_br_collapsed = false
 	if _br_box != null:
 		_br_box.visible = true
+	_place_br_box()
 	_sync_br_pages()
 
 
@@ -2671,10 +3056,19 @@ func _sb_empty() -> StyleBoxEmpty:
 
 
 ## ⑥ 收起 / 展开整个右下角功能区
+func _place_br_box() -> void:
+	if _br_box == null: return
+	var w := UI_BR_W * _ui_scale
+	var h := (UI_BR_BAR_H + UI_BR_MARGIN) if _br_collapsed else \
+		(UI_BR_MAP_H + UI_BR_BAR_H + UI_BR_GAP + UI_BR_MARGIN)
+	var viewport_size := get_viewport().get_visible_rect().size
+	_br_box.position = Vector2(viewport_size.x - w - UI_BR_MARGIN * _ui_scale,
+		viewport_size.y - h * _ui_scale)
+
 func _toggle_br() -> void:
 	_br_collapsed = not _br_collapsed
-	if _br_box != null:
-		_br_box.visible = not _br_collapsed
+	# 只收起上方内容，底部图标条始终保留，最后一个按钮负责重新展开。
+	_place_br_box()
 	if _br_collapsed and _chat_bar != null:
 		_chat_bar.visible = false
 	_sync_br_pages()
@@ -2732,6 +3126,8 @@ func _build_action_entry() -> void:
 
 	# ---- 落点气泡 = 买 / 升级 / 放弃（是 / 否 用原版 yes_up/no_up 贴图）----
 	_pop = PanelContainer.new()
+	_pop.name = "PurchaseConfirmation"
+	_pop.set_meta("ui_title", "买地／升级／购买确认框")
 	_pop.visible = false
 	# 层级：气泡要在**商店面板之上** —— 商店购买确认复用的就是它，
 	# 否则「是/否」会被面板压住，点不到（老板 2026-09-26 反馈）
@@ -2757,13 +3153,32 @@ func _build_action_entry() -> void:
 		_pop.add_theme_stylebox_override("panel", _sb_round(
 			Color8(255, 250, 236), Color8(206, 78, 92), int(round(8.0 * _ui_scale)),
 			maxi(3, int(round(5.0 * _ui_scale))), maxf(1.5, 2.0 * _ui_scale)))
-	_hud.add_child(_pop)
+	var modal := CanvasLayer.new()
+	modal.name = "ConfirmationLayer"
+	modal.layer = 90
+	add_child(modal)
+	var blocker := Control.new()
+	blocker.name = "InputBlocker"
+	blocker.set_meta("ui_inspector_skip", true)
+	modal.add_child(blocker)
+	blocker.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	blocker.mouse_filter = Control.MOUSE_FILTER_STOP
+	blocker.visible = false
+	blocker.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseButton:
+			blocker.accept_event()
+			if event.pressed and event.button_index == MOUSE_BUTTON_RIGHT: _close_topmost())
+	modal.add_child(_pop)
+	_pop.mouse_filter = Control.MOUSE_FILTER_STOP
+	_pop.visibility_changed.connect(func(): blocker.visible = _pop.visible)
 
 	var pv := VBoxContainer.new()
 	pv.add_theme_constant_override("separation", maxi(2, int(round(3.0 * _ui_scale))))
 	_pop.add_child(pv)
 
 	_pop_text = Label.new()
+	_pop_text.name = "PromptText"
+	_pop_text.set_meta("ui_title", "确认提示正文")
 	_pop_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_pop_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_pop_text.add_theme_font_size_override("font_size", maxi(10, int(round(12.0 * _ui_scale))))
@@ -2774,6 +3189,8 @@ func _build_action_entry() -> void:
 
 	# 房型选择（原版 id 92「选择房屋」；只有一种可建房型时不出现）
 	_btn_bldtype = OptionButton.new()
+	_btn_bldtype.name = "BuildingType"
+	_btn_bldtype.set_meta("ui_title", "建筑类型选择")
 	_btn_bldtype.add_theme_font_size_override("font_size", maxi(9, int(round(11.0 * _ui_scale))))
 	_btn_bldtype.visible = false
 	pv.add_child(_btn_bldtype)
@@ -2784,8 +3201,12 @@ func _build_action_entry() -> void:
 	pv.add_child(row)
 
 	_pop_yes = _pop_btn("yes", func(): _pop_confirm())
+	_pop_yes.name = "ConfirmYes"
+	_pop_yes.set_meta("ui_title", "确认：是")
 	row.add_child(_pop_yes)
 	_pop_no = _pop_btn("no", func(): _pop_cancel())
+	_pop_no.name = "ConfirmNo"
+	_pop_no.set_meta("ui_title", "取消：否")
 	row.add_child(_pop_no)
 
 
@@ -2825,6 +3246,18 @@ func _set_dice_count(n: int) -> void:
 
 ## GO 钮被按下：把当前选择的颗数一起发出去（服务端掷骰）
 func _on_go_pressed() -> void:
+	if _dialogue_obscured(): return
+	var me: Dictionary = (_snapshot.get("players", {}) as Dictionary).get(multiplayer.get_unique_id(), {})
+	if Net.sim == null or me.is_empty():
+		return
+	if str(me.get("last_plot_kind", "")) != "":
+		_toast("请先处理当前地块")
+		return
+	var reason := Net.sim.roll_block_reason(me, float(_snapshot.get("t", 0.0)))
+	var resting := float(me.get("effects", {}).get("rest_until", 0.0)) > float(_snapshot.get("t", 0.0))
+	if reason != "" and not (resting and reason.begins_with("体力不足")):
+		_toast(reason)
+		return
 	Net.send_action("roll", [_dice_count])
 
 
@@ -2852,8 +3285,8 @@ func _start_dice_fly(faces: Array) -> void:
 		_dice_fx.append(t)
 		var side := 0.0 if n == 1 else (float(i) - float(n - 1) * 0.5)
 		_dice_fx_from.append(base + Vector2(side * 22.0 * _ui_scale, -4.0 * _ui_scale))
-		# 飞到角色头顶更高处，几颗呈扇形散开
-		_dice_fx_to.append(base + Vector2(side * 40.0 * _ui_scale, -104.0 * _ui_scale))
+		# Throw slightly left of GO, with a separate arc and per-die spread.
+		_dice_fx_to.append(base + Vector2((-58.0 + side * 40.0) * _ui_scale, -46.0 * _ui_scale))
 	_dice_fx_faces = faces.duplicate()
 	_dice_fx_t = 0.0
 	_dice_fx_state = "fly"
@@ -2895,7 +3328,7 @@ func _tick_dice(delta: float) -> void:
 
 	if _dice_fx_state == "fly":
 		var k := clampf(_dice_fx_t / DIE_FLY_TIME, 0.0, 1.0)
-		var e := 1.0 - pow(1.0 - k, 3.0)              # ease-out
+		var e := k
 		for i in range(_dice_fx.size()):
 			var t: TextureRect = _dice_fx[i]
 			if not is_instance_valid(t):
@@ -2903,14 +3336,13 @@ func _tick_dice(delta: float) -> void:
 			# 抛物线：掷出去的骰子**先上抛再落下**（sin(k·π) 两端为 0、中间最高，
 			# 正好是一条弧）。老板 2026-09-26：「骰子会有抛物线落下的感觉」。
 			var arc := sin(k * PI) * DIE_FLY_ARC * _ui_scale
-			t.position = (_dice_fx_from[i] as Vector2).lerp(_dice_fx_to[i], e) \
-				+ Vector2(0.0, -arc)
 			t.rotation = TAU * 2.0 * e * (1.0 if i % 2 == 0 else -1.0)
 			if not _tex_spin.is_empty():
 				t.texture = _tex_spin[int(_dice_fx_t * DIE_SPIN_FPS) % _tex_spin.size()]
 			var s := (0.7 + 0.3 * e) * DIE_FLY_SIZE * _ui_scale
 			t.size = Vector2(s, s)
 			t.pivot_offset = t.size * 0.5
+			t.position = (_dice_fx_from[i] as Vector2).lerp(_dice_fx_to[i], e) + Vector2(0.0, -arc) - t.size * 0.5
 		if k >= 1.0:
 			_dice_fx_state = "hold"
 			_dice_fx_t = 0.0
@@ -2969,9 +3401,9 @@ func _close_position_bound_ui() -> void:
 	if _lotto != null and _lotto.visible:
 		_lotto.close()
 	if _casino != null and _casino.visible:
-		_casino.close()
+		_on_casino_action("exit", 0)
 	if _auction != null and _auction.visible:
-		_auction.close()
+		_on_auction_action("pass", 0)
 	if shop_open():
 		_close_shop()                       # 卡片商店 / 精灵屋 / 仓库
 	# ⚠️ `_stock`（股票）**故意不关** —— 它跟位置无关
@@ -2983,6 +3415,19 @@ func _close_position_bound_ui() -> void:
 ## 原版 `Info.txt` 62 的批注也是「点击右键界面消失」。
 ## ⚠️ 顺序很重要 —— 菜单 / 气泡这类**临时浮层**先关，整块的商店面板最后关。
 func _close_topmost() -> bool:
+	if is_instance_valid(_settlement) and _settlement.visible: return true
+	if is_instance_valid(_view_menu) and _view_menu.visible:
+		_view_menu.hide()
+		return true
+	if is_instance_valid(_data_view) and _data_view.visible:
+		_data_view.hide()
+		return true
+	if _event_dialog != null and _event_dialog.visible:
+		_next_event_result()
+		return true
+	if _tile_info_panel != null and _tile_info_panel.visible:
+		_tile_info_panel.hide()
+		return true
 	if _chat_input != null and _chat_input.visible and _chat_input.has_focus():
 		_chat_input.release_focus()
 		return true
@@ -2990,22 +3435,29 @@ func _close_topmost() -> bool:
 		_pop_cancel()
 		return true
 	if _house_pick != null:
+		_house_pick_dismissed_idx = int(Net.sim.players[multiplayer.get_unique_id()].get("last_plot", -1)) if Net.sim != null else -1
 		_close_house_picker()
 		return true
 	if _lotto != null and _lotto.visible:
 		_lotto.close()
 		return true
 	if _auction != null and _auction.visible:
-		_auction.close()
+		_on_auction_action("pass", 0)
 		return true
 	if _casino != null and _casino.visible:
-		_casino.close()
+		_on_casino_action("exit", 0)
 		return true
-	if _stock != null and _stock.visible:
+	if _stock != null and _stock.visible and _stock.menu_open():
 		_stock.close_all()
 		return true
 	if _card_confirm_id != "":
 		_close_card_confirm()
+		return true
+	if _pet_target_pending:
+		_clear_card_target_mode()
+		return true
+	if is_instance_valid(_pet_menu):
+		_hide_pet_menu()
 		return true
 	if _card_menu != null and _card_menu.visible:
 		_hide_card_menu()
@@ -3024,12 +3476,15 @@ func _pop_confirm() -> void:
 	if _pop_mode == "buy":
 		Net.send_action("buy")
 	elif _pop_mode == "upgrade":
-		# ⚠️ 老板 2026-09-27：「建造的时候建筑物选择界面应该是**横排的卡片**，
-		#   不是现在那种下拉框」→ 空地首次建设时弹 `_open_house_picker()`，
-		#   选完把房型随 `upgrade` 一起发出去（`net.gd` 的 `upgrade` 分支已经支持 args[0]）。
-		if _btn_bldtype != null and _btn_bldtype.visible and _btn_bldtype.item_count > 0:
-			_pop_cancel()
-			_open_house_picker({"options": Net.sim.buildable_types()})
+		if Net.sim != null and Net.sim.players.has(multiplayer.get_unique_id()) \
+				and Net.sim.plots.has(int(Net.sim.players[multiplayer.get_unique_id()]["last_plot"])) \
+				and int(Net.sim.plots[int(Net.sim.players[multiplayer.get_unique_id()]["last_plot"])].get("level", 0)) == 0:
+			var me: Dictionary = Net.sim.players[multiplayer.get_unique_id()]
+			_pop.hide()
+			_pop_mode = ""
+			_house_pick_dismissed_idx = -1
+			_open_house_picker({"options": Net.sim.buildable_types(), "idx": int(me["last_plot"]),
+				"pid": int(me["id"]), "free": int(me["effects"]["free_upgrade_steps"]) > 0})
 		else:
 			Net.send_action("upgrade")
 	elif _pop_mode == "card":
@@ -3142,7 +3597,7 @@ func _sync_pet_strip(me: Dictionary) -> void:
 		var e: Dictionary = ps[i]
 		var pid := str(e.get("id", ""))
 		var lv := int(e.get("level", 1))
-		t.texture = _tex_or_null(Rules.pet_art(pid, "face", lv))
+		t.texture = _tex_or_null(Rules.pet_art(pid, "mini", 1))
 		t.visible = t.texture != null
 		t.size = Vector2(px, px)
 		t.position = Vector2(float(i) * (px + gap), 0.0)
@@ -3315,11 +3770,14 @@ func _sync_card_hand(me: Dictionary) -> void:
 		var g: Dictionary = groups[i]
 		var cid := str(g["id"])
 		var box := PanelContainer.new()
+		box.set_meta("ui_inspector_skip", true) # Dynamic slots cannot share persisted layout IDs.
 		box.add_theme_stylebox_override("panel", _sb_round(
 			Color8(246, 250, 255), Color8(10, 60, 170), int(round(6.0 * _ui_scale)),
 			maxi(1, int(round(2.0 * _ui_scale))), maxf(1.0, 1.6 * _ui_scale)))
 		box.position = Vector2(x0 + step * float(i), y0)
 		box.size = Vector2(cw, cw)
+		box.pivot_offset = Vector2(cw * .5, cw)
+		box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_card_bar.add_child(box)
 
 		var img := TextureRect.new()
@@ -3331,18 +3789,26 @@ func _sync_card_hand(me: Dictionary) -> void:
 
 		# 数量角标（同种多张时）
 		var cnt: Label = null
-		if int(g["n"]) > 1:
+		if int(g["n"]) > 1 or cid.begins_with("boost:"):
 			cnt = Label.new()
-			cnt.text = "×%d" % int(g["n"])
-			cnt.add_theme_font_size_override("font_size", maxi(9, int(round(11.0 * _ui_scale))))
+			cnt.text = ("★强化 " if cid.begins_with("boost:") else "") + ("×%d" % int(g["n"]) if int(g["n"]) > 1 else "")
+			cnt.add_theme_font_size_override("font_size", maxi(17, int(round(22.0 * _ui_scale))))
 			cnt.add_theme_color_override("font_color", Color8(255, 245, 160))
 			cnt.add_theme_color_override("font_outline_color", Color8(20, 20, 40))
 			cnt.add_theme_constant_override("outline_size", 4)
-			# PanelContainer 会把子节点撑满 → 用对齐把角标压到右下
-			cnt.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			# 原版叠加张数位于左下角。
+			cnt.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 			cnt.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 			cnt.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			box.add_child(cnt)
+			var badge_layer := Control.new()
+			badge_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			box.add_child(badge_layer)
+			cnt.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+			cnt.offset_left = 5.0 * _ui_scale
+			cnt.offset_top = -29.0 * _ui_scale
+			cnt.offset_right = cw - 5.0 * _ui_scale
+			cnt.offset_bottom = -4.0 * _ui_scale
+			badge_layer.add_child(cnt)
 
 		var btn := Button.new()
 		btn.flat = true
@@ -3357,11 +3823,13 @@ func _sync_card_hand(me: Dictionary) -> void:
 		var code := 0
 		if Net.sim != null:
 			code = Net.sim.card_usable(multiplayer.get_unique_id(), cid)
-		btn.tooltip_text = "%s\n%s\n（原版 String.txt %d）%s" % [
-			Rules.card_name(cid), Rules.card_desc(cid), 9000 + _card_n(cid),
+		btn.tooltip_text = "%s\n%s%s" % [
+			Rules.card_name(cid), Rules.card_desc(cid),
 			"" if code == 0 else "\n⚠ 现在用不了：%s" % Rules.ui_string(code)]
 		var idx := i
 		btn.pressed.connect(func(): _on_card_clicked(idx))
+		btn.mouse_entered.connect(func(): _card_hover(idx, true))
+		btn.mouse_exited.connect(func(): _card_hover(idx, false))
 		box.add_child(btn)
 
 		# ---- 锁定标志：原版 `uitex/other/clamp.tga`（= 卡片夹子图标）----
@@ -3372,20 +3840,58 @@ func _sync_card_hand(me: Dictionary) -> void:
 		lk.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		lk.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		lk.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		lk.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
-		lk.offset_top = -20.0 * _ui_scale
-		lk.offset_bottom = -2.0 * _ui_scale
+		# A free Control wrapper prevents PanelContainer from stretching the icon.
+		var overlay := Control.new()
+		overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.add_child(overlay)
+		lk.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+		var clamp_size := minf(cw * .24, 24.0 * _ui_scale)
+		lk.offset_left = -clamp_size * .5
+		lk.offset_right = clamp_size * .5
+		lk.offset_top = -clamp_size - 3.0 * _ui_scale
+		lk.offset_bottom = -3.0 * _ui_scale
 		lk.visible = bool((me.get("card_locks", {}) as Dictionary).get(cid, false))
-		box.add_child(lk)
+		overlay.add_child(lk)
 
 		# 压暗**只留给「此刻条件不满足」**这一种情况（锁定改用夹子图标）
 		if code != 0:
 			img.modulate = Color(0.62, 0.62, 0.68, 0.72)
-		_card_slots.append({"box": box, "img": img, "btn": btn, "cnt": cnt, "code": code})
+		_card_slots.append({"box": box, "img": img, "btn": btn, "cnt": cnt, "code": code, "lock": lk, "base_modulate": img.modulate})
 		_card_ids.append(cid)
+	_sync_card_combination_visuals()
 
+
+func _sync_card_combination_visuals() -> void:
+	for i in range(_card_slots.size()):
+		var slot: Dictionary = _card_slots[i]
+		var cid := str(_card_ids[i])
+		var eligible := (_card_pending == "gem" and Rules.can_gem_combine(cid)) \
+			or (_card_pending == "copy" and cid != "copy")
+		var color := Color(0.45, 0.45, 0.49, 0.58) if _card_pending in ["gem", "copy"] and not eligible \
+			else Color(1.18, 1.14, 0.92, 1.0) if eligible else \
+				Color(0.62, 0.62, 0.68, 0.72) if int(slot.get("code", 0)) != 0 else Color.WHITE
+		slot["base_modulate"] = color
+		(slot["img"] as TextureRect).modulate = color
+		(slot["box"] as Control).z_index = 2 if eligible else 0
+
+
+func _card_hover(slot: int, entered: bool) -> void:
+	if slot < 0 or slot >= _card_slots.size(): return
+	var card: Dictionary = _card_slots[slot]
+	var box: Control = card.box
+	if not is_instance_valid(box): return
+	var previous: Variant = box.get_meta("hover_tween") if box.has_meta("hover_tween") else null
+	if previous is Tween and previous.is_valid(): previous.kill()
+	box.z_index = 5 if entered else 0
+	var tween := create_tween().set_parallel(true)
+	box.set_meta("hover_tween", tween)
+	tween.tween_property(box, "scale", Vector2.ONE * (1.14 if entered else 1.0), .12)
+	var tint: Color = card.base_modulate
+	if entered: tint = tint.lerp(Color(1.12, 1.12, 1.08, 1.0), .55)
+	tween.tween_property(card.img, "modulate", tint, .12)
 
 func _card_n(cid: String) -> int:
+	cid = Rules.base_card_id(cid)
 	var arr: Array = Rules.card_index.get("cards", [])
 	for e in arr:
 		if str((e as Dictionary).get("id", "")) == cid:
@@ -3401,10 +3907,60 @@ func _card_face(cid: String) -> Texture2D:
 	return r if r is Texture2D else null
 
 
+func _clear_used_card() -> void:
+	if _used_card_tween != null and _used_card_tween.is_valid(): _used_card_tween.kill()
+	if is_instance_valid(_used_card_face): _used_card_face.queue_free()
+	_used_card_face = null
+
+
+func _show_used_card(cid: String, pid: int) -> void:
+	if screen != Screen.GAME or _hud == null: return
+	var face := _card_face(cid)
+	if face == null: return
+	_clear_used_card()
+	var initial := Rect2(get_viewport().get_visible_rect().size * .5, Vector2(80, 80) * _ui_scale)
+	if pid == multiplayer.get_unique_id():
+		var slot := _card_ids.find(cid)
+		if slot >= 0 and slot < _card_slots.size(): initial = _card_slots[slot].box.get_global_rect()
+	elif _board != null:
+		var positions: Dictionary = _board.player_screen_positions()
+		if positions.has(pid): initial.position = positions[pid]
+	_used_card_face = TextureRect.new()
+	_used_card_face.name = "UsedCardPresentation"
+	_used_card_face.texture = face
+	_used_card_face.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_used_card_face.stretch_mode = TextureRect.STRETCH_SCALE
+	_used_card_face.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_used_card_face.z_index = 20
+	_hud.add_child(_used_card_face)
+	_used_card_face.position = initial.position
+	_used_card_face.size = initial.size
+	var target_size := Vector2(200, 280) * _ui_scale
+	var target := Vector2(0, minf(get_viewport().get_visible_rect().size.y * .36,
+		_char_panel.get_global_rect().position.y - target_size.y - 12 * _ui_scale))
+	_used_card_tween = create_tween()
+	_used_card_tween.set_parallel(true)
+	_used_card_tween.tween_property(_used_card_face, "position", target, .4).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	_used_card_tween.tween_property(_used_card_face, "size", target_size, .4).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	_used_card_tween.set_parallel(false)
+	_used_card_tween.tween_interval(1.4)
+	_used_card_tween.tween_property(_used_card_face, "modulate:a", 0.0, .35)
+	_used_card_tween.tween_callback(_clear_used_card)
+
+
 ## 点了一张卡 → 弹菜单（使用 / 锁定 / 丢弃）
 func _on_card_clicked(slot: int) -> void:
 	Audio.play_sfx(Audio.SFX_UI_CLICK)
 	if slot < 0 or slot >= _card_slots.size():
+		return
+	if _card_pending in ["copy", "gem"]:
+		var choice := str(_card_ids[slot])
+		if choice == _card_pending or (_card_pending == "gem" and not Rules.can_gem_combine(choice)):
+			_toast("请选择高亮的可强化卡片" if _card_pending == "gem" else "请选择另一张手牌")
+			return
+		var command := _card_pending
+		_clear_card_target_mode()
+		Net.send_action("card", [command, -1, choice])
 		return
 	_card_menu_at = slot
 	var box: Control = (_card_slots[slot] as Dictionary)["box"]
@@ -3417,12 +3973,12 @@ func _on_card_clicked(slot: int) -> void:
 	# 而不是让玩家对着「点了没反应」发呆（老板 2026-09-26 反馈）
 	if code != 0 and not locked:
 		_toast("「%s」用不了：%s" % [Rules.card_name(cid), Rules.ui_string(code)])
-	var blocked := locked or code != 0
+	var blocked := code != 0
 	for i in range(_card_menu_btns.size()):
 		var b: Button = _card_menu_btns[i]
 		b.text = labels[i]
-		# 「锁定」永远可用；「使用」「喂食」在锁定 / 条件不满足时禁用
-		b.disabled = blocked and i != 0
+		# 锁定只保护满栏时不被挤掉，不影响使用、喂食或被抢夺。
+		b.disabled = blocked if i == 1 else false
 	var mh := _card_menu.get_combined_minimum_size().y
 	if mh <= 0.0:
 		mh = 84.0 * _ui_scale
@@ -3462,7 +4018,7 @@ func _on_card_menu(which: String) -> void:
 				# 会动到**别人的已有地产** → 先弹原版「是 / 否」二次确认
 				# （老板 2026-09-26 反馈：购地卡使用之后应该出一个二次确认框）
 				_open_card_confirm(cid)
-			elif Net.sim.card_needs_player(cid):
+			elif Net.sim.card_target(cid) in ["player", "road", "building"]:
 				# 需要点对手的卡 → 先进「选目标」模式（原版 String.txt 1101「请选择对手」）
 				_set_card_target_mode(cid)
 			elif Net.sim.card_target(cid) == "stock":
@@ -3474,6 +4030,15 @@ func _on_card_menu(which: String) -> void:
 				_card_hint.visible = true
 				if _stock != null:
 					_stock.begin_pick(tip)
+			elif cid in ["copy", "gem"]:
+				_card_pending = cid
+				_card_hint.text = "宝石卡 → 点击高亮卡片组合（右键取消）" if cid == "gem" else "复制卡 → 点击要复制的另一张手牌（右键或 ESC 取消）"
+				_card_hint.visible = true
+				_sync_card_combination_visuals()
+			elif cid == "rebuild":
+				var me: Dictionary = Net.sim.players[multiplayer.get_unique_id()]
+				_open_house_picker({"options": ["special1", "special2", "special3"],
+					"idx": int(me.tile), "pid": int(me.id), "card": "rebuild"})
 			else:
 				Net.send_action("card", [cid])
 		"lock":
@@ -3502,8 +4067,8 @@ func _on_card_menu(which: String) -> void:
 ## ⚠️ 我上一版做的是「屏幕中间弹一个目标选择器」，那不是原版的样子 → **已撤掉**。
 func _set_card_target_mode(cid: String) -> void:
 	_card_pending = cid
-	_card_hint.text = "%s  →  %s（脚下亮绿圈的人可以选）" % [Rules.card_name(cid),
-		Rules.card_target_prompt("player")]
+	_card_hint.text = "%s → %s（右键或 ESC 取消）" % [Rules.card_name(cid),
+		("请选择亮绿圈的建筑地块" if Net.sim.card_target(cid) == "building" else "请选择亮绿圈的路点") if Net.sim.card_target(cid) in ["road", "building"] else "请选择脚下亮绿圈的对手"]
 	_card_hint.visible = true
 	_sync_target_highlight()
 
@@ -3512,21 +4077,38 @@ func _set_card_target_mode(cid: String) -> void:
 func _sync_target_highlight() -> void:
 	if _board == null:
 		return
+	if _pet_target_pending and Net.sim != null:
+		_board.set_road_targets([])
+		_board.set_card_targets(Net.sim.pet_skill_candidates(multiplayer.get_unique_id()), _hover_player)
+		return
 	if _card_pending == "" or Net.sim == null:
 		_board.set_card_targets([], -1)
+		_board.set_road_targets([])
 		return
-	_board.set_card_targets(Net.sim.card_target_candidates(multiplayer.get_unique_id()),
+	if Net.sim.card_target(_card_pending) in ["road", "building"]:
+		_board.set_card_targets([], -1)
+		_board.set_road_targets([])
+		_board.set_road_targets(Net.sim.card_map_candidates(multiplayer.get_unique_id(), _card_pending))
+		return
+	_board.set_road_targets([])
+	if not Net.sim.card_needs_player(_card_pending):
+		_board.set_card_targets([], -1)
+		return
+	_board.set_card_targets(Net.sim.card_target_candidates(multiplayer.get_unique_id(), _card_pending),
 		_hover_player)
 
 
 ## 鼠标位置 → 指到了哪个玩家（用屏幕距离判，和棋盘选格子同一套思路）
-func _pick_hover_player() -> int:
-	if _card_pending == "" or _board == null or Net.sim == null:
+func _pick_hover_player(mouse: Vector2 = Vector2.INF) -> int:
+	if (_card_pending == "" and not _pet_target_pending) or _board == null or Net.sim == null:
 		return -1
-	var m := get_viewport().get_mouse_position()
+	var m := get_viewport().get_mouse_position() if mouse == Vector2.INF else mouse
 	var best := -1
 	var best_d := 90.0 * _ui_scale
 	for id in _board.player_screen_positions().keys():
+		var candidates := Net.sim.pet_skill_candidates(multiplayer.get_unique_id()) if _pet_target_pending \
+			else Net.sim.card_target_candidates(multiplayer.get_unique_id(), _card_pending)
+		if not candidates.has(int(id)): continue
 		var d: float = (m as Vector2).distance_to(_board.player_screen_positions()[id])
 		if d < best_d:
 			best_d = d
@@ -3536,11 +4118,14 @@ func _pick_hover_player() -> int:
 
 func _clear_card_target_mode() -> void:
 	_card_pending = ""
+	_sync_card_combination_visuals()
+	_pet_target_pending = false
 	_hover_player = -1
 	if _card_hint != null:
 		_card_hint.visible = false
 	if _board != null:
 		_board.set_card_targets([], -1)
+		_board.set_road_targets([])
 	if _avatar_rows.size() > 0:
 		_sync_avatar_column(_player_ids(), _snapshot.get("players", {}), multiplayer.get_unique_id())
 
@@ -3557,8 +4142,8 @@ func _open_card_confirm(cid: String) -> void:
 	_pop_mode = "card"
 	_btn_bldtype.visible = false
 	var price := Net.sim.plot_value(lidx)
-	_pop_text.text = "%s\n%s\n%d 元 · 是否购买？" % [
-		Rules.card_name(cid), _plot_name(lidx), price]
+	_pop_text.text = "%s\n%s\n%s" % [Rules.card_name(cid), _plot_name(lidx),
+		("免费强占，是否使用？" if cid == "tudigong" else "%d 元 · 是否购买？" % price)]
 	_pop.visible = true
 
 
@@ -3578,14 +4163,22 @@ func _player_ids() -> Array:
 
 ## 点了某个玩家的头像（只有选目标模式下有效）
 func _on_avatar_clicked(pid: int) -> void:
+	if _pet_target_pending:
+		if Net.sim == null or not Net.sim.pet_skill_candidates(multiplayer.get_unique_id()).has(pid): return
+		_clear_card_target_mode()
+		Net.send_action("pet_skill", [pid])
+		return
 	if _card_pending == "":
+		return
+	if Net.sim == null or not Net.sim.card_needs_player(_card_pending) or not Net.sim.card_target_candidates(multiplayer.get_unique_id(), _card_pending).has(pid):
 		return
 	if pid == multiplayer.get_unique_id():
 		_toast("不能对自己用这张卡")
 		return
 	Audio.play_sfx(Audio.SFX_UI_CONFIRM)
-	Net.send_action("card", [_card_pending, pid])
+	var card := _card_pending
 	_clear_card_target_mode()
+	Net.send_action("card", [card, pid])
 
 
 ## ⚠ 仅供 `--uishot` / `--demo` 验收：直接往本机玩家手牌里塞卡。
@@ -3610,7 +4203,7 @@ func _show_step_picker() -> void:
 	_step_picker.visible = true
 	_step_picker_i = -1
 	_sync_step_picker()
-	_toast("骰子卡：请选择前进步数")
+	_toast("请选择前进步数")
 
 
 ## 把步数选择器贴到**角色头顶**（原版截图里就在棋盘上角色附近）
@@ -3623,7 +4216,9 @@ func _sync_step_picker() -> void:
 		return
 	var p: Vector2 = pos[me]
 	var sz := _step_picker.get_combined_minimum_size()
-	_step_picker.position = Vector2(p.x - sz.x * 0.5, p.y - sz.y - 10.0 * _ui_scale)
+	var vp := get_viewport().get_visible_rect().size
+	_step_picker.position = Vector2(clampf(p.x - sz.x * .5, 8 * _ui_scale, vp.x - sz.x - 8 * _ui_scale),
+		maxf(38 * _ui_scale, p.y - sz.y - 72.0 * _ui_scale))
 
 
 func _on_step_picked(n: int) -> void:
@@ -3644,6 +4239,8 @@ var _shop: Control
 var _shop_mode: String = ""              # "" / "pethouse" / "cardshop" / "pets"
 var _shop_sig: String = ""               # 变化检测：换一次内容就重建
 var _shop_nodes: Array = []
+var _pet_menu: PanelContainer = null
+var _pet_menu_right_opening := false
 var _shop_stock: Array = []              # 货架上的 id 列表
 var _shop_bg: TextureRect
 var _shop_panel: TextureRect             # 持有面板（只有 pethouse 模式显示）
@@ -3656,16 +4253,19 @@ var _shop_pending: String = ""          # 待确认的购买："pet:<id>" / "car
 const SHOP_CREDIT_RECT := {"cardshop": [84, 80, 88, 23], "pethouse": [78, 42, 100, 20]}
 const SHOP_NATIVE := 256.0
 const SHOP_BASE_MAX := 2.2                      # 两块并排（精灵屋）时的上限
-const SHOP_BASE_MAX_ONE := 2.8                  # 单块（卡片商店）可以更大
+const SHOP_BASE_MAX_PET := 1.6
+const SHOP_BASE_MAX_ONE := 1.6                  # 两种商店使用相同的原版256像素基准
 
 
 func _build_shop() -> void:
 	_shop = Control.new()
+	_shop.name = "ShopRoot"
 	_shop.visible = false
 	_shop.mouse_filter = Control.MOUSE_FILTER_STOP
 	_hud.add_child(_shop)
 
 	_shop_panel = TextureRect.new()
+	_shop_panel.name = "OwnedPetPanel"
 	_shop_panel.texture = _tex_or_null(Rules.shop_ui_path("pethouse_panel.png"))
 	_shop_panel.stretch_mode = TextureRect.STRETCH_SCALE
 	_shop_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -3673,12 +4273,14 @@ func _build_shop() -> void:
 	_shop.add_child(_shop_panel)
 
 	_shop_bg = TextureRect.new()
+	_shop_bg.name = "ShopBackground"
 	_shop_bg.stretch_mode = TextureRect.STRETCH_SCALE
 	_shop_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_shop.add_child(_shop_bg)
 
 	# 顶部浮动条（原版 uitex/pethouse/浮动条.tga / other/cardshop1.tga）——放「您有 N 点券」
 	_shop_credit = Label.new()
+	_shop_credit.name = "CreditAmount"
 	_shop_credit.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_shop_credit.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_shop_credit.add_theme_color_override("font_color", Color8(255, 255, 255))
@@ -3688,6 +4290,7 @@ func _build_shop() -> void:
 	_shop.add_child(_shop_credit)
 
 	_shop_hint = Label.new()
+	_shop_hint.name = "ShopHint"
 	_shop_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_shop_hint.add_theme_color_override("font_color", Color8(255, 240, 180))
 	_shop_hint.add_theme_color_override("font_outline_color", Color8(20, 20, 40))
@@ -3745,9 +4348,33 @@ func _open_pet_warehouse() -> void:
 	_open_shop("warehouse")
 
 
+func _on_pet_skill_quick() -> void:
+	if Net.sim == null:
+		return
+	var reason := Net.sim.pet_skill_block_reason(multiplayer.get_unique_id())
+	if reason != "":
+		_toast(reason)
+		return
+	var skill_pet := str(Net.sim.active_pet(Net.sim.players[multiplayer.get_unique_id()]).get("id", ""))
+	if skill_pet in ["hutu", "qiongshen"]:
+		var candidates := Net.sim.pet_skill_candidates(multiplayer.get_unique_id())
+		if candidates.is_empty():
+			_toast("附近没有可施加技能的对手")
+			return
+		_close_shop()
+		_pet_target_pending = true
+		_card_hint.text = "%s：请选择脚下亮绿圈的对手（右键或 ESC 取消）" % Net.sim.pet_name(skill_pet)
+		_card_hint.visible = true
+		_sync_target_highlight()
+		_sync_avatar_column(_player_ids(), _snapshot.get("players", {}), multiplayer.get_unique_id())
+		return
+	Net.send_action("pet_skill")
+
+
 func _close_shop() -> void:
 	if _shop == null:
 		return
+	_hide_pet_menu()
 	_shop.visible = false
 	_shop_mode = ""
 	_shop_sig = ""
@@ -3757,12 +4384,22 @@ func _close_shop() -> void:
 func _sync_shop() -> void:
 	if _shop == null or not _shop.visible:
 		return
+	if _shop_mode == "cardshop" and Net.sim != null:
+		_shop_stock = Net.sim._shop_stock(multiplayer.get_unique_id())
 	var my := multiplayer.get_unique_id()
 	var me: Dictionary = (_snapshot.get("players", {}) as Dictionary).get(my, {})
 	var credit := int(me.get("credit", 0))
 	var owned: Array = me.get("pets", [])
+	# 精灵屋货架由 pethouse_open / buy_pet 事件更新。此处的快照可能是上一帧，
+	# 不能覆盖刚收到的新货架，否则再次进店会显示上一次的空位。
 	# 变化检测：点券 / 持有 / 货架 变了才重建
-	var sig := "%s|%d|%s|%s" % [_shop_mode, credit, str(owned), str(_shop_stock)]
+	# Fullness changes continuously. Recreating buttons between mouse-down and
+	# mouse-up loses the click; only rebuild when visible roster data changes.
+	var roster: Array = []
+	for pet in owned:
+		roster.append([pet.get("uid", pet.get("id", "")), int(pet.get("level", 1))])
+	var sig := "%s|%d|%s|%s|%s" % [_shop_mode,
+		0 if _shop_mode == "warehouse" else credit, str(roster), str(_shop_stock), str(me.get("pet_active", ""))]
 	if sig == _shop_sig:
 		return
 	_shop_sig = sig
@@ -3772,6 +4409,7 @@ func _sync_shop() -> void:
 func _render_shop(me: Dictionary, credit: int, owned: Array) -> void:
 	for n in _shop_nodes:
 		if is_instance_valid(n):
+			_shop.remove_child(n)
 			(n as Node).queue_free()
 	_shop_nodes.clear()
 
@@ -3783,12 +4421,14 @@ func _render_shop(me: Dictionary, credit: int, owned: Array) -> void:
 	#   已持有的小神仙改为显示在**左下角角色面板旁边**（同原版截图）。
 	var cols := 1
 	var fit := (vp.x * 0.94) / float(cols * SHOP_NATIVE)
-	_shop_base = minf(SHOP_BASE_MAX_ONE, fit / maxf(_ui_scale, 0.001)) * _ui_scale
+	_shop_base = minf(SHOP_BASE_MAX_PET if two else SHOP_BASE_MAX_ONE, fit / maxf(_ui_scale, 0.001)) * _ui_scale
+	if _shop_mode == "warehouse": _shop_base = 1.3 * _ui_scale
 	# 同时别把底下的手牌条压住（原版底图 256 高，留 150 native 给 HUD）
 	_shop_base = minf(_shop_base, (vp.y - 150.0 * _ui_scale) / SHOP_NATIVE)
 	var side := SHOP_NATIVE * _shop_base
 	var total := side * float(cols)
 	var x0 := (vp.x - total) * 0.5
+	if _shop_mode == "warehouse": x0 = (vp.x - 223.0 * _shop_base) * 0.5
 	var y0 := (vp.y - side) * 0.5 - 14.0 * _ui_scale
 
 	# 只有一块底图：小神仙商店 / 卡片商店 / **精灵仓库**（三张都是原版图）
@@ -3826,15 +4466,16 @@ func _render_shop(me: Dictionary, credit: int, owned: Array) -> void:
 		# 精灵仓库：列出**持有**的小神仙，点一只 → 设为「出战」
 		_shop_credit.visible = false          # 这张底图自带「小神仙」标题
 		_place_owned_pets(shop_x, shop_y, owned)
-		_shop_hint.text = "点一只小神仙设为出战 ｜ 右键 / ESC 关闭"
+		_shop_hint.text = "点小神仙选择使用或放生 ｜ 技能在左下角发动"
 	elif two:
 		_shop_credit.visible = true
 		_shop_stock = _pet_shop_stock()
 		var list: Array = slots
 		for i in range(mini(list.size(), _shop_stock.size())):
 			var s: Dictionary = list[i]
-			_add_pet_slot(shop_x, shop_y, s, str(_shop_stock[i]), credit)
-		_shop_hint.text = "%s ｜ 右键 / ESC 关闭" % Rules.info_string(202).replace("\n", "")
+			if str(_shop_stock[i]) != "":
+				_add_pet_slot(shop_x, shop_y, s, str(_shop_stock[i]), credit)
+		_shop_hint.text = "点击小神仙头像购买 ｜ 右键 / ESC 关闭"
 	else:
 		_shop_credit.visible = true
 		if _shop_stock.is_empty() or _shop_stock.size() != Sim.CARD_SHOP_SLOTS:
@@ -3847,6 +4488,7 @@ func _render_shop(me: Dictionary, credit: int, owned: Array) -> void:
 			_add_card_slot(shop_x, shop_y, arr[i], str(_shop_stock[i]), credit)
 		_shop_hint.text = "右键 / ESC 关闭"
 
+	_shop_hint.visible = _shop_mode == "cardshop"
 	_shop_hint.add_theme_font_size_override("font_size", maxi(10, int(round(12.0 * _ui_scale))))
 	_shop_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	# 贴在面板**左上角**：放屏幕顶会跟 toast 打架，放底部会压手牌条
@@ -3874,7 +4516,7 @@ func _pet_shop_stock() -> Array:
 
 
 func _shop_stock_for_me() -> Array:
-	return Net.sim._shop_stock() if Net.sim != null else []
+	return Net.sim._shop_stock(multiplayer.get_unique_id()) if Net.sim != null else []
 
 
 func _add_pet_slot(ox: float, oy: float, slot: Dictionary, pet_id: String, credit: int) -> void:
@@ -3885,7 +4527,8 @@ func _add_pet_slot(ox: float, oy: float, slot: Dictionary, pet_id: String, credi
 	var bar: Array = slot.get("bar", [])
 	var price := int(r.get("buy_price", 0))
 	var art := TextureRect.new()
-	art.texture = _tex_or_null(Rules.pet_art(pet_id, "big", 1))
+	# Native shop 44f150 asks 4328d0(type, 0, 0): original 10.tga.
+	art.texture = _tex_or_null(Rules.pet_art(pet_id, "mini", 1))
 	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -3894,18 +4537,49 @@ func _add_pet_slot(ox: float, oy: float, slot: Dictionary, pet_id: String, credi
 	_shop.add_child(art)
 	_shop_nodes.append(art)
 
-	# 原版标签条 = 「名字  价格」（价格就是数字，**没有「点券」二字**）
-	var txt := "%s  %d" % [str(r.get("name", pet_id)), price]
-	var owned_lv := 0
-	var me: Dictionary = (_snapshot.get("players", {}) as Dictionary).get(
-		multiplayer.get_unique_id(), {})
-	for e in me.get("pets", []):
-		if str((e as Dictionary).get("id", "")) == pet_id:
-			owned_lv = int((e as Dictionary).get("level", 1))
-	if owned_lv > 0:
-		txt = "%s  Lv%d → %d" % [str(r.get("name", pet_id)), owned_lv, price]
-	_shop_nodes.append(_slot_button(ox, oy, bar, txt, credit >= price, func() -> void:
-		_confirm_buy_pet(pet_id)))
+	# The portrait is the actual purchase target. The original name/price strip
+	# is display only; separate fields keep the amount inside its right cell.
+	var pick := Button.new()
+	pick.name = "BuyPet_" + pet_id
+	pick.flat = true
+	pick.focus_mode = Control.FOCUS_NONE
+	pick.position = art.position
+	pick.size = art.size
+	pick.tooltip_text = "%s · %d 点券（点击头像购买）" % [str(r.get("name", pet_id)), price]
+	pick.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
+	pick.add_theme_stylebox_override("hover", _sb_round(Color8(255, 255, 255, 45),
+		Color8(255, 218, 88), int(round(5.0 * _ui_scale)), 0, maxf(1.0, 2.0 * _ui_scale)))
+	pick.disabled = credit < price
+	pick.pressed.connect(func(): _confirm_buy_pet(pet_id))
+	_shop.add_child(pick)
+	_shop_nodes.append(pick)
+	if not pick.disabled: _sfx(pick)
+	var left := Label.new()
+	left.name = "PetName_" + pet_id
+	left.text = str(r.get("name", pet_id))
+	left.clip_text = true
+	left.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	left.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	left.add_theme_font_size_override("font_size", maxi(9, int(round(10.5 * _shop_base))))
+	left.add_theme_color_override("font_color", Color8(40, 30, 60))
+	left.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	left.position = Vector2(ox + float(bar[0]) * _shop_base, oy + float(bar[1]) * _shop_base)
+	left.size = Vector2(63, float(bar[3])) * _shop_base
+	_shop.add_child(left)
+	_shop_nodes.append(left)
+	var price_label := Label.new()
+	price_label.name = "PetPrice_" + pet_id
+	price_label.text = str(price)
+	price_label.clip_text = true
+	price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	price_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	price_label.add_theme_font_size_override("font_size", maxi(9, int(round(11.0 * _shop_base))))
+	price_label.add_theme_color_override("font_color", Color8(40, 30, 60))
+	price_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	price_label.position = left.position + Vector2(63, 0) * _shop_base
+	price_label.size = Vector2(float(bar[2]) - 63.0, float(bar[3])) * _shop_base
+	_shop.add_child(price_label)
+	_shop_nodes.append(price_label)
 
 
 ## 卡片商店的槽位。
@@ -3914,6 +4588,7 @@ func _add_pet_slot(ox: float, oy: float, slot: Dictionary, pet_id: String, credi
 ## 我们原来塞了「卡面 + 文字」，而槽位只有 95×30 native → 卡面把文字压住，
 ## 老板 2026-09-26 反馈「文本和价格几乎看不清」。现在改成纯文字、居中。
 func _add_card_slot(ox: float, oy: float, slot: Dictionary, card_id: String, credit: int) -> void:
+	if card_id == "": return
 	var price := Net.sim.card_price(card_id) if Net.sim != null else 0
 	# ⚠ 卡片商店的槽位是 {x,y,w,h} 字典（不是 [x,y,w,h] 数组）→ 转一下再交给 _slot_button
 	var rect: Array = [float(slot.get("x", 0)), float(slot.get("y", 0)),
@@ -3935,12 +4610,18 @@ func _slot_button(ox: float, oy: float, rect: Array, text: String, afford: bool,
 	b.add_theme_font_size_override("font_size",
 		maxi(9, int(round((fs if fs > 0.0 else 13.0) * _shop_base))))   # 原版槽位里那行字约 13 native
 	b.add_theme_color_override("font_color",
-		Color8(40, 30, 60) if afford else Color8(150, 140, 150))
-	b.add_theme_color_override("font_pressed_color", Color8(200, 60, 90))
+		Color8(40, 30, 60) if afford else Color8(90, 80, 100))
+	# Hover/pressed/disabled theme defaults are white, unreadable on the original
+	# pale shop label. Highlight the background, keeping text dark in every state.
+	for state in ["font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color"]:
+		b.add_theme_color_override(state, Color8(40, 30, 60))
+	b.add_theme_color_override("font_disabled_color", Color8(90, 80, 100))
 	b.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
 	b.add_theme_stylebox_override("hover", _sb_round(Color8(255, 255, 255, 90),
 		Color8(255, 220, 120), int(round(5.0 * _ui_scale)), 0, maxf(1.0, 2.0 * _ui_scale)))
-	b.add_theme_stylebox_override("pressed", StyleBoxEmpty.new())
+	b.add_theme_stylebox_override("pressed", _sb_round(Color8(255, 237, 145, 130),
+		Color8(255, 220, 120), int(round(5.0 * _ui_scale)), 0, maxf(1.0, 2.0 * _ui_scale)))
+	b.add_theme_stylebox_override("disabled", StyleBoxEmpty.new())
 	b.position = Vector2(ox + float(rect[0]) * _shop_base, oy + float(rect[1]) * _shop_base)
 	b.size = Vector2(float(rect[2]) * _shop_base, float(rect[3]) * _shop_base)
 	b.disabled = not afford
@@ -3951,27 +4632,28 @@ func _slot_button(ox: float, oy: float, rect: Array, text: String, afford: bool,
 	return b
 
 
-## 持有面板上的 4 格（原版「小神仙」面板底图）
+## 持有面板：五只小神仙和主动技能入口。
 func _place_owned_pets(ox: float, oy: float, owned: Array) -> void:
 	var slots: Variant = Rules.pet_slots("panel")
 	if slots == null:
 		return
 	var list: Array = slots
-	# 当前「出战」的那只标个 ▶（原版：仓库里选一只使用）
 	var me: Dictionary = (_snapshot.get("players", {}) as Dictionary).get(
 		multiplayer.get_unique_id(), {})
-	var act_id := ""
-	if Net.sim != null:
-		act_id = str(Net.sim.active_pet(me).get("id", ""))
-	for i in range(mini(list.size(), owned.size())):
-		var e: Dictionary = owned[i]
+	var active_id := Net.sim.pet_token(Net.sim.active_pet(me)) if Net.sim != null else ""
+	var reserve: Array = []
+	for pet in owned:
+		if Net.sim.pet_token(pet) != active_id: reserve.append(pet)
+	for i in range(mini(list.size(), reserve.size())):
+		var e: Dictionary = reserve[i]
 		var pid := str(e.get("id", ""))
 		var lv := int(e.get("level", 1))
 		var s: Dictionary = list[i]
 		var img: Array = s.get("img", [])
 		var bar: Array = s.get("bar", [])
 		var art := TextureRect.new()
-		art.texture = _tex_or_null(Rules.pet_art(pid, "face", lv))
+		# Native reserve panel 44e9e0 -> 4329d0 -> 4328d0(type, 0, 0).
+		art.texture = _tex_or_null(Rules.pet_art(pid, "mini", 1))
 		art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		art.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -3981,28 +4663,81 @@ func _place_owned_pets(ox: float, oy: float, owned: Array) -> void:
 		_shop.add_child(art)
 		_shop_nodes.append(art)
 		# 等级星（uitex/pet/星01..04）
-		var st := TextureRect.new()
-		st.texture = _tex_or_null(Rules.pet_star(lv))
-		st.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		st.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		var st := Label.new()
+		st.text = "★".repeat(clampi(lv, 1, 4))
+		st.add_theme_font_size_override("font_size", maxi(10, int(11 * _shop_base)))
+		st.add_theme_color_override("font_color", Color8(255, 214, 40))
+		st.add_theme_color_override("font_outline_color", Color8(92, 52, 8))
+		st.add_theme_constant_override("outline_size", 2)
 		st.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		st.position = Vector2(ox + float(img[0] + img[2] - 18) * _shop_base,
-			oy + float(img[1] + 2) * _shop_base)
-		st.size = Vector2(16.0 * _shop_base, 16.0 * _shop_base)
+		st.position = Vector2(ox + float(img[0]) * _shop_base,
+			oy + float(img[1] + img[3] - 15) * _shop_base)
+		st.size = Vector2(64.0 * _shop_base, 16.0 * _shop_base)
 		_shop.add_child(st)
 		_shop_nodes.append(st)
-		var nm := ("▶ " if pid == act_id else "") + pet_label(pid, lv)
-		# 仓库模式下点这一格 = 把它设为「出战」（原版「可以选择要使用的精灵」）；
-		# 别的场合沿用「点一下看技能说明」
-		var in_wh := _shop_mode == "warehouse"
-		var cb := func() -> void:
-			if in_wh:
-				Net.send_action("set_pet", [pid])
-			else:
-				_show_pet_skill(pid, lv)
-		# 槽位只有 80 native 宽 → 字号收一点，否则「小财神 Lv1」会被裁掉尾巴
-		_shop_nodes.append(_slot_button(ox, oy, bar, nm, true, cb,
-			HORIZONTAL_ALIGNMENT_CENTER, 10.5))
+		art.name = "PetPortrait_%s" % pid
+		var nm := Net.sim.pet_name(pid)
+		var select := Label.new()
+		select.text = nm
+		select.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		select.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		select.add_theme_font_size_override("font_size", maxi(10, int(round(10.5 * _shop_base))))
+		select.add_theme_color_override("font_color", Color8(24, 32, 55))
+		select.position = Vector2(ox + float(bar[0]) * _shop_base, oy + float(bar[1]) * _shop_base)
+		select.size = Vector2(float(bar[2]), float(bar[3])) * _shop_base
+		select.name = "PetSelect_%s" % pid
+		select.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_shop.add_child(select)
+		_shop_nodes.append(select)
+		# 整个头像和名称槽都是同一个点击目标，边缘也留可点击余量。
+		# 透明覆盖层放最后，避免图像或文字控件抢走输入。
+		var hitbox := [float(img[0]) - 6.0, float(img[1]) - 3.0,
+			float(img[2]) + 12.0, float(bar[1]) + float(bar[3]) - float(img[1]) + 6.0]
+		var hit := _slot_button(ox, oy, hitbox, "", true,
+			func() -> void: _show_pet_menu(Net.sim.pet_token(e), art.get_global_rect()))
+		hit.name = "PetHit_%s" % pid
+		hit.tooltip_text = "%s：点击选择使用或放生" % nm
+		hit.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
+		hit.mouse_entered.connect(func() -> void: art.modulate = Color(1.4, 1.4, 1.4))
+		hit.mouse_exited.connect(func() -> void: art.modulate = Color.WHITE)
+		_shop_nodes.append(hit)
+
+func _show_pet_menu(pet_id: String, anchor: Rect2) -> void:
+	_hide_pet_menu()
+	_pet_menu = PanelContainer.new()
+	_pet_menu.name = "PetActionMenu"
+	_pet_menu.z_index = 75
+	_pet_menu.add_theme_stylebox_override("panel", _sb_round(Color8(237, 249, 253), Color8(20, 111, 172), 7, 0, 2))
+	var column := VBoxContainer.new()
+	_pet_menu.add_child(column)
+	for action in ["使用", "放生"]:
+		var selected_action: String = action
+		var button := Button.new()
+		button.text = selected_action
+		button.focus_mode = Control.FOCUS_NONE
+		button.add_theme_font_size_override("font_size", maxi(12, int(round(16.0 * _ui_scale))))
+		button.add_theme_color_override("font_color", Color8(194, 35, 37))
+		button.add_theme_color_override("font_hover_color", Color8(224, 35, 37))
+		button.add_theme_stylebox_override("normal", _sb_round(Color8(242, 255, 252), Color8(32, 84, 183), 3, 0, 2))
+		button.add_theme_stylebox_override("hover", _sb_round(Color8(199, 246, 255), Color8(32, 84, 183), 3, 0, 2))
+		button.add_theme_stylebox_override("pressed", _sb_round(Color8(167, 223, 244), Color8(32, 84, 183), 3, 0, 2))
+		button.custom_minimum_size = Vector2(96, 30) * _ui_scale
+		_sfx(button)
+		button.pressed.connect(func() -> void:
+			_hide_pet_menu()
+			if selected_action == "使用": Net.send_action("set_pet", [pet_id])
+			else: Net.send_action("release_pet", [pet_id]))
+		column.add_child(button)
+	_hud.add_child(_pet_menu)
+	_pet_menu.position = Vector2(clampf(anchor.position.x + anchor.size.x,
+		0.0, get_viewport().get_visible_rect().size.x - 110.0 * _ui_scale),
+		clampf(anchor.position.y, 0.0, get_viewport().get_visible_rect().size.y - 70.0 * _ui_scale))
+
+func _hide_pet_menu() -> void:
+	if is_instance_valid(_pet_menu):
+		_pet_menu.hide()
+		_pet_menu.queue_free()
+	_pet_menu = null
 
 
 func pet_label(pet_id: String, lv: int) -> String:
@@ -4016,9 +4751,10 @@ func _show_pet_skill(pet_id: String, lv: int) -> void:
 	if Net.sim == null:
 		return
 	var r: Dictionary = Net.sim.pet_record(pet_id)
-	_toast("%s：%s（%.0f 秒 / %d 点券）" % [str(r.get("name", pet_id)),
-		str(r.get("skill_raw", "")), Net.sim.pet_seconds(pet_id, lv),
-		Net.sim.pet_cost(pet_id, lv)])
+	var duration := "%d 步" % int((r.get("turn_times", []) as Array)[clampi(lv - 1, 0, 3)]) \
+		if pet_id == "hutu" else "%.0f 秒" % Net.sim.pet_seconds(pet_id, lv)
+	_toast("%s：%s（%s / %d 能量）" % [str(r.get("name", pet_id)),
+		str(r.get("skill_raw", "")), duration, Net.sim.pet_cost(pet_id, lv)])
 
 
 ## 二次确认（Info.txt 203 / 卡片商店）——复用落点气泡那套原版「是│否」
@@ -4063,6 +4799,97 @@ func _build_toast() -> void:
 	_toast_lbl.visible = false
 	_toast_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_hud.add_child(_toast_lbl)
+	_tile_info_panel = PanelContainer.new()
+	_tile_info_panel.name = "RoadPointInfo"
+	_tile_info_panel.visible = false
+	_tile_info_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tile_info_panel.add_theme_stylebox_override("panel", _sb_round(Color8(16, 31, 63, 238),
+		Color8(127, 211, 237), int(round(9.0 * _ui_scale)), int(round(8.0 * _ui_scale)),
+		maxf(1.0, 2.0 * _ui_scale)))
+	_tile_info_label = Label.new()
+	_tile_info_label.custom_minimum_size = Vector2(230, 54) * _ui_scale
+	_tile_info_label.add_theme_font_size_override("font_size", maxi(10, int(round(13.0 * _ui_scale))))
+	_tile_info_label.add_theme_color_override("font_color", Color8(255, 249, 220))
+	_tile_info_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tile_info_panel.add_child(_tile_info_label)
+	_hud.add_child(_tile_info_panel)
+
+
+func _show_tile_info_at(screen_pos: Vector2) -> void:
+	if _board == null or _board.map == null or Net.sim == null:
+		return
+	var choices: Array = []
+	for i in range(_board.map.tile_count()):
+		choices.append(i)
+	var tile_id := _board.nearest_card_tile_to_screen(screen_pos, choices, true)
+	if tile_id < 0:
+		return
+	var tile: Dictionary = _board.map.tile(tile_id)
+	var lines: Array[String] = []
+	match str(tile.get("kind", "")):
+		"plot":
+			lines.append(str(tile.get("street", tile.get("name", "空地"))))
+			var estate: Dictionary = Net.sim.plots.get(tile_id, {})
+			if estate.is_empty():
+				lines.append("空地 · 购地价 %d 元" % Net.sim.empty_plot_price(tile_id))
+			else:
+				var owner: Dictionary = Net.sim.players.get(int(estate.get("owner", -1)), {})
+				lines.append("业主 %s · %s" % [str(owner.get("name", "未知")), str(Rules.house_grade(str(estate.get("type", "")), int(estate.get("level", 0))).get("name", "空地")) if int(estate.get("level", 0)) > 0 else "空地"])
+				var property_type := str(estate.get("type", ""))
+				if property_type.begins_with("special"):
+					lines.append(_special_building_explanation(Rules.house_file(property_type, int(estate.level))))
+				else:
+					lines.append("异常状态免租" if Sim.owner_abnormal(owner, Net.sim.time) else
+						"当前租金 %d 元" % Net.sim.plot_rent(tile_id))
+		"event":
+			lines.append(str(tile.get("name", "事件格")))
+			lines.append(_tile_event_explanation(str(tile.get("event", ""))))
+		"start":
+			lines.append("起点")
+		_:
+			lines.append(str(tile.get("name", "路点")))
+	if Net.sim.road_objs.has(tile_id):
+		var road_kind := str((Net.sim.road_objs[tile_id] as Dictionary).get("kind", ""))
+		var road_items: Dictionary = _board._load_road_index().get("items", {})
+		lines.append("路边物体：%s" % str((road_items.get(road_kind, {}) as Dictionary).get("cn", road_kind)))
+	_tile_info_label.text = "\n".join(lines)
+	_tile_info_panel.show()
+	var vp := get_viewport().get_visible_rect().size
+	_tile_info_panel.position = Vector2(clampf(screen_pos.x + 12.0 * _ui_scale, 4.0, vp.x - 270.0 * _ui_scale),
+		clampf(screen_pos.y + 12.0 * _ui_scale, UI_BAR_H * _ui_scale, vp.y - 110.0 * _ui_scale))
+
+
+func _special_building_explanation(file: String) -> String:
+	# Native 438d70 services bypass ordinary property rent.
+	match file:
+		"d101": return "喷泉：恢复全部体力"
+		"d102": return "连锁店：向访客收费，同业主店铺越多费用越高"
+		"d103": return "公园：恢复体力及随身小神仙能量"
+		"d201": return "俱乐部：访客按本次走格数支付点券给业主"
+		"d202": return "银行：访客按现金与本次走格数支付手续费"
+		"d203": return "酒店：访客付住宿费并入住两天"
+		"d301": return "垃圾场：影响周围地价，不收普通房租"
+		"d302": return "发电厂：补满随身小神仙能量，不收房租"
+		"d303": return "科研中心：获得一张研究卡片"
+	return "特殊建筑服务"
+
+
+func _tile_event_explanation(key: String) -> String:
+	match key:
+		"cardpt": return "经过获得卡片；停在此处再获得一张"
+		"cardshop": return "停在此处可用点券购买卡片"
+		"pethouse": return "停在此处可用点券购买小神仙"
+		"platform": return "经过传送平台时由地毯送往另一端"
+		"casino": return "停在此处参加乐透"
+		"labar": return "停在此处参加拉霸游戏"
+		"hospital": return "停在此处进入医院"
+		"tvnews": return "停在此处触发新闻事件"
+		"capital": return "停在此处触发资金事件"
+		"game_a", "game_b": return "停在此处参加小游戏"
+		_:
+			if key.begins_with("coupon") or key.begins_with("credit"):
+				return "停在此处获得点券"
+	return "停在此处触发路点事件"
 
 
 ## 取一条 Info.txt 消息并填占位符（换行压成空格，适配 toast 单行）
@@ -4076,6 +4903,87 @@ func _toast(msg: String) -> void:
 	_toast_lbl.text = msg
 	_toast_lbl.visible = true
 	_toast_t = 1.6
+
+
+## 问号的随机结果需要确认；其他路点只显示短提示。
+func _build_event_dialog() -> void:
+	_event_dialog = Control.new()
+	_event_dialog.name = "RoadEventResult"
+	_event_dialog.visible = false
+	_event_dialog.z_index = 85
+	_event_dialog.mouse_filter = Control.MOUSE_FILTER_STOP
+	_hud.add_child(_event_dialog)
+	_event_dialog_art = _illustrated_event(_event_dialog)
+	_event_dialog_text = _event_dialog.get_node("EventText") as Label
+	var ok := Button.new()
+	ok.name = "EventResultOK"
+	ok.flat = true
+	ok.focus_mode = Control.FOCUS_NONE
+	ok.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	for state in ["normal", "hover", "pressed", "focus"]:
+		ok.add_theme_stylebox_override(state, StyleBoxEmpty.new())
+	_event_dialog.add_child(ok)
+	ok.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	ok.pressed.connect(_next_event_result)
+
+
+# The original illustrations already include the gold frame. Text belongs on
+# the translucent strip inside the picture, with no separate title or footer.
+func _illustrated_event(parent: Control) -> TextureRect:
+	var art := TextureRect.new()
+	art.name = "EventIllustration"
+	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	art.stretch_mode = TextureRect.STRETCH_SCALE
+	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(art)
+	art.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var strip := TextureRect.new()
+	strip.texture = _tex_or_null("res://assets/news/文字栏.png")
+	strip.modulate.a = .72
+	strip.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	strip.stretch_mode = TextureRect.STRETCH_SCALE
+	strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(strip)
+	strip.anchor_left = .04
+	strip.anchor_right = .96
+	strip.anchor_top = .75
+	strip.anchor_bottom = .95
+	var label := Label.new()
+	label.name = "EventText"
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", maxi(14, int(round(22.0 * _ui_scale))))
+	label.add_theme_color_override("font_color", Color8(22, 24, 28))
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(label)
+	label.anchor_left = .06
+	label.anchor_right = .94
+	label.anchor_top = .75
+	label.anchor_bottom = .95
+	return art
+
+
+func _show_event_result(title: String, result: String, fate: int = 1) -> void:
+	if screen != Screen.GAME or _event_dialog == null or result == "": return
+	_event_messages.append({"title": title, "text": result, "fate": fate})
+	if not _event_dialog.visible: _next_event_result()
+
+
+func _next_event_result() -> void:
+	if _event_messages.is_empty():
+		_event_dialog.visible = false
+		return
+	var message: Dictionary = _event_messages.pop_front()
+	var fate := clampi(int(message.get("fate", 1)), 1, 19)
+	# Original assets 20--23 share the four cash-award illustrations;
+	# 24..38 depict theft, hacking, fines, hospital, aliens, pets, etc.
+	var filename := "20--23" if fate <= 4 else "%02d" % (19 + fate)
+	_event_dialog_art.texture = _tex_or_null("res://assets/news/%s.png" % filename)
+	_event_dialog_text.text = str(message["text"])
+	_event_dialog.visible = true
+	var vp := get_viewport().get_visible_rect().size
+	_event_dialog.size = Vector2(490, 400) * _ui_scale
+	_event_dialog.position = (vp - _event_dialog.size) * 0.5
 
 
 func _toggle_sfx() -> void:
@@ -4262,6 +5170,11 @@ func _chat_send() -> void:
 	if txt == "":
 		return
 	_chat_input.text = ""
+	if txt.begins_with("/"):
+		var result := Net.debug_command(txt)
+		_chat_append("测试指令", result)
+		_toast(result)
+		return
 	var ch := str(_chat_channels[_chat_ch_idx]) if _chat_ch_idx < _chat_channels.size() \
 		else "公共"
 	var to := -1
@@ -4302,6 +5215,7 @@ func _on_auction_action(kind: String, amount: int) -> void:
 			Net.send_action("auction_bid", [amount])
 		"pass":
 			Net.send_action("auction_pass", [])
+			_auction.close()
 
 
 ## 乐透面板的按钮回调（挑号码 / 离开）
@@ -4322,6 +5236,7 @@ func _on_casino_action(kind: String, amount: int) -> void:
 		"pull":
 			Net.send_action("casino_pull", [])
 		"exit":
+			Net.send_action("casino_exit", [])
 			if _casino != null:
 				_casino.close()
 
@@ -4378,29 +5293,40 @@ func _show_say(text: String, who: int) -> void:
 
 
 func _sync_say_bubble() -> void:
-	if _say_bubble == null or not _say_bubble.visible or _board == null:
+	if _say_bubble == null or _board == null or _say_t <= 0.0:
 		return
+	# World dialogue must not cover the controls of a foreground panel.
+	_say_bubble.visible = not _dialogue_obscured()
+	if not _say_bubble.visible: return
 	var pos: Dictionary = _board.player_screen_positions()
 	if not pos.has(_say_who):
 		_say_bubble.visible = false
 		return
 	var p: Vector2 = pos[_say_who]
-	_say_bubble.position = Vector2(p.x - _say_bubble.size.x * 0.5,
-		p.y - _say_bubble.size.y - 26.0 * _ui_scale)
+	var vp := get_viewport().get_visible_rect().size
+	_say_bubble.position = Vector2(clampf(p.x - _say_bubble.size.x * 0.5, 0, vp.x - _say_bubble.size.x),
+		clampf(p.y - _say_bubble.size.y - 26.0 * _ui_scale, UI_BAR_H * _ui_scale, vp.y - _say_bubble.size.y))
+
+
+func _dialogue_obscured() -> bool:
+	if is_instance_valid(_settlement) and _settlement.visible: return true
+	for panel in [_shop, _event_dialog, _news_pop, _session_menu, _house_pick, _casino, _lotto, _step_picker, _data_view, _auction, _pop]:
+		if is_instance_valid(panel) and panel.visible: return true
+	return false
 
 
 ## 全局新闻的全屏插画（`assets/news/01..37.png` = 原版 `samples/news/*.tga`）
 func _show_global_news(idx: int, text: String, art: int) -> void:
 	if _news_pop == null:
 		_build_news_popup()
-	var n := ((maxi(art, 1) - 1) % 37) + 1        # 37 张插画，按事件序号取（无力据，见 alignment-gap）
+	var n := clampi(art, 1, 19)
 	_news_art.texture = _tex_or_null("res://assets/news/%02d.png" % n)
 	_news_text.text = text.replace("\n", " ")
 	_news_pop.visible = true
 	_news_left = 4.0
 	var vp := get_viewport().get_visible_rect()
-	var w := minf(vp.size.x * 0.42, 430.0 * _ui_scale)
-	var h := minf(vp.size.y * 0.62, 430.0 * _ui_scale)
+	var w := minf(vp.size.x * 0.7, 490.0 * _ui_scale)
+	var h := minf(vp.size.y * 0.62, 400.0 * _ui_scale)
 	_news_pop.size = Vector2(w, h)
 	_news_pop.position = Vector2((vp.size.x - w) * 0.5, (vp.size.y - h) * 0.5)
 
@@ -4411,29 +5337,8 @@ func _build_news_popup() -> void:
 	_news_pop.z_index = 80
 	_news_pop.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_hud.add_child(_news_pop)
-	var pc := PanelContainer.new()
-	pc.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	pc.add_theme_stylebox_override("panel", _sb_round(
-		Color8(246, 250, 226, 248), Color8(150, 190, 60), int(round(10.0 * _ui_scale)),
-		maxi(3, int(round(6.0 * _ui_scale))), maxf(2.0, 3.0 * _ui_scale)))
-	_news_pop.add_child(pc)
-	var col := VBoxContainer.new()
-	col.alignment = BoxContainer.ALIGNMENT_CENTER
-	col.add_theme_constant_override("separation", maxi(3, int(round(8.0 * _ui_scale))))
-	pc.add_child(col)
-	_news_art = TextureRect.new()
-	_news_art.custom_minimum_size = Vector2(230.0 * _ui_scale, 230.0 * _ui_scale)
-	_news_art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_news_art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	_news_art.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	col.add_child(_news_art)
-	_news_text = Label.new()
-	_news_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_news_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_news_text.add_theme_font_size_override("font_size", maxi(11, int(round(17.0 * _ui_scale))))
-	_news_text.add_theme_color_override("font_color", Color8(40, 60, 20))
-	_news_text.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	col.add_child(_news_text)
+	_news_art = _illustrated_event(_news_pop)
+	_news_text = _news_pop.get_node("EventText") as Label
 
 
 ## 「选房屋」（原版 `Info.txt` id 92 / `House.txt` 的三种主类型）——
@@ -4443,6 +5348,7 @@ func _build_news_popup() -> void:
 ## ⚠️ 原来这块是个**下拉框**，不是原版的样子，已换成卡片。
 ## 缩略图用 `uitex/house/<House.txt 的一级文件>.png`（住宅 a0101 / 商业 b0101 / 工业 c0101）。
 var _house_pick: Control = null
+var _house_pick_dismissed_idx := -1
 
 
 func _open_house_picker(data: Dictionary) -> void:
@@ -4453,10 +5359,11 @@ func _open_house_picker(data: Dictionary) -> void:
 	if types.is_empty():
 		return
 	var pc := PanelContainer.new()
+	pc.set_meta("card", str(data.get("card", "")))
 	pc.z_index = 72
-	pc.add_theme_stylebox_override("panel", _sb_round(Color8(24, 46, 100, 246),
-		Color8(255, 236, 150), int(round(8.0 * _ui_scale)),
-		maxi(2, int(round(4.0 * _ui_scale))), maxf(2.0, 3.0 * _ui_scale)))
+	pc.add_theme_stylebox_override("panel", _sb_round(Color8(13, 42, 92, 235),
+		Color8(105, 192, 247), int(round(12.0 * _ui_scale)),
+		maxi(8, int(round(11.0 * _ui_scale))), maxf(2.0, 3.0 * _ui_scale)))
 	_hud.add_child(pc)
 	_house_pick = pc
 
@@ -4467,76 +5374,126 @@ func _open_house_picker(data: Dictionary) -> void:
 	var title := Label.new()
 
 	title.clip_text = true
-	title.text = "请选择要盖的房屋"
+	title.text = "请选择改建后的房型" if data.get("card", "") == "rebuild" else "请选择要盖的房屋"
+	title.visible = data.get("card", "") == "rebuild"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", maxi(10, int(round(14.0 * _ui_scale))))
 	title.add_theme_color_override("font_color", Color8(255, 244, 190))
 	col.add_child(title)
 
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", maxi(3, int(round(8.0 * _ui_scale))))
-	col.add_child(row)
-
-	for t in types:
-		var tid := str(t)
-		var b := Button.new()
-		var idx := int(data.get("idx", -1))
-		var pid := int(data.get("pid", multiplayer.get_unique_id()))
-		var plan := PlotAssembly.plan(_board.map, _snapshot.get("plots", {}), pid, idx, tid)
-		var level := int(plan.get("level", 1))
-		var free := bool(data.get("free", false))
-		b.disabled = plan.is_empty()
-		# 卡面：上面是房屋缩略图，下面是「名字 + 造价」（原版截图就是这个版式）
-		var caption := "%s\n%d 联地 · 造价:%d" % [str(plan.get("name", Rules.house_type_cn(tid))),
-			(plan.get("members", []) as Array).size(), 0 if free else int(plan.get("cost", 0))]
-		b.tooltip_text = caption if not plan.is_empty() else "%s：需要拥有对应的连续地块" % Rules.house_type_cn(tid)
-		b.custom_minimum_size = Vector2(96.0 * _ui_scale, 118.0 * _ui_scale)
-		var preview := TextureRect.new()
-		preview.texture = _tex_or_null("res://assets/uitex/house/%s.png" % Rules.house_file(tid, level))
-		preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		preview.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		preview.position = Vector2(6, 6) * _ui_scale
-		preview.size = Vector2(84, 70) * _ui_scale
-		b.add_child(preview)
-		var description := Label.new()
-		description.text = caption if not plan.is_empty() else "%s\n需要连续地块" % Rules.house_type_cn(tid)
-		description.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		description.position = Vector2(4, 78) * _ui_scale
-		description.size = Vector2(88, 36) * _ui_scale
-		description.add_theme_font_size_override("font_size", maxi(10, int(round(12.0 * _ui_scale))))
-		description.add_theme_color_override("font_color", Color8(250, 248, 235))
-		description.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		b.add_child(description)
-		b.focus_mode = Control.FOCUS_NONE
-		b.add_theme_font_size_override("font_size", maxi(9, int(round(12.0 * _ui_scale))))
-		b.add_theme_color_override("font_color", Color8(250, 248, 235))
-		b.add_theme_color_override("font_outline_color", Color8(30, 26, 60))
-		b.add_theme_constant_override("outline_size", 4)
-		b.add_theme_stylebox_override("normal", _sb_round(Color8(40, 78, 146),
-			Color8(140, 190, 250), int(round(6.0 * _ui_scale)),
-			maxi(1, int(round(2.0 * _ui_scale))), 0.0))
-		b.add_theme_stylebox_override("hover", _sb_round(Color8(70, 130, 210),
-			Color8(255, 246, 120), int(round(6.0 * _ui_scale)),
-			maxi(2, int(round(3.0 * _ui_scale))), 0.0))
-		b.add_theme_stylebox_override("pressed", _sb_round(Color8(30, 60, 120),
-			Color8(255, 246, 120), int(round(6.0 * _ui_scale)),
-			maxi(2, int(round(3.0 * _ui_scale))), 0.0))
-		var tt := tid
-		b.pressed.connect(func():
-			Audio.play_sfx(Audio.SFX_UI_CONFIRM)
-			Net.send_action("upgrade", [tt])      # 带上房型 → Sim 里就不用再问了
-			_close_house_picker())
-		row.add_child(b)
+	var rows_box := VBoxContainer.new()
+	rows_box.add_theme_constant_override("separation", maxi(3, int(round(6.0 * _ui_scale))))
+	col.add_child(rows_box)
+	var card_width := maxf(128.0 * _ui_scale, 100.0)
+	var preview_height := maxf(82.0 * _ui_scale, 68.0)
+	var card_height := preview_height + maxf(62.0 * _ui_scale, 56.0)
+	var ordered_types := ["industry", "shop", "uptown"]
+	if data.get("card", "") == "rebuild": ordered_types = types
+	for t in ordered_types:
+		if not types.has(t): continue
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", maxi(3, int(round(5.0 * _ui_scale))))
+		rows_box.add_child(row)
+		var levels: Array = [0]
+		if data.get("card", "") != "rebuild":
+			levels.clear()
+			var seen_sides := {}
+			for grade in Rules.house_grades(str(t)):
+				var side := maxi(int(grade.w), int(grade.h))
+				if not seen_sides.has(side):
+					seen_sides[side] = true
+					levels.append(int(grade.level))
+		for requested_level in levels:
+			var tid := str(t)
+			var choice := tid if requested_level == 0 else "%s:%d" % [tid, requested_level]
+			var b := Button.new()
+			var idx := int(data.get("idx", -1))
+			var pid := int(data.get("pid", multiplayer.get_unique_id()))
+			var plan := PlotAssembly.plan(_board.map, _snapshot.get("plots", {}), pid, idx, tid,
+				requested_level)
+			if data.get("card", "") == "rebuild": plan = Net.sim.rebuild_plan(pid, idx, tid)
+			var level := int(plan.get("level", maxi(requested_level, 1)))
+			var free := bool(data.get("free", false))
+			b.disabled = plan.is_empty()
+			# 原版 house/back.png 是建筑选项自身的蓝色底板，图像和造价贴在其上。
+			var grade_name := str(Rules.house_grade(tid, level).get("name", Rules.house_type_cn(tid)))
+			var caption := "%s\n改建卡免费" % grade_name if data.get("card", "") == "rebuild" else "%s\n造价 %d" % [grade_name,
+				0 if free else int(plan.get("cost", Rules.house_upgrade_cost(tid, level)))]
+			if data.get("card", "") == "rebuild" and not plan.is_empty():
+				var special_index := ["special1", "special2", "special3"].find(tid)
+				b.tooltip_text = "%s：%s" % [grade_name, Rules.ui_string(8101 + special_index * 3 + level - 1)]
+			else:
+				b.tooltip_text = caption if not plan.is_empty() else "%s：需要拥有对应的连续地块" % grade_name
+			b.custom_minimum_size = Vector2(card_width, card_height)
+			var back := TextureRect.new()
+			back.name = "HouseChoiceBack"
+			back.texture = _tex_or_null("res://assets/uitex/house/back.png")
+			back.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			back.stretch_mode = TextureRect.STRETCH_SCALE
+			back.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			back.size = Vector2(card_width, card_height)
+			b.add_child(back)
+			var preview := TextureRect.new()
+			preview.texture = _tex_or_null("res://assets/uitex/house/%s.png" % Rules.house_file(tid, level))
+			preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			preview.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			preview.position = Vector2(8, 6)
+			preview.size = Vector2(card_width - 16.0, preview_height - 10.0 * _ui_scale)
+			b.add_child(preview)
+			var description := Label.new()
+			description.text = grade_name
+			description.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			description.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			description.position = Vector2(6, card_height * 0.67)
+			description.size = Vector2(card_width - 12.0, card_height * 0.14)
+			description.clip_text = true
+			description.add_theme_font_size_override("font_size", maxi(10, int(round(12.0 * _ui_scale))))
+			description.add_theme_color_override("font_color", Color8(23, 59, 121))
+			description.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			b.add_child(description)
+			var price_label := Label.new()
+			price_label.text = "改建卡免费" if data.get("card", "") == "rebuild" else \
+				"造价 %d" % (0 if free else int(plan.get("cost", Rules.house_upgrade_cost(tid, level)))) if not plan.is_empty() else "需连续地块"
+			price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			price_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			price_label.position = Vector2(6, card_height * 0.81)
+			price_label.size = Vector2(card_width - 12.0, card_height * 0.17)
+			price_label.clip_text = true
+			price_label.add_theme_font_size_override("font_size", maxi(9, int(round(11.0 * _ui_scale))))
+			price_label.add_theme_color_override("font_color", Color8(23, 59, 121))
+			price_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			b.add_child(price_label)
+			b.focus_mode = Control.FOCUS_NONE
+			b.add_theme_font_size_override("font_size", maxi(9, int(round(12.0 * _ui_scale))))
+			b.add_theme_color_override("font_color", Color8(250, 248, 235))
+			b.add_theme_color_override("font_outline_color", Color8(30, 26, 60))
+			b.add_theme_constant_override("outline_size", 4)
+			b.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
+			b.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
+			b.add_theme_stylebox_override("pressed", StyleBoxEmpty.new())
+			b.mouse_entered.connect(func(): back.modulate = Color(1.28, 1.2, 0.9))
+			b.mouse_exited.connect(func(): back.modulate = Color.WHITE)
+			if b.disabled: b.modulate = Color(0.65, 0.65, 0.68)
+			var tt := choice
+			b.pressed.connect(func():
+				Audio.play_sfx(Audio.SFX_UI_CONFIRM)
+				if data.get("card", "") == "rebuild": Net.send_action("card", ["rebuild", -1, tt])
+				else: Net.send_action("upgrade", [tt])
+				_house_pick_dismissed_idx = idx
+				_close_house_picker())
+			row.add_child(b)
 
 	var sz := pc.get_combined_minimum_size()
 	pc.size = sz
 	var vp := get_viewport().get_visible_rect()
-	pc.position = Vector2((vp.size.x - sz.x) * 0.5, (vp.size.y - sz.y) * 0.30)
+	pc.position = Vector2(minf(vp.size.x - sz.x - 10.0, vp.size.x * 0.58),
+		clampf(vp.size.y * 0.22, 40.0, vp.size.y - sz.y - 10.0))
 
 
 func _close_house_picker() -> void:
 	if _house_pick != null:
+		_house_pick.hide()
 		_house_pick.queue_free()
 		_house_pick = null
 
@@ -4550,7 +5507,14 @@ func _toggle_fullscreen() -> void:
 # ------------------------------------------------------------- 界面切换
 
 func _show(s: int) -> void:
+	if s != Screen.GAME: _clear_used_card()
+	if s != Screen.GAME and _event_dialog != null:
+		_event_messages.clear()
+		_event_dialog.hide()
 	screen = s
+	if s != Screen.GAME and _pop != null:
+		_pop.hide()
+		_pop_mode = ""
 	_menu_root.visible = (s == Screen.MENU)
 	_lobby_root.visible = (s == Screen.LOBBY)
 	_hud.visible = (s == Screen.GAME)
@@ -4590,9 +5554,20 @@ func _on_join() -> void:
 		_lobby_hint.text = "已连接，等待房主开始"
 
 func _on_leave() -> void:
+	_close_settlement()
+	_close_session_menu()
+	_close_house_picker()
+	_clear_card_target_mode()
+	_close_shop()
+	if _auction != null: _auction.close()
+	if _casino != null: _casino.close()
+	if _lotto != null: _lotto.close()
+	if _stock != null: _stock.close_all()
+	if _loading != null: _loading.hide()
 	Net.leave()
 	_world_clear_players()
 	_show(Screen.MENU)
+	_frontend.show_page("entry")
 
 func _on_conn_fail(msg: String) -> void:
 	_status.text = msg
@@ -4600,6 +5575,9 @@ func _on_conn_fail(msg: String) -> void:
 		_show(Screen.MENU)
 
 func _on_disconnected() -> void:
+	_close_settlement()
+	_set_paused(false)
+	if _session_menu != null: _session_menu.hide()
 	if screen != Screen.MENU:
 		_show(Screen.MENU)
 		_status.text = "已断开连接"
@@ -4624,6 +5602,10 @@ func _on_lobby_changed(peers: Array) -> void:
 	_start_btn.disabled = peers.size() < 1
 
 func _on_game_started(map_name: String, _seed_val: int) -> void:
+	_char_expression = "01"
+	_char_expression_t = 0.0
+	_say_t = 0.0
+	if _say_bubble != null: _say_bubble.hide()
 	_log_lines.clear()
 	_hud_log.text = ""
 	_last_log_count = 0
@@ -4635,7 +5617,8 @@ func _on_game_started(map_name: String, _seed_val: int) -> void:
 	_sim_connected = false
 	_connect_sim()
 	Audio.play_bgm_playlist(Audio.map_bgm(map_name))
-	Audio.start_ambient()
+	_lotto_results.clear()
+	Audio.stop_ambient() # Omit the constant percussive ambient loop.
 	_on_log("对局开始 · 地图：%s · %d 格" % [_board.map.display_name, _board.map.tile_count()])
 	_on_log("实时制：1 天 = %.0f 秒，静止 %.0f 秒会睡着" % [
 		Rules.seconds_per_day(), Sim.IDLE_SLEEP_SECONDS])
@@ -4653,11 +5636,35 @@ func _connect_sim() -> void:
 	_sim_connected = true
 
 
-func _say(role: int, key: String, pos: Variant) -> void:
-	if pos == null:
-		Audio.say(role, key)
-	else:
-		Audio.say_at(role, key, pos)
+func _say_for(actor_pid: int, role: int, key: String, _pos: Variant) -> void:
+	if actor_pid != multiplayer.get_unique_id(): return
+	Audio.say(role, key)
+	# Original portraits: 02 unhappy, 03 happy, 04 resting.
+	if key in [Audio.V_HURT, Audio.V_LIGHT_PUNISH, Audio.V_HEAVY_PUNISH, Audio.V_HOSPITAL, Audio.V_BANKRUPT]:
+		_char_expression = "02"
+	elif key in [Audio.V_SELFISH, Audio.V_GET_MONEY, Audio.V_LUCKY, Audio.V_FREE_RENT, Audio.V_LOTTO, Audio.V_WIN]:
+		_char_expression = "03"
+	elif key == Audio.V_SLEEP:
+		_char_expression = "04"
+	else: return
+	_char_expression_t = 2.6
+	_char_avatar.texture = _role_texture(role - 1, _char_expression)
+
+
+func _pet_voice(pet_id: String, line: int) -> void:
+	for record in Audio.mapping.get("pets", []):
+		if str(record.get("dir", "")) == pet_id:
+			Audio.pet_say(int(record.idx), line)
+			return
+
+
+func _pet_event_voice(data: Dictionary) -> void:
+	if int(data.get("pid", -1)) != multiplayer.get_unique_id(): return
+	var line := int(data.get("voice_line", 0))
+	if line <= 0: return
+	var pet_id := str(data.get("pet", ""))
+	_pet_voice(pet_id, line)
+	if Net.sim != null: _show_say(Net.sim.pet_line(pet_id, line), int(data.pid))
 
 
 ## 结算画面（006 胜利 / 007 失败）是**全桌共见**的结果 → 不受「2D 只给当事人」限制
@@ -4665,30 +5672,49 @@ const SFX_GLOBAL_IDS := [6, 7]
 
 
 func _ev_sfx(id: int, data: Dictionary, _pos: Variant) -> void:
-	## 事件音效派发。规则来自原版自己的分类表 `sound/effect/sndeffect.txt`
-	## （已解析进 assets/audio/voice_map.json 的 effects[].kind）：
-	##
-	##   · **2D = 界面音**（按钮 / 掷骰 / 金币掉在「桌子上」…）→ 是**本机操作的听觉反馈**，
-	##     只有「这件事的当事人」听得到。老板 2026-09-26 反馈的核心 bug 就在这：
-	##     我们此前把 023 骰子滚动声无条件播了，于是电脑玩家掷骰子也吵到自己。
-	##   · **3D = 场景空间音**（地产升级、爆炸、金币散落…）→ 场景里真的发生了，人人可听。
-	##
-	## 例外：SFX_GLOBAL_IDS 里的 2D 结算音全员可听。
-	##
-	## ⚠ 3D 音这里仍走**非定位**播放（与今天之前一致）—— 改成 Audio.play_sfx_at 会让
-	## 远处声音直接听不见：棋盘跨度 200 世界单位、相机离角色 300~400 单位，而
-	## play_sfx_at 写死 unit_size=12 / max_distance=120（超出即静音）。要做空间音必须
-	## 先把这两个参数调到 ≈200 / ≈2000，属未做的后续项，登记在 docs/ui-audit.md。
-	var mine: bool = (not data.has("pid")) or int(data["pid"]) == multiplayer.get_unique_id()
-	if Audio.effect_kind(id) == "2D" and not SFX_GLOBAL_IDS.has(id):
-		if not mine:
-			return
+	var mine := int(data.get("pid", -1)) == multiplayer.get_unique_id()
+	if mine or SFX_GLOBAL_IDS.has(id):
 		Audio.play_sfx(id)
-		return
-	Audio.play_sfx(id)
+
+
+func _show_money_reel(amount: int) -> void:
+	if _hud == null: return
+	if _money_reel == null:
+		_money_reel = PanelContainer.new()
+		_money_reel.name = "GodMoneyReel"
+		_money_reel.z_index = 84
+		_money_reel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var reel_frame := _sb_round(Color8(255, 219, 65),
+			Color8(181, 89, 12), int(round(10.0 * _ui_scale)),
+			maxi(3, int(round(10.0 * _ui_scale))), maxf(4.0, 5.0 * _ui_scale))
+		reel_frame.content_margin_top = 10 * _ui_scale
+		reel_frame.content_margin_bottom = 10 * _ui_scale
+		_money_reel.add_theme_stylebox_override("panel", reel_frame)
+		_hud.add_child(_money_reel)
+		_money_reel_digits = MoneyReelDigits.new()
+		_money_reel_digits.name = "Digits"
+		_money_reel_digits.setup(_ui_scale)
+		_money_reel_digits.custom_minimum_size = Vector2(212, 50) * _ui_scale
+		_money_reel_digits.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_money_reel.add_child(_money_reel_digits)
+	_money_reel_amount = clampi(amount, 0, 999999)
+	_money_reel_time = 1.35
+	_money_reel_digits.roll(_money_reel_amount)
+	var vp := get_viewport().get_visible_rect().size
+	_money_reel.size = Vector2(270, 70) * _ui_scale
+	_money_reel.position = Vector2(vp.x * 0.5 - _money_reel.size.x * 0.5,
+		vp.y * 0.43 - _money_reel.size.y * 0.5)
+	_money_reel.show()
 
 
 func _on_game_event(kind: String, data: Dictionary) -> void:
+	if is_instance_valid(_board): _board.on_game_event(kind, data)
+	# Board animations are shared. Personal messages, money reels and menus
+	# belong to the player receiving the event; global news/auctions remain shared.
+	if kind in ["card_status_applied", "card_unavailable", "buy_card", "sleepwalk", "pet_flew_away",
+		"road_crystal", "road_hanbao", "road_chest", "road_bomb", "road_thief", "road_god",
+		"stock_buy", "stock_sell", "stock_shift", "sealed_rent"] \
+		and int(data.get("pid", -1)) != multiplayer.get_unique_id(): return
 	## 语义事件 → 音效 / 角色对白（对白语义键见 docs/sfx-map.md §2.3，
 	## 音效 id 见 game/data/rules/sfx.json）
 	var role := int(data.get("role", 1))
@@ -4698,39 +5724,69 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 	var effect := str(data.get("effect", ""))
 	match kind:
 		"roll":
-			_ev_sfx(Audio.SFX_DICE_ROLL, data, pos)      # 23 骰子滚动声（2D → 只有掷的人听得到）
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				Audio.play_sfx(Audio.SFX_DICE_ROLL)
 			# 掷骰是**自己的**才播「骰子飞出 → 定格点数」动画（自己才看得见自己的 GO 钮）
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
 				_start_dice_fly(data.get("faces", []))
 		"roll_end":
-			_ev_sfx(Audio.SFX_DICE_STOP, data, pos)      # 5 骰子滚动结束
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				Audio.play_sfx(Audio.SFX_DICE_STOP)
 		"buy":
 			_ev_sfx(Audio.SFX_COIN_DROP, data, pos)      # 50 金币掉落在桌子上
-			_say(role, Audio.V_SELFISH, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_SELFISH, pos)
 		"upgrade", "rebuild":
 			_ev_sfx(Audio.SFX_BUILD_UPGRADE, data, pos)  # 12 地产升级
-			_say(role, Audio.V_SELFISH, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_SELFISH, pos)
 		"pay_rent":
-			_ev_sfx(Audio.SFX_BANK_SETTLE, data, pos)    # 52 银行结账
-			_say(role, Audio.V_LIGHT_PUNISH, pos)
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				Audio.play_sfx(Audio.SFX_BANK_SETTLE)
+				_say_for(int(data.get("pid", -1)), role, Audio.V_LIGHT_PUNISH, pos)
+			var landlord_id := int(data.get("to", -1))
+			var landlord: Dictionary = Net.sim.players.get(landlord_id, {}) if Net.sim != null else {}
+			if not landlord.is_empty() and landlord_id == multiplayer.get_unique_id():
+				_say_for(landlord_id, int(landlord.get("role", 1)), Audio.V_GET_MONEY,
+					_board.player_pos(landlord_id) if _board != null else null)
+		"special_building":
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				var service := str(data.get("file", ""))
+				var amount := int(data.get("number", 0))
+				match service:
+					"d101": _toast("喷泉：体力已恢复")
+					"d103": _toast("公园：体力和小神仙能量已恢复")
+					"d302": _toast("发电厂：小神仙能量已补满" if bool(data.get("pet_present", false)) else "发电厂：没有携带小神仙")
+					"d201": _toast("俱乐部：支付 %d 点券" % amount if amount > 0 else "俱乐部：无需付费")
+					"d202", "d102", "d203":
+						if amount > 0:
+							Audio.play_sfx(Audio.SFX_BANK_SETTLE)
+							_toast("%s：支付 %d 元%s" % [str(data.get("name", "建筑")), amount,
+								"，入住两天" if service == "d203" else ""])
+					"d303":
+						if str(data.get("card", "")) != "": _toast("科研中心：获得%s" % Rules.card_name(str(data.card)))
 		"casino":
 			_ev_sfx(Audio.SFX_PAY_DEDUCT, data, pos)     # 40 负面技能扣款
-			_say(role, Audio.V_LIGHT_PUNISH, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_LIGHT_PUNISH, pos)
 		"credit":
 			_ev_sfx(Audio.SFX_COIN_SCATTER, data, pos)   # 15 金币散落
-			_say(role, Audio.V_GET_MONEY, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_GET_MONEY, pos)
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				var amount := str(int(data.get("amount", 0)))
+				var park := str(data.get("eid", "")).begins_with("game_")
+				_toast(Rules.info_fill(4 if park else 5, {"number": amount}).replace("\n", " "))
 		"news":
 			_ev_sfx(Audio.SFX_COIN_SCATTER, data, pos)
-			_say(role, Audio.V_LUCKY, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_LUCKY, pos)
 		"win_money":
 			_ev_sfx(Audio.SFX_COIN_DROP, data, pos)
-			_say(role, Audio.V_GET_MONEY, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_GET_MONEY, pos)
 		"lose_money":
 			_ev_sfx(Audio.SFX_PAY_DEDUCT, data, pos)
-			_say(role, Audio.V_LIGHT_PUNISH, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_LIGHT_PUNISH, pos)
 		"get_pet":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
-			_say(role, Audio.V_GREET, pos)
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_pet_voice(str(data.get("pet", "")), 2)
+				_show_say(Net.sim.pet_line(str(data.get("pet", "")), 2), int(data.pid))
 		"platform":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
 		"no_stamina":
@@ -4738,14 +5794,18 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
 		"win":
 			_ev_sfx(Audio.SFX_WIN_SCREEN, data, pos)     # 6 胜利结算画面（全局例外）
-			_say(role, Audio.V_WIN, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_WIN, pos)
 		"bankrupt":
 			_ev_sfx(Audio.SFX_LOSE_SCREEN, data, pos)    # 7 失败结算（全局例外）
-			_say(role, Audio.V_BANKRUPT, pos)
-		"insufficient_money", "need_house_type", "upgrade_blocked":
+			_say_for(int(data.get("pid", -1)), role, Audio.V_BANKRUPT, pos)
+		"insufficient_money", "need_house_type", "upgrade_blocked", "buy_blocked":
 			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)  # 19 禁止操作的音效
-			if kind == "upgrade_blocked":
-				_say(role, Audio.V_LIGHT_PUNISH, pos)    # 衰神附身：投资失败（id 1053）
+			if kind == "insufficient_money" and int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast("现金不足：需要%d元，现有%d元" % [int(data.get("need", 0)), int(data.get("have", 0))])
+			if kind in ["upgrade_blocked", "buy_blocked"]:
+				_say_for(int(data.get("pid", -1)), role, Audio.V_LIGHT_PUNISH, pos)    # 衰神附身：投资失败（id 1053）
+				if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+					_toast("衰神附身，投资失败：不能买地或升级")
 			# 「选房屋」（原版 Info.txt id 92 / String.txt 2010）——
 			# ⚠️ 老板 2026-09-27：「建造的时候建筑物选择界面应该是**横排的卡片**，
 			#   不是现在那种下拉框」→ 弹一排可选的房屋。
@@ -4759,9 +5819,32 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 					_ev_sfx(Audio.SFX_PET_UPGRADE, data, pos)    # 9 小神仙的地产升级技能
 				_:
 					_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
-			_say(role, Audio.V_SELFISH, pos)
-			if kind == "get_card":
-				_toast("得到卡片「%s」" % str(data.get("name", "")))
+			if kind == "use_card" and int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				Audio.say_card(role, _card_n(str(data.get("card", ""))))
+			if kind == "use_card": _show_used_card(str(data.get("card", "")), int(data.get("pid", -1)))
+			if kind == "get_card" and int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast("得到「%s」。" % str(data.get("name", "")))
+			elif int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast(str(data.get("result", "卡片已生效")))
+		"fate":
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_show_event_result("命运事件", str(data.get("text", "事件已结算")), int(data.get("fate", 1)))
+		"capital_result":
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				var amount := int(data.get("amount", 0))
+				_toast("领取市政补助%d元。" % amount if amount >= 0
+					else "缴纳市政基金%d元。" % -amount)
+		"hand_full":
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast("卡片栏已满：「%s」没有放进卡片栏。" % str(data.get("name", "新卡")))
+		"stock_closed":
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast("股市休市：还有%d天恢复交易，暂时不能买卖股票。"
+					% int(data.get("days", 0)))
+		"card_status_applied":
+			_toast(str(data.get("message", "附身效果已生效")))
+		"hospital_release":
+			_toast("%s 已出院" % str(data.get("name", "玩家")))
 		"discard_card":
 			_ev_sfx(Audio.SFX_UI_CLICK, data, pos)
 		"card_unavailable":
@@ -4780,7 +5863,7 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 		# ---- 两家商店（点券的出口）----
 		"pethouse_open":
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
-				_shop_stock = []
+				_shop_stock = data.get("stock", []).duplicate()
 				_open_shop("pethouse")
 				_toast(_info_disp(201, "精灵屋\n请选购小神仙"))
 		"cardshop_open":
@@ -4791,11 +5874,14 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 		"buy_pet":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_shop_stock = data.get("stock", _shop_stock).duplicate()
+				_shop_sig = ""
+				_sync_shop()
 				_show_pet_skill(str(data.get("pet", "")), 1)
 		"buy_card":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
 			# ⭐ 买走的那张要**从货架上消失**（老板 2026-09-27：「我买了的卡应该移除掉，
-			# 不然我不就可以不停买了吗」）。权威货架在 `Sim.card_shop_stock`，
+			# 不然我不就可以不停买了吗」）。权威货架在玩家的 `card_shop_stock`，
 			# 这里重新拉一次 → 下面的 `_sync_shop` 会因为签名变化而重建格子。
 			_shop_stock = _shop_stock_for_me()
 			_toast("买下「%s」（%d 点券）" % [str(data.get("name", "")), int(data.get("price", 0))])
@@ -4806,26 +5892,48 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 		"pet_shop_refused", "cardshop_refused":
 			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
-				_toast(_info_disp(42 if kind == "cardshop_refused" else 42,
-					"您没有点券\n不能进入卡片商店"))
+				_toast(str(data.get("reason", "点券不足，无法购买")))
 		"pet_skill":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_pet_voice(str(data.get("pet", "")), 1)
 				_toast("%s：%s" % [str(data.get("name", "")), str(data.get("skill", ""))])
+				_show_say(Net.sim.pet_line(str(data.get("pet", "")), 1), int(data.get("pid", -1)))
+		"pet_skill_refused":
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast(str(data.get("reason", "技能未生效")))
+		"need_pet_target":
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_on_pet_skill_quick()
+		"sleepwalk":
+			_toast("%s 梦游中：电脑接管 %d 步" % [str(data.get("name", "玩家")), int(data.get("steps", 0))])
+		"sleepwalk_end":
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id(): _toast("梦游结束，已恢复控制")
+		"pet_flew_away":
+			_pet_event_voice(data)
+			_toast("%s 饱食度耗尽，飞走了" % str(data.get("pet_name", "小神仙")))
+		"pet_released":
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast("已放生%s，可在精灵屋购买新小神仙" % str(data.get("pet_name", "小神仙")))
 		"pet_levelup":
 			_ev_sfx(Audio.SFX_PET_UPGRADE, data, pos)
 		"pet_curse", "pet_attacked", "steal_pet":
 			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
+			if kind == "pet_attacked": _pet_event_voice(data)
 		"pet_dice":
-			_ev_sfx(Audio.SFX_DICE_STOP, data, pos)
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				Audio.play_sfx(Audio.SFX_DICE_STOP)
 		"mine":
 			_ev_sfx(Audio.SFX_PAY_DEDUCT, data, pos)
-			_say(role, Audio.V_LIGHT_PUNISH, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_LIGHT_PUNISH, pos)
 		# ---- 路边物体（原版 roadobj）—— 文案取 config/Info.txt 71..78 ----
 		"road_crystal":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
 			if bool(data.get("leveled", false)):
-				_toast(_info_disp(78, "得到魔戒 小神仙等级上升！"))
+				_toast("得到魔戒：小神仙升到%d级，能量已满，可发动一次技能！"
+					% int(data.get("level", 1)))
+			elif bool(data.get("recharged", false)):
+				_toast("得到魔戒：小神仙能量已满，可发动一次技能！")
 			else:
 				_toast(_info_disp(71, "得到魔戒 什么也没发生"))
 		"road_hanbao":
@@ -4833,18 +5941,29 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 			_toast(_info_disp(74, "吃到汉堡 体力上升"))
 		"road_chest":
 			_ev_sfx(Audio.SFX_COIN_DROP, data, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_GET_MONEY, pos)
 			_toast(_info_disp(72, "强盗遗失宝箱 获得{NUMBER}元",
 				{"NUMBER": str(int(data.get("gain", 0)))}))
 		"road_bomb":
 			_ev_sfx(Audio.SFX_PAY_DEDUCT, data, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_HURT, pos)
 			_toast(_info_disp(76, "遇到炸弹鬼 体力受损"))
 		"road_thief":
 			_ev_sfx(Audio.SFX_PAY_DEDUCT, data, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_LIGHT_PUNISH, pos)
 			_toast(_info_disp(77, "遇到小偷 遗失{NUMBER}元",
 				{"NUMBER": str(int(data.get("loss", 0)))}))
 		"road_god":
-			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
-			_toast(_info_disp(0, "%s附身" % str(data.get("god_cn", ""))))
+			var money := int(data.get("amount", 0))
+			_ev_sfx(Audio.SFX_PAY_DEDUCT if str(data.get("god", "")) == "qiongshen" else Audio.SFX_COIN_DROP, data, pos)
+			var detail := ""
+			if int(data.get("cards", 0)) > 0: detail = "，得到%d张卡" % int(data["cards"])
+			if money > 0:
+				detail = "，%s%d元" % ["失去" if str(data.get("god", "")) == "qiongshen" else "得到", money]
+				_show_money_reel(money)
+			_toast("%s附身%s" % [str(data.get("god_cn", "")), detail])
+			_say_for(int(data.get("pid", -1)), role, Audio.V_LIGHT_PUNISH if str(data.get("god", "")) == "qiongshen"
+				else Audio.V_LUCKY, pos)
 		# ---- 股票 / 公司 ----
 		"stock_buy":
 			_ev_sfx(Audio.SFX_COIN_DROP, data, pos)
@@ -4864,26 +5983,15 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
 				_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
 				_toast("你被 %s 挤到了下一格" % str(data.get("name", "")))
-		"pet_skill":
-			# 小神仙发动特技 → 冒一句台词（`PETSAY` 台词号 1 = 发特技）
-			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
-				var pn := str(data.get("pet", ""))
-				_show_say(Net.sim.pet_line(pn, 1), int(data.get("pid", -1)))
-		"get_pet":
-			# 刚得到小神仙 → 「平时」那句（台词号 2）。
-			# 例：小财神 = 6302「我是人见人爱的小财神」（就是老板截图里那句）
-			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
-				_show_say(Net.sim.pet_line(str(data.get("pet", "")), 2),
-					int(data.get("pid", -1)))
 		"auction_start":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
-			if _auction != null:
+			if _auction != null and not _local_auction_passed():
 				_auction.open(str(data.get("street", "")), int(data.get("price", 0)), "", 1.0)
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
 				_toast(str(data.get("info", "一处土地公开拍卖")))
 		"auction_bid":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
-			if _auction != null:
+			if _auction != null and not _local_auction_passed():
 				_auction.open(str(data.get("street", "")), int(data.get("price", 0)),
 					str(data.get("name", "")), 1.0)
 		"auction_bad_bid":
@@ -4923,18 +6031,18 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 			# 走到「乐透」格（`casino`）→ 打开乐透面板挑号码（Info.txt 61「请选择您的号码」）
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id() and _lotto != null:
 				_lotto.open(int(data.get("prize", 0)),
-					data.get("numbers", {}) as Dictionary)
+					data.get("numbers", {}) as Dictionary, int(data.get("picked", -1)))
 		"lotto_pick":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id() and _lotto != null:
 				_lotto.mark_picked(int(data.get("number", 0)))
-				_toast("乐透号码 %d 已登记（Info.txt 62「拜拜，祝您中奖」）"
-					% int(data.get("number", 0)))
+				_toast("乐透号码 %d 已登记，等待开奖" % int(data.get("number", 0)))
 		"lotto_draw":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
-			if _lotto != null and _lotto.visible:
-				_lotto.show_draw(int(data.get("number", 0)),
-					str(data.get("winner_name", "")), int(data.get("amount", 0)))
+			if int(data.get("pid", -1)) == int(data.get("winner", -2)):
+				_say_for(int(data.get("pid", -1)), role, Audio.V_LOTTO, pos)
+			if _lotto != null and int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_lotto_results.append(data.duplicate(true))
 		"lotto_sold_out":
 			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
@@ -4947,13 +6055,21 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 		"casino_result":
 			_ev_sfx(Audio.SFX_COIN_DROP if int(data.get("win", 0)) > 0
 				else Audio.SFX_ACTION_DENIED, data, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_LOTTO if int(data.get("win", 0)) > 0 else Audio.V_LIGHT_PUNISH, pos)
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				if _casino != null:
+					_casino.set_result("赢 %d 元" % int(data.get("win", 0))
+						if int(data.get("win", 0)) > 0 else "没中", int(data.get("win", 0)) > 0)
 				_toast("拉霸结果：%s" % ("赢 %d 元" % int(data.get("win", 0))
 					if int(data.get("win", 0)) > 0 else "没中"))
 		"casino_need_bet":
 			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
 				_toast("请先投注")
+		"casino_exit":
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id() \
+					and int(data.get("refund", 0)) > 0:
+				_toast("未拉杆的 %d 元下注已退回" % int(data["refund"]))
 		"chairman":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
 			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
@@ -4968,29 +6084,45 @@ func _on_game_event(kind: String, data: Dictionary) -> void:
 			_ev_sfx(Audio.SFX_ACTION_DENIED, data, pos)
 		"blast":
 			_ev_sfx(Audio.SFX_PAY_DEDUCT, data, pos)
-			_say(role, Audio.V_ATTACK, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_ATTACK, pos)
 		"estate_index":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast("%s地价再%s%d%%，累计%+d%%" % [str(data.get("street", "当前街道")),
+					"上涨" if int(data.get("delta", 0)) >= 0 else "下降",
+					absi(int(data.get("delta", 0))), int(data.get("value", 0))])
+		"estate_index_up":
+			_toast("公司资产增长：物价指数涨至%d，空地价格%d元" % [
+				int(data.get("index", 1)), int(data.get("price", 2000))])
+			_toast_t = 5.0
 		"seal":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast("已查封%s的全部%d处地产，封期内不收租" % [
+					str(data.get("street", "这条街")), int(data.get("count", 0))])
 		"own_plot":
 			_ev_sfx(Audio.SFX_UI_CONFIRM, data, pos)
 		"sealed_rent":
 			_toast("该街道查封中，免收过路费")
 		"downgrade":
-			_say(role, Audio.V_ATTACK, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_ATTACK, pos)
 		"arrive_own":
 			# 衰神附身中回到自己土地 —— 原版这里会播「衰神附身 投资失败」
 			if bool(data.get("blocked", false)):
-				_say(role, Audio.V_LIGHT_PUNISH, pos)
+				_say_for(int(data.get("pid", -1)), role, Audio.V_LIGHT_PUNISH, pos)
 		"free_rent":
-			_say(role, Audio.V_FREE_RENT, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_FREE_RENT, pos)
 		"hospital":
-			_say(role, Audio.V_HOSPITAL, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_HOSPITAL, pos)
+		"card_damage":
+			_say_for(int(data.get("pid", -1)), role, Audio.V_HURT, pos)
 		"sleep":
-			_say(role, Audio.V_SLEEP, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_SLEEP, pos)
+			if int(data.get("pid", -1)) == multiplayer.get_unique_id():
+				_toast("受到%s影响，暂时不能掷骰" % (str(data.get("by_name", "对手")) + "的冬眠卡"
+					if data.has("card") else "小神仙"))
 		"meet":
-			_say(role, Audio.V_GREET, pos)
+			_say_for(int(data.get("pid", -1)), role, Audio.V_GREET, pos)
 		_:
 			pass
 
@@ -4999,7 +6131,39 @@ func _on_state(snap: Dictionary) -> void:
 	if screen != Screen.GAME:
 		return
 	_board.sync(snap)
+	if _card_pending != "": _sync_target_highlight()
 	_hud_refresh(snap)
+	if not bool(snap.get("run", true)) and not (snap.get("players", {}) as Dictionary).is_empty():
+		_show_settlement(snap)
+
+
+func _show_settlement(snap: Dictionary) -> void:
+	if is_instance_valid(_settlement): return
+	_camera_drag_button = 0
+	_camera_drag_distance = 0.0
+	_close_house_picker()
+	_clear_card_target_mode()
+	_close_shop()
+	_pop_mode = ""
+	_shop_pending = ""
+	if _pop != null: _pop.hide()
+	for panel in [_event_dialog, _news_pop, _session_menu, _step_picker, _data_view, _view_menu]:
+		if is_instance_valid(panel): panel.hide()
+	if _casino != null: _casino.close()
+	if _lotto != null: _lotto.close()
+	if _auction != null: _auction.close()
+	if _stock != null: _stock.close_all()
+	_settlement = load("res://scripts/ui/settlement_panel.gd").new()
+	_ui.add_child(_settlement)
+	_settlement.setup(self, snap)
+	_settlement.return_requested.connect(_on_leave)
+
+
+func _close_settlement() -> void:
+	if is_instance_valid(_settlement):
+		_settlement.hide()
+		_settlement.queue_free()
+	_settlement = null
 
 func _on_log(text: String) -> void:
 	_log_lines.append(text)
@@ -5018,19 +6182,22 @@ func _hud_refresh(snap: Dictionary) -> void:
 
 	# ---- 顶栏（5 个计数项 + x/y，版式见 docs/ui-audit.md）----
 	var me: Dictionary = players.get(my_id, {})
-	var day := int(float(snap.get("t", 0.0)) / maxf(Rules.seconds_per_day(), 0.001)) + 1
-	_hud_day.set_text("%d/1" % day)     # ⚠️ 原版 x/y 的确切语义未考证，暂用「第 N 天 / 1」占位
+	var elapsed_days := int(snap.get("road_day", int(float(snap.get("t", 0.0)) / maxf(Rules.seconds_per_day(), .001))))
+	var date := Sim.calendar_at_day(elapsed_days)
+	_hud_day.set_text("%d/%d" % [date.day, date.month])
+	_hud_day.tooltip_text = "第%d年 %d月%d日（30天/月）\n物价指数：%.0f（%.1f倍）\n空地价格：%d元" % [date.year, date.month, date.day,
+		float(snap.get("estate_index", 10)), float(snap.get("estate_index", 10)) / 10.0,
+		Net.sim.empty_plot_price() if Net.sim != null else 2000]
+	_hud_day.mouse_filter = Control.MOUSE_FILTER_STOP
 	if not me.is_empty():
 		_hud_money.set_text(_comma(int(me["money"])))
-		_hud_deposit.set_text("0")      # ⚠️ 存款系统未实现 → 占位
-		var mine := 0
-		for k in plots.keys():
-			if int(plots[k]["owner"]) == my_id:
-				mine += 1
-		_hud_houses.set_text(str(mine))
-		var cards: Array = me.get("cards", [])
-		_hud_cards.set_text(str(cards.size()))
-		_hud_credit.set_text(str(int(me.get("credit", 0))))   # 点券（事件格 5/10/20/30/50 加）
+		_hud_stock_value.set_text(_comma(Net.sim.stock_portfolio_value(me)))
+		_hud_estate_value.set_text(_comma(Net.sim.estate_value(me)))
+		_hud_points.set_text(str(int(me.get("credit", 0))))
+		# 原版顶栏使用整数指数；图片数字字库没有小数点，"1.1" 会被画成 "11"。
+		var price_tenths := maxi(10, int(round(float(snap.get("estate_index", 10.0)))))
+		_hud_price_index.set_text(str(int(price_tenths / 10)) if price_tenths % 10 == 0
+			else "%.1f" % (float(price_tenths) / 10.0))
 
 	# ---- 右侧：玩家头像列（原版 = 贴右边缘的竖排圆头像）----
 	_sync_avatar_column(ids, players, my_id)
@@ -5105,7 +6272,9 @@ func _sync_avatar_column(ids: Array, players: Dictionary, my_id: int) -> void:
 		img.texture = _role_texture(int(p.get("role", i + 1)) - 1, "21")
 		img.modulate = Color(1, 1, 1, 1) if bool(p["alive"]) else Color(0.5, 0.5, 0.55, 0.7)
 		# 「请选择对手」模式：除自己外都能点（String.txt 1101）
-		var selectable := _card_pending != "" and id != my_id and bool(p["alive"])
+		var selectable := Net.sim != null and ((_pet_target_pending and Net.sim.pet_skill_candidates(my_id).has(id)) \
+			or (_card_pending != "" and Net.sim.card_needs_player(_card_pending) \
+			and Net.sim.card_target_candidates(my_id, _card_pending).has(id)))
 		ab.set_meta("pid", id)
 		ab.disabled = not selectable
 		ab.mouse_filter = Control.MOUSE_FILTER_STOP if selectable else Control.MOUSE_FILTER_IGNORE
@@ -5138,30 +6307,22 @@ func _active_player_id(players: Dictionary) -> int:
 ## 左下角色面板内容（版式见 _build_character_panel 的注释）
 func _sync_char_panel(me: Dictionary, players: Dictionary, plots: Dictionary,
 		ids: Array, my_id: int) -> void:
-	var rank := 1
-	for id in ids:
-		if int(players[int(id)]["money"]) > int(me["money"]):
-			rank += 1
-	_char_avatar.texture = _role_texture(int(me.get("role", 1)) - 1, "01")
-	_char_name.text = str(me["name"])
-	_char_stat.text = "第 %d 名" % rank
-
-	# 左细条 = **体力**（满 = 亮黄）。这一条是即时制里真正一直在动的量：
-	#   每走 1 格 -20、每秒 +7，低于「自己走所需要最小体力值」就不能出发。
-	#   参数来自地图场景配置（config/scene/<map>/<map>.txt），见 Sim.stamina_*()。
-	# 右细条 = 现金 / 目标额（原版这条留空，我们的刻意偏差，见 docs/ui-audit.md §2）
+	var role := int(me.get("role", 1))
+	var resting := maxf(float(me.get("effects", {}).get("rest_until", 0.0)), float(me.get("effects", {}).get("sleep_until", 0.0))) > float(_snapshot.get("t", 0.0))
+	_char_avatar.texture = _role_texture(role - 1, _char_expression if _char_expression_t > 0 else "04" if resting else "01")
+	_char_identity.texture_normal = _role_texture(role - 1, "31")
+	_char_name.text = Rules.role_name(role)
+	# Original bottom bars: player's stamina, active pet's fullness.
 	var smax := Sim.STAMINA_MAX
 	if Net.sim != null:
 		smax = Net.sim.stamina_max()
 	_char_bar_a.value = clampf(float(me.get("stamina", 0.0)) / maxf(smax, 1.0) * 100.0, 0.0, 100.0)
-	var goal := 1000000.0
-	_char_bar_b.value = clampf(float(me["money"]) / goal * 100.0, 0.0, 100.0)
-
-	var t: Dictionary = {}
-	if _board != null and _board.map != null:
-		t = _board.map.tile(int(me["tile"]))
-	# 这块是**精灵栏**：显示出战小神仙的**头像**（点一下 → 精灵仓库）。
-	# ⚠️ 原来这里显示「所在地块的名字 + 等级」，老板说「很奇怪」；也不该用文字。
+	var full_stamina := float(me.get("stamina", 0.0)) + 0.001 >= smax
+	if full_stamina != _stamina_bar_full:
+		_stamina_bar_full = full_stamina
+		var fill := Color8(255, 225, 32) if full_stamina else Color8(255, 48, 25)
+		_char_bar_a.add_theme_stylebox_override("fill",
+			_sb(fill, fill, maxi(1, int(round(4.0 * _ui_scale))), 0))
 	var ap: Dictionary = {}
 	if Net.sim != null:
 		ap = Net.sim.active_pet(me)
@@ -5169,18 +6330,33 @@ func _sync_char_panel(me: Dictionary, players: Dictionary, plots: Dictionary,
 		if ap.is_empty():
 			_pet_slot.texture = null
 		else:
-			_pet_slot.texture = _tex_or_null(Rules.pet_art(str(ap.get("id", "")), "face",
-				int(ap.get("level", 1))))
+			var happy := Net.sim.pet_skill_ready(ap)
+			var anxious := Net.sim.pet_anxious(ap)
+			_pet_slot.texture = _tex_or_null(Rules.pet_hud_art(str(ap.get("id", "")), anxious, happy))
 	if _pet_bar != null:
 		_pet_bar.value = 100.0 * (Net.sim.pet_fullness_ratio(ap) if (Net.sim != null
 			and not ap.is_empty()) else 0.0)
+	if _pet_skill_btn != null:
+		_pet_skill_btn.visible = not ap.is_empty() and Net.sim != null and Net.sim.pet_skill_ready(ap)
+		if _pet_skill_btn.visible and Net.sim != null:
+			_pet_skill_btn.texture_normal = _tex_or_null(Rules.pet_art(str(ap.get("id", "")), "icon", 1))
+			_pet_skill_btn.texture_hover = _pet_skill_btn.texture_normal
+			_pet_skill_btn.texture_pressed = _tex_or_null(Rules.pet_art(str(ap.get("id", "")), "icon", 2))
+			var skill_reason := Net.sim.pet_skill_block_reason(my_id)
+			_pet_skill_btn.tooltip_text = "发动%s" % Net.sim.pet_skill(str(ap.get("id", ""))) \
+				if skill_reason == "" else skill_reason
 	if ap.is_empty():
-		_char_info.text = "精灵栏（空）"
+		_char_info.text = ""
 	else:
 		var nm2 := str(ap.get("id", ""))
 		if Net.sim != null:
 			nm2 = Net.sim.pet_name(nm2)
-		_char_info.text = "%s Lv%d" % [nm2, int(ap.get("level", 1))]
+		_char_info.text = nm2
+	_pet_level_star.visible = not ap.is_empty()
+	_pet_level_star.text = "★".repeat(clampi(int(ap.get("level", 1)), 1, 4)) if not ap.is_empty() else ""
+	# Native HUD expresses hunger through 02.tga, without an added warning badge.
+	_pet_anxious.visible = false
+	_pet_slot.modulate = Color.WHITE
 
 
 ## 动作入口：GO 圆钮（掷骰子）+ 落点气泡（买 / 升级 / 放弃）
@@ -5188,21 +6364,42 @@ func _sync_char_panel(me: Dictionary, players: Dictionary, plots: Dictionary,
 func _sync_action_entry(me: Dictionary, plots: Dictionary, my_id: int) -> void:
 	var can_act: bool = int(me["moving"]) == 0 and bool(me["alive"]) \
 		and int(me.get("id", my_id)) == my_id
+	can_act = can_act and float(_snapshot.get("t", 0.0)) >= float(me.get("entry_until", 0.0)) \
+		and int(me.get("effects", {}).get("sleepwalk_steps", 0)) == 0
 	var kind := str(me.get("last_plot_kind", ""))
 	var lidx := int(me["last_plot"])
+	if kind == "": _house_pick_dismissed_idx = -1
+	if _house_pick != null:
+		var rebuild := str(_house_pick.get_meta("card", "")) == "rebuild"
+		if not can_act or (not rebuild and kind != "upgrade") or (rebuild and not (me.get("cards", []) as Array).has("rebuild")): _close_house_picker()
+		else:
+			_pop.hide()
+			_go_btn.hide()
+			return
+	if can_act and kind == "upgrade" and lidx >= 0 and plots.has(lidx) \
+			and int(plots[lidx].get("level", 0)) == 0 \
+			and _house_pick_dismissed_idx != lidx:
+		_open_house_picker({"options": Net.sim.buildable_types(), "idx": lidx,
+			"pid": my_id, "free": int(me["effects"].get("free_upgrade_steps", 0)) > 0})
+		_pop_mode = ""
+		_pop.hide()
+		_go_btn.hide()
+		return
 
 	# 骰子正在飞出的那 0.55 秒里 GO 钮**保持可见**，否则观感是「按钮突然消失、
 	# 骰子凭空出现在天上」，接不上「从这里飞出去」。
-	_go_btn.visible = (can_act and kind == "") or _dice_fx_state == "fly"
-	# 体力不够时压暗 GO 钮（原版「自己走所需要最小体力值」——见 Sim.stamina_min_start）
-	var smin := Sim.STAMINA_MIN_START
-	if Net.sim != null:
-		smin = Net.sim.stamina_min_start()
-	var tired: bool = float(me.get("stamina", 0.0)) < smin
-	_go_btn.modulate = Color(0.55, 0.55, 0.62, 0.85) if tired else Color(1, 1, 1, 1)
-	if tired:
-		_go_btn.tooltip_text = "体力不足（%.0f/%.0f），歇一会儿" % [
-			float(me.get("stamina", 0.0)), smin]
+	# 行走刚好在骰子飞行动画尚未结束时落到购地格，必须马上让位给购地提示。
+	# 否则 GO 还亮着，却被提示框盖住，玩家会以为第二次点击失效。
+	_go_btn.visible = (can_act and kind == "") or (_dice_fx_state == "fly" and kind == "")
+	# 按服务端同一套门槛显示状态；被挤走后若仍在睡眠/住院，不能亮着却掷不出。
+	var roll_reason := Net.sim.roll_block_reason(me, float(_snapshot.get("t", 0.0))) \
+		if Net.sim != null else "当前无法掷骰"
+	var resting := float(me.get("effects", {}).get("rest_until", 0.0)) > float(_snapshot.get("t", 0.0))
+	_go_btn.modulate = Color(0.55, 0.55, 0.62, 0.85) if roll_reason != "" and not resting else Color(1, 1, 1, 1)
+	_go_btn.tooltip_text = roll_reason if roll_reason != "" else "掷骰子（空格）· %d 颗" % _dice_count
+	if resting:
+		_go_btn.tooltip_text = "挂机休息中：点击 GO 立即唤醒并掷骰" if roll_reason == "" else \
+			"挂机休息中：点击 GO 立即唤醒；体力不足暂不能前进"
 
 	# 卡片二次确认（购地卡 / 土神卡）自己管文案与显隐，别被落点逻辑覆盖；
 	# 一旦不能再操作（走起来了 / 不是自己了 / 又冒出一个落点机会）就收掉，
@@ -5229,12 +6426,16 @@ func _sync_action_entry(me: Dictionary, plots: Dictionary, my_id: int) -> void:
 	#   id 91「<ROAD>\n购买价格<NUMBER>元\n是否购买」
 	#   id 93「<ROAD>\n升级费用<NUMBER>元\n是否升级」
 	if kind == "buy":
-		_pop_text.text = "%s\n买地 %d 元" % [_plot_name(lidx), Net.sim.empty_plot_price()]
+		_pop_text.text = "%s\n买地 %d 元" % [_plot_name(lidx), Net.sim.empty_plot_price(lidx)]
 		_btn_bldtype.visible = false
 		return
 	if kind == "upgrade" and lidx >= 0 and plots.has(lidx):
 		var plot: Dictionary = plots[lidx]
 		var lv := int(plot["level"])
+		if lv == 0:
+			_btn_bldtype.visible = false
+			_pop_text.text = "%s\n请选择要盖的房屋" % _plot_name(lidx)
+			return
 		var ptype := str(plot.get("type", ""))
 		var opts: Array = Net.sim.buildable_types() if Net.sim != null else Rules.primary_types()
 		if ptype == "" and opts.size() > 1:
@@ -5344,3 +6545,6 @@ func _label(t: String) -> Label:
 	l.text = t
 	l.add_theme_color_override("font_color", Color(0.78, 0.82, 0.9))
 	return l
+
+func _local_auction_passed() -> bool:
+	return Net.sim != null and (Net.sim.auction.get("passed", []) as Array).has(multiplayer.get_unique_id())

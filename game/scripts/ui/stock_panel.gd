@@ -88,6 +88,7 @@ func _build() -> void:
 	var heads := ["名称", "股价", "持股", "%"]
 	for i in range(4):
 		var lb := Label.new()
+		lb.clip_text = true
 		lb.text = heads[i]
 		lb.custom_minimum_size = Vector2(_px(COL_W[i]), _px(HEAD_H))
 		lb.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER if i > 0 \
@@ -113,6 +114,7 @@ func _build() -> void:
 		var labels: Array = []
 		for i in range(4):
 			var lb := Label.new()
+			lb.clip_text = true
 			lb.custom_minimum_size = Vector2(_px(COL_W[i]), _px(ROW_H))
 			lb.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER if i > 0 \
 				else HORIZONTAL_ALIGNMENT_LEFT
@@ -127,6 +129,7 @@ func _build() -> void:
 
 	# ---- 底部提示（还能翻页 / 点行操作）----
 	_hint = Label.new()
+	_hint.clip_text = true
 	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_hint.add_theme_font_size_override("font_size", maxi(8, int(round(_px(10.0)))))
 	_hint.add_theme_color_override("font_color", Color8(90, 100, 130))
@@ -199,11 +202,13 @@ func _build_info() -> void:
 	col.add_theme_constant_override("separation", maxi(2, int(round(_px(5.0)))))
 	_info.add_child(col)
 	_info_title = Label.new()
+	_info_title.clip_text = true
 	_info_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_info_title.add_theme_font_size_override("font_size", maxi(10, int(round(_px(14.0)))))
 	_info_title.add_theme_color_override("font_color", Color8(28, 62, 140))
 	col.add_child(_info_title)
 	_info_list = Label.new()
+	_info_list.clip_text = true
 	_info_list.custom_minimum_size = Vector2(_px(212.0), _px(30.0))
 	_info_list.add_theme_font_size_override("font_size", maxi(9, int(round(_px(12.0)))))
 	_info_list.add_theme_color_override("font_color", Color8(24, 28, 44))
@@ -279,6 +284,7 @@ func _build_dialog() -> void:
 	top.add_theme_constant_override("separation", maxi(3, int(round(_px(6.0)))))
 	col.add_child(top)
 	_dlg_title = Label.new()
+	_dlg_title.clip_text = true
 	_dlg_title.custom_minimum_size = Vector2(_px(50.0), _px(24.0))
 	_dlg_title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_dlg_title.add_theme_font_size_override("font_size", maxi(10, int(round(_px(14.0)))))
@@ -287,6 +293,7 @@ func _build_dialog() -> void:
 	# ⚠ 老板 2026-09-26：「他这个面板**没有手动输入框**，滑动条是唯一的输入点，每跳 100」
 	#   → 用 HSlider（步长 100）当**唯一**输入，股数只做只读显示，不要 LineEdit。
 	_dlg_num = Label.new()
+	_dlg_num.clip_text = true
 	_dlg_num.custom_minimum_size = Vector2(_px(80.0), _px(24.0))
 	_dlg_num.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_dlg_num.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -295,6 +302,7 @@ func _build_dialog() -> void:
 	top.add_child(_dlg_num)
 
 	_dlg_amount = Label.new()
+	_dlg_amount.clip_text = true
 	_dlg_amount.custom_minimum_size = Vector2(_px(150.0), _px(34.0))
 	_dlg_amount.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_dlg_amount.vertical_alignment = VERTICAL_ALIGNMENT_CENTER

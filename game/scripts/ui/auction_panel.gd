@@ -32,14 +32,14 @@ var _add_btns: Array = []
 
 
 func setup(ui_scale: float) -> void:
-	_scale = ui_scale
+	_scale = ui_scale * 1.4
 	visible = false
 	z_index = 48
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_build()
 	var vp := get_viewport().get_visible_rect()
-	size = Vector2(SIDE * _scale, SIDE * _scale)
-	position = Vector2((vp.size.x - size.x) * 0.5, (vp.size.y - size.y) * 0.42)
+	size = Vector2(SIDE * _scale, (SIDE + 22.0) * _scale)
+	position = Vector2(12.0 * ui_scale, (vp.size.y - size.y) * 0.42)
 
 
 func _px(v: float) -> float:
@@ -82,18 +82,20 @@ func _label(pos: Vector2, sz: Vector2, fsz: float, col: Color) -> Label:
 func _build() -> void:
 	_img("bg.png", Vector2.ZERO, Vector2(_px(SIDE), _px(SIDE)))
 	# 底图右侧下方有三条白框信息栏 → 文字要**落在框里**（所以左右都留了边距、字号压小）
-	_title = _label(Vector2(_px(16), _px(148)), Vector2(_px(178), _px(15)), 9.5,
+	_title = _label(Vector2(_px(111), _px(132)), Vector2(_px(67), _px(16)), 10,
 		Color8(90, 40, 30))
-	_sub = _label(Vector2(_px(16), _px(170)), Vector2(_px(178), _px(15)), 9.5,
+	_sub = _label(Vector2(_px(55), _px(182)), Vector2(_px(76), _px(18)), 11,
 		Color8(180, 40, 40))
-	_third = _label(Vector2(_px(16), _px(192)), Vector2(_px(178), _px(15)), 9,
+	_third = _label(Vector2(_px(55), _px(211)), Vector2(_px(76), _px(18)), 11,
 		Color8(70, 60, 90))
+	_label(Vector2(_px(14), _px(174)), Vector2(_px(33), _px(26)), 10, Color8(90, 40, 30)).text = "价格"
+	_label(Vector2(_px(14), _px(210)), Vector2(_px(33), _px(26)), 10, Color8(90, 40, 30)).text = "出价"
 
 	# 倒计时条
 	_bar = ProgressBar.new()
 	_bar.show_percentage = false
-	_bar.position = Vector2(_px(20), _px(214))
-	_bar.size = Vector2(_px(216), _px(7))
+	_bar.position = Vector2(_px(14), _px(232))
+	_bar.size = Vector2(_px(190), _px(4))
 	_bar.min_value = 0.0
 	_bar.max_value = 100.0
 	_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -107,7 +109,7 @@ func _build() -> void:
 
 	# 三个加价档（素材就是 100 / 500 / 1000）
 	var add_row := HBoxContainer.new()
-	add_row.position = Vector2(_px(18), _px(226))
+	add_row.position = Vector2(_px(14), _px(239))
 	add_row.add_theme_constant_override("separation", maxi(1, int(round(_px(3)))))
 	add_child(add_row)
 	for amt in [100, 500, 1000]:
@@ -115,7 +117,7 @@ func _build() -> void:
 		b.texture_normal = _tex("add%d.png" % amt)
 		b.ignore_texture_size = true
 		b.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-		b.custom_minimum_size = Vector2(_px(58), _px(26))
+		b.custom_minimum_size = Vector2(_px(48), _px(17))
 		var a := int(amt)
 		b.pressed.connect(func(): _pick_add(a))
 		add_row.add_child(b)
@@ -123,22 +125,25 @@ func _build() -> void:
 
 	# OK / PASS
 	var ok := TextureButton.new()
+	ok.name = "BidButton"
 	ok.texture_normal = _tex("ok.png")
 	ok.texture_pressed = _tex("ok_dn.png")
 	ok.ignore_texture_size = true
 	ok.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-	ok.position = Vector2(_px(196), _px(226))
-	ok.size = Vector2(_px(40), _px(26))
+	ok.position = Vector2(_px(177), _px(235))
+	ok.size = Vector2(_px(38), _px(28))
+	ok.tooltip_text = "按所选金额加价出价"
 	ok.pressed.connect(func(): act.emit("bid", _picked))
 	add_child(ok)
 
 	var pass_btn := TextureButton.new()
+	pass_btn.name = "PassButton"
 	pass_btn.texture_normal = _tex("pass.png")
 	pass_btn.texture_pressed = _tex("pass_dn.png")
 	pass_btn.ignore_texture_size = true
 	pass_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-	pass_btn.position = Vector2(_px(196), _px(254))
-	pass_btn.size = Vector2(_px(40), _px(20))
+	pass_btn.position = Vector2(_px(216), _px(235))
+	pass_btn.size = Vector2(_px(38), _px(28))
 	pass_btn.pressed.connect(func(): act.emit("pass", 0))
 	add_child(pass_btn)
 
@@ -155,9 +160,10 @@ func _pick_add(a: int) -> void:
 ## 开拍 / 刷新
 func open(street: String, price: int, best_name: String, left_ratio: float) -> void:
 	visible = true
-	_title.text = "%s 一处土地公开拍卖" % street
-	_sub.text = "当前价 %d 元" % price
-	_third.text = ("最高出价：%s" % best_name) if best_name != "" else "还没有人出价"
+	_title.text = street
+	_title.tooltip_text = "%s 一处土地公开拍卖" % street
+	_sub.text = str(price)
+	_third.text = best_name if best_name != "" else "暂无"
 	_bar.value = clampf(left_ratio, 0.0, 1.0) * 100.0
 
 

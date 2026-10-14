@@ -30,6 +30,18 @@ var _pool: Array[TextureRect] = []
 
 static func _tex_of(name: String) -> Texture2D:
 	if not _tex.has(name):
+		if name == "num_dot":
+			var image := Image.create(7, 7, false, Image.FORMAT_RGBA8)
+			image.fill(Color.TRANSPARENT)
+			for y in range(2, 7):
+				for x in range(1, 6):
+					if Vector2(x - 3, y - 4).length() <= 2.5:
+						image.set_pixel(x, y, Color(0.12, 0.18, 0.47))
+			for y in range(3, 6):
+				for x in range(2, 5):
+						image.set_pixel(x, y, Color.WHITE)
+			_tex[name] = ImageTexture.create_from_image(image)
+			return _tex[name]
 		var p := DIR + name + ".png"
 		_tex[name] = VisualQuality.texture(p, true) if ResourceLoader.exists(p) else null
 	return _tex[name]
@@ -65,7 +77,8 @@ func _sync() -> void:
 			continue
 		var ch := _text[i]
 		var is_slash := ch == "/"
-		var tex: Texture2D = _tex_of("num_slash" if is_slash else ("num_" + ch))
+		var is_dot := ch == "."
+		var tex: Texture2D = _tex_of("num_slash" if is_slash else ("num_dot" if is_dot else ("num_" + ch)))
 		if tex == null:
 			t.visible = false
 			continue
@@ -74,10 +87,11 @@ func _sync() -> void:
 			continue
 		t.visible = true
 		t.texture = tex
+		t.size_flags_vertical = Control.SIZE_SHRINK_END if is_dot else Control.SIZE_SHRINK_CENTER
 		# 斜杠已经是从原版截图直接裁的（已含原版拉伸），不再补横向
-		var cap := SLASH_H if is_slash else DIGIT_H
+		var cap := DIGIT_H * .30 if is_dot else (SLASH_H if is_slash else DIGIT_H)
 		var sy := cap * ui_scale / h
-		var sx := sy if is_slash else sy * STRETCH_X
+		var sx := sy if is_slash or is_dot else sy * STRETCH_X
 		var sz: Vector2 = tex.get_size() * Vector2(sx, sy)
 		t.custom_minimum_size = sz
 		t.size = sz

@@ -3,22 +3,37 @@ extends RefCounted
 class_name VisualQuality
 ## Optional enhancement overlay. Asset definitions and manual map transforms stay original.
 static var enabled := true
+static var remade := OS.get_cmdline_user_args().has("--remade-assets")
 static var _manifest: Dictionary = {}
 static var _loaded := false
 static var _textures: Dictionary = {}
 static var _texture_costs: Dictionary = {}
 static var _cache_bytes := 0
 const CACHE_BUDGET := 256 * 1024 * 1024
+static var _material_rules: Dictionary = {}
+
+static func use_profile(profile: String) -> void:
+	enabled = profile != "original"
+	remade = profile == "remade"
+	_loaded = false
+	_manifest = {}
 
 static func manifest() -> Dictionary:
 	if not _loaded:
 		_loaded = true
-		var path := "res://assets/enhanced/manifest.json"
+		var path := "res://assets/remade/manifest.json" if remade else "res://assets/enhanced/manifest.json"
 		if FileAccess.file_exists(path):
 			var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
 			if data is Dictionary:
 				_manifest = data
 	return _manifest
+
+static func alpha_mode(source: String) -> String:
+	if _material_rules.is_empty():
+		var path := "res://data/render/materials.json"
+		if FileAccess.file_exists(path):
+			_material_rules = JSON.parse_string(FileAccess.get_file_as_string(path))
+	return str(_material_rules.get(source, {}).get("mode", "cutout"))
 
 static func mesh_path(source: String) -> String:
 	if not enabled:
@@ -32,7 +47,7 @@ static func mesh_path(source: String) -> String:
 static func texture(source: String, logical_size := false) -> Texture2D:
 	if source.is_empty():
 		return null
-	var key := source + str(enabled) + str(logical_size)
+	var key := source + str(enabled) + str(remade) + str(logical_size)
 	if _textures.has(key):
 		var cached: Texture2D = _textures[key]
 		_textures.erase(key)

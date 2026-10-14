@@ -19,7 +19,7 @@ const DECAL_LIFT := 0.05          # 地毯离地高度，避免与地形 z-fight
 const MARKER_R := 0.95
 const CORNER_S := 0.26            # 地毯四角小红块
 
-const C_UNSOLD := Color(0.80, 0.78, 0.79)
+const C_UNSOLD := Color(0.48, 0.38, 0.22, 0.42)
 const C_START := Color(0.34, 0.88, 0.50)
 const C_EVENT := Color(1.00, 0.84, 0.28)
 
@@ -55,14 +55,22 @@ var _tile_mats: Array = []         # StandardMaterial3D
 var _tile_pos: Array = []          # Vector3，与 tiles 同序
 var _tile_spacing := 4.4
 var _level_nodes: Dictionary = {}  # tile:int -> Node3D（房屋）
+var _plot_anchors: Dictionary = {}
 var _plot_nodes: Dictionary = {}   # tile:int -> Node3D（原版彩色地产槽）
 var _plot_border_tex: Texture2D = null
+var estate_view := false
+var _estate_coins: Node3D
+var _estate_value_signature := ""
 
 # 角色
 var _player_nodes: Dictionary = {}   # id:int -> Node3D
 var _player_mats: Dictionary = {}    # id:int -> StandardMaterial3D
 var _player_target: Dictionary = {}  # id:int -> Vector3
 var _blob_tex: Texture2D = null
+var _effects: WorldEffects
+var _actor_actions: Dictionary = {}
+var _visual_time := 0.0
+var _entry_parts: Array = []
 
 # 相机
 var _cam_pitch := CAM_PITCH_DEF
@@ -97,6 +105,9 @@ func build(m: MapData) -> void:
 	_build_tiles()
 	_build_event_icons()
 	_place_camera()
+	_effects = WorldEffects.new()
+	add_child(_effects)
+	_effects.setup(self)
 
 
 ## 相机初始取景：默认跟人（近距斜视）；无角色时先框住全盘
@@ -268,9 +279,12 @@ func _build_tiles() -> void:
 
 		var mat := StandardMaterial3D.new()
 		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 		mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
-		mat.albedo_texture = tex
 		var kind: String = t.get("kind", "")
+		var egypt_carpet := map.name == "aiji" and str(t.get("event", "")) == "platform"
+		# 地毯是埃及传送点的标志，不是铺满所有路点的通用道路贴图。
+		mat.albedo_texture = tex if egypt_carpet else null
 		if kind == "start":
 			mat.albedo_color = C_START
 		elif kind == "event":
@@ -280,18 +294,23 @@ func _build_tiles() -> void:
 
 		var mi := MeshInstance3D.new()
 		var pm := PlaneMesh.new()
-		pm.size = Vector2(rug, rug)
+		pm.size = Vector2.ONE if kind == "plot" and not map.original_layout.is_empty() else Vector2(rug, rug)
 		mi.mesh = pm
 		mi.material_override = mat
-		mi.position = pos + Vector3(0, DECAL_LIFT, 0)
-		mi.rotation = Vector3(0, ang, 0)
+		if kind == "plot" and not map.original_layout.is_empty():
+			mi.transform = map.plot_transform(i)
+			mi.position.y += DECAL_LIFT + .01
+		else:
+			mi.position = pos + Vector3(0, DECAL_LIFT, 0)
+			mi.rotation = Vector3(0, ang, 0)
 		mi.name = "Plot%d" % i
 		add_child(mi)
+		mi.visible = kind == "plot" or egypt_carpet
 		_tile_nodes.append(mi)
 		_tile_mats.append(mat)
 
 		# 四角小红块（原版地毯四角的标记）
-		if kind != "start":
+		if egypt_carpet:
 			var cmat := StandardMaterial3D.new()
 			cmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 			cmat.albedo_color = Color(0.42, 0.10, 0.12)
@@ -324,26 +343,6 @@ func _build_tiles() -> void:
 			disc.position = pos + Vector3(0, DECAL_LIFT + 0.06, 0)
 			add_child(disc)
 
-		# 文字：街道名 / 事件名 / 起点（只标关键格，避免糊成一团）
-		var txt := ""
-		if kind == "plot" and int(t.get("plot_in_street", -1)) == 0:
-			txt = str(t.get("street", ""))
-		elif kind == "event":
-			txt = str(t.get("name", ""))
-		elif kind == "start":
-			txt = "起点"
-		if txt != "":
-			var lab := Label3D.new()
-			lab.text = txt
-			lab.font_size = 64
-			lab.pixel_size = 0.0072
-			lab.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-			lab.no_depth_test = true
-			lab.outline_size = 12
-			lab.modulate = Color(1.0, 0.98, 0.9)
-			lab.outline_modulate = Color(0.06, 0.06, 0.10, 0.85)
-			lab.position = pos + Vector3(0, 1.35, 0)
-			add_child(lab)
 
 
 # ------------------------------------- 事件格图标 / 路边物体（原版 roadobj）
@@ -363,7 +362,9 @@ const ROAD_ASSET_DIR := "res://assets/roadobj/"
 const ROAD_OBJ_SCALE := 0.82
 
 var _road_index: Dictionary = {}      # assets/roadobj/index.json
+var _road_cvd_index: Dictionary = {}  # 原版 CVD 动画路面物体
 var _event_nodes: Dictionary = {}     # tile:int -> MeshInstance3D
+var _obstacle_nodes: Dictionary = {}
 var _road_nodes: Dictionary = {}      # tile:int -> Node3D
 var _tex_cache: Dictionary = {}       # res 路径 -> Texture2D
 var _r6bm_cache: Dictionary = {}      # res 路径 -> ArrayMesh
@@ -409,6 +410,8 @@ func _build_event_icons() -> void:
 		if not EVENT_NO_ICON.has(key) and icons.has(icon_name):
 			tex = _tex(ROAD_ASSET_DIR + str(icons[icon_name]))
 		if tex == null:
+			if key == "platform" and map.name == "aiji":
+				continue              # 埃及传送地毯本身就是事件标志
 			# 原版没给这个事件格画图标（例如传送平台）→ 退回原来的黄圆盘
 			_event_disc(i)
 			continue
@@ -508,6 +511,24 @@ func _sync_road(objs: Dictionary) -> void:
 			(_road_nodes[ti] as Node3D).visible = false
 
 
+func _sync_obstacles(obstacles: Array) -> void:
+	var known := {}
+	for entry in obstacles:
+		if not entry is Dictionary: continue
+		var tile := int(entry.get("idx", -1))
+		if tile < 0 or tile >= _tile_pos.size(): continue
+		var kind := str(entry.get("kind", ""))
+		known[tile] = true
+		if _obstacle_nodes.has(tile) and str((_obstacle_nodes[tile] as Node3D).get_meta("kind", "")) == kind:
+			(_obstacle_nodes[tile] as Node3D).visible = true
+			continue
+		if _obstacle_nodes.has(tile): (_obstacle_nodes[tile] as Node3D).queue_free()
+		_obstacle_nodes[tile] = _make_road_node(tile, "block" if kind == "roadblock" else kind)
+		(_obstacle_nodes[tile] as Node3D).set_meta("kind", kind)
+	for tile in _obstacle_nodes:
+		if not known.has(tile): (_obstacle_nodes[tile] as Node3D).visible = false
+
+
 func _make_road_node(tile: int, kind: String) -> Node3D:
 	var root := Node3D.new()
 	root.name = "Road%d" % tile
@@ -515,9 +536,27 @@ func _make_road_node(tile: int, kind: String) -> Node3D:
 	root.position = _tile_pos[tile]
 	add_child(root)
 	var rug := _rug_size()
+	if kind == "block" or kind == "mine":
+		var road_dir := _dir_at(tile)
+		root.rotation.y = atan2(road_dir.x, road_dir.y) + (PI * 0.5 if kind == "block" else 0.0)
 	var idx := _load_road_index()
 	var items: Dictionary = idx.get("items", {})
 	var rec: Dictionary = items.get(kind, {})
+	# 解包的原版 CVD 优先：财神、衰神、小偷等都有几何与逐帧动画。
+	if _road_cvd_index.is_empty():
+		var cvd_index_path := "res://assets/original/road_items/index.json"
+		if FileAccess.file_exists(cvd_index_path):
+			_road_cvd_index = JSON.parse_string(FileAccess.get_file_as_string(cvd_index_path))
+	var parts: Array = _road_cvd_index.get(kind, [])
+	if not parts.is_empty():
+		for part in parts:
+			var actor := OriginalMesh.new()
+			actor.name = "OriginalRoadItem" if root.get_child_count() == 0 else "OriginalRoadPart%d" % root.get_child_count()
+			root.add_child(actor)
+			actor.setup(part)
+			actor.position.y = DECAL_LIFT + rug * .24
+			actor.scale = Vector3.ONE * minf(rug * .27, .75)
+		return root
 
 	# ⚠ index.json 里没有模型的项是 JSON `null`，`str(null)` 会得到 "<null>" → 显式判类型
 	var mv: Variant = rec.get("model", null)
@@ -532,11 +571,44 @@ func _make_road_node(tile: int, kind: String) -> Node3D:
 			if tex != null:
 				mat.albedo_texture = tex
 			mat.roughness = 0.9
+			mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 			mi.material_override = mat
-			var s := rug * ROAD_OBJ_SCALE
+			var s := rug * (1.05 if kind == "mine" else ROAD_OBJ_SCALE)
 			mi.scale = Vector3(s, s, s)
-			mi.position = Vector3(0, DECAL_LIFT + 0.04, 0)
+			mi.position = Vector3(0, DECAL_LIFT + (0.17 if kind == "mine" else 0.04), 0)
 			root.add_child(mi)
+			if kind == "mine" and tex != null:
+				# 原版地雷很扁；保留模型，再加贴地的原版六角纹样防止被路面遮住。
+				var mine_top := MeshInstance3D.new()
+				var plane := PlaneMesh.new()
+				plane.size = Vector2.ONE * rug * 0.62
+				mine_top.mesh = plane
+				var top_mat := StandardMaterial3D.new()
+				top_mat.albedo_texture = tex
+				top_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+				top_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+				top_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+				mine_top.material_override = top_mat
+				mine_top.position.y = DECAL_LIFT + 0.20
+				root.add_child(mine_top)
+			if kind == "block" and tex != null:
+				# POL 的侧面会露出贴图集中的青色区域；立一块裁出的 STOP 正面。
+				var sign_image := tex.get_image().get_region(Rect2i(0, 0, 128, 96))
+				var sign_tex := ImageTexture.create_from_image(sign_image)
+				for side in 2:
+					var sign := MeshInstance3D.new()
+					var face := QuadMesh.new()
+					face.size = Vector2(rug * 0.78, rug * 0.58)
+					sign.mesh = face
+					var sign_mat := StandardMaterial3D.new()
+					sign_mat.albedo_texture = sign_tex
+					sign_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+					sign_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+					sign_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+					sign.material_override = sign_mat
+					sign.position = Vector3(0, DECAL_LIFT + rug * 0.51, (0.08 if side == 0 else -0.08) * rug)
+					sign.rotation.y = PI * side
+					root.add_child(sign)
 			return root
 
 	# ---- 替代表现 ----
@@ -566,17 +638,6 @@ func _make_road_node(tile: int, kind: String) -> Node3D:
 	ball.position = Vector3(0, DECAL_LIFT + rug * 0.20, 0)
 	root.add_child(ball)
 
-	var lab := Label3D.new()
-	lab.text = cn
-	lab.font_size = 64
-	lab.pixel_size = 0.006
-	lab.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	lab.no_depth_test = true
-	lab.outline_size = 10
-	lab.modulate = Color(1.0, 0.98, 0.9)
-	lab.outline_modulate = Color(0.06, 0.06, 0.10, 0.85)
-	lab.position = Vector3(0, rug * 0.62, 0)
-	root.add_child(lab)
 	return root
 
 
@@ -682,6 +743,24 @@ func _fallback_positions(n: int) -> Array:
 ## 做法：**把每一格投影到屏幕再比距离**。94 格 × 每帧一次完全够快，
 ## 比「从相机打射线求交」简单得多，也不用管网格缩放。
 ## `max_dist` = 命中半径（像素），超出就返回 -1（表示点空了）。
+func nearest_card_tile_to_screen(screen: Vector2, candidates: Array, include_plots: bool) -> int:
+	var cam := _cam()
+	if cam == null: return -1
+	var best := -1
+	var best_d := 70.0
+	for index in candidates:
+		var points := [_pos_of(int(index))]
+		if include_plots and str(map.tile(int(index)).get("kind", "")) == "plot":
+			points.append(_building_spot(int(index)))
+			if _plot_nodes.has(int(index)): points.append((_plot_nodes[int(index)] as Node3D).position)
+		for point in points:
+			if cam.is_position_behind(point): continue
+			var distance := cam.unproject_position(point).distance_to(screen)
+			if distance < best_d:
+				best_d = distance
+				best = int(index)
+	return best
+
 func nearest_tile_to_screen(screen: Vector2, max_dist: float = 70.0) -> int:
 	var cam := _cam()
 	if cam == null or map == null:
@@ -712,6 +791,8 @@ var _target_hover := -1
 func set_card_targets(cands: Array, hover: int) -> void:
 	_target_cands = cands
 	_target_hover = hover
+	for pid in _player_nodes:
+		_paint_disc(_player_nodes[pid], _player_mats[pid].albedo_color if cands.has(pid) else Color.html(str(_player_nodes[pid].get_meta("owner_color", "ffffff"))), int(pid))
 
 
 ## 给某个玩家的脚下圆盘染色（绿 = 可选 / 红 = 当前指到 / 暗 = 不可选）
@@ -722,9 +803,10 @@ func _paint_disc(node: Node3D, col: Color, pid: int) -> void:
 	var m: StandardMaterial3D = dn.material_override as StandardMaterial3D
 	if m == null:
 		return
+	dn.visible = _target_cands.has(pid) and float(node.get_meta("entry_until", 0.0)) <= _visual_time
 	var want := col
 	if not _target_cands.is_empty():
-		if _target_hover == pid:
+		if _target_hover == pid and _target_cands.has(pid):
 			want = Color8(255, 74, 74)
 		elif _target_cands.has(pid):
 			want = Color8(96, 240, 120)
@@ -799,6 +881,9 @@ func set_overview(on: bool) -> void:
 		_cam_pitch = 46.0
 		_cam_dist = need / tan(deg_to_rad(CAM_FOV * 0.5)) * 1.05
 	else:
+		_follow = true
+		if _player_target.has(_my_id):
+			_cam_target = _player_target[_my_id] + Vector3(0, CAM_TARGET_LIFT, 0)
 		_cam_pitch = CAM_PITCH_DEF
 		_cam_dist = maxf(_tile_spacing * CAM_DIST_TILES, 6.0)
 	_apply_camera(cam)
@@ -813,6 +898,37 @@ func rotate_camera(deg: float) -> void:
 	var cam := _cam()
 	if cam != null:
 		_apply_camera(cam)
+
+
+func drag_rotate(relative: Vector2) -> void:
+	_cam_yaw = fposmod(_cam_yaw - relative.x * 0.32, 360.0)
+	_cam_pitch = clampf(_cam_pitch + relative.y * 0.20, CAM_PITCH_MIN, CAM_PITCH_MAX)
+	var cam := _cam()
+	if cam != null: _apply_camera(cam)
+
+
+func reset_follow_camera() -> void:
+	_cam_yaw = CAM_YAW_DEF
+	set_overview(false)
+
+
+func resume_follow() -> void:
+	# Movement resumes tracking only. The user's orbit, tilt and zoom stay intact.
+	_follow = true
+	if _player_target.has(_my_id):
+		_cam_target = _player_target[_my_id] + Vector3(0, CAM_TARGET_LIFT, 0)
+
+
+func drag_pan(relative: Vector2) -> void:
+	var cam := _cam()
+	if cam == null: return
+	_follow = false
+	var center := get_viewport().get_visible_rect().size * 0.5
+	var plane := Plane(Vector3.UP, _cam_target.y)
+	var before: Variant = plane.intersects_ray(cam.project_ray_origin(center), cam.project_ray_normal(center))
+	var after: Variant = plane.intersects_ray(cam.project_ray_origin(center + relative), cam.project_ray_normal(center + relative))
+	if before != null and after != null: _cam_target += before - after
+	_apply_camera(cam)
 
 
 func tilt_camera(deg: float) -> void:
@@ -851,15 +967,38 @@ func _unhandled_input(e: InputEvent) -> void:
 func _process(delta: float) -> void:
 	if not visible or _player_nodes.is_empty():
 		return
+	if not Net.game_paused: _visual_time += delta
 	# 快照 10Hz，位置用插值平滑，避免一跳一跳
 	var k := clampf(delta * 10.0, 0.0, 1.0)
 	for id in _player_nodes.keys():
 		var node: Node3D = _player_nodes[id]
 		if _player_target.has(id):
-			node.position = node.position.lerp(_player_target[id], k)
+			var target: Vector3 = _player_target[id]
+			var remaining := float(node.get_meta("entry_until", 0.0)) - _visual_time
+			if remaining > 0.0:
+				var phase := clampf(remaining / Sim.ENTRY_SECONDS, 0.0, 1.0)
+				node.position = target + Vector3(sin(_visual_time * 3.0 + int(id)) * .25 * phase, 13.0 * phase, 0)
+			else: node.position = node.position.lerp(target, k)
+			var parachute := node.get_node_or_null("Parachute") as Node3D
+			if parachute != null:
+				parachute.visible = remaining > 0.0
+				parachute.rotation.z = sin(_visual_time * 2.5 + int(id)) * .07
+			var disc := node.get_node_or_null("PColorDisc") as Node3D
+			if disc != null: disc.visible = remaining <= 0.0 and _target_cands.has(id)
+		var actor := node.get_node_or_null("OriginalActor") as OriginalMesh
+		if actor != null:
+			actor.rotation.y = lerp_angle(actor.rotation.y, float(node.get_meta("heading", actor.rotation.y)), 1 - exp(-delta * 12))
+			if _actor_actions.has(id):
+				_actor_actions[id].remaining -= delta
+				if float(_actor_actions[id].remaining) <= 0:
+					_actor_actions.erase(id)
+					actor.play(str(node.get_meta("base_clip", "stan")))
 
 	if _follow and _player_target.has(_my_id):
 		var want: Vector3 = _player_target[_my_id] + Vector3(0, CAM_TARGET_LIFT, 0)
+		var followed: Node3D = _player_nodes[_my_id]
+		var phase := clampf((float(followed.get_meta("entry_until", 0.0)) - _visual_time) / Sim.ENTRY_SECONDS, 0.0, 1.0)
+		want.y += 13.0 * phase + (2.0 if phase > 0.0 else 0.0)
 		_cam_target = _cam_target.lerp(want, clampf(delta * 6.0, 0.0, 1.0))
 	var cam := _cam()
 	if cam != null:
@@ -871,8 +1010,16 @@ func _process(delta: float) -> void:
 func sync(snap: Dictionary) -> void:
 	if map == null:
 		return
+	_visual_time = float(snap.get("t", 0.0))
 	var players: Dictionary = snap.get("players", {})
 	var plots: Dictionary = snap.get("plots", {})
+	for id in _player_nodes.keys():
+		if not players.has(id):
+			(_player_nodes[id] as Node3D).queue_free()
+			_player_nodes.erase(id)
+			_player_target.erase(id)
+			_player_mats.erase(id)
+			_actor_actions.erase(id)
 
 	# 地毯着色（归属 + 等级）
 	for i in range(_tile_mats.size()):
@@ -880,21 +1027,27 @@ func sync(snap: Dictionary) -> void:
 			break
 		var t: Dictionary = map.tile(i)
 		var kind: String = t.get("kind", "")
+		(_tile_nodes[i] as MeshInstance3D).visible = (kind == "plot" and not plots.has(i)) \
+			or (map.name == "aiji" and str(t.get("event", "")) == "platform")
 		var mat: StandardMaterial3D = _tile_mats[i]
 		if kind == "start":
 			mat.albedo_color = C_START
 		elif kind == "event":
 			mat.albedo_color = C_EVENT
 		elif plots.has(i) and players.has(int(plots[i]["owner"])):
-			var col := Color.html(str(players[int(plots[i]["owner"])]["color"]))
+			var owner_info: Dictionary = players[int(plots[i]["owner"])]
+			var col := Color(0.025, 0.025, 0.03) if Sim.owner_abnormal(owner_info, _visual_time) \
+				else Color.html(str(owner_info["color"]))
 			var lv := int(plots[i]["level"])
 			mat.albedo_color = col.lerp(Color.WHITE, 0.16 * lv)
 		else:
 			mat.albedo_color = C_UNSOLD
 
-	_sync_plot_platforms(plots, players)
+	_sync_plot_platforms(plots, players, snap.get("street_seal", {}) as Dictionary)
 	_sync_buildings(plots)
+	if estate_view: _sync_estate_coins()
 	_sync_road(snap.get("road_objs", {}))
+	_sync_obstacles(snap.get("obstacles", []))
 
 	# 角色
 	for id in players.keys():
@@ -902,10 +1055,13 @@ func sync(snap: Dictionary) -> void:
 		if not _player_nodes.has(int(id)):
 			_create_player(int(id), p)
 		var node: Node3D = _player_nodes[int(id)]
-		node.visible = bool(p["alive"])
+		node.set_meta("entry_until", float(p.get("entry_until", 0.0)))
+		node.visible = bool(p["alive"]) and maxf(float(p["effects"].get("hospital_until", 0.0)),
+			float(p["effects"].get("hotel_until", 0.0))) <= float(snap.get("t", 0.0))
 		if not bool(p["alive"]):
 			continue
 		# 「请选择对手」时把脚下圆盘染色（绿 = 可选 / 红 = 指到 / 暗 = 太远或自己）
+		node.set_meta("owner_color", p["color"])
 		_paint_disc(node, Color.html(str(p["color"])), int(id))
 		var f: float = clampf(float(p["progress"]), 0.0, 1.0)
 		var pos := _route_pos(int(p["tile"]), int(p["dir"]), f)
@@ -915,48 +1071,103 @@ func sync(snap: Dictionary) -> void:
 			var ang := TAU * float(idx - 1) / 4.0
 			pos += Vector3(cos(ang) * 0.34, 0.0, sin(ang) * 0.34)
 		_player_target[int(id)] = pos
-		# 世界名牌：名字 + 现金（原版截图里每个玩家头顶都有，如「巴克力 / 258」）
+		if int(id) == _my_id and int(p.get("moving", 0)) > 0 and float(snap.get("t", 0.0)) >= float(p.get("move_after", 0.0)):
+			resume_follow()
+		# 原版平时不挂姓名/现金；只有神仙附身才显示头像与绿色剩余步数。
 		var tag := node.get_node_or_null("Tag") as Label3D
-		if tag != null:
-			tag.text = "%s\n$%d" % [str(p["name"]), int(p["money"])]
+		if tag != null: tag.visible = false
+		var god_icon := node.get_node_or_null("GodIcon") as Sprite3D
+		var god_steps := node.get_node_or_null("GodSteps") as Label3D
+		if god_icon != null and god_steps != null:
+			var status: Dictionary = p["effects"]
+			var god := ""
+			var steps := 0
+			for pair in [["sleepwalk_steps", "梦游"], ["free_upgrade_steps", "福神"], ["no_upgrade_steps", "衰神"],
+				["rent_double_steps", "穷神"], ["no_rent_steps", "财神"]]:
+				if int(status.get(pair[0], 0)) > 0:
+					god = str(pair[1])
+					steps = int(status[pair[0]])
+					break
+			god_icon.visible = steps > 0
+			god_steps.visible = steps > 0
+			if steps > 0:
+				if str(god_icon.get_meta("god", "")) != god:
+					god_icon.texture = _tex(Rules.pet_art("hutu", "mini", 1) if god == "梦游"
+						else "res://assets/uitex/effect/%s.png" % god)
+					god_icon.set_meta("god", god)
+				god_steps.text = str(steps)
+			var invisible_left := float(status.get("invisible_until", 0.0)) - float(snap.get("t", 0.0))
+			if invisible_left > 0:
+				god_icon.visible = false
+				god_steps.visible = true
+				god_steps.text = str(ceili(invisible_left))
 		if node.position.distance_to(_player_target[int(id)]) > 12.0:
 			node.position = _player_target[int(id)]      # 复位（换图/首次出现）
 
 		var base_col := Color.html(str(p["color"]))
-		var sleep_until := float(p["effects"].get("sleep_until", 0.0))
+		var sleep_until := maxf(float(p["effects"].get("rest_until", 0.0)),
+			maxf(float(p["effects"].get("sleep_until", 0.0)), float(p["effects"].get("hospital_until", 0.0))))
 		if sleep_until > float(snap.get("t", 0.0)):
 			base_col = base_col.lerp(Color(0.40, 0.40, 0.46), 0.5)
 		var mat: StandardMaterial3D = _player_mats[int(id)]
 		mat.albedo_color = base_col
 		mat.emission = base_col * 0.22
+		_paint_disc(node, base_col, int(id))
 
 		var actor := node.get_node_or_null("OriginalActor") as OriginalMesh
 		if actor != null:
-			actor.play("slee" if sleep_until > float(snap.get("t", 0.0)) else ("run" if int(p["moving"]) > 0 else "stan"))
-			var ahead := _route_pos(int(p["tile"]), int(p["dir"]), minf(f + 0.01, 1.0)) - pos
+			actor.set_opacity(0.45 if float(p["effects"].get("invisible_until", 0.0)) > float(snap.get("t", 0.0)) else 1.0)
+			var clip := "slee" if sleep_until > float(snap.get("t", 0.0)) else ("run" if int(p["moving"]) > 0 and float(snap.get("t", 0.0)) >= float(p.get("move_after", 0.0)) else "stan")
+			node.set_meta("base_clip", clip)
+			if not _actor_actions.has(int(id)) or clip == "slee":
+				if clip == "slee": _actor_actions.erase(int(id))
+				actor.play(clip)
+			actor.motion_speed = clampf(float(p.get("speed", 2.0)) / 2.0, .65, 2.5) if clip == "run" and not _actor_actions.has(int(id)) else 1.0
+			var ahead := _route_pos(int(p["tile"]), int(p["dir"]), minf(f + 0.01, 1.0)) - _route_pos(int(p["tile"]), int(p["dir"]), f)
 			if ahead.length_squared() > 0.00001:
-				actor.rotation.y = atan2(ahead.x, ahead.z)
+				node.set_meta("heading", atan2(ahead.x, ahead.z))
 
-		# 骰子精灵：只在移动中显示，展示最近一次掷出的点数
-		var dz := node.get_node("Dice") as Sprite3D
-		var lr := int(p.get("last_roll", 0))
-		if int(p["moving"]) > 0 and lr >= 1 and lr <= 6:
-			var dp := "res://assets/dice/%d.png" % lr
-			if ResourceLoader.exists(dp):
-				var rr: Resource = VisualQuality.texture(dp)
-				if rr is Texture2D:
-					dz.texture = rr
-					dz.visible = true
-		else:
-			dz.visible = false
 
+	if _effects != null: _effects.sync(snap)
 	if _follow and _player_target.has(_my_id):
-		pass  # 目标点已在 _process 里插值跟随
+		var followed: Node3D = _player_nodes[_my_id]
+		if float(followed.get_meta("entry_until", 0.0)) > _visual_time:
+			_cam_target = _player_target[_my_id] + Vector3(0, CAM_TARGET_LIFT + 13.0 * clampf((float(followed.get_meta("entry_until")) - _visual_time) / Sim.ENTRY_SECONDS, 0, 1) + 2.0, 0)
+
+func on_game_event(kind: String, data: Dictionary) -> void:
+	if is_instance_valid(_effects): _effects.on_event(kind, data)
+	var pid := int(data.get("pid", -1))
+	match kind:
+		"roll":
+			_actor_actions.erase(pid)
+			var player := _player_nodes.get(pid) as Node3D
+			if player != null:
+				var actor := player.get_node_or_null("OriginalActor") as OriginalMesh
+				if actor != null: actor.play("stan")
+		"pay_rent":
+			react(pid, "sad")
+			react(int(data.get("to", -1)), "glad")
+		"buy", "upgrade", "rebuild", "win_money", "get_pet", "pet_levelup", "credit", "news", "road_chest": react(pid, "glad")
+		"lotto_draw":
+			if pid == int(data.get("winner", -1)): react(pid, "glad")
+		"casino_result": react(pid, "glad" if int(data.get("win", 0)) > 0 else "sad")
+		"road_god": react(pid, "sad" if str(data.get("god", "")) == "qiongshen" else "glad")
+		"mine", "road_bomb", "pet_attacked", "lose_money", "road_thief", "card_damage": react(pid, "sad")
+		"pet_skill": react(pid, "stpa", .8)
+
+func react(pid: int, clip: String, duration := 1.0) -> void:
+	var player := _player_nodes.get(pid) as Node3D
+	if player == null or not player.visible or str(player.get_meta("base_clip", "")) == "slee": return
+	var actor := player.get_node_or_null("OriginalActor") as OriginalMesh
+	if actor == null or not actor._clips.has(clip): return
+	_actor_actions[pid] = {"remaining": minf(duration, actor.animation_duration(clip))}
+	actor.motion_speed = 1.0
+	actor.play(clip, false, .12)
 
 
 ## 原版买地后出现彩色框住的平坦地产槽，边缘用 platform/mtlplat2.tga。
 ## 它在地毯旁边；等级 0 只有地产槽，下次抵达建设后才叠建筑。
-func _sync_plot_platforms(plots: Dictionary, players: Dictionary) -> void:
+func _sync_plot_platforms(plots: Dictionary, players: Dictionary, seals: Dictionary) -> void:
 	var known := {}
 	for tile_key in plots.keys():
 		var tile := int(tile_key)
@@ -981,7 +1192,9 @@ func _sync_plot_platforms(plots: Dictionary, players: Dictionary) -> void:
 		node.rotation.y = atan2(d.x, d.y)
 		if not map.original_layout.is_empty():
 			node.transform = map.plot_transform(tile, fp, int(plot.get("build_cell", -1)))
-		var color := Color.html(str(players[owner]["color"]))
+		var sealed := float(seals.get(map.street_of(tile), 0.0)) > _visual_time
+		var color := Color(0.025, 0.025, 0.03) if sealed or Sim.owner_abnormal(players[owner], _visual_time) \
+			else Color.html(str(players[owner]["color"]))
 		var border := (node.get_node("Edge0") as MeshInstance3D).material_override as StandardMaterial3D
 		border.albedo_color = color
 		border.emission = color * 0.6
@@ -1052,6 +1265,8 @@ func _size_plot_platform(node: Node3D, fp: int) -> void:
 ## 选型：直接取 House.txt 的「文件」列（主题 + 等级 → a0101 / b0203 / d201 …），
 ## 等级 0 = 空地（原版买地后先是一块空地，下一次抵达才开始建设，见 Info.txt id 88/92/93）。
 func _sync_buildings(plots: Dictionary) -> void:
+	_plot_anchors.clear()
+	for key in plots: _plot_anchors[int(key)] = int(plots[key].get("anchor", int(key)))
 	var map_name := str(map.name) if map != null else "aiji"
 	var known := {}
 	for tile_key in plots.keys():
@@ -1077,11 +1292,90 @@ func _sync_buildings(plots: Dictionary) -> void:
 			_apply_building_model(node, sid)
 		if not map.original_layout.is_empty():
 			node.transform = map.plot_transform(tile, int(plot.get("footprint", BuildingLib.footprint(sid))), int(plot.get("build_cell", -1)))
-		node.visible = true
+		node.visible = not estate_view
 
 	for tile in _level_nodes.keys():
 		if not known.has(tile):
 			(_level_nodes[tile] as Node3D).visible = false
+
+func set_estate_view(enabled: bool) -> void:
+	estate_view = enabled
+	_estate_value_signature = ""
+	if is_instance_valid(_estate_coins):
+		_estate_coins.hide()
+		_estate_coins.queue_free()
+		_estate_coins = null
+	if Net.sim == null: return
+	_sync_buildings(Net.sim.plots)
+	# Keep ownership platforms visible; only the buildings and owner flags change.
+	for key in _plot_nodes:
+		var platform: Node3D = _plot_nodes[key]
+		var marker := (platform as Node3D).get_node_or_null("OwnerMarker") as Node3D
+		if marker != null: marker.visible = not enabled and Net.sim.plots.has(key) and int(Net.sim.plots[key].level) == 0
+	if enabled: _sync_estate_coins()
+
+func _sync_estate_coins() -> void:
+	if Net.sim == null: return
+	var values := {}
+	for key in Net.sim.unique_plot_keys():
+		var value := Net.sim.estate_asset_value(int(key))
+		values[int(key)] = value
+	var signature := str(values)
+	if signature == _estate_value_signature: return
+	_estate_value_signature = signature
+	if is_instance_valid(_estate_coins):
+		_estate_coins.hide()
+		_estate_coins.queue_free()
+	_estate_coins = Node3D.new()
+	_estate_coins.name = "EstateValueCoins"
+	add_child(_estate_coins)
+	var coin := CylinderMesh.new()
+	coin.top_radius = .34
+	coin.bottom_radius = .34
+	coin.height = .065
+	coin.radial_segments = 24
+	var gold := StandardMaterial3D.new()
+	gold.albedo_color = Color8(255, 207, 25)
+	gold.metallic = .35
+	gold.roughness = .42
+	var face := StandardMaterial3D.new()
+	face.albedo_texture = _tex("res://assets/roadobj/tex/gold/金币.png")
+	face.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	face.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	for key in values:
+		var plot: Dictionary = Net.sim.plots[key]
+		var root := Node3D.new()
+		root.name = "EstateCoins%d" % int(key)
+		_estate_coins.add_child(root)
+		root.transform = map.plot_transform(int(key), int(plot.get("footprint", 1)), int(plot.get("build_cell", -1)))
+		# An inexpensive lone estate must not become the tallest stack merely
+		# because it is the only owned lot. Use the same monetary scale everywhere.
+		var count := maxi(1, int(ceil(sqrt(float(values[key]) / maxf(1.0, Net.sim.empty_plot_price())))))
+		root.set_meta("value", values[key])
+		root.set_meta("coin_count", count)
+		for level in range(count):
+			var mesh := MeshInstance3D.new()
+			mesh.mesh = coin
+			mesh.material_override = gold
+			mesh.position.y = .13 + level * .085
+			root.add_child(mesh)
+		var top := MeshInstance3D.new()
+		var plane := PlaneMesh.new()
+		plane.size = Vector2(.68, .68)
+		top.mesh = plane
+		top.material_override = face
+		top.position.y = .166 + (count - 1) * .085
+		root.add_child(top)
+		var label := Label3D.new()
+		label.text = str(values[key])
+		label.font_size = 32
+		label.pixel_size = .003
+		label.modulate = Color.BLACK
+		label.outline_modulate = Color8(255, 233, 130)
+		label.outline_size = 2
+		label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		label.position.y = top.position.y + .25
+		root.add_child(label)
 
 
 ## 把某个建筑 id 的网格 + 材质装到节点上，并按**占地**缩放与定位
@@ -1102,6 +1396,8 @@ func _apply_building_model(node: Node3D, sid: String) -> void:
 		return
 	mi.mesh = BuildingLib.mesh_for(sid)
 	mi.material_override = BuildingLib.material_for(sid)
+	mi.set_meta("rent_flash_generation", int(mi.get_meta("rent_flash_generation", 0)) + 1)
+	mi.set_meta("rent_flash_base", mi.material_override)
 	var rug := _rug_size()
 	var s := rug * BUILDING_SCALE * float(fp)
 	if not map.original_layout.is_empty():
@@ -1188,6 +1484,26 @@ func _create_player(id: int, p: Dictionary) -> void:
 	tag.outline_modulate = col.darkened(0.45)
 	tag.position = Vector3(0, 4.3, 0)
 	root.add_child(tag)
+	var god_icon := Sprite3D.new()
+	god_icon.name = "GodIcon"
+	god_icon.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	god_icon.pixel_size = 0.0048
+	god_icon.no_depth_test = true
+	god_icon.position = Vector3(0, 4.65, 0)
+	god_icon.visible = false
+	root.add_child(god_icon)
+	var god_steps := Label3D.new()
+	god_steps.name = "GodSteps"
+	god_steps.font_size = 65
+	god_steps.pixel_size = 0.007
+	god_steps.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	god_steps.no_depth_test = true
+	god_steps.outline_size = 8
+	god_steps.modulate = Color(0.29, 1.0, 0.15)
+	god_steps.outline_modulate = Color(0.08, 0.31, 0.02)
+	god_steps.position = Vector3(0, 5.15, 0)
+	god_steps.visible = false
+	root.add_child(god_steps)
 
 	# 脚下投影
 	var blob := MeshInstance3D.new()
@@ -1219,6 +1535,7 @@ func _create_player(id: int, p: Dictionary) -> void:
 	disc.material_override = dmat
 	disc.position = Vector3(0, 0.06, 0)
 	root.add_child(disc)
+	disc.visible = false
 
 	var actor := OriginalMesh.new()
 	actor.name = "OriginalActor"
@@ -1229,16 +1546,22 @@ func _create_player(id: int, p: Dictionary) -> void:
 		actor.setup(JSON.parse_string(FileAccess.get_file_as_string(actor_path)))
 		actor.play("stan")
 
-	# 最近一次点数：原版棋盘上那个实体骰子
-	var dice := Sprite3D.new()
-	dice.name = "Dice"
-	dice.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	dice.shaded = false
-	dice.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
-	dice.pixel_size = 0.018
-	dice.position = Vector3(0, 4.0, 0)
-	dice.visible = false
-	root.add_child(dice)
+	# Original san.cvd canopy and suspension ropes, only during entry.
+	if _entry_parts.is_empty():
+		var entry_path := "res://assets/original/entry/index.json"
+		if FileAccess.file_exists(entry_path): _entry_parts = JSON.parse_string(FileAccess.get_file_as_string(entry_path)).get("parts", [])
+	var parachute := Node3D.new()
+	parachute.name = "Parachute"
+	parachute.position.y = 4.0
+	parachute.scale = actor.scale
+	parachute.visible = false
+	root.add_child(parachute)
+	for part in _entry_parts:
+		var mesh := OriginalMesh.new()
+		parachute.add_child(mesh)
+		mesh.setup(part)
+		var pivot: Array = part.get("pivot", [0, 0, 0])
+		mesh.position = Vector3(pivot[0], pivot[1], pivot[2])
 
 	_player_nodes[id] = root
 	_player_mats[id] = dmat
@@ -1253,6 +1576,45 @@ func player_pos(id: int) -> Variant:
 	if n is Node3D and (n as Node3D).is_inside_tree():
 		return (n as Node3D).global_position
 	return null
+
+
+func plot_pos_of(idx: int) -> Variant:
+	# Rent belongs to the estate anchor, including merged three-cell buildings.
+	var anchor := int(_plot_anchors.get(idx, idx))
+	var node: Variant = _level_nodes.get(anchor, _plot_nodes.get(anchor))
+	if node is Node3D and node.is_inside_tree() and node.visible: return node.global_position
+	if anchor >= 0 and anchor < _tile_pos.size(): return _building_spot(anchor)
+	return null
+
+
+func flash_joint_rent(members: Array) -> void:
+	# 425ab3 case0x3f4 -> 443310(...,4). 442c7f alternates the red
+	# emissive material at int(t*3)&1; 442d00 clears the flag after 2s.
+	var seen := {}
+	for member in members:
+		var anchor := int(_plot_anchors.get(int(member), int(member)))
+		if seen.has(anchor): continue
+		seen[anchor] = true
+		var building: Node3D = _level_nodes.get(anchor)
+		if not is_instance_valid(building) or not building.visible: continue
+		var model := building.get_node_or_null("Model") as MeshInstance3D
+		if model == null or not model.material_override is StandardMaterial3D: continue
+		var base: Material = model.get_meta("rent_flash_base", model.material_override)
+		var red := base.duplicate() as StandardMaterial3D
+		red.albedo_color = Color(1, 0, 0)
+		red.emission_enabled = true
+		red.emission = Color(1, 0, 0)
+		var generation := int(model.get_meta("rent_flash_generation", 0)) + 1
+		model.set_meta("rent_flash_generation", generation)
+		model.set_meta("rent_flash_base", base)
+		model.material_override = base
+		var tween := create_tween()
+		for phase in range(1, 7):
+			tween.tween_interval(1.0 / 3.0)
+			var material: Material = red if phase % 2 == 1 and phase < 6 else base
+			tween.tween_callback(func():
+				if is_instance_valid(model) and int(model.get_meta("rent_flash_generation", 0)) == generation:
+					model.material_override = material)
 
 
 func tile_pos_of(idx: int) -> Variant:
@@ -1282,17 +1644,30 @@ func _blob_texture() -> Texture2D:
 # -------------------------------------------------------------------- 清理
 
 func clear() -> void:
+	estate_view = false
+	_estate_coins = null
+	_estate_value_signature = ""
 	for c in get_children():
+		remove_child(c)
 		c.queue_free()
 	_ground = null
 	_tile_nodes.clear()
 	_tile_mats.clear()
 	_tile_pos.clear()
 	_level_nodes.clear()
+	_plot_anchors.clear()
 	_plot_nodes.clear()
 	_player_nodes.clear()
 	_player_mats.clear()
 	_player_target.clear()
+	_event_nodes.clear()
+	_road_nodes.clear()
+	_obstacle_nodes.clear()
+	_road_target_nodes.clear()
+	_target_cands.clear()
+	_target_hover = -1
+	_actor_actions.clear()
+	_effects = null
 	_follow = true
 	_cam_pitch = CAM_PITCH_DEF
 	_cam_yaw = CAM_YAW_DEF
@@ -1316,4 +1691,35 @@ func _sync_owner_marker(platform: Node3D, player: Dictionary, empty: bool) -> vo
 			marker.setup(JSON.parse_string(FileAccess.get_file_as_string(path)))
 			marker.position.y = 0.09
 	if marker != null:
-		marker.visible = empty
+		marker.visible = empty and not estate_view
+
+var _road_target_nodes: Dictionary = {}
+var _road_target_hover := -1
+func set_road_targets(tiles: Array) -> void:
+	for tile in _road_target_nodes:
+		(_road_target_nodes[tile] as Node3D).visible = tiles.has(tile)
+	if not tiles.has(_road_target_hover): _road_target_hover = -1
+	for tile in tiles:
+		if _road_target_nodes.has(tile): continue
+		var marker := MeshInstance3D.new()
+		marker.name = "RoadTarget%d" % tile
+		var ring := TorusMesh.new()
+		ring.inner_radius = _tile_spacing * .23
+		ring.outer_radius = _tile_spacing * .31
+		marker.mesh = ring
+		var material := StandardMaterial3D.new()
+		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		material.albedo_color = Color8(96, 240, 120)
+		material.no_depth_test = true
+		marker.material_override = material
+		marker.position = _pos_of(int(tile)) + Vector3.UP * (DECAL_LIFT + .18)
+		add_child(marker)
+		_road_target_nodes[tile] = marker
+	set_road_target_hover(_road_target_hover)
+
+func set_road_target_hover(tile: int) -> void:
+	_road_target_hover = tile
+	for key in _road_target_nodes:
+		var marker := _road_target_nodes[key] as MeshInstance3D
+		var material := marker.material_override as StandardMaterial3D
+		material.albedo_color = Color8(255, 72, 68) if marker.visible and int(key) == tile else Color8(96, 240, 120)
