@@ -23,11 +23,13 @@ var _lines: Array = []
 func run() -> void:
 	print("========== RichMan6 P0 自检 ==========")
 	_test_rules()
+	_test_native_alignment()
 	_test_map()
 	_test_movement()
 	_test_stamina()
 	_test_road_events()
 	_test_cards()
+	_test_native_card_damage()
 	_test_pets()
 	_test_road_objs()
 	_test_platform()
@@ -36,10 +38,13 @@ func run() -> void:
 	_test_stock()
 	_test_push_away()
 	_test_buy_and_rent()
+	_test_corner_plot_ownership()
 	_test_upgrade_chain()
+	_test_special_buildings()
 	_test_timers()
 	_test_bankruptcy()
 	_test_idle_sleep()
+	_test_user_round_2026_10_01()
 	_test_game_events()
 	_test_audio()
 
@@ -48,6 +53,283 @@ func run() -> void:
 		print(l)
 	print("通过 %d / 失败 %d" % [_pass, _fail])
 	print("==============================")
+
+func _test_special_buildings() -> void:
+	_lines.append("[special] 原版特殊建筑抵达服务及逆向挤人")
+	for kind in ["special1", "special2", "special3"]:
+		for level in range(1, 4):
+			var sim := _fresh_sim()
+			var p: Dictionary = sim.players[1]
+			var owner: Dictionary = sim.players[2]
+			var idx := 1
+			sim.plots[idx] = {"owner": 2, "level": level, "type": kind}
+			p.credit = 50
+			p.money = 300000
+			p.stamina = sim.stamina_max() / 2.0
+			p.walked_this_move = 3
+			sim.add_pet(p, "dushen")
+			var pet := sim.active_pet(p)
+			sim._set_pet_energy(pet, 1)
+			var before := int(owner.money)
+			var cards := (p.cards as Array).size()
+			sim._resolve_plot(p, idx, sim.map.tile(idx))
+			var file := Rules.house_file(kind, level)
+			match file:
+				"d201": _ok("俱乐部扣3点券并转给业主，不发卡", int(p.credit) == 47 and int(owner.credit) == 3 and (p.cards as Array).size() == cards and int(p.money) == 300000)
+				"d202": _ok("银行手续费=现款×实际步数×2%", int(p.money) == 282000 and int(owner.money) == before + 18000)
+				"d203": _ok("酒店步数×万元并住宿两天", int(p.money) == 270000 and not sim._roll_block_code(p).is_empty() and float(p.effects.hotel_until) == sim.time + Rules.seconds_per_day() * 2.0)
+				"d101": _ok("喷泉恢复体力且不收租", float(p.stamina) == sim.stamina_max() and int(p.money) == 300000 and sim.pet_energy(pet) == 1)
+				"d102": _ok("一座连锁店固定消费万元", int(p.money) == 290000 and int(owner.money) == before + 10000)
+				"d103": _ok("公园体力与神仙能量全满且不收租", float(p.stamina) == sim.stamina_max() and sim.pet_skill_ready(pet) and int(p.money) == 300000)
+				"d301": _ok("垃圾場抵达不扣普通租金", int(p.money) == 300000)
+				"d302": _ok("发电厂补随身神仙MP，不补人物体力不收租", sim.pet_skill_ready(pet) and float(p.stamina) == sim.stamina_max() / 2.0 and int(p.money) == 300000)
+				"d303": _ok("科研中心访客获得一张卡且不收租", (p.cards as Array).size() == cards + 1 and int(p.money) == 300000)
+	var chain := _fresh_sim()
+	chain.plots[1] = {"owner": 2, "level": 2, "type": "special2"}
+	chain.plots[2] = {"owner": 2, "level": 2, "type": "special2"}
+	chain._resolve_special_building(chain.players[1], 1, chain.plots[1])
+	_ok("两座连锁店收费翻倍", int(chain.players[1].money) == Sim.START_MONEY - 20000)
+	var stopped := _fresh_sim()
+	stopped.plots[1] = {"owner": 2, "level": 2, "type": "special1"}
+	stopped.players[2].tile = 50
+	stopped.players[1].tile = 0
+	stopped.players[1].moving = 6
+	stopped.players[1].last_roll = 6
+	stopped.players[1].money = 300000
+	stopped.obstacles.append({"idx": 1, "kind": "roadblock", "owner": 2})
+	stopped._advance(stopped.players[1], 1.0)
+	_ok("路障提前止步后银行按实际一格收费，不按骰面六格", int(stopped.players[1].walked_this_move) == 1 and int(stopped.players[1].money) == 294000)
+	var reverse := _fresh_sim()
+	reverse.add_player(3, "第三人")
+	reverse.players[1].tile = 10
+	reverse.players[1].dir = -1
+	reverse.players[2].tile = 10
+	reverse.players[3].tile = 9
+	reverse._push_away_occupants(reverse.players[1])
+	_ok("逆向挤人按前进方向连锁而非退到身后", int(reverse.players[2].tile) == 9 and int(reverse.players[3].tile) == 8 and int(reverse.players[2].dir) == -1 and int(reverse.players[3].dir) == -1)
+	var god := _fresh_sim()
+	god.plots[1] = {"owner": 2, "level": 1, "type": "industry"}
+	god.players[1].effects.free_upgrade_steps = 30
+	_ok("原版福神不替对手加盖", not god._apply_fushen_arrival(god.players[1], 1, god.plots[1]) and int(god.plots[1].level) == 1)
+
+func _test_corner_plot_ownership() -> void:
+	for pair in [[38, 70], [53, 55]]:
+		var sim := Sim.new()
+		sim.setup(MapData.load_from("train"), 987)
+		sim.add_player(1, "甲")
+		sim.add_player(2, "乙")
+		var a := int(pair[0])
+		var b := int(pair[1])
+		var p: Dictionary = sim.players[1]
+		p.last_plot = a
+		p.last_plot_kind = "buy"
+		_ok("拐角两个入口共用产权 %s" % str(pair), sim.act_buy(1)
+			and sim.plots.has(b) and sim.unique_plot_keys().size() == 1)
+		var q: Dictionary = sim.players[2]
+		q.last_plot = b
+		q.last_plot_kind = "buy"
+		var cash := int(q.money)
+		_ok("另一入口不能重复出售", not sim.act_buy(2) and int(q.money) == cash)
+		var plan := sim.construction_plan(1, b, "uptown:1")
+		_ok("从拐角另一入口可以盖房", not plan.is_empty())
+		if not plan.is_empty():
+			sim._commit_construction(b, plan, 0)
+			_ok("建房同步所有入口", int(sim.plots[a].level) > 0 and sim.plots[a] == sim.plots[b])
+		var restored := Sim.new()
+		restored.setup(sim.map)
+		restored.apply_dict(sim.to_dict().duplicate(true))
+		restored.plots[b].owner = 2
+		_ok("存档恢复后入口仍共用产权", int(restored.plots[a].owner) == 2)
+		restored._downgrade_estate(a)
+		if int(restored.plots[a].level) == 0:
+			_ok("拆成空地仍只有一份产权", restored.unique_plot_keys().size() == 1 and int(restored.plots[b].owner) == 2)
+		var saved := sim.to_dict().duplicate(true)
+		saved.plots = {a: {"owner": 1, "level": 0, "type": "", "paid_base": 200.0},
+			b: {"owner": 2, "level": 0, "type": "", "paid_base": 200.0}}
+		cash = int(saved.players[2].money)
+		restored.apply_dict(saved)
+		_ok("修复旧存档重复购地并退款", restored.unique_plot_keys().size() == 1
+			and int(restored.plots[b].owner) == 1 and int(restored.players[2].money) == cash + 200)
+		var repaired := restored.to_dict().duplicate(true)
+		restored.apply_dict(repaired)
+		_ok("存档重复读取不会重复退款", int(restored.players[2].money) == cash + 200)
+
+func _test_user_round_2026_10_01() -> void:
+	var seal := _card_world("seize")
+	var p: Dictionary = seal.players[1]
+	var event_tile := -1
+	for i in range(seal.map.tile_count()):
+		if str(seal.map.tile(i).get("kind", "")) == "event" and seal._current_street(i) != "":
+			event_tile = i
+			break
+	if event_tile >= 0:
+		p.tile = event_tile
+		p.cards = ["seize"]
+		var street := seal._current_street(event_tile)
+		_ok("查封卡在事件格也能找到当前街道", seal.act_use_card(1, "seize")
+			and float(seal.street_seal.get(street, 0.0)) > seal.time, street)
+		var affected := seal._street_plots(street)
+		if not affected.is_empty():
+			var rent_tile := int(affected[0])
+			if int(seal.plots[rent_tile].owner) == 2:
+				_ok("查封街道的建筑停收过路费", _rent_paid(seal, rent_tile) == 0)
+	var grab := _card_world("abduct")
+	var owner: Dictionary = grab.players[1]
+	var victim: Dictionary = grab.players[2]
+	victim.tile = grab._wrap(int(owner.tile) + 1)
+	grab.add_pet(victim, "hutu")
+	victim.pet_active = "caishen"
+	owner.cards = ["abduct"]
+	_ok("诱拐卡抢对手当前出战的小神仙", grab.act_use_card(1, "abduct", 2)
+		and grab.has_pet(owner, "caishen") and not grab.has_pet(victim, "caishen")
+		and grab.has_pet(victim, "hutu"))
+	var combine := _card_world("gem")
+	combine.players[1].cards = ["gem", "buyland"]
+	_ok("宝石卡加购地卡变土神卡", combine.act_use_card(1, "gem", -1, "buyland")
+		and combine.players[1].cards.has("tudigong"))
+	var energy := _pet_world("caishen")
+	var pet: Dictionary = energy.active_pet(energy.players[1])
+	energy.step(0.1)
+	_ok("满能量不会继续衰减，技能保持可发动", is_equal_approx(float(pet.fullness), 100.0)
+		and energy.pet_skill_ready(pet) and energy.pet_skill_block_reason(1) == "")
+	var tired := _card_world("hamburger")
+	var sleeper: Dictionary = tired.players[1]
+	sleeper.stamina = 100.0
+	tired.step(Sim.IDLE_SLEEP_SECONDS + 1.0)
+	_ok("体力未满时不进入挂机休息", float(sleeper.effects.rest_until) <= tired.time)
+	sleeper.stamina = tired.stamina_max()
+	sleeper.idle = 0.0
+	tired.step(Sim.IDLE_SLEEP_SECONDS + 0.1)
+	_ok("体力满后静置25秒才挂机", float(sleeper.effects.rest_until) > tired.time)
+	var lotto := _card_world("hamburger")
+	var saved_state := lotto.rng.state
+	var upcoming := lotto.rng.randi_range(1, Sim.LOTTO_NUMBERS)
+	lotto.rng.state = saved_state
+	var chosen := upcoming % Sim.LOTTO_NUMBERS + 1
+	var lotto_player: Dictionary = lotto.players[1]
+	lotto._resolve_event(lotto_player, int(lotto_player.tile), {"event": "casino", "name": "乐透"})
+	_ok("乐透每次进入只能登记一个号码", lotto.act_lotto_pick(1, chosen)
+		and not lotto.act_lotto_pick(1, upcoming) and lotto.lotto_pick_of(1) == chosen)
+	lotto._resolve_event(lotto_player, int(lotto_player.tile), {"event": "casino", "name": "乐透"})
+	_ok("再次进入乐透可再选一个未被占用的号码", lotto.act_lotto_pick(1, upcoming)
+		and lotto.lotto_numbers.size() == 2)
+	lotto._lotto_draw()
+	_ok("已有号码中奖后清空本期选号", lotto.lotto_numbers.is_empty())
+	var no_hit := _card_world("hamburger")
+	var known := no_hit.rng.state
+	var draw_number := no_hit.rng.randi_range(1, Sim.LOTTO_NUMBERS)
+	no_hit.rng.state = known
+	var keep_number := draw_number % Sim.LOTTO_NUMBERS + 1
+	var ticket: Dictionary = no_hit.players[1]
+	no_hit._resolve_event(ticket, int(ticket.tile), {"event": "casino", "name": "乐透"})
+	no_hit.act_lotto_pick(1, keep_number)
+	no_hit._lotto_draw()
+	_ok("本期无人中奖时已选号码保留到下一期开奖",
+		int(no_hit.lotto_numbers.get(keep_number, -1)) == 1)
+	var game := _card_world("hamburger")
+	var game_tile := -1
+	for i in range(game.map.tile_count()):
+		if str(game.map.tile(i).get("event", "")) in ["game_a", "game_b"]:
+			game_tile = i
+			break
+	if game_tile >= 0:
+		var gamer: Dictionary = game.players[1]
+		var before_credit := int(gamer.credit)
+		gamer.tile = game_tile
+		game._resolve_event(gamer, game_tile, game.map.tile(game_tile))
+		_ok("问号游戏点停留后发放点券", int(gamer.credit) > before_credit)
+
+func _test_native_card_damage() -> void:
+	var m := MapData.new()
+	for i in range(12):
+		m.tiles.append({"kind": "plot", "street": "验证街道"})
+		m.tile_pos.append(Vector2(i * 100.0, 0))
+	var sim := Sim.new()
+	sim.setup(m, 7)
+	for id in range(1, 5): sim.add_player(id, "玩家%d" % id)
+	sim.running = true
+	var caster: Dictionary = sim.players[1]
+	var victim: Dictionary = sim.players[2]
+	var edge: Dictionary = sim.players[3]
+	var immune: Dictionary = sim.players[4]
+	caster.tile = 0
+	victim.tile = 5
+	edge.tile = 7
+	immune.tile = 5
+	for player in sim.players.values():
+		player.cards.clear()
+		player.stamina = 600.0
+		player.moving = 0
+		player.effects.sleep_until = 0.0
+	immune.effects.invincible_until = 100.0
+	sim.plots[0] = {"owner": 1, "level": 2, "type": "industry"}
+	sim.plots[5] = {"owner": 2, "level": 2, "type": "industry"}
+	sim.plots[8] = {"owner": 2, "level": 2, "type": "industry"}
+	caster.cards = ["missile", "nuke"]
+	_ok("飞弹缺少选点不消耗手牌", not sim.act_use_card(1, "missile") and caster.cards.has("missile"))
+	_ok("飞弹非法路点不消耗手牌", not sim.act_use_card(1, "missile", -1) and caster.cards.has("missile"))
+	_ok("飞弹选中附近地块后延迟结算", sim.act_use_card(1, "missile", 5)
+		and int(sim.plots[5].level) == 2 and sim.pending_card_impacts.size() == 1)
+	sim.step(.5)
+	_ok("飞弹飞行阶段不提前扣血", float(victim.stamina) == 600.0)
+	sim.step(.5)
+	_ok("飞弹爆心是所选格，施法者脚下建筑保留", int(sim.plots[5].level) == 1 and int(sim.plots[0].level) == 2)
+	_ok("飞弹建筑范围使用五路点而非十一点", int(sim.plots[8].level) == 2)
+	var hospital_tile := sim._hospital_road_tile()
+	_ok("飞弹击中后进入医院，并等体力恢复", float(victim.effects.get("hospital_until", 0)) > sim.time
+		and (hospital_tile < 0 or int(victim.tile) == hospital_tile), "hospital=" + str(hospital_tile))
+	_ok("飞弹按空间距离衰减伤害", float(edge.stamina) > 450.0 and float(edge.stamina) < 500.0)
+	_ok("无敌玩家免疫飞弹", float(immune.stamina) == 600.0 and float(immune.effects.get("hospital_until", 0)) == 0.0)
+	_ok("住院阻止骰子与卡片操作", not sim.act_roll(2) and sim.card_usable(2, "step1") == 61)
+	var replica := Sim.new()
+	replica.setup(m, 7)
+	replica.apply_dict(sim.to_dict())
+	_ok("联机快照保留住院状态", replica.players[2].effects.hospital_until == victim.effects.hospital_until)
+	_ok("核弹选点成功", sim.act_use_card(1, "nuke", 5))
+	replica.apply_dict(sim.to_dict())
+	_ok("飞弹延迟队列进入联机快照", replica.pending_card_impacts.size() == 1)
+	sim.step(1)
+	_ok("核弹摧毁目标建筑而非只降一级", int(sim.plots[5].level) == 0 and int(sim.plots[0].level) == 2)
+	sim.step(73)
+	_ok("体力未满时仍留在医院", float(victim.effects.hospital_until) > 0.0)
+	sim.step(20)
+	_ok("体力回满后恢复行动", float(victim.effects.hospital_until) == 0
+		and float(victim.stamina) == sim.stamina_max()
+		and (hospital_tile < 0 or int(victim.tile) == hospital_tile))
+	var egypt := Sim.new()
+	egypt.setup(MapData.load_from("aiji"), 79)
+	egypt.add_player(1, "医院检查")
+	var injured: Dictionary = egypt.players[1]
+	egypt._send_to_hospital(injured, 100.0, "missile")
+	_ok("埃及地图受伤者移到真实医院路点", egypt._hospital_road_tile() >= 0
+		and int(injured.tile) == egypt._hospital_road_tile())
+	caster.tile = 5
+	victim.tile = 6
+	caster.cards = ["shuaishen"]
+	victim.effects.rent_double_steps = 12
+	var feedback: Array = []
+	sim.game_event.connect(func(kind, data):
+		if kind == "card_status_applied": feedback.append(data))
+	_ok("衰神替换旧附身并发出明确目标反馈", sim.act_use_card(1, "shuaishen", 2)
+		and int(victim.effects.no_upgrade_steps) == 30 and int(victim.effects.rent_double_steps) == 0
+		and feedback.size() == 1 and int(feedback[0].pid) == 2 and str(feedback[0].message).contains("30"))
+	sim._tick_step_effects(victim)
+	_ok("衰神步数按实际走格消耗", int(victim.effects.no_upgrade_steps) == 29)
+	caster.cards = ["qiongshen"]
+	victim.money = 100000
+	var previous_cash := int(caster.money)
+	_ok("穷神卡转移现金并替换衰神附身", sim.act_use_card(1, "qiongshen", 2)
+		and int(victim.money) < 100000 and int(caster.money) - previous_cash == 100000 - int(victim.money)
+		and int(victim.effects.rent_double_steps) == 30 and int(victim.effects.no_upgrade_steps) == 0)
+	caster.cards = ["shuaishen"]
+	victim.effects.invincible_until = sim.time + 30
+	_ok("无敌抵挡衰神且使用失败保留手牌", not sim.act_use_card(1, "shuaishen", 2) and caster.cards.has("shuaishen"))
+	# Exported route coordinates are already scaled. Check actual map distances,
+	# guarding against an apparent 250-unit radius swallowing the whole board.
+	var real := Sim.new()
+	real.setup(MapData.load_from("aiji"), 1)
+	var native_distance := real._native_road_position(0).distance_to(real._native_road_position(1))
+	_ok("爆炸距离使用原版未缩放道路记录", _near(native_distance, 97.5680569630236, .001))
 
 func _ok(name: String, cond: bool, detail: String = "") -> void:
 	if cond:
@@ -75,6 +357,153 @@ func _all_footprint_in_range(files: Dictionary) -> bool:
 	return files.size() > 0 and _footprint_out_of_range(files) == 0
 
 # ------------------------------------------------------------------ 1. 数值表
+
+func _test_native_alignment() -> void:
+	_lines.append("[native] 原版强化、内部能量、目标及尺寸等级")
+	var transforms := {"upgrade": "tianshi", "monster": "emo", "buyland": "tudigong",
+		"free": "caishen", "invincible": "invisible", "missile": "nuke", "tax": "qiongshen", "rob": "shuaishen"}
+	for source in transforms:
+		var world := _card_world("gem")
+		world.players[1].cards = ["gem", source]
+		_ok("原版强化换卡 " + source, world.act_use_card(1, "gem", -1, source)
+			and world.players[1].cards == [transforms[source]])
+	for card in Rules.cards():
+		var id := str(card.id)
+		var allowed := transforms.has(id) or id in ["caishen", "fushen", "qiongshen", "shuaishen", "tianshi", "emo", "qingshen", "run", "priceup", "pricedown", "hibernate", "redcard", "blackcard", "seize", "invisible"]
+		_ok("强化集合 " + id, Rules.can_gem_combine(id) == allowed and not Rules.can_gem_combine("boost:" + id))
+	for enhanced in [false, true]:
+		var results := {}
+		for seed in range(60):
+			var rush := _card_world("run")
+			rush.rng.seed = seed
+			var id := "boost:run" if enhanced else "run"
+			rush.players[1].cards = [id]
+			rush.act_use_card(1, id)
+			results[int(rush.players[1].moving)] = true
+		var expected := [42, 48, 54, 60, 66, 72] if enhanced else [21, 24, 27, 30, 33, 36]
+		_ok("暴走闭区间六种结果，增强双倍 " + str(enhanced), results.size() == 6 and results.keys().all(func(n): return expected.has(n)))
+	for kind in ["uptown", "shop", "industry", "special1", "special2", "special3"]:
+		for side in [1, 2, 3]:
+			var first := Rules.house_asset_level(kind, side, 1)
+			if first == 0: continue
+			var last := first
+			while Rules.house_next_level(kind, last) > 0: last = Rules.house_next_level(kind, last)
+			_ok("尺寸内升级 " + kind + str(side), Rules.house_local_grade(kind, first) == 1
+				and Rules.house_footprint(Rules.house_file(kind, last)) == side
+				and Rules.house_next_level(kind, last) == 0)
+			var split := _fresh_sim()
+			var idx := int(split.players[1].tile)
+			split.plots[idx] = {"owner": 1, "level": first, "type": kind, "footprint": side, "members": [idx]}
+			split._downgrade_estate(idx)
+			_ok("一级拆为空地 " + kind + str(side), int(split.plots[idx].level) == 0
+				and str(split.plots[idx].type) == "" and int(split.plots[idx].owner) == 1)
+	var maxima := {"qiongshen": 15, "hutu": 15, "emo": 20, "caishen": 20, "tushen": 30, "jingling": 20, "huaxian": 15, "dushen": 20, "guaishou": 15}
+	for id in maxima:
+		var world := _fresh_sim()
+		var owner: Dictionary = world.players[1]
+		world.add_pet(owner, id)
+		var pet := world.active_pet(owner)
+		_ok("原版内部能量上限/整数半值 " + id, world.pet_max_energy(pet) == float(maxima[id])
+			and world.pet_energy(pet) == float(int(maxima[id]) * 5 / 10))
+		owner.cards = ["step3"]
+		world._set_pet_energy(pet, 0.0)
+		_ok("喂食量不随宠物上限放大 " + id, world.act_feed_card(1, "step3")
+			and is_equal_approx(world.pet_energy(pet), 3.0))
+		_ok("HUD 表情不使用星级索引 " + id,
+			Rules.pet_hud_art(id, false, false) == Rules.pet_art(id, "face", 1)
+			and Rules.pet_hud_art(id, true, false) == Rules.pet_art(id, "face", 2)
+			and Rules.pet_hud_art(id, false, true) == Rules.pet_art(id, "face", 3))
+	var walked := _pet_world("caishen")
+	walked.add_pet(walked.players[1], "hutu")
+	var walker: Dictionary = walked.players[1]
+	walker.tile = 0
+	walker.moving = 10
+	walker.speed = 1.0
+	walker.progress = 0.0
+	walked._advance(walker, 0.4)
+	_ok("没有跨路点时小神仙不累计成长", int(walked.active_pet(walker).growth) == 0)
+	walked._advance(walker, 0.7)
+	_ok("跨路点只累计随身实例", int(walked.active_pet(walker).growth) == 1
+		and int(walker.pets[1].growth) == 0)
+	walked._advance(walker, 2.0)
+	_ok("一次移动更新跨多点只记一次原版标记", int(walked.active_pet(walker).growth) == 2)
+	var energy := _pet_world("huaxian")
+	var p: Dictionary = energy.players[1]
+	energy.add_pet(p, "hutu")
+	var reserve: Dictionary = p.pets[1]
+	var before := energy.pet_energy(reserve)
+	energy._tick_pet_hunger(Rules.seconds_per_day() * 3.0)
+	_ok("满槽保持且备用不衰减", energy.pet_skill_ready(energy.active_pet(p)) and energy.pet_energy(reserve) == before)
+	p.credit = 0
+	var caster := energy.active_pet(p)
+	var expected := energy.pet_max_energy(caster) - energy.pet_cost("huaxian", 1)
+	_ok("技能只扣原版内部能量", energy.act_pet_skill(1) and int(p.credit) == 0 and energy.pet_energy(caster) == expected)
+	energy._tick_pet_hunger(Rules.seconds_per_day() * 3.0)
+	_ok("未满槽三天掉一点内部能量", is_equal_approx(energy.pet_energy(caster), expected - 1.0) and energy.pet_energy(reserve) == before)
+	var curse := _pet_world("qiongshen")
+	_ok("小穷神要求选择对手，不随机施加", not curse.act_pet_skill(1, false)
+		and curse.act_pet_skill(1, false, 2) and float(curse.players[2].effects.rent_pay_double_until) > curse.time)
+	var devil := _pet_world("emo")
+	devil.active_pet(devil.players[1]).level = 2
+	var idx := int(devil.players[1].tile)
+	_ok("二级恶魔拆脚下两级", devil.act_pet_skill(1) and int(devil.plots[idx].level) == 0)
+	var monster := _pet_world("guaishou")
+	var victim := monster.active_pet(monster.players[2])
+	var victim_before := monster.pet_energy(victim)
+	var attack_voices: Array = []
+	monster.game_event.connect(func(kind, data):
+		if kind == "pet_attacked": attack_voices.append(int(data.get("voice_line", 0))))
+	_ok("小怪兽伤害随身宠能量，保留宠物", monster.act_pet_skill(1)
+		and not monster.players[2].pets.is_empty() and monster.pet_energy(victim) < victim_before)
+	_ok("原版宠物挨打语音6", attack_voices == [6])
+	monster._set_pet_energy(monster.active_pet(monster.players[1]), 15.0)
+	monster._set_pet_energy(victim, 1.0)
+	_ok("宠物被击退语音8并移除实例", monster.act_pet_skill(1) and attack_voices == [6, 8]
+		and monster.active_pet(monster.players[2]).is_empty())
+	var steal := _card_world("abduct")
+	var taker: Dictionary = steal.players[1]
+	var target: Dictionary = steal.players[2]
+	steal.add_pet(taker, "caishen")
+	var stolen := steal.active_pet(target)
+	stolen.level = 3
+	steal._set_pet_energy(stolen, 9.0)
+	taker.cards = ["abduct"]
+	var equipped := steal.pet_token(steal.active_pet(taker))
+	_ok("同种诱拐保留两个实例和原能量等级", steal.act_use_card(1, "abduct", 2)
+		and taker.pets.size() == 2 and steal.pet_token(steal.active_pet(taker)) == equipped
+		and int(taker.pets[1].level) == 3 and steal.pet_energy(taker.pets[1]) == 9.0 and steal.active_pet(target).is_empty())
+	_ok("同种备用实例可以单独使用", steal.act_set_active_pet(1, steal.pet_token(taker.pets[1]))
+		and steal.active_pet(taker).level == 3)
+	var save := steal.to_dict()
+	var restored := _fresh_sim()
+	restored.apply_dict(save)
+	_ok("实例与能量随网络/存档快照往返", restored.players[1].pets.size() == 2
+		and restored.active_pet(restored.players[1]).level == 3
+		and restored.pet_energy(restored.active_pet(restored.players[1])) == 9.0)
+	var state := _card_world("invisible")
+	var invisible: Dictionary = state.players[1]
+	invisible.effects.invincible_until = state.time + 99.0
+	invisible.effects.no_rent_steps = 30
+	invisible.cards = ["invisible"]
+	_ok("隐形独立互斥且具伤害保护", state.act_use_card(1, "invisible") and state._protected(invisible)
+		and float(invisible.effects.invincible_until) == 0.0 and int(invisible.effects.no_rent_steps) == 0)
+	state.time = float(invisible.effects.invisible_until)
+	_ok("隐形到期没有无敌残留", not state._protected(invisible))
+	var seal := _card_world("seize")
+	var sealer: Dictionary = seal.players[1]
+	sealer.cards = ["seize", "seize", "boost:seize"]
+	var street := seal._current_street(int(sealer.tile))
+	seal.act_use_card(1, "seize")
+	var expiry := float(seal.street_seal[street])
+	seal.time += 10.0
+	seal.act_use_card(1, "seize")
+	_ok("未到期重复查封累加五天", float(seal.street_seal[street]) == expiry + 5.0 * Rules.seconds_per_day())
+	seal.act_use_card(1, "boost:seize")
+	_ok("增强查封累加十天", float(seal.street_seal[street]) == expiry + 15.0 * Rules.seconds_per_day())
+	var legacy := {"id": "hutu", "level": 1, "fullness": 80.0, "ready": true}
+	_ok("旧存档锁存就绪转换成真正满能量", energy.pet_energy(legacy) == 15.0 and energy.pet_skill_ready(legacy))
+	var depleted := {"id": "hutu", "level": 1, "fullness": 10.0, "ready": false}
+	_ok("低能量表情按内部三点阈值", energy.pet_anxious(depleted) and energy.pet_energy(depleted) == 1.5)
 
 func _test_rules() -> void:
 	print("\n[1] 数值表 (realtime.json + houses.json)")
@@ -334,6 +763,34 @@ func _test_road_events() -> void:
 		kinds.has("pethouse_open"), str(kinds))
 	_ok("点券格加点券", int(p["credit"]) > 0, "点券 %d" % int(p["credit"]))
 	_ok("相邻入口出口不触发重复传送", not p.has("_ev_platform_moved"))
+	var fate_results: Array = []
+	sim.game_event.connect(func(kind: String, data: Dictionary) -> void:
+		if kind == "fate": fate_results.append(data))
+	_fire_event(sim, p, "tvnews")
+	_ok("问号路点发出具体命运结果，无未填占位符", fate_results.size() == 1
+		and not str(fate_results[0].get("text", "")).contains("<"), str(fate_results))
+	p["tile"] = 0
+	var aimed := sim.card_road_candidates(1, "missile")
+	_ok("飞弹可瞄准前后20个路点，21格外不可选", aimed.has(20)
+		and aimed.has(m.tile_count() - 20) and not aimed.has(21)
+		and not aimed.has(m.tile_count() - 21), "候选%d格" % aimed.size())
+	for event_name in ["tvnews", "game_a"]:
+		var walked := Sim.new()
+		walked.setup(m, 808)
+		walked.add_player(1, "步行玩家")
+		walked.running = true
+		var landing := -1
+		for tile in range(m.tile_count()):
+			if str(m.tile(tile).get("event", "")) == event_name:
+				landing = tile
+				break
+		var heard: Array = []
+		walked.game_event.connect(func(kind: String, _data: Dictionary) -> void: heard.append(kind))
+		var credit_before := int(walked.players[1].credit)
+		_arrive_at(walked, walked.players[1], landing)
+		_ok("实际走到%s路点会触发可见结果" % event_name,
+			heard.has("fate") if event_name == "tvnews" else
+			(heard.has("credit") and int(walked.players[1].credit) > credit_before), str(heard))
 
 # ------------------------------------------- 3e. 小神仙（精灵屋）+ 卡片商店
 
@@ -390,7 +847,10 @@ func _test_card_menu_feed() -> void:
 	var f0 := float(p["pets"][0].get("fullness", 0.0))
 	var n0 := (p["cards"] as Array).size()
 	var ok_feed := sim.act_feed_card(1, "step3")
-	# ⚠️ 老板 2026-09-27 修正机制：**喂食只加饱食度、不升级**（升级改由时间驱动，每月一级）
+	_ok("原版三步卡直接补三点能量（小财神上限20，显示15%）",
+		is_equal_approx(sim.pet_energy(sim.active_pet(p)), 3.0)
+		and is_equal_approx(sim.pet_fullness_ratio(sim.active_pet(p)), 0.15))
+	# Native feeding adds card energy directly; it does not change the level.
 	_ok("喂食：消耗一张卡 + **只加饱食度、等级不变**", ok_feed
 		and int(p["pets"][0]["level"]) == lv0
 		and float(p["pets"][0]["fullness"]) > f0
@@ -399,7 +859,7 @@ func _test_card_menu_feed() -> void:
 			int(p["pets"][0]["level"]), int(f0), int(p["pets"][0]["fullness"]), n0,
 			(p["cards"] as Array).size()])
 	# 喂到饱 → 饱食度封顶，再喂应被拒（别浪费卡）
-	for _i in range(5):
+	for _i in range(7):
 		(p["cards"] as Array).append("step3")
 		sim.act_feed_card(1, "step3")
 	_ok("喂饱之后弹「都吃饱了」、不再吃卡",
@@ -413,8 +873,8 @@ func _test_card_menu_feed() -> void:
 	sim._tick_pet_aging()
 	sim.road_day = 61
 	sim._tick_pet_aging()
-	_ok("小神仙**随时间升级**（每月一级，老板 2026-09-27）",
-		int(p["pets"][0]["level"]) == mini(lv_before + 2, Sim.PET_LEVEL_CAP),
+	_ok("只推进月份不提升小神仙等级",
+		int(p["pets"][0]["level"]) == lv_before,
 		"level %d → %d" % [lv_before, int(p["pets"][0]["level"])])
 
 	var s2 := _fresh_sim()
@@ -496,6 +956,31 @@ func _test_hand() -> void:
 	_ok("全部锁定时新卡进不来（reason = all_locked）",
 		not bool(res3["added"]) and str(res3["reason"]) == "all_locked",
 		"reason=%s" % str(res3["reason"]))
+	var use_sim := _fresh_sim()
+	var use_player: Dictionary = use_sim.players[1]
+	(use_player["cards"] as Array).append("invincible")
+	use_sim.act_lock_card(1, "invincible")
+	_ok("锁定卡仍可正常使用", use_sim.act_use_card(1, "invincible")
+		and float(use_player["effects"]["invincible_until"]) > use_sim.time
+		and not use_sim.card_locked(use_player, "invincible"))
+	var feed_sim := _pet_world("caishen")
+	var feed_player: Dictionary = feed_sim.players[1]
+	(feed_player["cards"] as Array).append("step3")
+	(feed_player["pets"][0] as Dictionary)["fullness"] = 0.0
+	feed_sim.act_lock_card(1, "step3")
+	_ok("锁定卡仍可喂食小神仙", feed_sim.act_feed_card(1, "step3")
+		and not (feed_player["cards"] as Array).has("step3")
+		and not feed_sim.card_locked(feed_player, "step3"))
+	var steal_sim := _card_world("rob")
+	var thief: Dictionary = steal_sim.players[1]
+	var victim: Dictionary = steal_sim.players[2]
+	thief.cards = ["rob"]
+	victim.cards = ["step1"]
+	steal_sim.act_lock_card(2, "step1")
+	_ok("锁定卡仍能被对手抢夺，失去卡后锁定状态清理",
+		steal_sim.act_use_card(1, "rob", 2) and (thief.cards as Array).has("step1")
+		and not (victim.cards as Array).has("step1")
+		and not steal_sim.card_locked(victim, "step1"))
 
 
 # ------------------------------------ 3j. 股票 / 公司（Role.txt 缺省公司 + Initvar_r 参数）
@@ -609,14 +1094,25 @@ func _test_stock() -> void:
 	var s4 := _fresh_sim()
 	var p4: Dictionary = s4.players[1]
 	p4["money"] = 100000
+	s4._resolve_event(p4, int(p4["tile"]), {"event": "labar", "name": "拉霸"})
 	_ok("拉霸：先投注（原版三档 +1000 / +5000 / +10000）",
 		s4.act_casino_bet(1, 1000) and int(s4._casino_of(1)["bet"]) == 1000,
 		"注额 %d" % int(s4._casino_of(1)["bet"]))
+	_ok("拉霸：同次进入只能下注一档", not s4.act_casino_bet(1, 5000)
+		and int(s4._casino_of(1)["bet"]) == 1000)
 	_ok("拉霸：没投注就拉杆会被拒", not s4.act_casino_pull(2), "")
 	_ok("拉霸：拉杆 → 出三个滚轮符号并结算",
 		s4.act_casino_pull(1) and (s4._casino_of(1)["reels"] as Array).size() == 3,
 		str(s4._casino_of(1)["reels"]))
 	_ok("拉霸：拉杆后投注额清零", int(s4._casino_of(1)["bet"]) == 0, "")
+	_ok("拉霸：结算后不可再下注或反复拉杆", not s4.act_casino_bet(1, 1000)
+		and not s4.act_casino_pull(1))
+	s4._resolve_event(p4, int(p4["tile"]), {"event": "labar", "name": "拉霸"})
+	_ok("拉霸：再次经过事件点才可重新下注", s4.act_casino_bet(1, 1000))
+	var before_refund := int(p4["money"])
+	_ok("拉霸：未拉杆退出退还本次下注", s4.act_casino_exit(1)
+		and int(p4["money"]) == before_refund + 1000
+		and int(s4._casino_of(1)["bet"]) == 0)
 
 	# ---- 全局新闻（Info.txt 3001..3014 + realtime.json 的 news 段）----
 	var s5 := _fresh_sim()
@@ -627,6 +1123,49 @@ func _test_stock() -> void:
 		s5.stock_price(c5) > pr5, "%.2f → %.2f" % [pr5, s5.stock_price(c5)])
 	_ok("新闻文案取自原版 Info.txt（3001..3014）",
 		Rules.info_string(3002).contains("股市"), Rules.info_string(3002))
+	var news_results: Array = []
+	var closed_events: Array = []
+	s5.game_event.connect(func(kind: String, data: Dictionary) -> void:
+		if kind == "global_news": news_results.append(data)
+		if kind == "stock_closed": closed_events.append(data))
+	s5._fire_global_news(6)
+	var held_before := s5.holding_of(1, c5)
+	_ok("股市休市新闻填入真实天数", news_results.size() == 1
+		and not str(news_results[0].get("text", "")).contains("<NUMBER>")
+		and s5.stock_closed_until_day > s5.road_day, str(news_results))
+	_ok("休市期间买卖均被拒绝且持股不变", not s5.act_buy_stock(1, c5, 1)
+		and not s5.act_sell_stock(1, c5, 1) and s5.holding_of(1, c5) == held_before
+		and closed_events.size() == 2)
+	s5.road_day = s5.stock_closed_until_day
+	_ok("休市期结束恢复交易", s5.act_sell_stock(1, c5, 1))
+	var s6 := _fresh_sim()
+	var land := -1
+	for tile in range(s6.map.tile_count()):
+		if str(s6.map.tile(tile).get("kind", "")) == "plot":
+			land = tile
+			break
+	if land >= 0:
+		s6.plots[land] = {"owner": 2, "level": 1, "type": "shop"}
+		var value_before := s6.plot_value(land)
+		s6._fire_global_news(8)
+		var value_up := s6.plot_value(land)
+		s6._fire_global_news(9)
+		_ok("地价新闻确实改变地产现值", value_up > value_before
+			and s6.plot_value(land) < value_up)
+		var buyer: Dictionary = s6.players[1]
+		buyer.tile = land
+		var cash := int(buyer.money)
+		s6._resolve_plot(buyer, land, s6.map.tile(land))
+		var base_rent := cash - int(buyer.money)
+		s6._fire_global_news(3)
+		cash = int(buyer.money)
+		s6._resolve_plot(buyer, land, s6.map.tile(land))
+		var raised_rent := cash - int(buyer.money)
+		s6._fire_global_news(14)
+		cash = int(buyer.money)
+		s6._resolve_plot(buyer, land, s6.map.tile(land))
+		_ok("商业与经济萧条新闻确实改变实收租金", raised_rent > base_rent
+			and cash - int(buyer.money) < raised_rent)
 
 
 # ------------------------------------ 3k. 同格挤人（原版不允许多人站在同一格）
@@ -652,8 +1191,40 @@ func _test_push_away() -> void:
 	_ok("后到的人把先到的人**往前挤一格**",
 		int(p["tile"]) == sim._wrap(at + 1),
 		"p 在 %d（期望 %d）" % [int(p["tile"]), sim._wrap(at + 1)])
-	_ok("挤人**不触发**地面事件 / 买地 / 升级（被挤的人拿不到一次性机会）",
+	_ok("被挤的人拿不到买地 / 升级的一次性机会",
 		int(p.get("last_plot", -1)) < 0, "last_plot=%d" % int(p.get("last_plot", -1)))
+	var sim3 := _fresh_sim()
+	var pushed: Dictionary = sim3.players[1]
+	var pusher: Dictionary = sim3.players[2]
+	var from3 := -1
+	for i in range(1, sim3.map.tile_count() - 1):
+		if str(sim3.map.tile(i + 1).get("kind", "")) == "plot":
+			from3 = i
+			break
+	var to3 := sim3._wrap(from3 + 1)
+	sim3.road_objs[to3] = {"kind": "caishen", "born": 0.0}
+	pushed.tile = from3
+	pusher.tile = from3
+	sim3._arrive(pusher)
+	_ok("被撞到财神路点会拾取财神并获得附身状态",
+		int(pushed.effects.get("no_rent_steps", 0)) > 0 and not sim3.road_objs.has(to3),
+		str(pushed.effects))
+	var sim4 := _fresh_sim()
+	var unlucky: Dictionary = sim4.players[1]
+	var empty4 := -1
+	for i in range(sim4.map.tile_count()):
+		if str(sim4.map.tile(i).get("kind", "")) == "plot" and not sim4.plots.has(i):
+			empty4 = i
+			break
+	unlucky.tile = empty4
+	unlucky.effects.no_upgrade_steps = 30
+	sim4._resolve_plot(unlucky, empty4, sim4.map.tile(empty4))
+	_ok("衰神附身时抵达空地不给购地机会",
+		int(unlucky.last_plot) < 0)
+	unlucky.last_plot = empty4
+	unlucky.last_plot_kind = "buy"
+	_ok("衰神附身时即使留有旧机会也不能买地",
+		not sim4.act_buy(1) and not sim4.plots.has(empty4))
 
 	# 被挤到**别人的地产**上 → 要付房租
 	var sim2 := _fresh_sim()
@@ -785,12 +1356,18 @@ func _test_road_objs() -> void:
 	_discover_road(s3, "crystal")
 	_ok("戒指（有小神仙）= 等级 +1", int(s3.players[1]["pets"][0]["level"]) == 2,
 		"level=%d" % int(s3.players[1]["pets"][0]["level"]))
+	_ok("戒指升级后立即补满能量，可发动一次技能",
+		float(s3.players[1]["pets"][0]["fullness"]) == Sim.PET_FULLNESS_MAX
+		and s3.pet_skill_ready(s3.players[1]["pets"][0]))
 	var s4 := _pet_world("caishen")
 	s4.players[1]["pets"][0]["level"] = 4
 	_discover_road(s4, "crystal")
 	_ok("戒指不能把满级小神仙顶过上限（4 级，逆向自 0x431170）",
 		int(s4.players[1]["pets"][0]["level"]) == 4,
 		"level=%d" % int(s4.players[1]["pets"][0]["level"]))
+	_ok("满级小神仙吃戒指仍能补满能量",
+		float(s4.players[1]["pets"][0]["fullness"]) == Sim.PET_FULLNESS_MAX
+		and s4.pet_skill_ready(s4.players[1]["pets"][0]))
 
 	# 74 汉堡：+1000 HP（HanBao_Inc_HP），受体力上限约束
 	var s5 := _fresh_sim()
@@ -861,19 +1438,30 @@ func _test_road_objs() -> void:
 
 	# 财神 / 福神 / 衰神 / 穷神：附身到踩到的人身上
 	var god_eff := {
-		"caishen": "no_rent_until", "qiongshen": "rent_pay_double_until",
+		"caishen": "no_rent_steps", "qiongshen": "rent_double_steps",
 		"shuaishen": "no_upgrade_steps", "fushen": "free_upgrade_steps",
 	}
 	var gods_ok := true
 	var gods_detail: Array = []
 	for g in god_eff.keys():
 		var sg := _fresh_sim()
+		var before_money := int(sg.players[1]["money"])
+		var before_cards := (sg.players[1]["cards"] as Array).size()
 		_discover_road(sg, str(g))
 		var v: Variant = sg.players[1]["effects"][str(god_eff[g])]
 		var grew: bool = (float(v) > 0.0) if v is float else (int(v) > 0)
 		if not grew:
 			gods_ok = false
 			gods_detail.append("%s 没生效" % g)
+		if g == "caishen" and int(sg.players[1]["money"]) <= before_money:
+			gods_ok = false
+			gods_detail.append("财神没有给钱")
+		if g == "qiongshen" and int(sg.players[1]["money"]) >= before_money:
+			gods_ok = false
+			gods_detail.append("穷神没有扣钱")
+		if g == "fushen" and (sg.players[1]["cards"] as Array).size() <= before_cards:
+			gods_ok = false
+			gods_detail.append("福神没有发卡")
 	_ok("踩到四神（财神/福神/衰神/穷神）会附身并改变状态", gods_ok, str(gods_detail))
 
 	# 隔毁：挡一下
@@ -909,9 +1497,9 @@ func _test_road_objs() -> void:
 	s14._try_pet_levelup(s14.players[1])
 	_ok("走够步数之前不升级", int(s14.players[1]["pets"][0]["level"]) == lv14, "")
 	var need14 := int(Rules.get_val("pet.upgrade_steps_per_level", 300)) * lv14
-	s14.players[1]["pet_steps"] = need14
+	s14.active_pet(s14.players[1])["growth"] = need14
 	s14._try_pet_levelup(s14.players[1])
-	_ok("走满 Pet_Upgrade_Steps × 级数 步后升一级（小神仙的第二个升级途径）",
+	_ok("实例累计达到等级×300时升级并清空累计",
 		int(s14.players[1]["pets"][0]["level"]) == lv14 + 1,
 		"level %d → %d（门槛 %d 步）" % [lv14, int(s14.players[1]["pets"][0]["level"]), need14])
 
@@ -972,6 +1560,9 @@ func _test_pets() -> void:
 		s2.act_buy_pet(1, "caishen") and s2.pet_count(p2) == 1
 			and int(p2["credit"]) == 500 - price,
 		"价 %d，剩 %d" % [price, int(p2["credit"])])
+	_ok("新小财神内部能量初始一半，不会立刻飞走",
+		float((p2.pets[0] as Dictionary).fullness) == Sim.PET_START_FULLNESS)
+	_ok("稀有度越高喂食越多", s2.pet_feed_value("nuke") > s2.pet_feed_value("step3"))
 	_ok("同一位再请 → 升一级，不是重复持有",
 		s2.act_buy_pet(1, "caishen") and s2.pet_count(p2) == 1
 			and int((p2["pets"][0] as Dictionary)["level"]) == 2,
@@ -982,6 +1573,43 @@ func _test_pets() -> void:
 	_ok("满 5 位后不能再请（Info.txt 202）",
 		s2.pet_count(p2) == 5 and not s2.act_buy_pet(1, "huaxian")
 			and s2.pet_count(p2) == 5, "持有 %d 位" % s2.pet_count(p2))
+	var hunger_world := _pet_world("caishen")
+	var hungry: Dictionary = hunger_world.players[1]
+	var flee_lines: Array = []
+	hunger_world.game_event.connect(func(kind, data):
+		if kind == "pet_flew_away": flee_lines.append(int(data.get("voice_line", 0))))
+	(hungry.pets[0] as Dictionary).fullness = 1.0
+	hunger_world._tick_pet_hunger(Rules.seconds_per_day())
+	_ok("饱食度随时间下降，到 0 时离开并清除出战位",
+		hungry.pets.is_empty() and hunger_world.active_pet(hungry).is_empty())
+	_ok("原版能量耗尽逃离语音9", flee_lines == [9])
+	var dream_world := _pet_world("hutu")
+	var dreamer: Dictionary = dream_world.players[2]
+	_ok("糊涂鬼只对选中的近处对手施加梦游步数",
+		dream_world.act_pet_skill(1, false, 2) and int(dreamer.effects.sleepwalk_steps) == 15
+		and float(dreamer.effects.sleep_until) == 0.0 and int(dream_world.players[1].effects.sleepwalk_steps) == 0)
+	_ok("梦游玩家不能手动掷骰，但可由电脑驱动，地产不收租",
+		not dream_world.act_roll(2) and dream_world.act_roll(2, 1, true)
+		and Sim.owner_abnormal(dreamer, dream_world.time))
+	var cardpoint := -1
+	var empty_plot := -1
+	for tile_index in range(dream_world.map.tile_count()):
+		var tile_data: Dictionary = dream_world.map.tile(tile_index)
+		if cardpoint < 0 and str(tile_data.get("event", "")) == "cardpt": cardpoint = tile_index
+		if empty_plot < 0 and str(tile_data.get("kind", "")) == "plot" \
+				and not dream_world.plots.has(tile_index): empty_plot = tile_index
+	if cardpoint >= 0:
+		dreamer.tile = dream_world._wrap(cardpoint - 1)
+		dreamer.moving = 1
+		dreamer.progress = .99
+		dreamer.move_after = 0.0
+		var hand_before := (dreamer.cards as Array).size()
+		dream_world._advance(dreamer, 0.2)
+		_ok("梦游自动行走仍触发卡片路点", int(dreamer.tile) == cardpoint
+			and (dreamer.cards as Array).size() > hand_before)
+	if empty_plot >= 0:
+		dream_world._resolve_plot(dreamer, empty_plot, dream_world.map.tile(empty_plot))
+		_ok("梦游抵达空地没有购地机会", str(dreamer.last_plot_kind) == "")
 
 	# ---- 9 种特技都能发动，且真的改变状态 ----
 	var silent: Array = []
@@ -990,33 +1618,29 @@ func _test_pets() -> void:
 		var s3 := _pet_world(str(r.get("id", "")))
 		var p3: Dictionary = s3.players[1]
 		var before := str(s3.to_dict())
-		s3._tick_pets(p3)
+		s3.act_pet_skill(1, false, 2 if str(r.get("id", "")) in ["hutu", "qiongshen"] else -1)
 		if str(s3.to_dict()) == before:
 			silent.append("%s/%s" % [r.get("id"), r.get("effect")])
 	_ok("9 只小神仙的特技全部能发动且改变状态（没有空转）", silent.is_empty(), str(silent))
 
-	# ---- 冷却 = Pet.txt 的「秒数」；点券 = 「消耗点数」----
+	# ---- 满饱食可主动发动；再次喂满即可立刻再用 ----
 	var s4 := _pet_world("huaxian")
 	var p4: Dictionary = s4.players[1]
-	s4._tick_pets(p4)
+	s4.act_pet_skill(1)
 	var cr := int(p4["credit"])
-	s4._tick_pets(p4)                       # 同一时刻再来 → 冷却中
-	_ok("冷却期内不会连发（不重复扣点券）", int(p4["credit"]) == cr,
+	_ok("一次技能消耗饱食度，不能空能量连发", not s4.act_pet_skill(1) and int(p4["credit"]) == cr,
 		"点券 %d → %d" % [cr, int(p4["credit"])])
-	s4.time += s4.pet_seconds("huaxian", 1) + 0.1
-	# ⚠️ 现在发动还要求**体力满**（老板 2026-09-27：满体力条才能发动技能）——
-	# 上一次发动已经把体力清零了，这里手动填满再测冷却
 	for _e in (p4["pets"] as Array):
 		(_e as Dictionary)["fullness"] = Sim.PET_FULLNESS_MAX
-	s4._tick_pets(p4)
-	_ok("冷却（%.0f 秒）过后能再发，并再扣一次点券" % s4.pet_seconds("huaxian", 1),
-		int(p4["credit"]) < cr, "点券 %d" % int(p4["credit"]))
+	s4.act_pet_skill(1)
+	_ok("重新喂满后无冷却可立即再发",
+		int(p4["credit"]) == cr and not s4.pet_skill_ready(s4.active_pet(p4)), "点券保持 %d" % int(p4["credit"]))
 	var s5 := _pet_world("huaxian")
 	var p5: Dictionary = s5.players[1]
 	p5["credit"] = 0
-	s5._tick_pets(p5)
-	_ok("点券不够 → 特技不发动（也不扣、不进冷却）",
-		float(p5["effects"]["invincible_until"]) == 0.0 and int(p5["credit"]) == 0,
+	s5.act_pet_skill(1)
+	_ok("没有点券也能消耗宠物能量发动技能",
+		float(p5["effects"]["invincible_until"]) > s5.time and int(p5["credit"]) == 0,
 		"credit %d / invincible_until %.0f" % [int(p5["credit"]),
 			float(p5["effects"]["invincible_until"])])
 
@@ -1028,9 +1652,9 @@ func _test_pets() -> void:
 	for pe6 in (p6["pets"] as Array):
 		(pe6 as Dictionary)["fullness"] = Sim.PET_FULLNESS_MAX
 	p6["credit"] = 100
-	s6._tick_pets(p6)
-	_ok("小赌神发动后，下一掷必出 6 点",
-		s6.act_roll(1, 1) and int(p6["last_roll"]) == 6, "点数 %d" % int(p6["last_roll"]))
+	s6.act_pet_skill(1)
+	_ok("小赌神发动后选择步数，点击后按所选点数前进",
+		bool(p6.pending_steps) and s6.act_walk(1, 3) and int(p6.last_roll) == 3 and not bool(p6.pending_steps))
 
 	# ---- 拍卖（甲13 新闻「公开拍卖一处公有土地」/ Info.txt 4001..4003）----
 	var s8 := _fresh_sim()
@@ -1094,32 +1718,31 @@ func _test_pets() -> void:
 		int(pb["last_plot"]) == -1 and int(pc["last_plot"]) == -1,
 		"b=%d c=%d" % [int(pb["last_plot"]), int(pc["last_plot"])])
 
-	# ---- 物价指数：30 天一个月，每月上涨（老板 2026-09-27）----
-	_lines.append("[3j] 物价指数每月上涨")
+	# ---- Native integer inflation driven by average company assets ----
+	_lines.append("[3j] 公司资产驱动物价指数")
 	var sE := _fresh_sim()
 	_ok("一个月 = 30 天", Sim.MONTH_DAYS == 30, str(Sim.MONTH_DAYS))
+	sE._tick_estate_index()
 	var idx0 := sE.estate_index
 	var price0 := sE.empty_plot_price()
-	sE.road_day = 29
-	sE._tick_estate_index()
-	_ok("没满 30 天不涨", sE.estate_index == idx0,
-		"%.0f（应还是 %.0f）" % [sE.estate_index, idx0])
-	sE.road_day = 30
-	sE._tick_estate_index()
-	_ok("满 30 天 → 指数上涨、地价跟着涨",
-		sE.estate_index > idx0 and sE.empty_plot_price() > price0,
-		"指数 %.0f→%.0f，地价 %d→%d" % [idx0, sE.estate_index, price0,
-			sE.empty_plot_price()])
 	sE.road_day = 90
 	sE._tick_estate_index()
-	_ok("跨 3 个月会补涨（一次跨月不丢）", sE.estate_index >= idx0 + 3.0,
-		"%.0f" % sE.estate_index)
-	_ok("房租也跟着指数涨（物价指数影响过路费）",
-		sE._rent_of(1, "uptown") > int(round(float(Rules.house_rent("uptown", 1)))), "")
+	_ok("时间经过三个月本身不提高物价", sE.estate_index == idx0, str(sE.estate_index))
+	for pE in sE.players.values(): pE.money = int(pE.money) * 100
+	sE._tick_estate_index()
+	_ok("公司资产增长提高整数物价及地价", sE.estate_index > idx0 and sE.empty_plot_price() > price0, str(sE.price_scale()))
+	_ok("原版物价上限为9", sE.price_scale() == 9, str(sE.price_scale()))
+	_ok("房租随物价指数提高", sE._rent_of(1, "uptown") > Rules.house_rent("uptown", 1), "")
+	for pE in sE.players.values(): pE.money = 0
+	sE._tick_estate_index()
+	_ok("资产下降不回退已有物价指数", sE.price_scale() == 9, str(sE.price_scale()))
 
 	# ---- 卡片商店（点券出口）----
 	var s7 := _fresh_sim()
 	var p7: Dictionary = s7.players[1]
+	s7.refill_card_shop()
+	if not s7.card_shop_stock.has("caishen"): s7.card_shop_stock[0] = "caishen"
+	_ok("货架初始为 8 格", s7._shop_stock().size() == 8)
 	p7["credit"] = 0
 	_ok("点券不够 → 买不了卡", not s7.act_buy_card(1, "caishen")
 		and (p7["cards"] as Array).is_empty(), "点券 0")
@@ -1130,7 +1753,7 @@ func _test_pets() -> void:
 			and int(p7["credit"]) == 100 - cprice,
 		"价 %d（徽章 %d），剩 %d" % [cprice, Rules.card_badge("caishen"), int(p7["credit"])])
 	_ok("货架正好 8 格（原版 cardshop.tga 是 2 列 × 4 行）",
-		s7._shop_stock().size() == 8, "%d 格" % s7._shop_stock().size())
+		s7._shop_stock().size() == 7, "买走一张后 %d 格" % s7._shop_stock().size())
 	# ⭐ 货架必须**持久**，且**买走的卡要从架上移除**
 	#   （老板 2026-09-27：「我买了的卡应该移除掉，不然我不就可以不停买了吗」）
 	#   改之前 `_shop_stock()` 每次现洗一副牌 → 买完卡还在架上、可以反复买。
@@ -1208,11 +1831,18 @@ func _test_cards() -> void:
 		if cid == "copy":
 			# 复制卡要有**别的**卡才能复制（String.txt 67「没有可以组合的卡片」）
 			(p["cards"] as Array).append("step3")
+		if cid == "gem":
+			(p["cards"] as Array).append("shuaishen")
 		var target := 2 if sim.card_needs_player(cid) else -1
+		if sim.card_target(cid) == "road":
+			var candidates := sim.card_road_candidates(1, cid)
+			if not candidates.is_empty(): target = int(candidates[0])
 		# 红卡 / 黑卡要指定「哪一种股票」（第 3 个参数 = 公司名）
 		var tname := ""
 		if sim.card_target(cid) == "stock" and not sim.stock_names().is_empty():
 			tname = str(sim.stock_names()[0])
+		if cid == "gem": tname = "shuaishen"
+		if cid == "rebuild": tname = "special1"
 		var before := str(sim.to_dict())
 		var used := sim.act_use_card(1, cid, target, tname)
 		if Sim.CARD_UNSUPPORTED.has(cid):
@@ -1229,6 +1859,53 @@ func _test_cards() -> void:
 	_ok("每张卡都真的改变了状态（没有空转的）", silent.is_empty(), str(silent))
 	_ok("`CARD_UNSUPPORTED` 已清空（红黑卡 + 复制卡都做完了）",
 		Sim.CARD_UNSUPPORTED.is_empty(), str(Sim.CARD_UNSUPPORTED))
+	# 原版 0x41fa20：改建选择的是 d1/d2/d3 特殊建筑，尺寸保持不变。
+	var rebuild_world := _card_world("rebuild")
+	var rebuild_player: Dictionary = rebuild_world.players[1]
+	(rebuild_player["cards"] as Array).append("rebuild")
+	var rebuild_idx := int(rebuild_player["tile"])
+	var normal_type := str(rebuild_world.plots[rebuild_idx].get("type", ""))
+	_ok("改建卡不会提供普通房型或自动把住宅降级",
+		rebuild_world.rebuild_plan(1, rebuild_idx, normal_type).is_empty()
+		and not rebuild_world.act_use_card(1, "rebuild", -1, normal_type), "type=" + normal_type)
+	_ok("改建卡选择特殊建筑后保留地块尺寸并使用原版 d 系列模型",
+		rebuild_world.act_use_card(1, "rebuild", -1, "special1")
+		and str(rebuild_world.plots[rebuild_idx].type) == "special1"
+		and Rules.house_file("special1", int(rebuild_world.plots[rebuild_idx].level)) == "d201",
+		str(rebuild_world.plots[rebuild_idx]))
+	var rebuild_large := _card_world("rebuild")
+	var large_idx := int(rebuild_large.players[1].tile)
+	rebuild_large.plots[large_idx].level = 4 # 二连地重工厂；模拟旧存档没有 footprint 字段
+	_ok("旧存档二连地改建保持尺寸，产物是银行而非俱乐部",
+		str(rebuild_large.rebuild_plan(1, large_idx, "special1").get("name", "")) == "银行")
+	var joined_idx := rebuild_large._wrap(large_idx + 1)
+	rebuild_large.plots[large_idx]["members"] = [large_idx, joined_idx]
+	rebuild_large.plots[joined_idx] = (rebuild_large.plots[large_idx] as Dictionary).duplicate(true)
+	(rebuild_large.players[1].cards as Array).append("rebuild")
+	_ok("二连地改建同步更新两个道路入口",
+		rebuild_large.act_use_card(1, "rebuild", -1, "special1")
+		and str(rebuild_large.plots[large_idx].type) == "special1"
+		and str(rebuild_large.plots[joined_idx].type) == "special1"
+		and int(rebuild_large.plots[joined_idx].level) == 2)
+	rebuild_large._downgrade_estate(large_idx)
+	_ok("二连格一级特殊建筑拆成独立空地且保留业主",
+		int(rebuild_large.plots[large_idx].level) == 0 and int(rebuild_large.plots[joined_idx].level) == 0
+		and int(rebuild_large.plots[large_idx].owner) == 1 and int(rebuild_large.plots[joined_idx].owner) == 1
+		and not rebuild_large.plots[large_idx].has("footprint") and not rebuild_large.plots[joined_idx].has("footprint"))
+	var clear_world := _card_world("clear")
+	var clear_player: Dictionary = clear_world.players[1]
+	var clear_start := int(clear_player["tile"])
+	var clear_step := int(clear_player["dir"])
+	var farther := clear_world._wrap(clear_start + clear_step * 4)
+	clear_world.road_objs[farther] = {"kind": "ring"}
+	(clear_player["cards"] as Array).append("clear")
+	var clear_used := clear_world.act_use_card(1, "clear")
+	_ok("清除卡发动时道具仍在，等待推土机抵达", clear_used and clear_world.road_objs.has(farther))
+	clear_world.step(3.5)
+	_ok("推土机走完前方七格后清理路面物体",
+		clear_used
+		and clear_world._obstacle_at(clear_world._wrap(clear_start + clear_step * 2)).is_empty()
+		and not clear_world.road_objs.has(farther))
 
 	# ---- 卡片可用性门禁：原因码全部取自原版 String.txt 60..70 ----
 	_ok("原因码文案来自原版 String.txt（60 现金不足 / 63 只能用于对手的地产 / 65 没有建筑）",
@@ -1323,10 +2000,35 @@ func _test_cards() -> void:
 	sim6.street_seal.clear()
 	sim6.street_index.clear()
 	var st6: String = sim6.map.street_of(idx6)
+	p6.cards = ["priceup", "priceup"]
+	var land_before := sim6.plot_value(idx6)
+	var owner_value_before := sim6.estate_value(sim6.players[2])
+	var twice := sim6.act_use_card(1, "priceup") and sim6.act_use_card(1, "priceup")
+	_ok("同一街道连续两张涨价卡累计 +10%，地产现值随之增加",
+		twice and int(sim6.street_index.get(st6, 0)) == 10 and sim6.plot_value(idx6) > land_before
+		and sim6.estate_value(sim6.players[2]) > owner_value_before,
+		"%d → %d，街道 %+d%%" % [land_before, sim6.plot_value(idx6),
+			int(sim6.street_index.get(st6, 0))])
+	sim6.street_index.clear()
+	var runner := _card_world("run")
+	var athlete: Dictionary = runner.players[1]
+	athlete.cards = ["run"]
+	runner.obstacles.clear()
+	runner.road_objs.clear()
+	var origin := int(athlete.tile)
+	var stamina_before := float(athlete.stamina)
+	var running := runner.act_use_card(1, "run")
+	var rush_steps := int(athlete.moving)
+	runner._advance(athlete, 20.0)
+	_ok("暴走原版随机21～36步，沿用现有体力行为", running
+		and rush_steps in [21, 24, 27, 30, 33, 36]
+		and int(athlete.tile) == runner._wrap(origin + rush_steps)
+		and int(athlete.moving) == 0 and is_equal_approx(float(athlete.stamina), stamina_before),
+		"走到%d，剩余%d步，体力%.0f" % [int(athlete.tile), int(athlete.moving), float(athlete.stamina)])
 	var r0 := _rent_paid(sim6, idx6)
 	sim6.street_index[st6] = 50
 	var r1 := _rent_paid(sim6, idx6)
-	_ok("涨价卡（地价 +50%%）→ %s 租金变贵" % st6, r1 > r0, "%d → %d" % [r0, r1])
+	_ok("原版工业租金由工业环境决定，涨价不直接改变工业租金", r1 == r0, "%d → %d" % [r0, r1])
 	sim6.street_seal[st6] = sim6.time + 9999.0
 	var r2 := _rent_paid(sim6, idx6)
 	_ok("查封卡 → %s 查封期内租金 = 0" % st6, r2 == 0, "%d" % r2)
@@ -1401,6 +2103,8 @@ func _card_world(cid: String) -> Sim:
 	#   点名给了「（土神卡， 购地卡等）」）
 	if cid == "buyland" or cid == "tudigong":
 		sim.plots[a] = {"owner": 2, "level": 3, "type": "industry"}
+	if cid == "rebuild" and own >= 0:
+		p["tile"] = own # 原版改建作用于脚下建筑，不能自动改远处的地。
 	return sim
 
 
@@ -1503,10 +2207,10 @@ func _test_buy_and_rent() -> void:
 	var m1: int = int(p1["money"])
 	var m2: int = int(p2["money"])
 	_ok("玩家2 停在 1 号格", int(p2["tile"]) == 1, "tile=%d" % int(p2["tile"]))
-	_ok("玩家2 被扣 1500（House.txt 一级公寓基本租金）",
-		m2 == Sim.START_MONEY - 1500, "money=%d" % m2)
+	_ok("玩家2 被扣1650（基本租金1500及自身建筑地价影响）",
+		m2 == Sim.START_MONEY - 1650, "money=%d" % m2)
 	_ok("玩家1 收到等额租金",
-		m1 == before - sim.empty_plot_price() - 1000 + 1500, "money=%d" % m1)
+		m1 == before - sim.empty_plot_price() - 1000 + 1650, "money=%d" % m1)
 	_ok("收支平衡",
 		(Sim.START_MONEY - m2) == (m1 - (before - sim.empty_plot_price() - 1000)))
 
@@ -1562,15 +2266,15 @@ func _test_upgrade_chain() -> void:
 	money0 = int(p["money"])
 	p["tile"] = 5
 	_arrive_at(sim, p, 1)
-	_ok("福神状态上升级造价为 0（原版 id 1001「N 步之内免费加盖」）",
-		sim.upgrade_cost(p, 1) == 0, "cost=%d" % sim.upgrade_cost(p, 1))
-	_ok("福神状态升级不花钱",
-		sim.act_upgrade(1) and int(p["money"]) == money0,
-		"level=%d money=%d" % [int(sim.plots[1]["level"]), int(p["money"])])
+	_ok("福神抵达自动加盖一级且免费", int(sim.plots[1]["level"]) == 2 and int(p.money) == money0)
+	_ok("福神不消费手动加盖机会", int(p.last_plot) == 1 and sim.upgrade_cost(p, 1) > 0)
+	var manual_cost := sim.upgrade_cost(p, 1)
+	_ok("福神后手动加盖仍按正常费用", sim.act_upgrade(1) and int(sim.plots[1].level) == 3 and int(p.money) == money0 - manual_cost)
 	_ok("跨档造价正确：一级住宅 2000",
 		Rules.house_upgrade_cost("uptown", 5) == 2000)
 
 	# 衰神卡：Card_ShuaiShen_Steps = 30 步内不能升级
+	p["effects"]["free_upgrade_steps"] = 0
 	p["effects"]["no_upgrade_steps"] = 30
 	_arrive_at(sim, p, 1)
 	_ok("衰神状态：到了自己地上也不给升级机会（原版 id 1053「投资失败」）",
@@ -1670,9 +2374,33 @@ func _test_idle_sleep() -> void:
 		sim.step(0.1)
 		t += 0.1
 	_ok("静止 25 秒后进入睡眠",
-		float(p["effects"]["sleep_until"]) > sim.time,
-		"sleep_until=%.1f  now=%.1f" % [float(p["effects"]["sleep_until"]), sim.time])
-	_ok("睡眠期间无法掷骰", not sim.act_roll(1))
+		float(p["effects"]["rest_until"]) > sim.time,
+		"rest_until=%.1f  now=%.1f" % [float(p["effects"]["rest_until"]), sim.time])
+	_ok("挂机休息时点击 GO 可立即唤醒并掷骰",
+		sim.act_roll(1) and float(p["effects"]["rest_until"]) == 0.0 and int(p["moving"]) > 0)
+	p["moving"] = 0
+	p["effects"]["sleep_until"] = sim.time + 5.0
+	_ok("冬眠卡造成的睡眠不能靠 GO 解除", not sim.act_roll(1))
+	p["effects"]["sleep_until"] = 0.0
+	p["effects"]["rest_until"] = sim.time + 5.0
+	p["stamina"] = 0.0
+	_ok("体力不足时 GO 仍立即解除挂机休息", not sim.act_roll(1) and
+		float(p["effects"]["rest_until"]) == 0.0)
+	var winter := _fresh_sim()
+	winter.add_player(3, "远方玩家")
+	var caster: Dictionary = winter.players[1]
+	var nearby: Dictionary = winter.players[2]
+	var faraway: Dictionary = winter.players[3]
+	caster.tile = 10
+	nearby.tile = 11
+	faraway.tile = 40
+	caster.cards = ["hibernate"]
+	_ok("冬眠卡作用全图其他玩家，不会冬眠自己",
+		winter.act_use_card(1, "hibernate") and float(caster.effects.sleep_until) == 0.0
+		and float(nearby.effects.sleep_until) > winter.time
+		and float(faraway.effects.sleep_until) > winter.time)
+	winter._resolve_event(caster, int(caster.tile), {"event": "hospital", "name": "医院"})
+	_ok("经过医院路点不误进入冬眠状态", float(caster.effects.sleep_until) == 0.0)
 
 # ------------------------------------------- 8. 语义事件（Sim → 表现层的唯一接口）
 

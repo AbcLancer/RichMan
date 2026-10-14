@@ -26,6 +26,7 @@ var saw_client_action := false
 var latest_snapshot: Dictionary = {}
 var heard_chat := ""              # 客户端侧：收到的聊天文本
 var host_saw_chat := ""           # 房主侧：收到的聊天文本
+var slot_reopened := false
 
 
 func _initialize() -> void:
@@ -43,6 +44,8 @@ func _seed_resources() -> void:
 			net.sim._push_card(p, str(cid))
 		if (p["pets"] as Array).is_empty():
 			net.sim.add_pet(p, "caishen")
+		# Enter the real slot event so the authority opens one permitted play.
+		net.sim._resolve_event(p, int(p["tile"]), {"event": "labar", "name": "拉霸"})
 
 
 func _run() -> void:
@@ -66,7 +69,10 @@ func _run() -> void:
 			_fail("没有客户端登记")
 			return
 		if large:
-			net.add_local_ai(2)
+			net.add_local_ai(99) # Authority must cap humans + AI at four total.
+			if net.players_info.size() != 4:
+				_fail("电脑席位没有限制在四人房间容量内")
+				return
 		net.start_game("aiji", 123456)
 		print("[smoke] 开局完成，开始塞测试资源；players_info=%s sim.players=%s"
 			% [str(net.players_info.keys()), str(net.sim.players.keys())])
@@ -75,7 +81,14 @@ func _run() -> void:
 		# 连事件：房主侧要能看到客户端发来的聊天
 		net.sim.game_event.connect(func(kind: String, d: Dictionary) -> void:
 			if kind == "chat":
-				host_saw_chat = str(d.get("text", "")))
+				if str(d.get("text", "")) == "smoke_reopen_slot":
+					var test_player: Dictionary = net.sim.players.get(int(d.get("from", -1)), {})
+					if not test_player.is_empty():
+						net.sim._resolve_event(test_player, int(test_player["tile"]),
+							{"event": "labar", "name": "拉霸"})
+						slot_reopened = true
+				else:
+					host_saw_chat = str(d.get("text", "")))
 		# 等客户端把一串新动作打完（掷骰 → 买股票 → 锁卡 → 精灵 → 聊天 → 拉霸）
 		var saw_all := false
 		var last_cp: Dictionary = {}
@@ -84,7 +97,7 @@ func _run() -> void:
 			# ⚠️ `cid` **每轮重新取** —— 房间成员会随重连变化，缓存一次就可能读到已经不在的 id
 			var cid := -1
 			for id2 in net.sim.players.keys():
-				if int(id2) != 1:
+				if int(id2) != 1 and not net.ai_ids.has(id2):
 					cid = int(id2)
 					break
 			if cid < 0:
@@ -95,7 +108,10 @@ func _run() -> void:
 				saw_client_action = true
 			var cst: Dictionary = net.sim.casino.get(cid, {}) as Dictionary
 			var rl: Array = cst.get("reels", [])
-			if saw_client_action and (cp.get("holdings", {}) as Dictionary).size() > 1 \
+			var stock_bought := false
+			for amount in (cp.get("holdings", {}) as Dictionary).values():
+				if int(amount) > 2000: stock_bought = true
+			if saw_client_action and stock_bought \
 					and not (cp.get("card_locks", {}) as Dictionary).is_empty() \
 					and str(cp.get("pet_active", "")) != "" \
 					and not rl.is_empty():
@@ -113,11 +129,19 @@ func _run() -> void:
 		if host_saw_chat == "":
 			_fail("服务端未收到客户端聊天")
 			return
-		if not saw_start or not saw_client_action:
-			_fail("服务端未收到客户端掷骰")
+		if not saw_all:
+			_fail("服务端未完成股票／锁卡／精灵／拉霸全流程")
 			return
-		if host_saw_chat == "":
-			_fail("服务端未收到客户端聊天")
+		var exit_seen := await _wait_for(func() -> bool:
+			if not slot_reopened: return false
+			for id2 in net.sim.players.keys():
+				if int(id2) == 1 or net.ai_ids.has(id2): continue
+				var st: Dictionary = net.sim.casino.get(id2, {})
+				if not bool(st.get("open", true)) and int(st.get("bet", -1)) == 0:
+					return true
+			return false)
+		if not exit_seen:
+			_fail("服务端未收到客户端拉霸退出和退款")
 			return
 		if large:
 			for tile in range(net.sim.map.tile_count()):
@@ -125,7 +149,7 @@ func _run() -> void:
 					net.sim.plots[tile] = {"owner": 1, "level": 12, "type": "uptown"}
 		var raw := var_to_bytes(net.sim.to_dict())
 		var packed := raw.compress(FileAccess.COMPRESSION_ZSTD)
-		print("NET_SMOKE_PASS host: 掷骰/买股票/锁卡/精灵出战/拉霸 都执行了；聊天收到「%s」；"
+		print("NET_SMOKE_PASS host: 掷骰/买股票/锁卡/精灵出战/拉霸及退出退款 都执行了；聊天收到「%s」；"
 			% host_saw_chat + "快照 %d -> %d bytes" % [raw.size(), packed.size()])
 		await create_timer(1.0).timeout  # 允许最后一帧状态发出后再断开
 		quit(0)
@@ -144,18 +168,36 @@ func _run() -> void:
 		if not net.sim.players.has(id):
 			_fail("客户端模拟里缺少自己")
 			return
-		var me: Dictionary = net.sim.players[id]
+		var resources_ready := await _wait_for(func() -> bool:
+			var ps: Dictionary = latest_snapshot.get("players", {})
+			return ps.has(id) and int((ps[id] as Dictionary).get("money", 0)) == 900000 \
+				and ((ps[id] as Dictionary).get("cards", []) as Array).has("step3") \
+				and not ((ps[id] as Dictionary).get("pets", []) as Array).is_empty())
+		if not resources_ready:
+			_fail("房主测试资源未同步到客户端")
+			return
+		var me: Dictionary = (latest_snapshot.get("players", {}) as Dictionary)[id]
 		# 连事件：客户端侧要能收到**房主转发过来的**聊天（这正是本轮修的联机缺口）
 		net.sim.game_event.connect(func(kind: String, d: Dictionary) -> void:
 			if kind == "chat":
 				heard_chat = str(d.get("text", "")))
-		var my_company := str(me.get("company", ""))
+		var stock_keys: Array = (me.get("holdings", {}) as Dictionary).keys()
+		if stock_keys.is_empty(): stock_keys = (latest_snapshot.get("stocks", {}) as Dictionary).keys()
+		var my_company := str(stock_keys[0]) if not stock_keys.is_empty() else ""
 		var my_card := str((me["cards"] as Array)[0]) if not (me["cards"] as Array).is_empty() \
 			else ""
 		var my_pet := str(((me["pets"] as Array)[0] as Dictionary).get("id", "")) \
 			if not (me["pets"] as Array).is_empty() else ""
 
 		# ---- ① 掷骰 ----
+		# 新的降落伞入场有 2.8 秒不可操作；等待房主快照确认降落完。
+		var landed := await _wait_for(func() -> bool:
+			var ps: Dictionary = latest_snapshot.get("players", {})
+			return ps.has(id) and float(latest_snapshot.get("t", 0.0)) >= \
+				float((ps[id] as Dictionary).get("entry_until", 0.0)))
+		if not landed:
+			_fail("降落伞入场未结束或快照未同步")
+			return
 		net.send_action("roll")
 		var received := await _wait_for(func() -> bool:
 			var ps: Dictionary = latest_snapshot.get("players", {})
@@ -221,6 +263,41 @@ func _run() -> void:
 		if not got_casino:
 			_fail("拉霸结果没同步回客户端")
 			return
+		var casino_before: Dictionary = (latest_snapshot.get("casino", {}) as Dictionary).get(id, {}).duplicate(true)
+		net.send_action("casino_bet", [1000])
+		net.send_action("casino_pull", [])
+		await create_timer(.3).timeout
+		var casino_after: Dictionary = (latest_snapshot.get("casino", {}) as Dictionary).get(id, {})
+		if int(casino_after.get("bet", 0)) != 0 \
+				or casino_after.get("reels", []) != casino_before.get("reels", []):
+			_fail("拉霸同次进入被重复下注或重拉")
+			return
+		# Ask the host to simulate the next visit, then verify the new exit/refund RPC.
+		net.send_action("chat", ["smoke_reopen_slot", -1, "公共"])
+		var reopened := await _wait_for(func() -> bool:
+			var cs: Dictionary = latest_snapshot.get("casino", {})
+			return bool((cs.get(id, {}) as Dictionary).get("open", false)))
+		if not reopened:
+			_fail("下一次拉霸访问未同步到客户端")
+			return
+		var cash_before_exit := int(((latest_snapshot.get("players", {}) as Dictionary)[id] as Dictionary)["money"])
+		net.send_action("casino_bet", [1000])
+		var stake_seen := await _wait_for(func() -> bool:
+			var cs: Dictionary = latest_snapshot.get("casino", {})
+			return int((cs.get(id, {}) as Dictionary).get("bet", 0)) == 1000)
+		if not stake_seen:
+			_fail("退出前的拉霸下注未同步")
+			return
+		net.send_action("casino_exit", [])
+		var refunded := await _wait_for(func() -> bool:
+			var cs: Dictionary = latest_snapshot.get("casino", {})
+			var st: Dictionary = cs.get(id, {})
+			var ps: Dictionary = latest_snapshot.get("players", {})
+			return ps.has(id) and not bool(st.get("open", true)) and int(st.get("bet", -1)) == 0 \
+				and int((ps[id] as Dictionary).get("money", 0)) == cash_before_exit)
+		if not refunded:
+			_fail("拉霸退出没有经房主退还未拉杆下注")
+			return
 		if large:
 			var received_large := false
 			for i in range(int(LIMIT_SECONDS * 20.0)):
@@ -231,7 +308,8 @@ func _run() -> void:
 			if not received_large:
 				_fail("满盘地产状态没有回到客户端")
 				return
-		print("NET_SMOKE_PASS client: 掷骰 / 买股票 / 锁卡 / 精灵出战 / 聊天 / 拉霸 全部往返成功")
+		print("NET_SMOKE_PASS client: 掷骰 / 买股票 / 锁卡 / 精灵出战 / 聊天 / 拉霸及退出退款 全部往返成功")
+		await create_timer(1.0).timeout
 		quit(0)
 
 

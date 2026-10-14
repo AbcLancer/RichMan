@@ -2,6 +2,10 @@
 samples/
 out/
 exports/
+build-config.local.json
+ios-export-options.local.plist
+*.keystore
+*.jks
 
 # 由 tools/build_game_assets.py 从原版素材转出来的运行时素材（38 MB，含原版贴图/音效）
 # 版权属软星，同样不提交；本地跑 `python tools/build_game_assets.py` 重新生成即可
@@ -18,6 +22,17 @@ game/assets/
 docs/original-readable/
 docs/orig-logic/
 docs/orig-scene/
+
+# 逐函数反汇编产物（`rea-function-*.json`，单个 2~4 MB、**合计 121 MB / 208 个**）
+# 体积太大且**完全可由 tools/r6_disassemble_range.py 重跑**（原版 exe 还在 F:\游戏\Rich6）
+# ⚠️ 这里**不能写成 `docs/rea-*/rea-function-*.json`** —— gitignore 的 `*` 不跨 `/`，
+#   而实际路径是 `docs/rea-2026-10-11/economy-followup/rea-function-*.json`（多一层），
+#   那样写会漏掉子目录里的（第一次就这么漏了，险些提交 121 MB）。
+# ⚠️ 只忽略这些产物；同目录下的 *.md 结论、config-*.json 索引、*.c、*.asm.txt 仍要提交。
+rea-function-*.json
+
+# 临时诊断日志（.tmp-<日期>-*.log/.err，跑完就没用了）
+.tmp-*
 
 # 对齐 / 渲染过程截图（约 74 MB，可由 tools/ 重新生成）
 docs/screenshots/
