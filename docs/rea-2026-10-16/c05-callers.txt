@@ -1,0 +1,163 @@
+// 目标: 435f80 → FUN_00435f80 @ 00435f80
+
+// [1] 调用点 004359eb   位于 FUN_00435910 @ 00435910
+//     004359d7  JNZ 0x00435d6e
+//     004359dd  PUSH 0x3
+//     004359df  MOV ECX,EDI
+//     004359e1  CALL 0x00436570
+//     004359e6  PUSH EBP
+//     004359e7  PUSH 0x6
+//     004359e9  MOV ECX,EDI
+//   > CALL 0x00435f80
+
+// [2] 调用点 00435a74   位于 FUN_00435910 @ 00435910
+//     00435a61  MOV ECX,EDI
+//     00435a63  CALL 0x00436570
+//     00435a68  MOV ECX,EDI
+//     00435a6a  CALL 0x00435510
+//     00435a6f  PUSH EBP
+//     00435a70  PUSH 0x3
+//     00435a72  MOV ECX,EDI
+//   > CALL 0x00435f80
+
+// [3] 调用点 00435b06   位于 FUN_00435910 @ 00435910
+//     00435af2  LEA ECX,[ESP + 0x34]
+//     00435af6  PUSH ECX
+//     00435af7  PUSH 0xaf
+//     00435afc  JMP 0x00435d5b
+//     00435b01  PUSH EBP
+//     00435b02  PUSH 0x9
+//     00435b04  MOV ECX,ESI
+//   > CALL 0x00435f80
+
+// [4] 调用点 00435c61   位于 FUN_00435910 @ 00435910
+//     00435c4b  MOV ECX,0x5090b0
+//     00435c50  CALL 0x0042ab30
+//     00435c55  PUSH 0x2
+//     00435c57  JMP 0x00435d67
+//     00435c5c  PUSH EBP
+//     00435c5d  PUSH 0x1
+//     00435c5f  MOV ECX,ESI
+//   > CALL 0x00435f80
+
+// [5] 调用点 0041f207   位于 (无函数)
+//     0041f1f2  MOV ECX,EAX
+//     0041f1f4  CALL 0x0043ffe0
+//     0041f1f9  MOV EBX,dword ptr [0x00508e4c]
+//     0041f1ff  IMUL EBX,EBP
+//     0041f202  PUSH EBX
+//     0041f203  PUSH 0x9
+//     0041f205  MOV ECX,ESI
+//   > CALL 0x00435f80
+
+// [6] 调用点 0041f2c4   位于 (无函数)
+//     0041f2af  MOV ECX,EDI
+//     0041f2b1  CALL 0x00434ae0
+//     0041f2b6  MOV ESI,dword ptr [0x00508e54]
+//     0041f2bc  IMUL ESI,EBX
+//     0041f2bf  PUSH ESI
+//     0041f2c0  PUSH 0x7
+//     0041f2c2  MOV ECX,EDI
+//   > CALL 0x00435f80
+
+// [7] 调用点 0041f3c1   位于 (无函数)
+//     0041f3ac  MOV ECX,EAX
+//     0041f3ae  CALL 0x0043ff30
+//     0041f3b3  MOV EBP,dword ptr [0x00508e60]
+//     0041f3b9  IMUL EBP,EDI
+//     0041f3bc  PUSH EBP
+//     0041f3bd  PUSH 0x6
+//     0041f3bf  MOV ECX,ESI
+//   > CALL 0x00435f80
+
+// [8] 调用点 0041f4cc   位于 (无函数)
+//     0041f4bc  PUSH EBP
+//     0041f4bd  PUSH EDI
+//     0041f4be  MOV EDI,dword ptr [0x00508e64]
+//     0041f4c4  IMUL EDI,EBX
+//     0041f4c7  PUSH EDI
+//     0041f4c8  PUSH 0x8
+//     0041f4ca  MOV ECX,ESI
+//   > CALL 0x00435f80
+
+// [9] 调用点 00420012   位于 (无函数)
+//     0041fffb  JZ 0x00420002
+//     0041fffd  MOV EAX,0x2
+//     00420002  MOV ECX,dword ptr [0x00508e70]
+//     00420008  IMUL ECX,EAX
+//     0042000b  PUSH ECX
+//     0042000c  MOV ECX,dword ptr [ESP + 0x10]
+//     00420010  PUSH 0x0
+//   > CALL 0x00435f80
+
+// [10] 调用点 00420045   位于 (无函数)
+//     00420032  MOV ECX,dword ptr [0x00508e74]
+//     00420038  IMUL ECX,EAX
+//     0042003b  PUSH ESI
+//     0042003c  MOV ESI,dword ptr [ESP + 0x10]
+//     00420040  PUSH ECX
+//     00420041  PUSH 0x1
+//     00420043  MOV ECX,ESI
+//   > CALL 0x00435f80
+
+// [11] 调用点 004201e6   位于 FUN_00420100 @ 00420100
+//     004201d0  MOV ECX,ESI
+//     004201d2  CALL 0x00435510
+//     004201d7  MOV EAX,[0x00508e80]
+//     004201dc  IMUL EAX,dword ptr [ESP + 0x10]
+//     004201e1  PUSH EAX
+//     004201e2  PUSH 0x2
+//     004201e4  MOV ECX,ESI
+//   > CALL 0x00435f80
+
+// [12] 调用点 00420aa5   位于 (无函数)
+//     00420a92  MOV ECX,dword ptr [0x00508ea0]
+//     00420a98  IMUL ECX,EAX
+//     00420a9b  PUSH ESI
+//     00420a9c  MOV ESI,dword ptr [ESP + 0x10]
+//     00420aa0  PUSH ECX
+//     00420aa1  PUSH 0xb
+//     00420aa3  MOV ECX,ESI
+//   > CALL 0x00435f80
+
+// [13] 调用点 004314db   位于 (无函数)
+//     004314c4  CALL 0x00435620
+//     004314c9  MOV ECX,EAX
+//     004314cb  CALL 0x0043ffe0
+//     004314d0  MOV EBX,dword ptr [0x00508e4c]
+//     004314d6  PUSH EBX
+//     004314d7  PUSH 0x9
+//     004314d9  MOV ECX,EDI
+//   > CALL 0x00435f80
+
+// [14] 调用点 0043156e   位于 (无函数)
+//     0043155b  PUSH EAX
+//     0043155c  MOV ECX,ESI
+//     0043155e  CALL 0x00434ae0
+//     00431563  MOV EDI,dword ptr [0x00508e54]
+//     00431569  PUSH EDI
+//     0043156a  PUSH 0x7
+//     0043156c  MOV ECX,ESI
+//   > CALL 0x00435f80
+
+// [15] 调用点 004315c9   位于 FUN_004315a0 @ 004315a0
+//     004315af  MOV ECX,0x5090b0
+//     004315b4  MOV dword ptr [0x004fdb20],ESI
+//     004315ba  CALL 0x0042ab30
+//     004315bf  MOV EAX,[0x00508e64]
+//     004315c4  PUSH EAX
+//     004315c5  PUSH 0x8
+//     004315c7  MOV ECX,ESI
+//   > CALL 0x00435f80
+
+// [16] 调用点 00431660   位于 (无函数)
+//     00431649  CALL 0x00435620
+//     0043164e  MOV ECX,EAX
+//     00431650  CALL 0x0043ff30
+//     00431655  MOV EDX,dword ptr [0x00508e60]
+//     0043165b  PUSH EDX
+//     0043165c  PUSH 0x6
+//     0043165e  MOV ECX,ESI
+//   > CALL 0x00435f80
+
+// 共找到 16 个调用点
