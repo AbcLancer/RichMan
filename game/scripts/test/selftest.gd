@@ -1737,6 +1737,27 @@ func _test_pets() -> void:
 	sE._tick_estate_index()
 	_ok("资产下降不回退已有物价指数", sE.price_scale() == 9, str(sE.price_scale()))
 
+	# ---- C05 · 12 个互斥状态（2026-10-16，依据原版 FUN_00435f80 + 421240）----
+	_lines.append("[3l] 12 个互斥状态：写一个清掉其余 + 状态 8/9 挡住步卡")
+	var sS := _fresh_sim()
+	var pS: Dictionary = sS.players[1]
+	sS.set_status(pS, 1, sS.time + 100.0)                    # 无敌
+	_ok("写入状态 1（无敌）生效", sS.current_status(pS) == 1, str(sS.current_status(pS)))
+	sS.set_status(pS, 9, sS.time + 100.0)                    # 小财神
+	_ok("再写状态 9 会**清掉**状态 1（原版 435f80 先清空 12 个再置位）",
+		sS.current_status(pS) == 9
+			and float(pS["effects"]["invincible_until"]) == 0.0,
+		"当前 %d，invincible_until=%s" % [sS.current_status(pS),
+			str(pS["effects"]["invincible_until"])])
+	(pS["cards"] as Array).append("step3")
+	_ok("状态 9（小财神）时**步卡不可用**（原版 421240 判定⑥）",
+		sS.card_usable(1, "step3") == 61, "code %d" % sS.card_usable(1, "step3"))
+	sS.set_status(pS, 11, sS.time + 100.0)                   # 隐形
+	_ok("换成状态 11（隐形）后步卡恢复可用",
+		sS.card_usable(1, "step3") == 0, "code %d" % sS.card_usable(1, "step3"))
+	_ok("步卡用掉后，隐形仍在（状态没被误清）", sS.current_status(pS) == 11,
+		str(sS.current_status(pS)))
+
 	# ---- 卡片商店（点券出口）----
 	var s7 := _fresh_sim()
 	var p7: Dictionary = s7.players[1]

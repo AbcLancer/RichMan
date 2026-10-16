@@ -274,6 +274,58 @@ const CARD_UNSUPPORTED: Array = []
 const STEP_EFFECTS := ["no_rent_steps", "rent_double_steps",
 	"free_upgrade_steps", "no_upgrade_steps"]
 
+# ---------------------------------------------------------------- 12 个互斥状态
+#
+# 原版 `FUN_00435f80(this, state, duration)`：**先把 12 个状态标志全部清零，再置位一个**
+#   （`this+0x118` 是 12 个 int 的标志数组，`this+0x148` 是同下标的持续量数组）。
+#   → 所以原版的这 12 个状态是**天然互斥**的：中一个必然清掉其余 11 个。
+#
+# **状态编号**（反编译 + 交叉验证，见 `docs/rea-2026-10-16/C05-状态互斥.md`）：
+#   1 = 无敌（花仙子写状态 1）· 3 = 糊涂鬼（梦游）· 6 = 小穷神 · 9 = 小财神（免费）
+#   11 = 隐形
+#   ⚠️ 0 / 2 / 7 / 8 **含义未知**；4 / 5 / 10 没有被 `435f80` 写过。
+#
+# ⚠️ **不要**把医院 / 酒店 / 休息 / 暴走 / 外星人绑架塞进来 ——
+#   10-11 报告明确提醒「医院、宠物等其他系统**不一定**属于这 12 项」，
+#   硬塞会引入新错误。
+const STATUS_SLOTS := 12
+
+## 我们的字段 → 原版状态号（**只映射已证实的**，其余保持独立）
+const STATUS_FIELD := {
+	1: "invincible_until",        # 无敌
+	3: "sleepwalk_steps",         # 糊涂鬼（梦游）
+	6: "rent_pay_double_until",   # 小穷神：收双倍
+	9: "no_rent_until",           # 小财神：免费
+	11: "invisible_until",        # 隐形
+}
+
+
+## 统一的**状态写入入口** —— 对应原版 `FUN_00435f80`。
+## **先把属于这 12 个槽的字段全部清空，再写目标那一个**（这就是原版的「互斥」）。
+## `value` 类型按字段而定（绝对时刻用 float，剩余步数用 int）。
+func set_status(p: Dictionary, state: int, value) -> void:
+	if not STATUS_FIELD.has(state):
+		return
+	var e: Dictionary = p["effects"]
+	for s in STATUS_FIELD:
+		e[str(STATUS_FIELD[s])] = 0
+	e[str(STATUS_FIELD[state])] = value
+
+
+## 该玩家当前处于 12 个状态里的哪一个（0 = 没有；返回值是原版状态号）。
+## ⚠️ 只认「还生效」的：绝对时刻比 `time`，步数比 0。
+func current_status(p: Dictionary) -> int:
+	var e: Dictionary = p["effects"]
+	for s in STATUS_FIELD:
+		var k := str(STATUS_FIELD[s])
+		var v: float = float(e.get(k, 0.0))
+		if k.ends_with("_until"):
+			if v > time:
+				return int(s)
+		elif v > 0.0:
+			return int(s)
+	return 0
+
 const PLAYER_COLORS := [
 	Color(0.91, 0.16, 0.77),   # 钱夫人 紫
 	Color(0.65, 0.47, 0.0),    # 阿土伯 土黄
@@ -717,7 +769,8 @@ func _pet_apply(p: Dictionary, pet_id: String, lv: int, target: int = -1) -> boo
 		# 小财神「免费技 免付房租」（String.txt 2204 / Info.txt 194）
 		"free_rent":
 			_clear_attached_gods(p)
-			p["effects"]["no_rent_until"] = time + secs
+			# 原版状态 9（见 set_status 注释）—— 走统一入口：写它就清掉其余 11 个状态
+			set_status(p, 9, time + secs)
 			log_message.emit("%s 的小财神显灵：%.0f 秒内免付租金" % [p["name"], secs])
 		# 小穷神「穷神技 罚金加倍」（2201 / Info.txt 191）
 		"curse_rent_double":
@@ -725,7 +778,7 @@ func _pet_apply(p: Dictionary, pet_id: String, lv: int, target: int = -1) -> boo
 			if not pet_skill_candidates(me).has(target) or _protected(t):
 				return false
 			_clear_attached_gods(t)
-			t["effects"]["rent_pay_double_until"] = time + secs
+			set_status(t, 6, time + secs)   # 原版状态 6（小穷神）
 			log_message.emit("%s 的小穷神附上 %s：%.0f 秒内罚金加倍" % [p["name"], t["name"], secs])
 			_ev("pet_curse", t, {"pet": pet_id, "from": me, "seconds": secs})
 		# 糊涂鬼：选择一位附近对手，让电脑接管指定步数。
@@ -737,7 +790,9 @@ func _pet_apply(p: Dictionary, pet_id: String, lv: int, target: int = -1) -> boo
 			q["moving"] = 0
 			q["progress"] = 0.0
 			var steps := int((pet_record(pet_id).get("turn_times", []) as Array)[clampi(lv - 1, 0, 3)])
-			q["effects"]["sleepwalk_steps"] = maxi(int(q["effects"].get("sleepwalk_steps", 0)), steps)
+			# 原版状态 3（糊涂鬼）。⚠️ 原版是 **覆盖**（先清空 12 个再写入），
+			# 而这里原来是 `maxi(已有, steps)` 取较大值 —— 改成覆盖，与 435f80 一致。
+			set_status(q, 3, steps)
 			_clear_chance(q)
 			log_message.emit("%s 的糊涂鬼让 %s 梦游 %d 步" % [p.name, q.name, steps])
 			_ev("sleepwalk", q, {"pet": pet_id, "by": me, "steps": steps})
@@ -773,7 +828,7 @@ func _pet_apply(p: Dictionary, pet_id: String, lv: int, target: int = -1) -> boo
 		# 花仙子「无敌技 无敌状态」（2207）
 		"invincible":
 			_clear_attached_gods(p)
-			p["effects"]["invincible_until"] = time + secs
+			set_status(p, 1, time + secs)   # 原版状态 1（无敌）
 			log_message.emit("%s 的花仙子让主人无敌 %.0f 秒" % [p["name"], secs])
 		# 小赌神「骰子技 遥控骰子」（2208）—— 只备一次，掷骰时消费
 		"max_dice":
@@ -3189,6 +3244,14 @@ func card_usable(id: int, card_id: String) -> int:
 		if not has_other:
 			return 67
 	var eff := str(Rules.card_by_id(card_id).get("effect", ""))
+	# 原版 `FUN_00421240`（1~5 步卡共用的门禁）的判定⑥：
+	#   **当前状态是 8 或 9 时，步卡不可用** —— 状态 9 就是小财神「免费」。
+	#   见 `docs/rea-2026-10-16/共用判定函数.md`。
+	#   ⚠️ 这条以前完全没有（被小财神附身的人照样能走步卡）。
+	if eff == "move":
+		var cur := current_status(p)
+		if cur == 8 or cur == 9:
+			return 61                  # String.txt 61「不能使用卡片」
 	# 红卡 / 黑卡：要有股票可动（本图得有上市公司）
 	if eff == "stock_up" or eff == "stock_down":
 		if stocks.is_empty():
@@ -3468,11 +3531,11 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 			log_message.emit("%s 免费卡：%d 步内免付房租" % [p["name"], int(e["no_rent_steps"])])
 		"immune":
 			_clear_attached_gods(p)
-			e["invincible_until"] = time + float(c.get("seconds", 72))
+			set_status(p, 1, time + float(c.get("seconds", 72)))   # 原版状态 1（无敌）
 			log_message.emit("%s 进入无敌状态 %.0f 秒" % [p["name"], float(c.get("seconds", 72))])
 		"invisible":
 			_clear_attached_gods(p)
-			e["invisible_until"] = time + float(c.get("seconds", 72))
+			set_status(p, 11, time + float(c.get("seconds", 72)))  # 原版状态 11（隐形）
 			log_message.emit("%s 进入隐形状态 %.0f 秒" % [p["name"], float(c.get("seconds", 72))])
 		"move":
 			if int(p["moving"]) == 0: p["walked_this_move"] = 0
