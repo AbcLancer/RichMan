@@ -1770,6 +1770,29 @@ func _test_pets() -> void:
 		_ok("★ 同一张清除卡在太空 = 9（原版按地图配置范围）",
 			sP2.card_param("clear") == 9, "space=%d" % sP2.card_param("clear"))
 
+	# ---- C14 · 骰子卡的落点可用性（依据原版 FUN_004213c0）----
+	_lines.append("[3n] 骰子卡要有「落点可用」的步数（原版 4213c0）")
+	# ⚠️ 骰子卡的 **id 是 `dice`**（`reroll` 是它的 effect 名，不是 id；
+	#   用错会在 `card_by_id()` 查不到 → 门禁静默失效，这里踩过一次）
+	var sD := _fresh_sim()
+	var pD: Dictionary = sD.players[1]
+	pD["tile"] = 0
+	pD["dir"] = 1
+	(pD["cards"] as Array).append("dice")
+	# ① 前方 1..5 格全被对手占了 → 没有可用落点 → 不该允许使用
+	for n in range(1, 6):
+		sD.plots[sD._wrap(n)] = {"owner": 2, "level": 1, "type": "uptown"}
+	_ok("★ 前方 1..5 格全是**对手的地** → 骰子卡不可用（原版会避开对手的房）",
+		sD.card_usable(1, "dice") == 61, "code %d" % sD.card_usable(1, "dice"))
+	# ② 把第 3 格改成无主 → 就有了可用落点
+	sD.plots.erase(sD._wrap(3))
+	_ok("★ 只要有一个落点「无主」，骰子卡就可用",
+		sD.card_usable(1, "dice") == 0, "code %d" % sD.card_usable(1, "dice"))
+	# ③ 把无主那格改成自己的 → 同样可用
+	sD.plots[sD._wrap(3)] = {"owner": 1, "level": 1, "type": "uptown"}
+	_ok("落点是「自己的地」也算可用",
+		sD.card_usable(1, "dice") == 0, "code %d" % sD.card_usable(1, "dice"))
+
 	# ---- 卡片商店（点券出口）----
 	var s7 := _fresh_sim()
 	var p7: Dictionary = s7.players[1]

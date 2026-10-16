@@ -3215,6 +3215,21 @@ func plot_value(idx: int) -> int:
 ##   ② 每张效果在 `_apply_card` 里 return false 的前置条件，逐条镜像过来。
 ## ⚠ 原版没有留下「卡 → 原因码」的映射表，这里是 ①+② 对上来的**推导**，语料里
 ##   只有这九条可用于此。登记在 docs/ui-audit.md §12。
+## 骰子卡：**往前 `steps` 格的落点是否可用** —— 原版 `FUN_004213c0` 的判定。
+##
+## 原版对落点有四条放行条件，这里**只实现能确定的两条**：
+##   · 落点**无主**（空地 / 还没人买）
+##   · 落点**是自己的**
+## ⚠️ 原版还有「落点格子类型 == 4 / 0x10 / 7 → 放行」一条，
+##   但那三个值的含义未明（`docs/rea-2026-10-16/C14-门禁对比-骰子卡.md`），
+##   **宁可少给也不能凭空多给** —— 等查清再补。
+func _step_landing_ok(p: Dictionary, steps: int) -> bool:
+	var idx := _wrap(int(p["tile"]) + int(p["dir"]) * steps)
+	if not plots.has(idx):
+		return true                                    # 空地 → 无主
+	return int(plots[idx].get("owner", -1)) == int(p["id"])
+
+
 func card_usable(id: int, card_id: String) -> int:
 	var p: Dictionary = players.get(id, {})
 	if time < float(p.get("entry_until", 0.0)): return 61
@@ -3244,6 +3259,21 @@ func card_usable(id: int, card_id: String) -> int:
 		if not has_other:
 			return 67
 	var eff := str(Rules.card_by_id(card_id).get("effect", ""))
+	# 骰子卡：**至少要有一个「落点可用」的步数**才允许用。
+	# 依据原版 `FUN_004213c0`（骰子卡门禁，见 docs/rea-2026-10-16/C14-门禁对比-骰子卡.md）：
+	#   它从 1 步开始逐格试算，要求落点满足「特殊格 / 无主 / 自己的」之一。
+	#   ⚠️ 原版还有「落点格子类型 == 4 / 0x10 / 7 → 可用」一条，那三个值含义未明，
+	#     这里**只实现能确定的两条**（无主 / 自己的），宁可少给不能多给。
+	#   ⚠️ 原版步数只算 `1..5`（`n < 6`）；我们的选择器是 1..6，
+	#     这里先按**原版范围**判定（见下文待办）。
+	if eff == "reroll":
+		var any_ok := false
+		for n in range(1, 6):
+			if _step_landing_ok(p, n):
+				any_ok = true
+				break
+		if not any_ok:
+			return 61                  # String.txt 61「不能使用卡片」
 	# 原版 `FUN_00421240`（1~5 步卡共用的门禁）的判定⑥：
 	#   **当前状态是 8 或 9 时，步卡不可用** —— 状态 9 就是小财神「免费」。
 	#   见 `docs/rea-2026-10-16/共用判定函数.md`。
