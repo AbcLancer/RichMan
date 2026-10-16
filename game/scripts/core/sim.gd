@@ -3305,8 +3305,15 @@ func card_usable(id: int, card_id: String) -> int:
 			if card_road_candidates(id, card_id).is_empty(): return 61
 		# ---- 要有路面道具可清 ----
 		"remove_obstacle":
+			# ⚠️ 范围**不是写死的 7** —— 原版从 `card.crd` 的 `+0x220` 按地图读
+			#   （埃及等 6 图 = 7，**太空 = 9**）。以前这里写死 `range(1, 8)`，
+			#   数字碰对了但来源错，太空图会少清 2 格。
+			#   见 docs/rea-2026-10-16/card-crd-解析.md
+			var span := card_param(card_id)
+			if span <= 0:
+				span = 7                   # 兜底（数据缺失时维持旧行为）
 			var found := false
-			for step_ahead in range(1, 8):
+			for step_ahead in range(1, span + 1):
 				var road_ahead := _wrap(here + int(p["dir"]) * step_ahead)
 				if not _obstacle_at(road_ahead).is_empty() or road_objs.has(road_ahead):
 					found = true
@@ -3804,10 +3811,14 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 			_add_obstacle(target, "roadblock", pid)
 			log_message.emit("%s 在前面放了一个路障" % p["name"])
 		"remove_obstacle":
-			# 原版 0x4209c0 传入前进方向和长度 7，并启动推土机。
+			# ⚠️ 范围**不是写死的 7** —— 原版从 `card.crd` 的 `+0x220` 按地图读
+			#   （埃及等 6 图 = 7，**太空 = 9**）。见 docs/rea-2026-10-16/card-crd-解析.md
+			var span := card_param(card_id)
+			if span <= 0:
+				span = 7                   # 兜底
 			var cleared := 0
 			var path: Array = []
-			for step_ahead in range(1, 8):
+			for step_ahead in range(1, span + 1):
 				var road_ahead := _wrap(here + int(p["dir"]) * step_ahead)
 				path.append(road_ahead)
 				cleared += int(not _obstacle_at(road_ahead).is_empty()) + int(road_objs.has(road_ahead))
@@ -3816,10 +3827,15 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 			for i in range(path.size()):
 				pending_road_clears.append({"idx": path[i], "at": time + float(i + 1) / 2.0})
 			_ev("clear_road", p, {"from_idx": here, "path": path, "removed": cleared})
-			log_message.emit("%s 的推土机清除了前方 7 格中的 %d 处路面道具" % [p["name"], cleared])
+			log_message.emit("%s 的推土机清除了前方 %d 格中的 %d 处路面道具"
+				% [p["name"], span, cleared])
 		"destroy_buildings", "nuke":
 			# 飞弹卡（9027）/ 核弹卡（9042）
-			var r := int(c.get("range", 5))
+			# ⚠️ 范围同样读原版 `+0x220`：飞弹卡 = **2**（**太空 25**），
+			#   核弹卡 = 100。以前用 `c.get("range", 5)`，与配置不符。
+			var r := card_param(card_id)
+			if r <= 0:
+				r = int(c.get("range", 5))   # 兜底
 			var dec := int(c.get("max_damage", c.get("hp_dec", 0)))
 			pending_card_impacts.append({"idx": target, "range": r, "damage": dec,
 				"owner": pid, "card": card_id, "at": time + 1.0})
@@ -4123,6 +4139,45 @@ func _remove_obstacle(idx: int) -> void:
 func _add_obstacle(idx: int, kind: String, owner: int) -> void:
 	_remove_obstacle(idx)
 	obstacles.append({"idx": idx, "kind": kind, "owner": owner})
+
+## 卡的作用范围 —— 原版 `card.crd` 的 `+0x220` 字段（**按地图配置**）。
+##
+## 依据：`docs/rea-2026-10-16/card-crd-解析.md`、`card_alignment.json`。
+## 例：清除卡在埃及/中国/海岛/日本/巴黎/铁路 = **7**，**太空 = 9**；
+##     地雷卡 4/6（太空 30）· 飞弹卡 2（太空 25）· 隐形/核弹 = 100（全图）。
+##
+## ⚠️ **语义是推断的**：范围内最像「作用距离（格）」；且 **`param = 0` 表示该地图禁用这张卡**
+##    （太空图里四神/天使/恶魔/改建/红黑/查封/诱拐/查税/均富 全是 0）。
+##    这里先只用于「取范围」，**禁用逻辑（param==0）还没有接**。
+var _card_params: Dictionary = {}     # 地图名 -> {卡id -> param}
+
+
+func _load_card_params() -> void:
+	if not _card_params.is_empty():
+		return
+	var f := FileAccess.open("res://data/rules/card_alignment.json", FileAccess.READ)
+	if f == null:
+		push_warning("Sim: 缺 data/rules/card_alignment.json")
+		return
+	var d: Variant = JSON.parse_string(f.get_as_text())
+	if typeof(d) != TYPE_DICTIONARY:
+		return
+	for r in (d as Dictionary).get("rows", []):
+		var by_map: Dictionary = (r as Dictionary).get("param_by_map", {})
+		var cid := str((r as Dictionary).get("id", ""))
+		for m in by_map:
+			if not _card_params.has(m):
+				_card_params[m] = {}
+			(_card_params[m] as Dictionary)[cid] = int(by_map[m])
+
+
+## 取某张卡在**当前地图**上的原版参数（`+0x220`）。取不到返回 0。
+func card_param(card_id: String) -> int:
+	_load_card_params()
+	var m := str(map.name) if map != null else ""
+	var per: Dictionary = _card_params.get(m, {})
+	return int(per.get(Rules.base_card_id(card_id), 0))
+
 
 ## 清除玩家前方 n 格内的路面道具，返回清掉的数量
 func _clear_obstacles_ahead(p: Dictionary, n: int) -> int:

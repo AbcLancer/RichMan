@@ -1758,6 +1758,18 @@ func _test_pets() -> void:
 	_ok("步卡用掉后，隐形仍在（状态没被误清）", sS.current_status(pS) == 11,
 		str(sS.current_status(pS)))
 
+	# ---- C09 · 卡的作用范围来自 card.crd 的 param（+0x220，按地图）----
+	_lines.append("[3m] 卡的作用范围按地图读（card.crd 的 +0x220）")
+	var sP := _fresh_sim()                                  # _fresh_sim 用 china
+	_ok("清除卡在 china = 7（与 card.crd 一致）",
+		sP.card_param("clear") == 7, str(sP.card_param("clear")))
+	var mSp := MapData.load_from("space")
+	if mSp != null:
+		var sP2 := Sim.new()
+		sP2.setup(mSp, 1)
+		_ok("★ 同一张清除卡在太空 = 9（原版按地图配置范围）",
+			sP2.card_param("clear") == 9, "space=%d" % sP2.card_param("clear"))
+
 	# ---- 卡片商店（点券出口）----
 	var s7 := _fresh_sim()
 	var p7: Dictionary = s7.players[1]
