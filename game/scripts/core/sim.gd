@@ -3215,18 +3215,40 @@ func plot_value(idx: int) -> int:
 ##   ② 每张效果在 `_apply_card` 里 return false 的前置条件，逐条镜像过来。
 ## ⚠ 原版没有留下「卡 → 原因码」的映射表，这里是 ①+② 对上来的**推导**，语料里
 ##   只有这九条可用于此。登记在 docs/ui-audit.md §12。
+## 格子的**原版事件编号**（`Roadevent.txt` 的 1..16；非事件格返回 -1）。
+##   1 传送平台 · 2 卡片商店 · 3 医院 · **4 卡片点** · 5 电视台 · 6 拉霸 ·
+##   **7 市政府** · 8 精灵屋 · 9/10 游戏点 · 11~15 点券5/10/20/30/50 · **16 乐透**
+func _event_num(idx: int) -> int:
+	if map == null or idx < 0 or idx >= map.tile_count():
+		return -1
+	var t: Dictionary = map.tile(idx)
+	if str(t.get("kind", "")) != "event":
+		return -1
+	return int(t.get("original_kind", -1))
+
+
 ## 骰子卡：**往前 `steps` 格的落点是否可用** —— 原版 `FUN_004213c0` 的判定。
 ##
-## 原版对落点有四条放行条件，这里**只实现能确定的两条**：
-##   · 落点**无主**（空地 / 还没人买）
-##   · 落点**是自己的**
-## ⚠️ 原版还有「落点格子类型 == 4 / 0x10 / 7 → 放行」一条，
-##   但那三个值的含义未明（`docs/rea-2026-10-16/C14-门禁对比-骰子卡.md`），
-##   **宁可少给也不能凭空多给** —— 等查清再补。
+## 原版的四条放行条件（现已**全部**落实）：
+##   ① 落点是**卡片点(4) / 市政府(7) / 乐透(16)** ——
+##      这三个数来自 `FUN_004213c0` 里的 `type == 4 / 0x10 / 7`，
+##      对应 `Roadevent.txt` 的事件编号（见 `docs/rea-2026-10-16/C14-门禁对比-骰子卡.md`）
+##   ② 落点**无主**
+##   ③ 落点是**自己的**
+##   （④ 落点是自己且「没建筑 / 建筑组合合法」= ③ 的细分）
+##
+## ⚠️ 注意原版**没有**「落点不能是别人的地产」这条排除 —— 别人的地不在放行列表里，
+##   所以等价于「不选别人的地」。这里照此实现。
 func _step_landing_ok(p: Dictionary, steps: int) -> bool:
 	var idx := _wrap(int(p["tile"]) + int(p["dir"]) * steps)
+	# ① 好事格：卡片点 / 市政府 / 乐透
+	var en := _event_num(idx)
+	if en == 4 or en == 7 or en == 16:
+		return true
+	# ② 无主（空地 / 还没人买）
 	if not plots.has(idx):
-		return true                                    # 空地 → 无主
+		return true
+	# ③ 自己的
 	return int(plots[idx].get("owner", -1)) == int(p["id"])
 
 

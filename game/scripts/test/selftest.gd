@@ -1792,6 +1792,23 @@ func _test_pets() -> void:
 	sD.plots[sD._wrap(3)] = {"owner": 1, "level": 1, "type": "uptown"}
 	_ok("落点是「自己的地」也算可用",
 		sD.card_usable(1, "dice") == 0, "code %d" % sD.card_usable(1, "dice"))
+	# ④ 好事格：原版门禁里 `type == 4 / 0x10 / 7` = 卡片点 / 市政府 / 乐透
+	#    （对应 Roadevent.txt 的 4 / 16 / 7）
+	sD.plots[sD._wrap(3)] = {"owner": 2, "level": 1, "type": "uptown"}
+	var saved: Dictionary = (sD.map.tiles[sD._wrap(3)] as Dictionary).duplicate(true)
+	sD.map.tiles[sD._wrap(3)] = {"kind": "event", "original_kind": 4,
+		"event": "cardpt", "name": "卡片点"}
+	_ok("★ 落点是「卡片点」（原版 type==4）时，即使被对手占着也可用",
+		sD.card_usable(1, "dice") == 0, "code %d" % sD.card_usable(1, "dice"))
+	sD.map.tiles[sD._wrap(3)] = {"kind": "event", "original_kind": 16,
+		"event": "casino", "name": "乐透"}
+	_ok("★ 落点是「乐透」（原版 type==0x10）时可用",
+		sD.card_usable(1, "dice") == 0, "code %d" % sD.card_usable(1, "dice"))
+	sD.map.tiles[sD._wrap(3)] = {"kind": "event", "original_kind": 3,
+		"event": "hospital", "name": "医院"}
+	_ok("★ 但「医院」（事件 3）**不在**原版放行列表里 → 仍不可用",
+		sD.card_usable(1, "dice") == 61, "code %d" % sD.card_usable(1, "dice"))
+	sD.map.tiles[sD._wrap(3)] = saved
 
 	# ---- 卡片商店（点券出口）----
 	var s7 := _fresh_sim()
