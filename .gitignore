@@ -66,3 +66,10 @@ __pycache__/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Ghidra 分析工作区与日志（2026-10-16）
+# ⚠️ Ghidra **拒绝路径里有以 `.` 开头的元素**（报 "Path element starting with '.' is not permitted"），
+#   所以项目目录只能叫 `ghidra_proj/`，不能塞进 `.workbuddy/`。
+#   分析项目与日志都由 tools/ 重跑生成，不入库；有价值的导出结果再单独拷进 docs/。
+ghidra_proj/
+ghidra_*.log
