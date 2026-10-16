@@ -16,6 +16,7 @@ import ghidra.app.decompiler.DecompileResults;
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
+import ghidra.program.model.listing.Instruction;   // ⚠️ 少这个会编译失败（cannot find symbol: class Instruction）
 import java.io.FileWriter;
 
 public class DecompileAt extends GhidraScript {
@@ -47,7 +48,42 @@ public class DecompileAt extends GhidraScript {
             }
             Function f = getFunctionContaining(a);
             if (f == null) {
-                w.write("// ===== " + spec + " → 不在任何已知函数内\n\n");
+                // ⚠️ 关键分支：原版里有一批函数**只被函数指针引用、没有直接 CALL**，
+                //   Ghidra 不会把它们识别成函数（例如 42 张卡的 effect 函数，
+                //   见 docs/rea-2026-10-16/42卡函数表.md）。
+                //   这时 getFunctionContaining() 返回 null —— **不能就此跳过**，
+                //   改成从该地址**线性反汇编**，照样能看到代码。
+                w.write("// ===== " + spec
+                        + " → 不是已识别函数（可能只被函数指针引用）→ 改为线性反汇编\n\n");
+                Instruction cur = getInstructionAt(a);
+                if (cur == null) {
+                    // 还没反汇编过这段：显式反汇编它。
+                    // ⚠️ 用 DisassembleCommand —— GhidraScript 没有 disassemble(Address) 这个签名
+                    //   （第一版写成 disassemble(a) → 编译报 "cannot find symbol" 并跳过整个脚本）。
+                    try {
+                        ghidra.app.cmd.disassemble.DisassembleCommand cmd =
+                                new ghidra.app.cmd.disassemble.DisassembleCommand(a, null, true);
+                        cmd.applyTo(currentProgram, monitor);
+                    } catch (Exception ex) {
+                        w.write("// disassemble 失败: " + ex.getMessage() + "\n\n");
+                        continue;
+                    }
+                    cur = getInstructionAt(a);
+                }
+                if (cur == null) {
+                    w.write("// 反汇编后仍拿不到指令\n\n");
+                    continue;
+                }
+                int shown = 0;
+                while (cur != null && shown < 400) {
+                    w.write(String.format("%08x  %-22s %s%n",
+                            cur.getAddress().getOffset(),
+                            cur.getMnemonicString(),
+                            cur.toString()));
+                    cur = cur.getNext();
+                    shown++;
+                }
+                w.write("\n\n");
                 continue;
             }
             long off = a.getOffset() - f.getEntryPoint().getOffset();

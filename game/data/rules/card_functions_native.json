@@ -1,0 +1,300 @@
+{
+ "note": "原版卡片对象注册的两个函数指针 +0x21c / +0x224，各 42 个，顺序 = card.crd 记录序",
+ "_evidence": "tools/r6_disasm_range.py 0x420000 0x424000 → docs/rea-2026-10-16/card-registry-disasm.txt",
+ "cards": [
+  {
+   "n": 1,
+   "name": "财神卡",
+   "effect": "gain_money",
+   "func_21c": "0x41f1a0",
+   "func_224": "0x47e4e0"
+  },
+  {
+   "n": 2,
+   "name": "福神卡",
+   "effect": "free_upgrade",
+   "func_21c": "0x41f270",
+   "func_224": "0x420f70"
+  },
+  {
+   "n": 3,
+   "name": "穷神卡",
+   "effect": "rent_double",
+   "func_21c": "0x41f310",
+   "func_224": "0x420fb0"
+  },
+  {
+   "n": 4,
+   "name": "衰神卡",
+   "effect": "no_upgrade",
+   "func_21c": "0x41f480",
+   "func_224": "0x421080"
+  },
+  {
+   "n": 5,
+   "name": "天使卡",
+   "effect": "auto_upgrade",
+   "func_21c": "0x41f550",
+   "func_224": "0x4210a0"
+  },
+  {
+   "n": 6,
+   "name": "恶魔卡",
+   "effect": "auto_downgrade",
+   "func_21c": "0x41f600",
+   "func_224": "0x421130"
+  },
+  {
+   "n": 7,
+   "name": "请神卡",
+   "effect": "summon_stock_god",
+   "func_21c": "0x41f6a0",
+   "func_224": "0x4211c0"
+  },
+  {
+   "n": 8,
+   "name": "土神卡",
+   "effect": "free_land",
+   "func_21c": "0x41f710",
+   "func_224": "0x4211f0"
+  },
+  {
+   "n": 9,
+   "name": "1步卡",
+   "effect": "move",
+   "func_21c": "0x41f800",
+   "func_224": "0x4212e0"
+  },
+  {
+   "n": 10,
+   "name": "2步卡",
+   "effect": "move",
+   "func_21c": "0x41f840",
+   "func_224": "0x4212f0"
+  },
+  {
+   "n": 11,
+   "name": "3步卡",
+   "effect": "move",
+   "func_21c": "0x41f880",
+   "func_224": "0x421300"
+  },
+  {
+   "n": 12,
+   "name": "4步卡",
+   "effect": "move",
+   "func_21c": "0x41f8c0",
+   "func_224": "0x421310"
+  },
+  {
+   "n": 13,
+   "name": "5步卡",
+   "effect": "move",
+   "func_21c": "0x41f900",
+   "func_224": "0x421320"
+  },
+  {
+   "n": 14,
+   "name": "转向卡",
+   "effect": "reverse_direction",
+   "func_21c": "0x41f940",
+   "func_224": "0x421330"
+  },
+  {
+   "n": 15,
+   "name": "暴走卡",
+   "effect": "double_speed",
+   "func_21c": "0x41f970",
+   "func_224": "0x421390"
+  },
+  {
+   "n": 16,
+   "name": "骰子卡",
+   "effect": "reroll",
+   "func_21c": "0x41f9e0",
+   "func_224": "0x4213c0"
+  },
+  {
+   "n": 17,
+   "name": "改建卡",
+   "effect": "change_building_type",
+   "func_21c": "0x41fa20",
+   "func_224": "0x421460"
+  },
+  {
+   "n": 18,
+   "name": "升级卡",
+   "effect": "upgrade_building",
+   "func_21c": "0x41fb00",
+   "func_224": "0x4214e0"
+  },
+  {
+   "n": 19,
+   "name": "怪兽卡",
+   "effect": "downgrade_building",
+   "func_21c": "0x41fba0",
+   "func_224": "0x421560"
+  },
+  {
+   "n": 20,
+   "name": "购地卡",
+   "effect": "buy_any_plot",
+   "func_21c": "0x41fcb0",
+   "func_224": "0x4215e0"
+  },
+  {
+   "n": 21,
+   "name": "涨价卡",
+   "effect": "raise_estate_index",
+   "func_21c": "0x41fd90",
+   "func_224": "0x421660"
+  },
+  {
+   "n": 22,
+   "name": "降价卡",
+   "effect": "lower_estate_index",
+   "func_21c": "0x41fe50",
+   "func_224": "0x4216c0"
+  },
+  {
+   "n": 23,
+   "name": "地雷卡",
+   "effect": "place_mine",
+   "func_21c": "0x41ff10",
+   "func_224": "0x421720"
+  },
+  {
+   "n": 24,
+   "name": "路障卡",
+   "effect": "place_roadblock",
+   "func_21c": "0x41ffa0",
+   "func_224": "0x421760"
+  },
+  {
+   "n": 25,
+   "name": "免费卡",
+   "effect": "no_rent",
+   "func_21c": "0x41fff0",
+   "func_224": "0x421800"
+  },
+  {
+   "n": 26,
+   "name": "无敌卡",
+   "effect": "immune",
+   "func_21c": "0x420020",
+   "func_224": "0x421820"
+  },
+  {
+   "n": 27,
+   "name": "飞弹卡",
+   "effect": "destroy_buildings",
+   "func_21c": "0x420080",
+   "func_224": "0x421880"
+  },
+  {
+   "n": 28,
+   "name": "冬眠卡",
+   "effect": "sleep_target",
+   "func_21c": "0x420100",
+   "func_224": "0x421ae0"
+  },
+  {
+   "n": 29,
+   "name": "红卡",
+   "effect": "stock_up",
+   "func_21c": "0x420220",
+   "func_224": "0x421b00"
+  },
+  {
+   "n": 30,
+   "name": "黑卡",
+   "effect": "stock_down",
+   "func_21c": "0x4202a0",
+   "func_224": "0x421b60"
+  },
+  {
+   "n": 31,
+   "name": "查封卡",
+   "effect": "seal_building",
+   "func_21c": "0x420350",
+   "func_224": "0x421c90"
+  },
+  {
+   "n": 32,
+   "name": "复制卡",
+   "effect": "copy_card",
+   "func_21c": "0x420400",
+   "func_224": "0x421d00"
+  },
+  {
+   "n": 33,
+   "name": "宝石卡",
+   "effect": "gain_gems",
+   "func_21c": "0x420460",
+   "func_224": "0x421d90"
+  },
+  {
+   "n": 34,
+   "name": "汉堡卡",
+   "effect": "heal",
+   "func_21c": "0x420520",
+   "func_224": "0x421e10"
+  },
+  {
+   "n": 35,
+   "name": "诱拐卡",
+   "effect": "teleport_target",
+   "func_21c": "0x420550",
+   "func_224": "0x421e50"
+  },
+  {
+   "n": 36,
+   "name": "查税卡",
+   "effect": "steal_ratio",
+   "func_21c": "0x4206b0",
+   "func_224": "0x421f10"
+  },
+  {
+   "n": 37,
+   "name": "抢夺卡",
+   "effect": "steal_card",
+   "func_21c": "0x4207e0",
+   "func_224": "0x421f70"
+  },
+  {
+   "n": 38,
+   "name": "均富卡",
+   "effect": "even_out_money",
+   "func_21c": "0x420890",
+   "func_224": "0x421fc0"
+  },
+  {
+   "n": 39,
+   "name": "清除卡",
+   "effect": "remove_obstacle",
+   "func_21c": "0x4209c0",
+   "func_224": "0x4220a0"
+  },
+  {
+   "n": 40,
+   "name": "停留卡",
+   "effect": "force_stop",
+   "func_21c": "0x420a30",
+   "func_224": "0x422110"
+  },
+  {
+   "n": 41,
+   "name": "隐形卡",
+   "effect": "invisible",
+   "func_21c": "0x420a80",
+   "func_224": "0x421820"
+  },
+  {
+   "n": 42,
+   "name": "核弹卡",
+   "effect": "nuke",
+   "func_21c": "0x420ad0",
+   "func_224": "0x422160"
+  }
+ ]
+}

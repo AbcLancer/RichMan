@@ -1,0 +1,404 @@
+// ===== 420350 → 不是已识别函数（可能只被函数指针引用）→ 改为线性反汇编
+
+00420350  MOV                    MOV EAX,dword ptr [ESP + 0x4]
+00420354  TEST                   TEST EAX,EAX
+00420356  PUSH                   PUSH EBX
+00420357  PUSH                   PUSH ESI
+00420358  PUSH                   PUSH EDI
+00420359  MOV                    MOV EBX,0x1
+0042035e  JZ                     JZ 0x00420365
+00420360  MOV                    MOV EBX,0x2
+00420365  MOV                    MOV EDI,dword ptr [ESP + 0x18]
+00420369  MOV                    MOV EAX,dword ptr [EDI + 0xc]
+0042036c  MOV                    MOV ESI,dword ptr [EAX + 0x78]
+0042036f  MOV                    MOV EAX,[0x00508e90]
+00420374  MOV                    MOV ECX,dword ptr [ESI + 0x3c]
+00420377  IMUL                   IMUL EAX,EBX
+0042037a  LEA                    LEA EDX,[EAX + EAX*0x2]
+0042037d  MOV                    MOV EAX,dword ptr [ECX + 0x28]
+00420380  SHL                    SHL EDX,0x3
+00420383  ADD                    ADD EAX,EDX
+00420385  MOV                    MOV dword ptr [ECX + 0x28],EAX
+00420388  MOV                    MOV EAX,dword ptr [ESI + 0xc]
+0042038b  MOV                    MOV ECX,dword ptr [0x004fe7ac]
+00420391  PUSH                   PUSH 0x1
+00420393  PUSH                   PUSH EAX
+00420394  PUSH                   PUSH 0xce
+00420399  CALL                   CALL 0x0043cb00
+0042039e  MOV                    MOV EDX,dword ptr [0x00508e90]
+004203a4  MOV                    MOV ECX,dword ptr [ESI + 0x3c]
+004203a7  IMUL                   IMUL EDX,EBX
+004203aa  PUSH                   PUSH 0xc25
+004203af  MOV                    MOV dword ptr [0x004fdb3c],ECX
+004203b5  MOV                    MOV dword ptr [0x004fdb24],EDI
+004203bb  MOV                    MOV dword ptr [0x004fdb34],EDX
+004203c1  CALL                   CALL 0x00431100
+004203c6  PUSH                   PUSH ESI
+004203c7  PUSH                   PUSH 0x2b
+004203c9  CALL                   CALL 0x0042f9b0
+004203ce  ADD                    ADD ESP,0xc
+004203d1  MOV                    MOV dword ptr [0x004fdb20],EDI
+004203d7  MOV                    MOV EAX,dword ptr [ESI + 0x3c]
+004203da  PUSH                   PUSH 0x4fdb20
+004203df  PUSH                   PUSH 0x3f9
+004203e4  MOV                    MOV ECX,0x5090b0
+004203e9  MOV                    MOV [0x004fdb3c],EAX
+004203ee  CALL                   CALL 0x0042ab30
+004203f3  POP                    POP EDI
+004203f4  POP                    POP ESI
+004203f5  XOR                    XOR EAX,EAX
+004203f7  POP                    POP EBX
+004203f8  RET                    RET
+00420400  MOV                    MOV EAX,dword ptr [ESP + 0x10]
+00420404  PUSH                   PUSH EDI
+00420405  PUSH                   PUSH EAX
+00420406  MOV                    MOV ECX,0x4e48b8
+0042040b  CALL                   CALL 0x0041f060
+00420410  PUSH                   PUSH 0x1f
+00420412  MOV                    MOV ECX,0x4e48b8
+00420417  MOV                    MOV EDI,EAX
+00420419  CALL                   CALL 0x0041ee80
+0042041e  TEST                   TEST AX,AX
+00420421  MOV                    MOV dword ptr [ESP + 0x14],EAX
+00420425  JGE                    JGE 0x0042042e
+00420427  MOV                    MOV EAX,0x1
+0042042c  POP                    POP EDI
+0042042d  RET                    RET
+0042042e  MOV                    MOV ECX,dword ptr [EDI + 0x4]
+00420431  PUSH                   PUSH ESI
+00420432  MOV                    MOV ESI,dword ptr [ESP + 0x14]
+00420436  PUSH                   PUSH ESI
+00420437  MOVSX                  MOVSX EDX,AX
+0042043a  PUSH                   PUSH ECX
+0042043b  PUSH                   PUSH EDX
+0042043c  MOV                    MOV ECX,0x4e48b8
+00420441  CALL                   CALL 0x0041f110
+00420446  PUSH                   PUSH 0x0
+00420448  LEA                    LEA EAX,[ESP + 0x1c]
+0042044c  PUSH                   PUSH EAX
+0042044d  PUSH                   PUSH 0x1
+0042044f  MOV                    MOV ECX,ESI
+00420451  CALL                   CALL 0x00434ae0
+00420456  POP                    POP ESI
+00420457  XOR                    XOR EAX,EAX
+00420459  POP                    POP EDI
+0042045a  RET                    RET
+00420460  MOV                    MOV EAX,dword ptr [ESP + 0x10]
+00420464  MOV                    MOV dword ptr [ESP + 0x10],EAX
+00420468  PUSH                   PUSH ESI
+00420469  MOV                    MOV ESI,dword ptr [ESP + 0x10]
+0042046d  MOVSX                  MOVSX EAX,AX
+00420470  PUSH                   PUSH EAX
+00420471  MOV                    MOV ECX,ESI
+00420473  CALL                   CALL 0x00434f40
+00420478  CMP                    CMP EAX,-0x1
+0042047b  JNZ                    JNZ 0x00420484
+0042047d  MOV                    MOV EAX,0x1
+00420482  POP                    POP ESI
+00420483  RET                    RET
+00420484  MOVSX                  MOVSX ECX,word ptr [ESP + 0x14]
+00420489  PUSH                   PUSH EBX
+0042048a  PUSH                   PUSH EDI
+0042048b  PUSH                   PUSH ECX
+0042048c  MOV                    MOV ECX,0x4e48b8
+00420491  CALL                   CALL 0x0041f060
+00420496  MOV                    MOV EDI,dword ptr [EAX + 0x4]
+00420499  PUSH                   PUSH 0x0
+0042049b  LEA                    LEA EDX,[ESP + 0x20]
+0042049f  PUSH                   PUSH EDX
+004204a0  PUSH                   PUSH 0x1
+004204a2  MOV                    MOV ECX,ESI
+004204a4  CALL                   CALL 0x00434c40
+004204a9  MOVSX                  MOVSX EAX,word ptr [ESP + 0x1c]
+004204ae  PUSH                   PUSH EAX
+004204af  MOV                    MOV ECX,0x4e48b8
+004204b4  CALL                   CALL 0x0041f060
+004204b9  MOV                    MOV EBX,dword ptr [EAX + 0x4]
+004204bc  PUSH                   PUSH EDI
+004204bd  MOV                    MOV ECX,0x4e48b8
+004204c2  CALL                   CALL 0x0041ee80
+004204c7  TEST                   TEST AX,AX
+004204ca  MOV                    MOV dword ptr [ESP + 0x1c],EAX
+004204ce  JGE                    JGE 0x004204f3
+004204d0  PUSH                   PUSH EBX
+004204d1  MOV                    MOV ECX,0x4e48b8
+004204d6  CALL                   CALL 0x0041ee80
+004204db  PUSH                   PUSH ESI
+004204dc  MOVSX                  MOVSX ECX,AX
+004204df  PUSH                   PUSH EDI
+004204e0  PUSH                   PUSH ECX
+004204e1  MOV                    MOV ECX,0x4e48b8
+004204e6  MOV                    MOV dword ptr [ESP + 0x28],EAX
+004204ea  CALL                   CALL 0x0041f110
+004204ef  MOV                    MOV EAX,dword ptr [ESP + 0x1c]
+004204f3  MOVSX                  MOVSX EDX,AX
+004204f6  PUSH                   PUSH ESI
+004204f7  PUSH                   PUSH EDX
+004204f8  MOV                    MOV ECX,0x4e48b8
+004204fd  CALL                   CALL 0x0041f160
+00420502  PUSH                   PUSH 0x0
+00420504  LEA                    LEA EAX,[ESP + 0x20]
+00420508  PUSH                   PUSH EAX
+00420509  PUSH                   PUSH 0x1
+0042050b  MOV                    MOV ECX,ESI
+0042050d  CALL                   CALL 0x00434ae0
+00420512  POP                    POP EDI
+00420513  POP                    POP EBX
+00420514  XOR                    XOR EAX,EAX
+00420516  POP                    POP ESI
+00420517  RET                    RET
+00420520  MOV                    MOV EAX,[0x00508e8c]
+00420525  PUSH                   PUSH ESI
+00420526  MOV                    MOV ESI,dword ptr [ESP + 0x10]
+0042052a  PUSH                   PUSH EAX
+0042052b  MOV                    MOV ECX,ESI
+0042052d  CALL                   CALL 0x00434350
+00420532  MOV                    MOV ECX,dword ptr [ESI + 0xc]
+00420535  MOV                    MOV EDX,dword ptr [ECX + 0x78]
+00420538  PUSH                   PUSH EDX
+00420539  PUSH                   PUSH 0x2e
+0042053b  CALL                   CALL 0x0042f9b0
+00420540  ADD                    ADD ESP,0x8
+00420543  XOR                    XOR EAX,EAX
+00420545  POP                    POP ESI
+00420546  RET                    RET
+00420550  MOV                    MOV EAX,dword ptr [ESP + 0x10]
+00420554  PUSH                   PUSH EBX
+00420555  PUSH                   PUSH ESI
+00420556  LEA                    LEA EAX,[EAX + EAX*0x2]
+00420559  LEA                    LEA ESI,[EAX + EAX*0x4]
+0042055c  SHL                    SHL ESI,0x5
+0042055f  PUSH                   PUSH EDI
+00420560  ADD                    ADD ESI,0x4f1b10
+00420566  PUSH                   PUSH 0x1
+00420568  MOV                    MOV ECX,ESI
+0042056a  CALL                   CALL 0x00435fe0
+0042056f  TEST                   TEST EAX,EAX
+00420571  JZ                     JZ 0x0042057c
+00420573  POP                    POP EDI
+00420574  POP                    POP ESI
+00420575  MOV                    MOV EAX,0x1
+0042057a  POP                    POP EBX
+0042057b  RET                    RET
+0042057c  PUSH                   PUSH 0xff
+00420581  MOV                    MOV ECX,ESI
+00420583  CALL                   CALL 0x00435630
+00420588  MOV                    MOV EDI,EAX
+0042058a  CMP                    CMP EDI,-0x1
+0042058d  JNZ                    JNZ 0x00420598
+0042058f  POP                    POP EDI
+00420590  POP                    POP ESI
+00420591  MOV                    MOV EAX,0x1
+00420596  POP                    POP EBX
+00420597  RET                    RET
+00420598  PUSH                   PUSH EBP
+00420599  PUSH                   PUSH -0x1
+0042059b  PUSH                   PUSH 0xff
+004205a0  MOV                    MOV ECX,ESI
+004205a2  CALL                   CALL 0x00435650
+004205a7  MOV                    MOV EAX,dword ptr [ESI + 0x38]
+004205aa  PUSH                   PUSH EAX
+004205ab  MOV                    MOV ECX,EDI
+004205ad  OR                     OR ECX,0xff00
+004205b3  PUSH                   PUSH ECX
+004205b4  MOV                    MOV ECX,dword ptr [0x004fe7ac]
+004205ba  PUSH                   PUSH 0x1f
+004205bc  CALL                   CALL 0x0043cb00
+004205c1  MOV                    MOV EBX,dword ptr [ESP + 0x1c]
+004205c5  PUSH                   PUSH EDI
+004205c6  MOV                    MOV ECX,0x4e3b18
+004205cb  MOV                    MOV dword ptr [0x004fdb20],EBX
+004205d1  MOV                    MOV dword ptr [0x004fdb24],ESI
+004205d7  CALL                   CALL 0x00433040
+004205dc  PUSH                   PUSH 0x4fdb20
+004205e1  PUSH                   PUSH 0x3fa
+004205e6  MOV                    MOV ECX,0x5090b0
+004205eb  MOV                    MOV [0x004fdb40],EAX
+004205f0  CALL                   CALL 0x0042ab30
+004205f5  PUSH                   PUSH EDI
+004205f6  MOV                    MOV ECX,0x4e3b18
+004205fb  MOV                    MOV dword ptr [0x004fdb20],ESI
+00420601  MOV                    MOV dword ptr [0x004fdb24],EBX
+00420607  CALL                   CALL 0x00433040
+0042060c  PUSH                   PUSH 0x4fdb20
+00420611  PUSH                   PUSH 0x40e
+00420616  MOV                    MOV ECX,0x5090b0
+0042061b  MOV                    MOV [0x004fdb40],EAX
+00420620  CALL                   CALL 0x0042ab30
+00420625  MOV                    MOV EBP,dword ptr [ESP + 0x18]
+00420629  PUSH                   PUSH 0x0
+0042062b  PUSH                   PUSH EBP
+0042062c  MOV                    MOV ECX,ESI
+0042062e  CALL                   CALL 0x00436810
+00420633  MOV                    MOV EDX,dword ptr [EBX + 0x38]
+00420636  MOV                    MOV ECX,dword ptr [0x004fe7ac]
+0042063c  SHL                    SHL EDX,0x8
+0042063f  PUSH                   PUSH ESI
+00420640  OR                     OR EDX,EBP
+00420642  PUSH                   PUSH EDX
+00420643  PUSH                   PUSH 0x404
+00420648  CALL                   CALL 0x0043c5e0
+0042064d  PUSH                   PUSH 0x3
+0042064f  PUSH                   PUSH EDI
+00420650  MOV                    MOV ECX,EBX
+00420652  CALL                   CALL 0x00435db0
+00420657  MOV                    MOV ESI,EAX
+00420659  CMP                    CMP ESI,-0x1
+0042065c  POP                    POP EBP
+0042065d  JNZ                    JNZ 0x00420680
+0042065f  PUSH                   PUSH EDI
+00420660  MOV                    MOV ECX,0x4e3b18
+00420665  CALL                   CALL 0x004330b0
+0042066a  MOV                    MOV ECX,dword ptr [0x004fe7ac]
+00420670  PUSH                   PUSH 0x0
+00420672  PUSH                   PUSH EDI
+00420673  PUSH                   PUSH 0x23
+00420675  CALL                   CALL 0x0043cb00
+0042067a  POP                    POP EDI
+0042067b  POP                    POP ESI
+0042067c  XOR                    XOR EAX,EAX
+0042067e  POP                    POP EBX
+0042067f  RET                    RET
+00420680  MOV                    MOV EAX,dword ptr [EBX + 0xc]
+00420683  MOV                    MOV ECX,dword ptr [EAX + 0x78]
+00420686  PUSH                   PUSH ECX
+00420687  PUSH                   PUSH 0x2f
+00420689  CALL                   CALL 0x0042f9b0
+0042068e  MOV                    MOV EDX,dword ptr [EBX + 0x38]
+00420691  MOV                    MOV ECX,dword ptr [0x004fe7ac]
+00420697  ADD                    ADD ESP,0x8
+0042069a  PUSH                   PUSH EDX
+0042069b  SHL                    SHL ESI,0x8
+0042069e  OR                     OR ESI,EDI
+004206a0  PUSH                   PUSH ESI
+004206a1  PUSH                   PUSH 0x1e
+004206a3  CALL                   CALL 0x0043cb00
+004206a8  POP                    POP EDI
+004206a9  POP                    POP ESI
+004206aa  XOR                    XOR EAX,EAX
+004206ac  POP                    POP EBX
+004206ad  RET                    RET
+004206b0  PUSH                   PUSH ECX
+004206b1  MOV                    MOV EAX,dword ptr [ESP + 0x8]
+004206b5  TEST                   TEST EAX,EAX
+004206b7  MOV                    MOV dword ptr [ESP],0x1
+004206bf  JZ                     JZ 0x004206c9
+004206c1  MOV                    MOV dword ptr [ESP],0x2
+004206c9  MOV                    MOV EAX,dword ptr [ESP + 0x14]
+004206cd  PUSH                   PUSH ESI
+004206ce  LEA                    LEA EAX,[EAX + EAX*0x2]
+004206d1  LEA                    LEA ESI,[EAX + EAX*0x4]
+004206d4  SHL                    SHL ESI,0x5
+004206d7  ADD                    ADD ESI,0x4f1b10
+004206dd  MOV                    MOV EAX,dword ptr [ESI + 0x1c0]
+004206e3  TEST                   TEST EAX,EAX
+004206e5  JZ                     JZ 0x004207d5
+004206eb  PUSH                   PUSH 0x1
+004206ed  MOV                    MOV ECX,ESI
+004206ef  CALL                   CALL 0x00435fe0
+004206f4  TEST                   TEST EAX,EAX
+004206f6  JNZ                    JNZ 0x004207d5
+004206fc  MOV                    MOV EAX,[0x00508e98]
+00420701  MOV                    MOV ECX,dword ptr [0x00508e94]
+00420707  PUSH                   PUSH EBX
+00420708  PUSH                   PUSH EBP
+00420709  PUSH                   PUSH EDI
+0042070a  PUSH                   PUSH EAX
+0042070b  PUSH                   PUSH ECX
+0042070c  CALL                   CALL 0x00405170
+00420711  FILD                   FILD dword ptr [ESP + 0x18]
+00420715  ADD                    ADD ESP,0x4
+00420718  MOV                    MOV ECX,ESI
+0042071a  FMUL                   FMUL ST1
+0042071c  FSTP                   FSTP float ptr [ESP]
+0042071f  FSTP                   FSTP ST0
+00420721  CALL                   CALL 0x00435620
+00420726  PUSH                   PUSH EAX
+00420727  MOV                    MOV ECX,0x4e3b48
+0042072c  CALL                   CALL 0x00441700
+00420731  MOV                    MOV EDI,dword ptr [ESP + 0x20]
+00420735  MOV                    MOV EBX,EAX
+00420737  PUSH                   PUSH 0x0
+00420739  PUSH                   PUSH EBX
+0042073a  MOV                    MOV ECX,EDI
+0042073c  CALL                   CALL 0x00435620
+00420741  MOV                    MOV ECX,EAX
+00420743  CALL                   CALL 0x0043ffe0
+00420748  MOV                    MOV EDX,dword ptr [EDI + 0xc]
+0042074b  MOV                    MOV EAX,dword ptr [EDX + 0x78]
+0042074e  PUSH                   PUSH EAX
+0042074f  PUSH                   PUSH 0x30
+00420751  CALL                   CALL 0x0042f9b0
+00420756  MOV                    MOV EBP,dword ptr [ESP + 0x24]
+0042075a  ADD                    ADD ESP,0x8
+0042075d  PUSH                   PUSH 0x0
+0042075f  PUSH                   PUSH EBP
+00420760  MOV                    MOV ECX,ESI
+00420762  CALL                   CALL 0x00436810
+00420767  PUSH                   PUSH 0x4fdb20
+0042076c  PUSH                   PUSH 0x404
+00420771  MOV                    MOV ECX,0x5090b0
+00420776  MOV                    MOV dword ptr [0x004fdb20],ESI
+0042077c  MOV                    MOV dword ptr [0x004fdb24],EDI
+00420782  MOV                    MOV dword ptr [0x004fdb34],EBX
+00420788  CALL                   CALL 0x0042ab30
+0042078d  PUSH                   PUSH 0x4fdb20
+00420792  PUSH                   PUSH 0x405
+00420797  MOV                    MOV ECX,0x5090b0
+0042079c  MOV                    MOV dword ptr [0x004fdb20],EDI
+004207a2  MOV                    MOV dword ptr [0x004fdb24],ESI
+004207a8  MOV                    MOV dword ptr [0x004fdb34],EBX
+004207ae  CALL                   CALL 0x0042ab30
+004207b3  MOV                    MOV ECX,dword ptr [EDI + 0x38]
+004207b6  SHL                    SHL ECX,0x8
+004207b9  PUSH                   PUSH ESI
+004207ba  OR                     OR ECX,EBP
+004207bc  PUSH                   PUSH ECX
+004207bd  MOV                    MOV ECX,dword ptr [0x004fe7ac]
+004207c3  PUSH                   PUSH 0x404
+004207c8  CALL                   CALL 0x0043c5e0
+004207cd  POP                    POP EDI
+004207ce  POP                    POP EBP
+004207cf  POP                    POP EBX
+004207d0  XOR                    XOR EAX,EAX
+004207d2  POP                    POP ESI
+004207d3  POP                    POP ECX
+004207d4  RET                    RET
+004207d5  MOV                    MOV EAX,0x1
+004207da  POP                    POP ESI
+004207db  POP                    POP ECX
+004207dc  RET                    RET
+004207e0  MOV                    MOV EAX,dword ptr [ESP + 0x10]
+004207e4  PUSH                   PUSH ESI
+004207e5  LEA                    LEA EAX,[EAX + EAX*0x2]
+004207e8  LEA                    LEA ESI,[EAX + EAX*0x4]
+004207eb  SHL                    SHL ESI,0x5
+004207ee  PUSH                   PUSH EDI
+004207ef  ADD                    ADD ESI,0x4f1b10
+004207f5  PUSH                   PUSH 0x1
+004207f7  MOV                    MOV ECX,ESI
+004207f9  CALL                   CALL 0x00435fe0
+004207fe  TEST                   TEST EAX,EAX
+00420800  JZ                     JZ 0x0042080a
+00420802  POP                    POP EDI
+00420803  MOV                    MOV EAX,0x1
+00420808  POP                    POP ESI
+00420809  RET                    RET
+0042080a  MOV                    MOV EDI,dword ptr [ESP + 0x14]
+0042080e  PUSH                   PUSH ESI
+0042080f  PUSH                   PUSH 0x0
+00420811  PUSH                   PUSH 0x3
+00420813  MOV                    MOV ECX,EDI
+00420815  CALL                   CALL 0x00434e60
+0042081a  TEST                   TEST EAX,EAX
+0042081c  JNZ                    JNZ 0x00420826
+0042081e  POP                    POP EDI
+0042081f  MOV                    MOV EAX,0x1
+00420824  POP                    POP ESI
+00420825  RET                    RET
+00420826  MOV                    MOV EAX,dword ptr [EDI + 0xc]
+00420829  MOV                    MOV ECX,dword ptr [EAX + 0x78]
+0042082c  PUSH                   PUSH EBX
+0042082d  PUSH                   PUSH ECX
+
+
