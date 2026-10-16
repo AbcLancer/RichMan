@@ -2106,6 +2106,18 @@ func _test_cards() -> void:
 	var r2 := _rent_paid(sim6, idx6)
 	_ok("查封卡 → %s 查封期内租金 = 0" % st6, r2 == 0, "%d" % r2)
 
+	# ---- C14 · 路障卡：落点已有道具时不能放（原版 FUN_00421760）----
+	_lines.append("[3o] 路障卡：落点已有道具时不能放（原版 421760）")
+	var sR := _card_world("roadblock")
+	var pR: Dictionary = sR.players[1]
+	var tgtR := sR._wrap(int(pR["tile"]) + int(pR["dir"]))
+	sR._add_obstacle(tgtR, "mine", 2)                  # 目标格先放一颗地雷
+	var n_before := (sR.obstacles as Array).size()
+	_ok("★ 落点已有道具 → 路障放不上去（不覆盖已有的）",
+		not sR.act_use_card(1, "roadblock", tgtR)
+			and (sR.obstacles as Array).size() == n_before,
+		"道具数 %d" % (sR.obstacles as Array).size())
+
 	# ---- 路面道具：路障挡人 ----
 	var sim7 := _card_world("roadblock")
 	var p7: Dictionary = sim7.players[1]

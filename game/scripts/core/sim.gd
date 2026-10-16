@@ -3860,6 +3860,14 @@ func _apply_card(p: Dictionary, card_id: String, c: Dictionary, e: Dictionary,
 			_add_obstacle(target, "mine", pid)
 			log_message.emit("%s 在身后放了一颗地雷" % p["name"])
 		"place_roadblock":
+			# ⚠️ 原来**完全没有检查**就放 —— 会盖掉已有的路面道具。
+			# 依据原版门禁 `FUN_00421760`（线性反汇编）：
+			#   `CALL 0x0042bf50` 判该格**有没有路面道具**，非 0 则不放。
+			#   （原版还要求落点 `+0x34 == -1` 且「有地块、有建筑」，
+			#     那两条语义还没完全弄清 —— 见 docs/rea-2026-10-16/C14-门禁对比-骰子卡.md，
+			#     这里**只补能确定的那条**。）
+			if not _obstacle_at(target).is_empty() or road_objs.has(target):
+				return false
 			_add_obstacle(target, "roadblock", pid)
 			log_message.emit("%s 在前面放了一个路障" % p["name"])
 		"remove_obstacle":
