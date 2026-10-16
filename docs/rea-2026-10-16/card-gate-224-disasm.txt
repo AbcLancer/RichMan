@@ -1,0 +1,2059 @@
+# 反汇编 0x420f00 .. 0x4221c0  （4800 字节）
+
+0x00420f00  83f8ff               cmp     eax, -1
+0x00420f03  741c                 je      0x420f21
+0x00420f05  56                   push    esi
+0x00420f06  8bcf                 mov     ecx, edi
+0x00420f08  e813370100           call    0x434620   ← 调用
+0x00420f0d  50                   push    eax
+0x00420f0e  b998944d00           mov     ecx, 0x4d9498
+0x00420f13  e8f8e0ffff           call    0x41f010   ← 调用
+0x00420f18  83b83c010000ff       cmp     dword ptr [eax + 0x13c], -1
+0x00420f1f  753b                 jne     0x420f5c
+0x00420f21  46                   inc     esi
+0x00420f22  83fe05               cmp     esi, 5
+0x00420f25  7cd1                 jl      0x420ef8
+0x00420f27  6a43                 push    0x43   (= 67)
+0x00420f29  b9b0905000           mov     ecx, 0x5090b0
+0x00420f2e  e8bd990000           call    0x42a8f0   ← 调用
+0x00420f33  83c9ff               or      ecx, 0xffffffff
+0x00420f36  8bf8                 mov     edi, eax
+0x00420f38  33c0                 xor     eax, eax
+0x00420f3a  f2ae                 repne scasbal, byte ptr es:[edi]
+0x00420f3c  f7d1                 not     ecx
+0x00420f3e  2bf9                 sub     edi, ecx
+0x00420f40  8bc1                 mov     eax, ecx
+0x00420f42  8bf7                 mov     esi, edi
+0x00420f44  8b7c2414             mov     edi, dword ptr [esp + 0x14]
+0x00420f48  c1e902               shr     ecx, 2
+0x00420f4b  f3a5                 rep movsddword ptr es:[edi], dword ptr [esi]
+0x00420f4d  8bc8                 mov     ecx, eax
+0x00420f4f  83e103               and     ecx, 3
+0x00420f52  f3a4                 rep movsbbyte ptr es:[edi], byte ptr [esi]
+0x00420f54  5f                   pop     edi
+0x00420f55  b805000000           mov     eax, 5
+0x00420f5a  5e                   pop     esi
+0x00420f5b  c3                   ret     
+0x00420f5c  5f                   pop     edi
+0x00420f5d  33c0                 xor     eax, eax
+0x00420f5f  5e                   pop     esi
+0x00420f60  c3                   ret     
+0x00420f61  90                   nop     
+0x00420f62  90                   nop     
+0x00420f63  90                   nop     
+0x00420f64  90                   nop     
+0x00420f65  90                   nop     
+0x00420f66  90                   nop     
+0x00420f67  90                   nop     
+0x00420f68  90                   nop     
+0x00420f69  90                   nop     
+0x00420f6a  90                   nop     
+0x00420f6b  90                   nop     
+0x00420f6c  90                   nop     
+0x00420f6d  90                   nop     
+0x00420f6e  90                   nop     
+0x00420f6f  90                   nop     
+0x00420f70  8b542404             mov     edx, dword ptr [esp + 4]
+0x00420f74  83ba1001000002       cmp     dword ptr [edx + 0x110], 2
+0x00420f7b  7f21                 jg      0x420f9e
+0x00420f7d  8b420c               mov     eax, dword ptr [edx + 0xc]
+0x00420f80  56                   push    esi
+0x00420f81  8b7074               mov     esi, dword ptr [eax + 0x74]
+0x00420f84  8b4078               mov     eax, dword ptr [eax + 0x78]
+0x00420f87  52                   push    edx
+0x00420f88  56                   push    esi
+0x00420f89  6a07                 push    7
+0x00420f8b  8bc8                 mov     ecx, eax
+0x00420f8d  e8feab0000           call    0x42bb90   ← 调用
+0x00420f92  83f803               cmp     eax, 3
+0x00420f95  5e                   pop     esi
+0x00420f96  7c06                 jl      0x420f9e
+0x00420f98  b801000000           mov     eax, 1
+0x00420f9d  c3                   ret     
+0x00420f9e  33c0                 xor     eax, eax
+0x00420fa0  c3                   ret     
+0x00420fa1  90                   nop     
+0x00420fa2  90                   nop     
+0x00420fa3  90                   nop     
+0x00420fa4  90                   nop     
+0x00420fa5  90                   nop     
+0x00420fa6  90                   nop     
+0x00420fa7  90                   nop     
+0x00420fa8  90                   nop     
+0x00420fa9  90                   nop     
+0x00420faa  90                   nop     
+0x00420fab  90                   nop     
+0x00420fac  90                   nop     
+0x00420fad  90                   nop     
+0x00420fae  90                   nop     
+0x00420faf  90                   nop     
+0x00420fb0  83ec20               sub     esp, 0x20
+0x00420fb3  53                   push    ebx
+0x00420fb4  56                   push    esi
+0x00420fb5  57                   push    edi
+0x00420fb6  8b7c2430             mov     edi, dword ptr [esp + 0x30]
+0x00420fba  8b470c               mov     eax, dword ptr [edi + 0xc]
+0x00420fbd  8b4078               mov     eax, dword ptr [eax + 0x78]
+0x00420fc0  50                   push    eax
+0x00420fc1  680000c040           push    0x40c00000   (= 1086324736)
+0x00420fc6  6a00                 push    0
+0x00420fc8  8d4c2418             lea     ecx, [esp + 0x18]
+0x00420fcc  51                   push    ecx
+0x00420fcd  b9081b4f00           mov     ecx, 0x4f1b08
+0x00420fd2  e8c9960100           call    0x43a6a0   ← 调用
+0x00420fd7  8bcf                 mov     ecx, edi
+0x00420fd9  8bf0                 mov     esi, eax
+0x00420fdb  e8a0500100           call    0x436080   ← 调用
+0x00420fe0  8bd8                 mov     ebx, eax
+0x00420fe2  33c0                 xor     eax, eax
+0x00420fe4  85f6                 test    esi, esi
+0x00420fe6  7e10                 jle     0x420ff8
+0x00420fe8  8d4c240c             lea     ecx, [esp + 0xc]
+0x00420fec  3919                 cmp     dword ptr [ecx], ebx
+0x00420fee  742e                 je      0x42101e
+0x00420ff0  40                   inc     eax
+0x00420ff1  83c104               add     ecx, 4
+0x00420ff4  3bc6                 cmp     eax, esi
+0x00420ff6  7cf4                 jl      0x420fec
+0x00420ff8  8bcf                 mov     ecx, edi
+0x00420ffa  e811510100           call    0x436110   ← 调用
+0x00420fff  33c9                 xor     ecx, ecx
+0x00421001  85f6                 test    esi, esi
+0x00421003  7e65                 jle     0x42106a
+0x00421005  8d54240c             lea     edx, [esp + 0xc]
+0x00421009  3902                 cmp     dword ptr [edx], eax
+0x0042100b  7437                 je      0x421044
+0x0042100d  41                   inc     ecx
+0x0042100e  83c204               add     edx, 4
+0x00421011  3bce                 cmp     ecx, esi
+0x00421013  7cf4                 jl      0x421009
+0x00421015  5f                   pop     edi
+0x00421016  5e                   pop     esi
+0x00421017  33c0                 xor     eax, eax
+0x00421019  5b                   pop     ebx
+0x0042101a  83c420               add     esp, 0x20
+0x0042101d  c3                   ret     
+0x0042101e  6a64                 push    0x64   (= 100)
+0x00421020  6a01                 push    1
+0x00421022  e80941feff           call    0x405130   ← 调用
+0x00421027  83c408               add     esp, 8
+0x0042102a  83f850               cmp     eax, 0x50
+0x0042102d  7fc9                 jg      0x420ff8
+0x0042102f  8b5338               mov     edx, dword ptr [ebx + 0x38]
+0x00421032  8b442434             mov     eax, dword ptr [esp + 0x34]
+0x00421036  5f                   pop     edi
+0x00421037  5e                   pop     esi
+0x00421038  8910                 mov     dword ptr [eax], edx
+0x0042103a  b801000000           mov     eax, 1
+0x0042103f  5b                   pop     ebx
+0x00421040  83c420               add     esp, 0x20
+0x00421043  c3                   ret     
+0x00421044  6a64                 push    0x64   (= 100)
+0x00421046  6a01                 push    1
+0x00421048  e8e340feff           call    0x405130   ← 调用
+0x0042104d  83c408               add     esp, 8
+0x00421050  83f814               cmp     eax, 0x14
+0x00421053  7f15                 jg      0x42106a
+0x00421055  8b4b38               mov     ecx, dword ptr [ebx + 0x38]
+0x00421058  8b542434             mov     edx, dword ptr [esp + 0x34]
+0x0042105c  5f                   pop     edi
+0x0042105d  5e                   pop     esi
+0x0042105e  890a                 mov     dword ptr [edx], ecx
+0x00421060  b801000000           mov     eax, 1
+0x00421065  5b                   pop     ebx
+0x00421066  83c420               add     esp, 0x20
+0x00421069  c3                   ret     
+0x0042106a  5f                   pop     edi
+0x0042106b  5e                   pop     esi
+0x0042106c  33c0                 xor     eax, eax
+0x0042106e  5b                   pop     ebx
+0x0042106f  83c420               add     esp, 0x20
+0x00421072  c3                   ret     
+0x00421073  90                   nop     
+0x00421074  90                   nop     
+0x00421075  90                   nop     
+0x00421076  90                   nop     
+0x00421077  90                   nop     
+0x00421078  90                   nop     
+0x00421079  90                   nop     
+0x0042107a  90                   nop     
+0x0042107b  90                   nop     
+0x0042107c  90                   nop     
+0x0042107d  90                   nop     
+0x0042107e  90                   nop     
+0x0042107f  90                   nop     
+0x00421080  8b442408             mov     eax, dword ptr [esp + 8]
+0x00421084  8b4c2404             mov     ecx, dword ptr [esp + 4]
+0x00421088  50                   push    eax
+0x00421089  51                   push    ecx
+0x0042108a  e821ffffff           call    0x420fb0   ← 调用
+0x0042108f  83c408               add     esp, 8
+0x00421092  c3                   ret     
+0x00421093  90                   nop     
+0x00421094  90                   nop     
+0x00421095  90                   nop     
+0x00421096  90                   nop     
+0x00421097  90                   nop     
+0x00421098  90                   nop     
+0x00421099  90                   nop     
+0x0042109a  90                   nop     
+0x0042109b  90                   nop     
+0x0042109c  90                   nop     
+0x0042109d  90                   nop     
+0x0042109e  90                   nop     
+0x0042109f  90                   nop     
+0x004210a0  53                   push    ebx
+0x004210a1  8b5c2408             mov     ebx, dword ptr [esp + 8]
+0x004210a5  8b430c               mov     eax, dword ptr [ebx + 0xc]
+0x004210a8  56                   push    esi
+0x004210a9  57                   push    edi
+0x004210aa  8b7878               mov     edi, dword ptr [eax + 0x78]
+0x004210ad  8b473c               mov     eax, dword ptr [edi + 0x3c]
+0x004210b0  85c0                 test    eax, eax
+0x004210b2  7474                 je      0x421128
+0x004210b4  8bcf                 mov     ecx, edi
+0x004210b6  e895aa0000           call    0x42bb50   ← 调用
+0x004210bb  8bf0                 mov     esi, eax
+0x004210bd  85f6                 test    esi, esi
+0x004210bf  7467                 je      0x421128
+0x004210c1  8bcb                 mov     ecx, ebx
+0x004210c3  e858450100           call    0x435620   ← 调用
+0x004210c8  394634               cmp     dword ptr [esi + 0x34], eax
+0x004210cb  755b                 jne     0x421128
+0x004210cd  8b7630               mov     esi, dword ptr [esi + 0x30]
+0x004210d0  85f6                 test    esi, esi
+0x004210d2  7454                 je      0x421128
+0x004210d4  56                   push    esi
+0x004210d5  b918ce4e00           mov     ecx, 0x4ece18
+0x004210da  e861bdffff           call    0x41ce40   ← 调用
+0x004210df  85c0                 test    eax, eax
+0x004210e1  7445                 je      0x421128
+0x004210e3  8b7f3c               mov     edi, dword ptr [edi + 0x3c]
+0x004210e6  8bcb                 mov     ecx, ebx
+0x004210e8  e8934f0100           call    0x436080   ← 调用
+0x004210ed  8bf0                 mov     esi, eax
+0x004210ef  85f6                 test    esi, esi
+0x004210f1  7435                 je      0x421128
+0x004210f3  8bcb                 mov     ecx, ebx
+0x004210f5  e826450100           call    0x435620   ← 调用
+0x004210fa  50                   push    eax
+0x004210fb  6a01                 push    1
+0x004210fd  8bcf                 mov     ecx, edi
+0x004210ff  e87cdb0000           call    0x42ec80   ← 调用
+0x00421104  83f803               cmp     eax, 3
+0x00421107  7c1f                 jl      0x421128
+0x00421109  8bce                 mov     ecx, esi
+0x0042110b  e810450100           call    0x435620   ← 调用
+0x00421110  50                   push    eax
+0x00421111  6a01                 push    1
+0x00421113  8bcf                 mov     ecx, edi
+0x00421115  e866db0000           call    0x42ec80   ← 调用
+0x0042111a  83f802               cmp     eax, 2
+0x0042111d  7f09                 jg      0x421128
+0x0042111f  5f                   pop     edi
+0x00421120  5e                   pop     esi
+0x00421121  b801000000           mov     eax, 1
+0x00421126  5b                   pop     ebx
+0x00421127  c3                   ret     
+0x00421128  5f                   pop     edi
+0x00421129  5e                   pop     esi
+0x0042112a  33c0                 xor     eax, eax
+0x0042112c  5b                   pop     ebx
+0x0042112d  c3                   ret     
+0x0042112e  90                   nop     
+0x0042112f  90                   nop     
+0x00421130  53                   push    ebx
+0x00421131  55                   push    ebp
+0x00421132  8b6c240c             mov     ebp, dword ptr [esp + 0xc]
+0x00421136  8b450c               mov     eax, dword ptr [ebp + 0xc]
+0x00421139  56                   push    esi
+0x0042113a  57                   push    edi
+0x0042113b  8b7878               mov     edi, dword ptr [eax + 0x78]
+0x0042113e  8b473c               mov     eax, dword ptr [edi + 0x3c]
+0x00421141  85c0                 test    eax, eax
+0x00421143  7465                 je      0x4211aa
+0x00421145  8bcd                 mov     ecx, ebp
+0x00421147  e8344f0100           call    0x436080   ← 调用
+0x0042114c  8bd8                 mov     ebx, eax
+0x0042114e  85db                 test    ebx, ebx
+0x00421150  7458                 je      0x4211aa
+0x00421152  8bcf                 mov     ecx, edi
+0x00421154  e8f7a90000           call    0x42bb50   ← 调用
+0x00421159  8bf0                 mov     esi, eax
+0x0042115b  85f6                 test    esi, esi
+0x0042115d  744b                 je      0x4211aa
+0x0042115f  8bcb                 mov     ecx, ebx
+0x00421161  e8ba440100           call    0x435620   ← 调用
+0x00421166  394634               cmp     dword ptr [esi + 0x34], eax
+0x00421169  753f                 jne     0x4211aa
+0x0042116b  8b4630               mov     eax, dword ptr [esi + 0x30]
+0x0042116e  85c0                 test    eax, eax
+0x00421170  7438                 je      0x4211aa
+0x00421172  8b773c               mov     esi, dword ptr [edi + 0x3c]
+0x00421175  8bcd                 mov     ecx, ebp
+0x00421177  e8a4440100           call    0x435620   ← 调用
+0x0042117c  50                   push    eax
+0x0042117d  6a01                 push    1
+0x0042117f  8bce                 mov     ecx, esi
+0x00421181  e8fada0000           call    0x42ec80   ← 调用
+0x00421186  85c0                 test    eax, eax
+0x00421188  7520                 jne     0x4211aa
+0x0042118a  8bcb                 mov     ecx, ebx
+0x0042118c  e88f440100           call    0x435620   ← 调用
+0x00421191  50                   push    eax
+0x00421192  6a01                 push    1
+0x00421194  8bce                 mov     ecx, esi
+0x00421196  e8e5da0000           call    0x42ec80   ← 调用
+0x0042119b  83f802               cmp     eax, 2
+0x0042119e  7f0a                 jg      0x4211aa
+0x004211a0  5f                   pop     edi
+0x004211a1  5e                   pop     esi
+0x004211a2  5d                   pop     ebp
+0x004211a3  b801000000           mov     eax, 1
+0x004211a8  5b                   pop     ebx
+0x004211a9  c3                   ret     
+0x004211aa  5f                   pop     edi
+0x004211ab  5e                   pop     esi
+0x004211ac  5d                   pop     ebp
+0x004211ad  33c0                 xor     eax, eax
+0x004211af  5b                   pop     ebx
+0x004211b0  c3                   ret     
+0x004211b1  90                   nop     
+0x004211b2  90                   nop     
+0x004211b3  90                   nop     
+0x004211b4  90                   nop     
+0x004211b5  90                   nop     
+0x004211b6  90                   nop     
+0x004211b7  90                   nop     
+0x004211b8  90                   nop     
+0x004211b9  90                   nop     
+0x004211ba  90                   nop     
+0x004211bb  90                   nop     
+0x004211bc  90                   nop     
+0x004211bd  90                   nop     
+0x004211be  90                   nop     
+0x004211bf  90                   nop     
+0x004211c0  56                   push    esi
+0x004211c1  8b742408             mov     esi, dword ptr [esp + 8]
+0x004211c5  8bce                 mov     ecx, esi
+0x004211c7  e8d4440100           call    0x4356a0   ← 调用
+0x004211cc  83f804               cmp     eax, 4
+0x004211cf  7515                 jne     0x4211e6
+0x004211d1  68ff000000           push    0xff   (= 255)
+0x004211d6  8bce                 mov     ecx, esi
+0x004211d8  e853440100           call    0x435630   ← 调用
+0x004211dd  83f8ff               cmp     eax, -1
+0x004211e0  7404                 je      0x4211e6
+0x004211e2  33c0                 xor     eax, eax
+0x004211e4  5e                   pop     esi
+0x004211e5  c3                   ret     
+0x004211e6  b801000000           mov     eax, 1
+0x004211eb  5e                   pop     esi
+0x004211ec  c3                   ret     
+0x004211ed  90                   nop     
+0x004211ee  90                   nop     
+0x004211ef  90                   nop     
+0x004211f0  56                   push    esi
+0x004211f1  57                   push    edi
+0x004211f2  8b7c240c             mov     edi, dword ptr [esp + 0xc]
+0x004211f6  8b470c               mov     eax, dword ptr [edi + 0xc]
+0x004211f9  8b4878               mov     ecx, dword ptr [eax + 0x78]
+0x004211fc  e84fa90000           call    0x42bb50   ← 调用
+0x00421201  8bf0                 mov     esi, eax
+0x00421203  85f6                 test    esi, esi
+0x00421205  7431                 je      0x421238
+0x00421207  8bcf                 mov     ecx, edi
+0x00421209  e812440100           call    0x435620   ← 调用
+0x0042120e  394634               cmp     dword ptr [esi + 0x34], eax
+0x00421211  7425                 je      0x421238
+0x00421213  8b7630               mov     esi, dword ptr [esi + 0x30]
+0x00421216  85f6                 test    esi, esi
+0x00421218  741e                 je      0x421238
+0x0042121a  837e3403             cmp     dword ptr [esi + 0x34], 3
+0x0042121e  7518                 jne     0x421238
+0x00421220  56                   push    esi
+0x00421221  b918ce4e00           mov     ecx, 0x4ece18
+0x00421226  e855bcffff           call    0x41ce80   ← 调用
+0x0042122b  83f801               cmp     eax, 1
+0x0042122e  7f08                 jg      0x421238
+0x00421230  5f                   pop     edi
+0x00421231  b801000000           mov     eax, 1
+0x00421236  5e                   pop     esi
+0x00421237  c3                   ret     
+0x00421238  5f                   pop     edi
+0x00421239  33c0                 xor     eax, eax
+0x0042123b  5e                   pop     esi
+0x0042123c  c3                   ret     
+0x0042123d  90                   nop     
+0x0042123e  90                   nop     
+0x0042123f  90                   nop     
+0x00421240  53                   push    ebx
+0x00421241  8b5c2408             mov     ebx, dword ptr [esp + 8]
+0x00421245  56                   push    esi
+0x00421246  57                   push    edi
+0x00421247  6a03                 push    3
+0x00421249  8bcb                 mov     ecx, ebx
+0x0042124b  e8e04f0100           call    0x436230   ← 调用
+0x00421250  85c0                 test    eax, eax
+0x00421252  7504                 jne     0x421258
+0x00421254  5f                   pop     edi
+0x00421255  5e                   pop     esi
+0x00421256  5b                   pop     ebx
+0x00421257  c3                   ret     
+0x00421258  8b430c               mov     eax, dword ptr [ebx + 0xc]
+0x0042125b  8b5074               mov     edx, dword ptr [eax + 0x74]
+0x0042125e  8b4c2414             mov     ecx, dword ptr [esp + 0x14]
+0x00421262  8b4078               mov     eax, dword ptr [eax + 0x78]
+0x00421265  51                   push    ecx
+0x00421266  52                   push    edx
+0x00421267  8bc8                 mov     ecx, eax
+0x00421269  e802a90000           call    0x42bb70   ← 调用
+0x0042126e  8bf8                 mov     edi, eax
+0x00421270  8bcf                 mov     ecx, edi
+0x00421272  e8d9a80000           call    0x42bb50   ← 调用
+0x00421277  8bf0                 mov     esi, eax
+0x00421279  85f6                 test    esi, esi
+0x0042127b  7504                 jne     0x421281
+0x0042127d  5f                   pop     edi
+0x0042127e  5e                   pop     esi
+0x0042127f  5b                   pop     ebx
+0x00421280  c3                   ret     
+0x00421281  8bcb                 mov     ecx, ebx
+0x00421283  e898430100           call    0x435620   ← 调用
+0x00421288  394634               cmp     dword ptr [esi + 0x34], eax
+0x0042128b  7406                 je      0x421293
+0x0042128d  5f                   pop     edi
+0x0042128e  5e                   pop     esi
+0x0042128f  33c0                 xor     eax, eax
+0x00421291  5b                   pop     ebx
+0x00421292  c3                   ret     
+0x00421293  8b5630               mov     edx, dword ptr [esi + 0x30]
+0x00421296  52                   push    edx
+0x00421297  b918ce4e00           mov     ecx, 0x4ece18
+0x0042129c  e89fbbffff           call    0x41ce40   ← 调用
+0x004212a1  85c0                 test    eax, eax
+0x004212a3  7504                 jne     0x4212a9
+0x004212a5  5f                   pop     edi
+0x004212a6  5e                   pop     esi
+0x004212a7  5b                   pop     ebx
+0x004212a8  c3                   ret     
+0x004212a9  8b7f34               mov     edi, dword ptr [edi + 0x34]
+0x004212ac  85ff                 test    edi, edi
+0x004212ae  7c1d                 jl      0x4212cd
+0x004212b0  57                   push    edi
+0x004212b1  b9682e4f00           mov     ecx, 0x4f2e68
+0x004212b6  e805080100           call    0x431ac0   ← 调用
+0x004212bb  8b00                 mov     eax, dword ptr [eax]
+0x004212bd  83f809               cmp     eax, 9
+0x004212c0  7405                 je      0x4212c7
+0x004212c2  83f808               cmp     eax, 8
+0x004212c5  7506                 jne     0x4212cd
+0x004212c7  5f                   pop     edi
+0x004212c8  5e                   pop     esi
+0x004212c9  33c0                 xor     eax, eax
+0x004212cb  5b                   pop     ebx
+0x004212cc  c3                   ret     
+0x004212cd  5f                   pop     edi
+0x004212ce  5e                   pop     esi
+0x004212cf  b801000000           mov     eax, 1
+0x004212d4  5b                   pop     ebx
+0x004212d5  c3                   ret     
+0x004212d6  90                   nop     
+0x004212d7  90                   nop     
+0x004212d8  90                   nop     
+0x004212d9  90                   nop     
+0x004212da  90                   nop     
+0x004212db  90                   nop     
+0x004212dc  90                   nop     
+0x004212dd  90                   nop     
+0x004212de  90                   nop     
+0x004212df  90                   nop     
+0x004212e0  8b442404             mov     eax, dword ptr [esp + 4]
+0x004212e4  6a01                 push    1
+0x004212e6  50                   push    eax
+0x004212e7  e854ffffff           call    0x421240   ← 调用
+0x004212ec  83c408               add     esp, 8
+0x004212ef  c3                   ret     
+0x004212f0  8b442404             mov     eax, dword ptr [esp + 4]
+0x004212f4  6a02                 push    2
+0x004212f6  50                   push    eax
+0x004212f7  e844ffffff           call    0x421240   ← 调用
+0x004212fc  83c408               add     esp, 8
+0x004212ff  c3                   ret     
+0x00421300  8b442404             mov     eax, dword ptr [esp + 4]
+0x00421304  6a03                 push    3
+0x00421306  50                   push    eax
+0x00421307  e834ffffff           call    0x421240   ← 调用
+0x0042130c  83c408               add     esp, 8
+0x0042130f  c3                   ret     
+0x00421310  8b442404             mov     eax, dword ptr [esp + 4]
+0x00421314  6a04                 push    4
+0x00421316  50                   push    eax
+0x00421317  e824ffffff           call    0x421240   ← 调用
+0x0042131c  83c408               add     esp, 8
+0x0042131f  c3                   ret     
+0x00421320  8b442404             mov     eax, dword ptr [esp + 4]
+0x00421324  6a05                 push    5
+0x00421326  50                   push    eax
+0x00421327  e814ffffff           call    0x421240   ← 调用
+0x0042132c  83c408               add     esp, 8
+0x0042132f  c3                   ret     
+0x00421330  a1302a4f00           mov     eax, dword ptr [0x4f2a30]
+0x00421335  85c0                 test    eax, eax
+0x00421337  56                   push    esi
+0x00421338  7414                 je      0x42134e
+0x0042133a  6a05                 push    5
+0x0042133c  6a01                 push    1
+0x0042133e  e8ed3dfeff           call    0x405130   ← 调用
+0x00421343  83c408               add     esp, 8
+0x00421346  48                   dec     eax
+0x00421347  f7d8                 neg     eax
+0x00421349  1bc0                 sbb     eax, eax
+0x0042134b  40                   inc     eax
+0x0042134c  5e                   pop     esi
+0x0042134d  c3                   ret     
+0x0042134e  8b742408             mov     esi, dword ptr [esp + 8]
+0x00421352  8b460c               mov     eax, dword ptr [esi + 0xc]
+0x00421355  8b5074               mov     edx, dword ptr [eax + 0x74]
+0x00421358  8b4078               mov     eax, dword ptr [eax + 0x78]
+0x0042135b  56                   push    esi
+0x0042135c  52                   push    edx
+0x0042135d  6a07                 push    7
+0x0042135f  8bc8                 mov     ecx, eax
+0x00421361  e88aa80000           call    0x42bbf0   ← 调用
+0x00421366  83f805               cmp     eax, 5
+0x00421369  7c20                 jl      0x42138b
+0x0042136b  8b460c               mov     eax, dword ptr [esi + 0xc]
+0x0042136e  8b5074               mov     edx, dword ptr [eax + 0x74]
+0x00421371  8b4078               mov     eax, dword ptr [eax + 0x78]
+0x00421374  56                   push    esi
+0x00421375  52                   push    edx
+0x00421376  6a07                 push    7
+0x00421378  8bc8                 mov     ecx, eax
+0x0042137a  e871a80000           call    0x42bbf0   ← 调用
+0x0042137f  83f802               cmp     eax, 2
+0x00421382  7f07                 jg      0x42138b
+0x00421384  b801000000           mov     eax, 1
+0x00421389  5e                   pop     esi
+0x0042138a  c3                   ret     
+0x0042138b  33c0                 xor     eax, eax
+0x0042138d  5e                   pop     esi
+0x0042138e  c3                   ret     
+0x0042138f  90                   nop     
+0x00421390  8b542404             mov     edx, dword ptr [esp + 4]
+0x00421394  8b420c               mov     eax, dword ptr [edx + 0xc]
+0x00421397  56                   push    esi
+0x00421398  8b7074               mov     esi, dword ptr [eax + 0x74]
+0x0042139b  8b4078               mov     eax, dword ptr [eax + 0x78]
+0x0042139e  52                   push    edx
+0x0042139f  56                   push    esi
+0x004213a0  6a0a                 push    0xa   (= 10)
+0x004213a2  8bc8                 mov     ecx, eax
+0x004213a4  e847a80000           call    0x42bbf0   ← 调用
+0x004213a9  33c9                 xor     ecx, ecx
+0x004213ab  83f807               cmp     eax, 7
+0x004213ae  0f9dc1               setge   cl
+0x004213b1  5e                   pop     esi
+0x004213b2  8bc1                 mov     eax, ecx
+0x004213b4  c3                   ret     
+0x004213b5  90                   nop     
+0x004213b6  90                   nop     
+0x004213b7  90                   nop     
+0x004213b8  90                   nop     
+0x004213b9  90                   nop     
+0x004213ba  90                   nop     
+0x004213bb  90                   nop     
+0x004213bc  90                   nop     
+0x004213bd  90                   nop     
+0x004213be  90                   nop     
+0x004213bf  90                   nop     
+0x004213c0  53                   push    ebx
+0x004213c1  55                   push    ebp
+0x004213c2  56                   push    esi
+0x004213c3  8b742410             mov     esi, dword ptr [esp + 0x10]
+0x004213c7  57                   push    edi
+0x004213c8  6a03                 push    3
+0x004213ca  8bce                 mov     ecx, esi
+0x004213cc  e85f4e0100           call    0x436230   ← 调用
+0x004213d1  85c0                 test    eax, eax
+0x004213d3  7470                 je      0x421445
+0x004213d5  8b460c               mov     eax, dword ptr [esi + 0xc]
+0x004213d8  8b7078               mov     esi, dword ptr [eax + 0x78]
+0x004213db  8b6874               mov     ebp, dword ptr [eax + 0x74]
+0x004213de  bb01000000           mov     ebx, 1
+0x004213e3  8b442418             mov     eax, dword ptr [esp + 0x18]
+0x004213e7  6a01                 push    1
+0x004213e9  55                   push    ebp
+0x004213ea  8bce                 mov     ecx, esi
+0x004213ec  8918                 mov     dword ptr [eax], ebx
+0x004213ee  e87da70000           call    0x42bb70   ← 调用
+0x004213f3  8bf0                 mov     esi, eax
+0x004213f5  8b4630               mov     eax, dword ptr [esi + 0x30]
+0x004213f8  83f804               cmp     eax, 4
+0x004213fb  744f                 je      0x42144c
+0x004213fd  83f810               cmp     eax, 0x10
+0x00421400  744a                 je      0x42144c
+0x00421402  83f807               cmp     eax, 7
+0x00421405  7445                 je      0x42144c
+0x00421407  8bce                 mov     ecx, esi
+0x00421409  e842a70000           call    0x42bb50   ← 调用
+0x0042140e  8bf8                 mov     edi, eax
+0x00421410  85ff                 test    edi, edi
+0x00421412  742b                 je      0x42143f
+0x00421414  8b4734               mov     eax, dword ptr [edi + 0x34]
+0x00421417  85c0                 test    eax, eax
+0x00421419  7431                 je      0x42144c
+0x0042141b  8b4c2414             mov     ecx, dword ptr [esp + 0x14]
+0x0042141f  e8fc410100           call    0x435620   ← 调用
+0x00421424  394734               cmp     dword ptr [edi + 0x34], eax
+0x00421427  7516                 jne     0x42143f
+0x00421429  8b7f30               mov     edi, dword ptr [edi + 0x30]
+0x0042142c  85ff                 test    edi, edi
+0x0042142e  741c                 je      0x42144c
+0x00421430  57                   push    edi
+0x00421431  b918ce4e00           mov     ecx, 0x4ece18
+0x00421436  e805baffff           call    0x41ce40   ← 调用
+0x0042143b  85c0                 test    eax, eax
+0x0042143d  750d                 jne     0x42144c
+0x0042143f  43                   inc     ebx
+0x00421440  83fb05               cmp     ebx, 5
+0x00421443  7e9e                 jle     0x4213e3
+0x00421445  5f                   pop     edi
+0x00421446  5e                   pop     esi
+0x00421447  5d                   pop     ebp
+0x00421448  33c0                 xor     eax, eax
+0x0042144a  5b                   pop     ebx
+0x0042144b  c3                   ret     
+0x0042144c  5f                   pop     edi
+0x0042144d  5e                   pop     esi
+0x0042144e  5d                   pop     ebp
+0x0042144f  b801000000           mov     eax, 1
+0x00421454  5b                   pop     ebx
+0x00421455  c3                   ret     
+0x00421456  90                   nop     
+0x00421457  90                   nop     
+0x00421458  90                   nop     
+0x00421459  90                   nop     
+0x0042145a  90                   nop     
+0x0042145b  90                   nop     
+0x0042145c  90                   nop     
+0x0042145d  90                   nop     
+0x0042145e  90                   nop     
+0x0042145f  90                   nop     
+0x00421460  53                   push    ebx
+0x00421461  8b5c2408             mov     ebx, dword ptr [esp + 8]
+0x00421465  8b430c               mov     eax, dword ptr [ebx + 0xc]
+0x00421468  8b4878               mov     ecx, dword ptr [eax + 0x78]
+0x0042146b  56                   push    esi
+0x0042146c  57                   push    edi
+0x0042146d  e8dea60000           call    0x42bb50   ← 调用
+0x00421472  8bf0                 mov     esi, eax
+0x00421474  85f6                 test    esi, esi
+0x00421476  745c                 je      0x4214d4
+0x00421478  8b4630               mov     eax, dword ptr [esi + 0x30]
+0x0042147b  85c0                 test    eax, eax
+0x0042147d  7455                 je      0x4214d4
+0x0042147f  8b7e34               mov     edi, dword ptr [esi + 0x34]
+0x00421482  8bcb                 mov     ecx, ebx
+0x00421484  e897410100           call    0x435620   ← 调用
+0x00421489  3bf8                 cmp     edi, eax
+0x0042148b  7447                 je      0x4214d4
+0x0042148d  85ff                 test    edi, edi
+0x0042148f  7443                 je      0x4214d4
+0x00421491  8b4e30               mov     ecx, dword ptr [esi + 0x30]
+0x00421494  51                   push    ecx
+0x00421495  b918ce4e00           mov     ecx, 0x4ece18
+0x0042149a  e8a1b9ffff           call    0x41ce40   ← 调用
+0x0042149f  85c0                 test    eax, eax
+0x004214a1  7531                 jne     0x4214d4
+0x004214a3  8b5630               mov     edx, dword ptr [esi + 0x30]
+0x004214a6  837a3803             cmp     dword ptr [edx + 0x38], 3
+0x004214aa  7d28                 jge     0x4214d4
+0x004214ac  6a02                 push    2
+0x004214ae  6a00                 push    0
+0x004214b0  e87b3cfeff           call    0x405130   ← 调用
+0x004214b5  8b4e30               mov     ecx, dword ptr [esi + 0x30]
+0x004214b8  8b4934               mov     ecx, dword ptr [ecx + 0x34]
+0x004214bb  83c408               add     esp, 8
+0x004214be  8d1449               lea     edx, [ecx + ecx*2]
+0x004214c1  8b4c2414             mov     ecx, dword ptr [esp + 0x14]
+0x004214c5  5f                   pop     edi
+0x004214c6  8d4410fd             lea     eax, [eax + edx - 3]
+0x004214ca  5e                   pop     esi
+0x004214cb  8901                 mov     dword ptr [ecx], eax
+0x004214cd  b801000000           mov     eax, 1
+0x004214d2  5b                   pop     ebx
+0x004214d3  c3                   ret     
+0x004214d4  5f                   pop     edi
+0x004214d5  5e                   pop     esi
+0x004214d6  33c0                 xor     eax, eax
+0x004214d8  5b                   pop     ebx
+0x004214d9  c3                   ret     
+0x004214da  90                   nop     
+0x004214db  90                   nop     
+0x004214dc  90                   nop     
+0x004214dd  90                   nop     
+0x004214de  90                   nop     
+0x004214df  90                   nop     
+0x004214e0  53                   push    ebx
+0x004214e1  8b5c2408             mov     ebx, dword ptr [esp + 8]
+0x004214e5  8b430c               mov     eax, dword ptr [ebx + 0xc]
+0x004214e8  56                   push    esi
+0x004214e9  57                   push    edi
+0x004214ea  8b7878               mov     edi, dword ptr [eax + 0x78]
+0x004214ed  8bcf                 mov     ecx, edi
+0x004214ef  e85ca60000           call    0x42bb50   ← 调用
+0x004214f4  8bf0                 mov     esi, eax
+0x004214f6  85f6                 test    esi, esi
+0x004214f8  7451                 je      0x42154b
+0x004214fa  8b4630               mov     eax, dword ptr [esi + 0x30]
+0x004214fd  85c0                 test    eax, eax
+0x004214ff  744a                 je      0x42154b
+0x00421501  8bcb                 mov     ecx, ebx
+0x00421503  e818410100           call    0x435620   ← 调用
+0x00421508  394634               cmp     dword ptr [esi + 0x34], eax
+0x0042150b  753e                 jne     0x42154b
+0x0042150d  8b4e30               mov     ecx, dword ptr [esi + 0x30]
+0x00421510  51                   push    ecx
+0x00421511  b918ce4e00           mov     ecx, 0x4ece18
+0x00421516  e825b9ffff           call    0x41ce40   ← 调用
+0x0042151b  85c0                 test    eax, eax
+0x0042151d  742c                 je      0x42154b
+0x0042151f  8b5728               mov     edx, dword ptr [edi + 0x28]
+0x00421522  2b1544384e00         sub     edx, dword ptr [0x4e3844]
+0x00421528  b8a38b2eba           mov     eax, 0xba2e8ba3
+0x0042152d  f7e2                 mul     edx
+0x0042152f  8b442414             mov     eax, dword ptr [esp + 0x14]
+0x00421533  c1ea06               shr     edx, 6
+0x00421536  8910                 mov     dword ptr [eax], edx
+0x00421538  8b4f2c               mov     ecx, dword ptr [edi + 0x2c]
+0x0042153b  c1e110               shl     ecx, 0x10
+0x0042153e  5f                   pop     edi
+0x0042153f  0bca                 or      ecx, edx
+0x00421541  5e                   pop     esi
+0x00421542  8908                 mov     dword ptr [eax], ecx
+0x00421544  b801000000           mov     eax, 1
+0x00421549  5b                   pop     ebx
+0x0042154a  c3                   ret     
+0x0042154b  5f                   pop     edi
+0x0042154c  5e                   pop     esi
+0x0042154d  33c0                 xor     eax, eax
+0x0042154f  5b                   pop     ebx
+0x00421550  c3                   ret     
+0x00421551  90                   nop     
+0x00421552  90                   nop     
+0x00421553  90                   nop     
+0x00421554  90                   nop     
+0x00421555  90                   nop     
+0x00421556  90                   nop     
+0x00421557  90                   nop     
+0x00421558  90                   nop     
+0x00421559  90                   nop     
+0x0042155a  90                   nop     
+0x0042155b  90                   nop     
+0x0042155c  90                   nop     
+0x0042155d  90                   nop     
+0x0042155e  90                   nop     
+0x0042155f  90                   nop     
+0x00421560  53                   push    ebx
+0x00421561  56                   push    esi
+0x00421562  8b74240c             mov     esi, dword ptr [esp + 0xc]
+0x00421566  57                   push    edi
+0x00421567  8bce                 mov     ecx, esi
+0x00421569  e8124b0100           call    0x436080   ← 调用
+0x0042156e  8bd8                 mov     ebx, eax
+0x00421570  85db                 test    ebx, ebx
+0x00421572  7464                 je      0x4215d8
+0x00421574  8b460c               mov     eax, dword ptr [esi + 0xc]
+0x00421577  8b7878               mov     edi, dword ptr [eax + 0x78]
+0x0042157a  8bcf                 mov     ecx, edi
+0x0042157c  e8cfa50000           call    0x42bb50   ← 调用
+0x00421581  8bf0                 mov     esi, eax
+0x00421583  85f6                 test    esi, esi
+0x00421585  7451                 je      0x4215d8
+0x00421587  8b4630               mov     eax, dword ptr [esi + 0x30]
+0x0042158a  85c0                 test    eax, eax
+0x0042158c  744a                 je      0x4215d8
+0x0042158e  8bcb                 mov     ecx, ebx
+0x00421590  e88b400100           call    0x435620   ← 调用
+0x00421595  394634               cmp     dword ptr [esi + 0x34], eax
+0x00421598  753e                 jne     0x4215d8
+0x0042159a  8b4e30               mov     ecx, dword ptr [esi + 0x30]
+0x0042159d  51                   push    ecx
+0x0042159e  b918ce4e00           mov     ecx, 0x4ece18
+0x004215a3  e898b8ffff           call    0x41ce40   ← 调用
+0x004215a8  85c0                 test    eax, eax
+0x004215aa  752c                 jne     0x4215d8
+0x004215ac  8b5728               mov     edx, dword ptr [edi + 0x28]
+0x004215af  2b1544384e00         sub     edx, dword ptr [0x4e3844]
+0x004215b5  b8a38b2eba           mov     eax, 0xba2e8ba3
+0x004215ba  f7e2                 mul     edx
+0x004215bc  8b442414             mov     eax, dword ptr [esp + 0x14]
+0x004215c0  c1ea06               shr     edx, 6
+0x004215c3  8910                 mov     dword ptr [eax], edx
+0x004215c5  8b4f2c               mov     ecx, dword ptr [edi + 0x2c]
+0x004215c8  c1e110               shl     ecx, 0x10
+0x004215cb  5f                   pop     edi
+0x004215cc  0bca                 or      ecx, edx
+0x004215ce  5e                   pop     esi
+0x004215cf  8908                 mov     dword ptr [eax], ecx
+0x004215d1  b801000000           mov     eax, 1
+0x004215d6  5b                   pop     ebx
+0x004215d7  c3                   ret     
+0x004215d8  5f                   pop     edi
+0x004215d9  5e                   pop     esi
+0x004215da  33c0                 xor     eax, eax
+0x004215dc  5b                   pop     ebx
+0x004215dd  c3                   ret     
+0x004215de  90                   nop     
+0x004215df  90                   nop     
+0x004215e0  56                   push    esi
+0x004215e1  57                   push    edi
+0x004215e2  8b7c240c             mov     edi, dword ptr [esp + 0xc]
+0x004215e6  8b470c               mov     eax, dword ptr [edi + 0xc]
+0x004215e9  8b4878               mov     ecx, dword ptr [eax + 0x78]
+0x004215ec  e85fa50000           call    0x42bb50   ← 调用
+0x004215f1  8bf0                 mov     esi, eax
+0x004215f3  85f6                 test    esi, esi
+0x004215f5  7462                 je      0x421659
+0x004215f7  8bcf                 mov     ecx, edi
+0x004215f9  e822400100           call    0x435620   ← 调用
+0x004215fe  394634               cmp     dword ptr [esi + 0x34], eax
+0x00421601  7456                 je      0x421659
+0x00421603  8b4630               mov     eax, dword ptr [esi + 0x30]
+0x00421606  85c0                 test    eax, eax
+0x00421608  7406                 je      0x421610
+0x0042160a  83783401             cmp     dword ptr [eax + 0x34], 1
+0x0042160e  7f49                 jg      0x421659
+0x00421610  8bcf                 mov     ecx, edi
+0x00421612  e8694a0100           call    0x436080   ← 调用
+0x00421617  85c0                 test    eax, eax
+0x00421619  743e                 je      0x421659
+0x0042161b  8b4e30               mov     ecx, dword ptr [esi + 0x30]
+0x0042161e  85c9                 test    ecx, ecx
+0x00421620  7437                 je      0x421659
+0x00421622  8bc8                 mov     ecx, eax
+0x00421624  e8f73f0100           call    0x435620   ← 调用
+0x00421629  394634               cmp     dword ptr [esi + 0x34], eax
+0x0042162c  752b                 jne     0x421659
+0x0042162e  8b4e30               mov     ecx, dword ptr [esi + 0x30]
+0x00421631  51                   push    ecx
+0x00421632  b918ce4e00           mov     ecx, 0x4ece18
+0x00421637  e804b8ffff           call    0x41ce40   ← 调用
+0x0042163c  85c0                 test    eax, eax
+0x0042163e  7508                 jne     0x421648
+0x00421640  5f                   pop     edi
+0x00421641  b801000000           mov     eax, 1
+0x00421646  5e                   pop     esi
+0x00421647  c3                   ret     
+0x00421648  8b5630               mov     edx, dword ptr [esi + 0x30]
+0x0042164b  8b4a30               mov     ecx, dword ptr [edx + 0x30]
+0x0042164e  33c0                 xor     eax, eax
+0x00421650  83f903               cmp     ecx, 3
+0x00421653  5f                   pop     edi
+0x00421654  0f9dc0               setge   al
+0x00421657  5e                   pop     esi
+0x00421658  c3                   ret     
+0x00421659  5f                   pop     edi
+0x0042165a  33c0                 xor     eax, eax
+0x0042165c  5e                   pop     esi
+0x0042165d  c3                   ret     
+0x0042165e  90                   nop     
+0x0042165f  90                   nop     
+0x00421660  8b4c2404             mov     ecx, dword ptr [esp + 4]
+0x00421664  8b410c               mov     eax, dword ptr [ecx + 0xc]
+0x00421667  8b5078               mov     edx, dword ptr [eax + 0x78]
+0x0042166a  56                   push    esi
+0x0042166b  8b723c               mov     esi, dword ptr [edx + 0x3c]
+0x0042166e  85f6                 test    esi, esi
+0x00421670  7504                 jne     0x421676
+0x00421672  33c0                 xor     eax, eax
+0x00421674  5e                   pop     esi
+0x00421675  c3                   ret     
+0x00421676  57                   push    edi
+0x00421677  e8a43f0100           call    0x435620   ← 调用
+0x0042167c  50                   push    eax
+0x0042167d  6a00                 push    0
+0x0042167f  8bce                 mov     ecx, esi
+0x00421681  e8fad50000           call    0x42ec80   ← 调用
+0x00421686  6a00                 push    0
+0x00421688  6a00                 push    0
+0x0042168a  8bce                 mov     ecx, esi
+0x0042168c  8bf8                 mov     edi, eax
+0x0042168e  e8edd50000           call    0x42ec80   ← 调用
+0x00421693  8944240c             mov     dword ptr [esp + 0xc], eax
+0x00421697  db44240c             fild    dword ptr [esp + 0xc]
+0x0042169b  d80d545b4900         fmul    dword ptr [0x495b54]
+0x004216a1  e82e3d0600           call    0x4853d4   ← 调用
+0x004216a6  33c9                 xor     ecx, ecx
+0x004216a8  3bf8                 cmp     edi, eax
+0x004216aa  0f9dc1               setge   cl
+0x004216ad  5f                   pop     edi
+0x004216ae  5e                   pop     esi
+0x004216af  8bc1                 mov     eax, ecx
+0x004216b1  c3                   ret     
+0x004216b2  90                   nop     
+0x004216b3  90                   nop     
+0x004216b4  90                   nop     
+0x004216b5  90                   nop     
+0x004216b6  90                   nop     
+0x004216b7  90                   nop     
+0x004216b8  90                   nop     
+0x004216b9  90                   nop     
+0x004216ba  90                   nop     
+0x004216bb  90                   nop     
+0x004216bc  90                   nop     
+0x004216bd  90                   nop     
+0x004216be  90                   nop     
+0x004216bf  90                   nop     
+0x004216c0  8b4c2404             mov     ecx, dword ptr [esp + 4]
+0x004216c4  8b410c               mov     eax, dword ptr [ecx + 0xc]
+0x004216c7  8b5078               mov     edx, dword ptr [eax + 0x78]
+0x004216ca  56                   push    esi
+0x004216cb  8b723c               mov     esi, dword ptr [edx + 0x3c]
+0x004216ce  85f6                 test    esi, esi
+0x004216d0  7504                 jne     0x4216d6
+0x004216d2  33c0                 xor     eax, eax
+0x004216d4  5e                   pop     esi
+0x004216d5  c3                   ret     
+0x004216d6  57                   push    edi
+0x004216d7  e8443f0100           call    0x435620   ← 调用
+0x004216dc  50                   push    eax
+0x004216dd  6a00                 push    0
+0x004216df  8bce                 mov     ecx, esi
+0x004216e1  e89ad50000           call    0x42ec80   ← 调用
+0x004216e6  6a00                 push    0
+0x004216e8  6a00                 push    0
+0x004216ea  8bce                 mov     ecx, esi
+0x004216ec  8bf8                 mov     edi, eax
+0x004216ee  e88dd50000           call    0x42ec80   ← 调用
+0x004216f3  8944240c             mov     dword ptr [esp + 0xc], eax
+0x004216f7  db44240c             fild    dword ptr [esp + 0xc]
+0x004216fb  d80dec554900         fmul    dword ptr [0x4955ec]
+0x00421701  e8ce3c0600           call    0x4853d4   ← 调用
+0x00421706  33c9                 xor     ecx, ecx
+0x00421708  3bf8                 cmp     edi, eax
+0x0042170a  0f9ec1               setle   cl
+0x0042170d  5f                   pop     edi
+0x0042170e  5e                   pop     esi
+0x0042170f  8bc1                 mov     eax, ecx
+0x00421711  c3                   ret     
+0x00421712  90                   nop     
+0x00421713  90                   nop     
+0x00421714  90                   nop     
+0x00421715  90                   nop     
+0x00421716  90                   nop     
+0x00421717  90                   nop     
+0x00421718  90                   nop     
+0x00421719  90                   nop     
+0x0042171a  90                   nop     
+0x0042171b  90                   nop     
+0x0042171c  90                   nop     
+0x0042171d  90                   nop     
+0x0042171e  90                   nop     
+0x0042171f  90                   nop     
+0x00421720  8b442404             mov     eax, dword ptr [esp + 4]
+0x00421724  8b400c               mov     eax, dword ptr [eax + 0xc]
+0x00421727  8b5074               mov     edx, dword ptr [eax + 0x74]
+0x0042172a  8b4078               mov     eax, dword ptr [eax + 0x78]
+0x0042172d  33c9                 xor     ecx, ecx
+0x0042172f  85d2                 test    edx, edx
+0x00421731  0f94c1               sete    cl
+0x00421734  6a01                 push    1
+0x00421736  51                   push    ecx
+0x00421737  8bc8                 mov     ecx, eax
+0x00421739  e832a40000           call    0x42bb70   ← 调用
+0x0042173e  837834ff             cmp     dword ptr [eax + 0x34], -1
+0x00421742  7403                 je      0x421747
+0x00421744  33c0                 xor     eax, eax
+0x00421746  c3                   ret     
+0x00421747  8bc8                 mov     ecx, eax
+0x00421749  e802a80000           call    0x42bf50   ← 调用
+0x0042174e  f7d8                 neg     eax
+0x00421750  1bc0                 sbb     eax, eax
+0x00421752  40                   inc     eax
+0x00421753  c3                   ret     
+0x00421754  90                   nop     
+0x00421755  90                   nop     
+0x00421756  90                   nop     
+0x00421757  90                   nop     
+0x00421758  90                   nop     
+0x00421759  90                   nop     
+0x0042175a  90                   nop     
+0x0042175b  90                   nop     
+0x0042175c  90                   nop     
+0x0042175d  90                   nop     
+0x0042175e  90                   nop     
+0x0042175f  90                   nop     
+0x00421760  8b442404             mov     eax, dword ptr [esp + 4]
+0x00421764  8b400c               mov     eax, dword ptr [eax + 0xc]
+0x00421767  8b5074               mov     edx, dword ptr [eax + 0x74]
+0x0042176a  33c9                 xor     ecx, ecx
+0x0042176c  85d2                 test    edx, edx
+0x0042176e  53                   push    ebx
+0x0042176f  0f94c1               sete    cl
+0x00421772  55                   push    ebp
+0x00421773  56                   push    esi
+0x00421774  57                   push    edi
+0x00421775  8b7878               mov     edi, dword ptr [eax + 0x78]
+0x00421778  33db                 xor     ebx, ebx
+0x0042177a  8be9                 mov     ebp, ecx
+0x0042177c  6a01                 push    1
+0x0042177e  55                   push    ebp
+0x0042177f  8bcf                 mov     ecx, edi
+0x00421781  e8eaa30000           call    0x42bb70   ← 调用
+0x00421786  8bf8                 mov     edi, eax
+0x00421788  837f34ff             cmp     dword ptr [edi + 0x34], -1
+0x0042178c  7545                 jne     0x4217d3
+0x0042178e  8bcf                 mov     ecx, edi
+0x00421790  e8bba70000           call    0x42bf50   ← 调用
+0x00421795  85c0                 test    eax, eax
+0x00421797  753a                 jne     0x4217d3
+0x00421799  8bcf                 mov     ecx, edi
+0x0042179b  e8b0a30000           call    0x42bb50   ← 调用
+0x004217a0  8bf0                 mov     esi, eax
+0x004217a2  85f6                 test    esi, esi
+0x004217a4  742d                 je      0x4217d3
+0x004217a6  8b4630               mov     eax, dword ptr [esi + 0x30]
+0x004217a9  85c0                 test    eax, eax
+0x004217ab  7426                 je      0x4217d3
+0x004217ad  8b4c2414             mov     ecx, dword ptr [esp + 0x14]
+0x004217b1  e86a3e0100           call    0x435620   ← 调用
+0x004217b6  394634               cmp     dword ptr [esi + 0x34], eax
+0x004217b9  7518                 jne     0x4217d3
+0x004217bb  8b7630               mov     esi, dword ptr [esi + 0x30]
+0x004217be  837e3403             cmp     dword ptr [esi + 0x34], 3
+0x004217c2  741c                 je      0x4217e0
+0x004217c4  56                   push    esi
+0x004217c5  b918ce4e00           mov     ecx, 0x4ece18
+0x004217ca  e871b6ffff           call    0x41ce40   ← 调用
+0x004217cf  85c0                 test    eax, eax
+0x004217d1  740d                 je      0x4217e0
+0x004217d3  43                   inc     ebx
+0x004217d4  83fb05               cmp     ebx, 5
+0x004217d7  7ea3                 jle     0x42177c
+0x004217d9  5f                   pop     edi
+0x004217da  5e                   pop     esi
+0x004217db  5d                   pop     ebp
+0x004217dc  33c0                 xor     eax, eax
+0x004217de  5b                   pop     ebx
+0x004217df  c3                   ret     
+0x004217e0  8b570c               mov     edx, dword ptr [edi + 0xc]
+0x004217e3  8b442418             mov     eax, dword ptr [esp + 0x18]
+0x004217e7  5f                   pop     edi
+0x004217e8  5e                   pop     esi
+0x004217e9  5d                   pop     ebp
+0x004217ea  8910                 mov     dword ptr [eax], edx
+0x004217ec  b801000000           mov     eax, 1
+0x004217f1  5b                   pop     ebx
+0x004217f2  c3                   ret     
+0x004217f3  90                   nop     
+0x004217f4  90                   nop     
+0x004217f5  90                   nop     
+0x004217f6  90                   nop     
+0x004217f7  90                   nop     
+0x004217f8  90                   nop     
+0x004217f9  90                   nop     
+0x004217fa  90                   nop     
+0x004217fb  90                   nop     
+0x004217fc  90                   nop     
+0x004217fd  90                   nop     
+0x004217fe  90                   nop     
+0x004217ff  90                   nop     
+0x00421800  8b4c2404             mov     ecx, dword ptr [esp + 4]
+0x00421804  e8173e0100           call    0x435620   ← 调用
+0x00421809  8b504c               mov     edx, dword ptr [eax + 0x4c]
+0x0042180c  33c9                 xor     ecx, ecx
+0x0042180e  81faf0490200         cmp     edx, 0x249f0
+0x00421814  0f9cc1               setl    cl
+0x00421817  8bc1                 mov     eax, ecx
+0x00421819  c3                   ret     
+0x0042181a  90                   nop     
+0x0042181b  90                   nop     
+0x0042181c  90                   nop     
+0x0042181d  90                   nop     
+0x0042181e  90                   nop     
+0x0042181f  90                   nop     
+0x00421820  83ec28               sub     esp, 0x28
+0x00421823  56                   push    esi
+0x00421824  8b742430             mov     esi, dword ptr [esp + 0x30]
+0x00421828  57                   push    edi
+0x00421829  8bce                 mov     ecx, esi
+0x0042182b  e850480100           call    0x436080   ← 调用
+0x00421830  8bf8                 mov     edi, eax
+0x00421832  8b460c               mov     eax, dword ptr [esi + 0xc]
+0x00421835  8b4078               mov     eax, dword ptr [eax + 0x78]
+0x00421838  50                   push    eax
+0x00421839  680000e040           push    0x40e00000   (= 1088421888)
+0x0042183e  6a00                 push    0
+0x00421840  8d4c2414             lea     ecx, [esp + 0x14]
+0x00421844  51                   push    ecx
+0x00421845  b9081b4f00           mov     ecx, 0x4f1b08
+0x0042184a  e8518e0100           call    0x43a6a0   ← 调用
+0x0042184f  33c9                 xor     ecx, ecx
+0x00421851  85c0                 test    eax, eax
+0x00421853  7e10                 jle     0x421865
+0x00421855  8d542408             lea     edx, [esp + 8]
+0x00421859  393a                 cmp     dword ptr [edx], edi
+0x0042185b  7410                 je      0x42186d
+0x0042185d  41                   inc     ecx
+0x0042185e  83c204               add     edx, 4
+0x00421861  3bc8                 cmp     ecx, eax
+0x00421863  7cf4                 jl      0x421859
+0x00421865  5f                   pop     edi
+0x00421866  33c0                 xor     eax, eax
+0x00421868  5e                   pop     esi
+0x00421869  83c428               add     esp, 0x28
+0x0042186c  c3                   ret     
+0x0042186d  5f                   pop     edi
+0x0042186e  b801000000           mov     eax, 1
+0x00421873  5e                   pop     esi
+0x00421874  83c428               add     esp, 0x28
+0x00421877  c3                   ret     
+0x00421878  90                   nop     
+0x00421879  90                   nop     
+0x0042187a  90                   nop     
+0x0042187b  90                   nop     
+0x0042187c  90                   nop     
+0x0042187d  90                   nop     
+0x0042187e  90                   nop     
+0x0042187f  90                   nop     
+0x00421880  83ec10               sub     esp, 0x10
+0x00421883  8b442414             mov     eax, dword ptr [esp + 0x14]
+0x00421887  53                   push    ebx
+0x00421888  55                   push    ebp
+0x00421889  56                   push    esi
+0x0042188a  57                   push    edi
+0x0042188b  50                   push    eax
+0x0042188c  e8ef000000           call    0x421980   ← 调用
+0x00421891  8bf0                 mov     esi, eax
+0x00421893  33ed                 xor     ebp, ebp
+0x00421895  83c404               add     esp, 4
+0x00421898  3bf5                 cmp     esi, ebp
+0x0042189a  89742414             mov     dword ptr [esp + 0x14], esi
+0x0042189e  750a                 jne     0x4218aa
+0x004218a0  5f                   pop     edi
+0x004218a1  5e                   pop     esi
+0x004218a2  5d                   pop     ebp
+0x004218a3  33c0                 xor     eax, eax
+0x004218a5  5b                   pop     ebx
+0x004218a6  83c410               add     esp, 0x10
+0x004218a9  c3                   ret     
+0x004218aa  392d302a4f00         cmp     dword ptr [0x4f2a30], ebp
+0x004218b0  0f85ae000000         jne     0x421964
+0x004218b6  8b560c               mov     edx, dword ptr [esi + 0xc]
+0x004218b9  8b4278               mov     eax, dword ptr [edx + 0x78]
+0x004218bc  8944241c             mov     dword ptr [esp + 0x1c], eax
+0x004218c0  89442418             mov     dword ptr [esp + 0x18], eax
+0x004218c4  a1788e5000           mov     eax, dword ptr [0x508e78]
+0x004218c9  99                   cdq     
+0x004218ca  2bc2                 sub     eax, edx
+0x004218cc  d1f8                 sar     eax, 1
+0x004218ce  85c0                 test    eax, eax
+0x004218d0  896c2410             mov     dword ptr [esp + 0x10], ebp
+0x004218d4  7e73                 jle     0x421949
+0x004218d6  33db                 xor     ebx, ebx
+0x004218d8  8d7c2418             lea     edi, [esp + 0x18]
+0x004218dc  8b0f                 mov     ecx, dword ptr [edi]
+0x004218de  6a01                 push    1
+0x004218e0  53                   push    ebx
+0x004218e1  e88aa20000           call    0x42bb70   ← 调用
+0x004218e6  8bc8                 mov     ecx, eax
+0x004218e8  8907                 mov     dword ptr [edi], eax
+0x004218ea  e861a20000           call    0x42bb50   ← 调用
+0x004218ef  8bf0                 mov     esi, eax
+0x004218f1  85f6                 test    esi, esi
+0x004218f3  742c                 je      0x421921
+0x004218f5  8b4630               mov     eax, dword ptr [esi + 0x30]
+0x004218f8  85c0                 test    eax, eax
+0x004218fa  740e                 je      0x42190a
+0x004218fc  8b4c2424             mov     ecx, dword ptr [esp + 0x24]
+0x00421900  e81b3d0100           call    0x435620   ← 调用
+0x00421905  394634               cmp     dword ptr [esi + 0x34], eax
+0x00421908  7450                 je      0x42195a
+0x0042190a  8b4630               mov     eax, dword ptr [esi + 0x30]
+0x0042190d  50                   push    eax
+0x0042190e  b918ce4e00           mov     ecx, 0x4ece18
+0x00421913  e828b5ffff           call    0x41ce40   ← 调用
+0x00421918  85c0                 test    eax, eax
+0x0042191a  7505                 jne     0x421921
+0x0042191c  bd01000000           mov     ebp, 1
+0x00421921  43                   inc     ebx
+0x00421922  83c704               add     edi, 4
+0x00421925  83fb02               cmp     ebx, 2
+0x00421928  7cb2                 jl      0x4218dc
+0x0042192a  a1788e5000           mov     eax, dword ptr [0x508e78]
+0x0042192f  8b4c2410             mov     ecx, dword ptr [esp + 0x10]
+0x00421933  99                   cdq     
+0x00421934  2bc2                 sub     eax, edx
+0x00421936  41                   inc     ecx
+0x00421937  d1f8                 sar     eax, 1
+0x00421939  3bc8                 cmp     ecx, eax
+0x0042193b  894c2410             mov     dword ptr [esp + 0x10], ecx
+0x0042193f  7c95                 jl      0x4218d6
+0x00421941  85ed                 test    ebp, ebp
+0x00421943  8b742414             mov     esi, dword ptr [esp + 0x14]
+0x00421947  751b                 jne     0x421964
+0x00421949  6a64                 push    0x64   (= 100)
+0x0042194b  6a00                 push    0
+0x0042194d  e8de37feff           call    0x405130   ← 调用
+0x00421952  83c408               add     esp, 8
+0x00421955  83f832               cmp     eax, 0x32
+0x00421958  7e0a                 jle     0x421964
+0x0042195a  5f                   pop     edi
+0x0042195b  5e                   pop     esi
+0x0042195c  5d                   pop     ebp
+0x0042195d  33c0                 xor     eax, eax
+0x0042195f  5b                   pop     ebx
+0x00421960  83c410               add     esp, 0x10
+0x00421963  c3                   ret     
+0x00421964  8b4e0c               mov     ecx, dword ptr [esi + 0xc]
+0x00421967  8b5178               mov     edx, dword ptr [ecx + 0x78]
+0x0042196a  8b420c               mov     eax, dword ptr [edx + 0xc]
+0x0042196d  8b4c2428             mov     ecx, dword ptr [esp + 0x28]
+0x00421971  5f                   pop     edi
+0x00421972  5e                   pop     esi
+0x00421973  5d                   pop     ebp
+0x00421974  8901                 mov     dword ptr [ecx], eax
+0x00421976  b801000000           mov     eax, 1
+0x0042197b  5b                   pop     ebx
+0x0042197c  83c410               add     esp, 0x10
+0x0042197f  c3                   ret     
+0x00421980  83ec30               sub     esp, 0x30
+0x00421983  53                   push    ebx
+0x00421984  8b5c2438             mov     ebx, dword ptr [esp + 0x38]
+0x00421988  8b4b0c               mov     ecx, dword ptr [ebx + 0xc]
+0x0042198b  56                   push    esi
+0x0042198c  57                   push    edi
+0x0042198d  8d44240c             lea     eax, [esp + 0xc]
+0x00421991  50                   push    eax
+0x00421992  6a00                 push    0
+0x00421994  c744241400000000     mov     dword ptr [esp + 0x14], 0
+0x0042199c  c744241800000000     mov     dword ptr [esp + 0x18], 0
+0x004219a4  c744241c00000000     mov     dword ptr [esp + 0x1c], 0
+0x004219ac  c744242000000000     mov     dword ptr [esp + 0x20], 0
+0x004219b4  c744242400000000     mov     dword ptr [esp + 0x24], 0
+0x004219bc  c744242800000000     mov     dword ptr [esp + 0x28], 0
+0x004219c4  c744242c00000000     mov     dword ptr [esp + 0x2c], 0
+0x004219cc  c744243000000000     mov     dword ptr [esp + 0x30], 0
+0x004219d4  c744243400000000     mov     dword ptr [esp + 0x34], 0
+0x004219dc  8b4978               mov     ecx, dword ptr [ecx + 0x78]
+0x004219df  6a00                 push    0
+0x004219e1  e84aa30000           call    0x42bd30   ← 调用
+0x004219e6  a1102a4f00           mov     eax, dword ptr [0x4f2a10]
+0x004219eb  33ff                 xor     edi, edi
+0x004219ed  85c0                 test    eax, eax
+0x004219ef  0f8ed5000000         jle     0x421aca
+0x004219f5  be101b4f00           mov     esi, 0x4f1b10
+0x004219fa  8b96c0010000         mov     edx, dword ptr [esi + 0x1c0]
+0x00421a00  3b93c0010000         cmp     edx, dword ptr [ebx + 0x1c0]
+0x00421a06  0f84aa000000         je      0x421ab6
+0x00421a0c  8b460c               mov     eax, dword ptr [esi + 0xc]
+0x00421a0f  8b8898000000         mov     ecx, dword ptr [eax + 0x98]
+0x00421a15  85c9                 test    ecx, ecx
+0x00421a17  0f8499000000         je      0x421ab6
+0x00421a1d  8bce                 mov     ecx, esi
+0x00421a1f  e87c4a0100           call    0x4364a0   ← 调用
+0x00421a24  85c0                 test    eax, eax
+0x00421a26  0f848a000000         je      0x421ab6
+0x00421a2c  6a01                 push    1
+0x00421a2e  8bce                 mov     ecx, esi
+0x00421a30  e8ab450100           call    0x435fe0   ← 调用
+0x00421a35  85c0                 test    eax, eax
+0x00421a37  757d                 jne     0x421ab6
+0x00421a39  8b560c               mov     edx, dword ptr [esi + 0xc]
+0x00421a3c  8d4c2418             lea     ecx, [esp + 0x18]
+0x00421a40  51                   push    ecx
+0x00421a41  8b4a78               mov     ecx, dword ptr [edx + 0x78]
+0x00421a44  50                   push    eax
+0x00421a45  50                   push    eax
+0x00421a46  e8e5a20000           call    0x42bd30   ← 调用
+0x00421a4b  d944240c             fld     dword ptr [esp + 0xc]
+0x00421a4f  d8642418             fsub    dword ptr [esp + 0x18]
+0x00421a53  d9442410             fld     dword ptr [esp + 0x10]
+0x00421a57  d864241c             fsub    dword ptr [esp + 0x1c]
+0x00421a5b  d95c2434             fstp    dword ptr [esp + 0x34]
+0x00421a5f  d9442414             fld     dword ptr [esp + 0x14]
+0x00421a63  8b442434             mov     eax, dword ptr [esp + 0x34]
+0x00421a67  d8642420             fsub    dword ptr [esp + 0x20]
+0x00421a6b  89442428             mov     dword ptr [esp + 0x28], eax
+0x00421a6f  d95c2438             fstp    dword ptr [esp + 0x38]
+0x00421a73  8b4c2438             mov     ecx, dword ptr [esp + 0x38]
+0x00421a77  894c242c             mov     dword ptr [esp + 0x2c], ecx
+0x00421a7b  d95c2424             fstp    dword ptr [esp + 0x24]
+0x00421a7f  8d4c2424             lea     ecx, [esp + 0x24]
+0x00421a83  e89823feff           call    0x403e20   ← 调用
+0x00421a88  d835505b4900         fdiv    dword ptr [0x495b50]
+0x00421a8e  d81574544900         fcom    dword ptr [0x495474]
+0x00421a94  dfe0                 fnstsw  ax
+0x00421a96  f6c401               test    ah, 1
+0x00421a99  7419                 je      0x421ab4
+0x00421a9b  db05788e5000         fild    dword ptr [0x508e78]
+0x00421aa1  d80d90544900         fmul    dword ptr [0x495490]
+0x00421aa7  d9c9                 fxch    st(1)
+0x00421aa9  ded9                 fcompp  
+0x00421aab  dfe0                 fnstsw  ax
+0x00421aad  f6c441               test    ah, 0x41
+0x00421ab0  7421                 je      0x421ad3
+0x00421ab2  eb02                 jmp     0x421ab6
+0x00421ab4  ddd8                 fstp    st(0)
+0x00421ab6  a1102a4f00           mov     eax, dword ptr [0x4f2a10]
+0x00421abb  47                   inc     edi
+0x00421abc  81c6e0010000         add     esi, 0x1e0
+0x00421ac2  3bf8                 cmp     edi, eax
+0x00421ac4  0f8c30ffffff         jl      0x4219fa
+0x00421aca  5f                   pop     edi
+0x00421acb  5e                   pop     esi
+0x00421acc  33c0                 xor     eax, eax
+0x00421ace  5b                   pop     ebx
+0x00421acf  83c430               add     esp, 0x30
+0x00421ad2  c3                   ret     
+0x00421ad3  5f                   pop     edi
+0x00421ad4  8bc6                 mov     eax, esi
+0x00421ad6  5e                   pop     esi
+0x00421ad7  5b                   pop     ebx
+0x00421ad8  83c430               add     esp, 0x30
+0x00421adb  c3                   ret     
+0x00421adc  90                   nop     
+0x00421add  90                   nop     
+0x00421ade  90                   nop     
+0x00421adf  90                   nop     
+0x00421ae0  6a03                 push    3
+0x00421ae2  6a01                 push    1
+0x00421ae4  e84736feff           call    0x405130   ← 调用
+0x00421ae9  83c408               add     esp, 8
+0x00421aec  48                   dec     eax
+0x00421aed  f7d8                 neg     eax
+0x00421aef  1bc0                 sbb     eax, eax
+0x00421af1  40                   inc     eax
+0x00421af2  c3                   ret     
+0x00421af3  90                   nop     
+0x00421af4  90                   nop     
+0x00421af5  90                   nop     
+0x00421af6  90                   nop     
+0x00421af7  90                   nop     
+0x00421af8  90                   nop     
+0x00421af9  90                   nop     
+0x00421afa  90                   nop     
+0x00421afb  90                   nop     
+0x00421afc  90                   nop     
+0x00421afd  90                   nop     
+0x00421afe  90                   nop     
+0x00421aff  90                   nop     
+0x00421b00  a1743b4e00           mov     eax, dword ptr [0x4e3b74]
+0x00421b05  85c0                 test    eax, eax
+0x00421b07  7403                 je      0x421b0c
+0x00421b09  33c0                 xor     eax, eax
+0x00421b0b  c3                   ret     
+0x00421b0c  56                   push    esi
+0x00421b0d  8b742408             mov     esi, dword ptr [esp + 8]
+0x00421b11  57                   push    edi
+0x00421b12  8bce                 mov     ecx, esi
+0x00421b14  e8073b0100           call    0x435620   ← 调用
+0x00421b19  8b7844               mov     edi, dword ptr [eax + 0x44]
+0x00421b1c  8bce                 mov     ecx, esi
+0x00421b1e  e8fd3a0100           call    0x435620   ← 调用
+0x00421b23  8bc8                 mov     ecx, eax
+0x00421b25  e886eb0100           call    0x4406b0   ← 调用
+0x00421b2a  8b7044               mov     esi, dword ptr [eax + 0x44]
+0x00421b2d  6a02                 push    2
+0x00421b2f  6a01                 push    1
+0x00421b31  e8fa35feff           call    0x405130   ← 调用
+0x00421b36  83c408               add     esp, 8
+0x00421b39  83f801               cmp     eax, 1
+0x00421b3c  750e                 jne     0x421b4c
+0x00421b3e  8b442410             mov     eax, dword ptr [esp + 0x10]
+0x00421b42  8938                 mov     dword ptr [eax], edi
+0x00421b44  5f                   pop     edi
+0x00421b45  b801000000           mov     eax, 1
+0x00421b4a  5e                   pop     esi
+0x00421b4b  c3                   ret     
+0x00421b4c  8b4c2410             mov     ecx, dword ptr [esp + 0x10]
+0x00421b50  5f                   pop     edi
+0x00421b51  8931                 mov     dword ptr [ecx], esi
+0x00421b53  b801000000           mov     eax, 1
+0x00421b58  5e                   pop     esi
+0x00421b59  c3                   ret     
+0x00421b5a  90                   nop     
+0x00421b5b  90                   nop     
+0x00421b5c  90                   nop     
+0x00421b5d  90                   nop     
+0x00421b5e  90                   nop     
+0x00421b5f  90                   nop     
+0x00421b60  a1743b4e00           mov     eax, dword ptr [0x4e3b74]
+0x00421b65  85c0                 test    eax, eax
+0x00421b67  53                   push    ebx
+0x00421b68  55                   push    ebp
+0x00421b69  0f8513010000         jne     0x421c82
+0x00421b6f  8b4c240c             mov     ecx, dword ptr [esp + 0xc]
+0x00421b73  e808450100           call    0x436080   ← 调用
+0x00421b78  85c0                 test    eax, eax
+0x00421b7a  0f8402010000         je      0x421c82
+0x00421b80  8b88c0010000         mov     ecx, dword ptr [eax + 0x1c0]
+0x00421b86  85c9                 test    ecx, ecx
+0x00421b88  0f84f4000000         je      0x421c82
+0x00421b8e  56                   push    esi
+0x00421b8f  57                   push    edi
+0x00421b90  8bc8                 mov     ecx, eax
+0x00421b92  e8893a0100           call    0x435620   ← 调用
+0x00421b97  8bc8                 mov     ecx, eax
+0x00421b99  e812eb0100           call    0x4406b0   ← 调用
+0x00421b9e  8be8                 mov     ebp, eax
+0x00421ba0  a1503b4e00           mov     eax, dword ptr [0x4e3b50]
+0x00421ba5  33ff                 xor     edi, edi
+0x00421ba7  83cbff               or      ebx, 0xffffffff
+0x00421baa  33f6                 xor     esi, esi
+0x00421bac  85c0                 test    eax, eax
+0x00421bae  7e2a                 jle     0x421bda
+0x00421bb0  56                   push    esi
+0x00421bb1  b9483b4e00           mov     ecx, 0x4e3b48
+0x00421bb6  e845f40100           call    0x441000   ← 调用
+0x00421bbb  8b4840               mov     ecx, dword ptr [eax + 0x40]
+0x00421bbe  85c9                 test    ecx, ecx
+0x00421bc0  740e                 je      0x421bd0
+0x00421bc2  8b80dc020000         mov     eax, dword ptr [eax + 0x2dc]
+0x00421bc8  3bf8                 cmp     edi, eax
+0x00421bca  7d04                 jge     0x421bd0
+0x00421bcc  8bf8                 mov     edi, eax
+0x00421bce  8bde                 mov     ebx, esi
+0x00421bd0  a1503b4e00           mov     eax, dword ptr [0x4e3b50]
+0x00421bd5  46                   inc     esi
+0x00421bd6  3bf0                 cmp     esi, eax
+0x00421bd8  7cd6                 jl      0x421bb0
+0x00421bda  6a03                 push    3
+0x00421bdc  6a01                 push    1
+0x00421bde  e84d35feff           call    0x405130   ← 调用
+0x00421be3  83c408               add     esp, 8
+0x00421be6  48                   dec     eax
+0x00421be7  5f                   pop     edi
+0x00421be8  5e                   pop     esi
+0x00421be9  7471                 je      0x421c5c
+0x00421beb  48                   dec     eax
+0x00421bec  742d                 je      0x421c1b
+0x00421bee  48                   dec     eax
+0x00421bef  0f8585000000         jne     0x421c7a
+0x00421bf5  8b4c240c             mov     ecx, dword ptr [esp + 0xc]
+0x00421bf9  e8223a0100           call    0x435620   ← 调用
+0x00421bfe  50                   push    eax
+0x00421bff  8bcd                 mov     ecx, ebp
+0x00421c01  e81aed0100           call    0x440920   ← 调用
+0x00421c06  85c0                 test    eax, eax
+0x00421c08  7578                 jne     0x421c82
+0x00421c0a  8b4544               mov     eax, dword ptr [ebp + 0x44]
+0x00421c0d  8b4c2410             mov     ecx, dword ptr [esp + 0x10]
+0x00421c11  5d                   pop     ebp
+0x00421c12  8901                 mov     dword ptr [ecx], eax
+0x00421c14  b801000000           mov     eax, 1
+0x00421c19  5b                   pop     ebx
+0x00421c1a  c3                   ret     
+0x00421c1b  83fbff               cmp     ebx, -1
+0x00421c1e  7462                 je      0x421c82
+0x00421c20  8b4c240c             mov     ecx, dword ptr [esp + 0xc]
+0x00421c24  e8f7390100           call    0x435620   ← 调用
+0x00421c29  50                   push    eax
+0x00421c2a  53                   push    ebx
+0x00421c2b  b9483b4e00           mov     ecx, 0x4e3b48
+0x00421c30  e8cbf30100           call    0x441000   ← 调用
+0x00421c35  8bc8                 mov     ecx, eax
+0x00421c37  e8e4ec0100           call    0x440920   ← 调用
+0x00421c3c  85c0                 test    eax, eax
+0x00421c3e  7542                 jne     0x421c82
+0x00421c40  53                   push    ebx
+0x00421c41  b9483b4e00           mov     ecx, 0x4e3b48
+0x00421c46  e8b5f30100           call    0x441000   ← 调用
+0x00421c4b  8b5044               mov     edx, dword ptr [eax + 0x44]
+0x00421c4e  8b442410             mov     eax, dword ptr [esp + 0x10]
+0x00421c52  5d                   pop     ebp
+0x00421c53  8910                 mov     dword ptr [eax], edx
+0x00421c55  b801000000           mov     eax, 1
+0x00421c5a  5b                   pop     ebx
+0x00421c5b  c3                   ret     
+0x00421c5c  8b4c240c             mov     ecx, dword ptr [esp + 0xc]
+0x00421c60  e8bb390100           call    0x435620   ← 调用
+0x00421c65  50                   push    eax
+0x00421c66  8bcd                 mov     ecx, ebp
+0x00421c68  e8b3ec0100           call    0x440920   ← 调用
+0x00421c6d  85c0                 test    eax, eax
+0x00421c6f  7511                 jne     0x421c82
+0x00421c71  8b4d44               mov     ecx, dword ptr [ebp + 0x44]
+0x00421c74  8b542410             mov     edx, dword ptr [esp + 0x10]
+0x00421c78  890a                 mov     dword ptr [edx], ecx
+0x00421c7a  5d                   pop     ebp
+0x00421c7b  b801000000           mov     eax, 1
+0x00421c80  5b                   pop     ebx
+0x00421c81  c3                   ret     
+0x00421c82  5d                   pop     ebp
+0x00421c83  33c0                 xor     eax, eax
+0x00421c85  5b                   pop     ebx
+0x00421c86  c3                   ret     
+0x00421c87  90                   nop     
+0x00421c88  90                   nop     
+0x00421c89  90                   nop     
+0x00421c8a  90                   nop     
+0x00421c8b  90                   nop     
+0x00421c8c  90                   nop     
+0x00421c8d  90                   nop     
+0x00421c8e  90                   nop     
+0x00421c8f  90                   nop     
+0x00421c90  53                   push    ebx
+0x00421c91  56                   push    esi
+0x00421c92  57                   push    edi
+0x00421c93  8b7c2410             mov     edi, dword ptr [esp + 0x10]
+0x00421c97  8b470c               mov     eax, dword ptr [edi + 0xc]
+0x00421c9a  8b7078               mov     esi, dword ptr [eax + 0x78]
+0x00421c9d  8b463c               mov     eax, dword ptr [esi + 0x3c]
+0x00421ca0  85c0                 test    eax, eax
+0x00421ca2  7506                 jne     0x421caa
+0x00421ca4  5f                   pop     edi
+0x00421ca5  5e                   pop     esi
+0x00421ca6  33c0                 xor     eax, eax
+0x00421ca8  5b                   pop     ebx
+0x00421ca9  c3                   ret     
+0x00421caa  8bcf                 mov     ecx, edi
+0x00421cac  e8cf430100           call    0x436080   ← 调用
+0x00421cb1  8bd8                 mov     ebx, eax
+0x00421cb3  85db                 test    ebx, ebx
+0x00421cb5  7504                 jne     0x421cbb
+0x00421cb7  5f                   pop     edi
+0x00421cb8  5e                   pop     esi
+0x00421cb9  5b                   pop     ebx
+0x00421cba  c3                   ret     
+0x00421cbb  8bcf                 mov     ecx, edi
+0x00421cbd  e85e390100           call    0x435620   ← 调用
+0x00421cc2  8b4e3c               mov     ecx, dword ptr [esi + 0x3c]
+0x00421cc5  50                   push    eax
+0x00421cc6  6a00                 push    0
+0x00421cc8  e8b3cf0000           call    0x42ec80   ← 调用
+0x00421ccd  85c0                 test    eax, eax
+0x00421ccf  7406                 je      0x421cd7
+0x00421cd1  5f                   pop     edi
+0x00421cd2  5e                   pop     esi
+0x00421cd3  33c0                 xor     eax, eax
+0x00421cd5  5b                   pop     ebx
+0x00421cd6  c3                   ret     
+0x00421cd7  8bcb                 mov     ecx, ebx
+0x00421cd9  e842390100           call    0x435620   ← 调用
+0x00421cde  8b4e3c               mov     ecx, dword ptr [esi + 0x3c]
+0x00421ce1  50                   push    eax
+0x00421ce2  6a01                 push    1
+0x00421ce4  e897cf0000           call    0x42ec80   ← 调用
+0x00421ce9  33c9                 xor     ecx, ecx
+0x00421ceb  83f803               cmp     eax, 3
+0x00421cee  0f9dc1               setge   cl
+0x00421cf1  5f                   pop     edi
+0x00421cf2  5e                   pop     esi
+0x00421cf3  5b                   pop     ebx
+0x00421cf4  8bc1                 mov     eax, ecx
+0x00421cf6  c3                   ret     
+0x00421cf7  90                   nop     
+0x00421cf8  90                   nop     
+0x00421cf9  90                   nop     
+0x00421cfa  90                   nop     
+0x00421cfb  90                   nop     
+0x00421cfc  90                   nop     
+0x00421cfd  90                   nop     
+0x00421cfe  90                   nop     
+0x00421cff  90                   nop     
+0x00421d00  8b442404             mov     eax, dword ptr [esp + 4]
+0x00421d04  83b81001000001       cmp     dword ptr [eax + 0x110], 1
+0x00421d0b  55                   push    ebp
+0x00421d0c  7f04                 jg      0x421d12
+0x00421d0e  33c0                 xor     eax, eax
+0x00421d10  5d                   pop     ebp
+0x00421d11  c3                   ret     
+0x00421d12  6a0a                 push    0xa   (= 10)
+0x00421d14  6a01                 push    1
+0x00421d16  e81534feff           call    0x405130   ← 调用
+0x00421d1b  83c408               add     esp, 8
+0x00421d1e  83f801               cmp     eax, 1
+0x00421d21  7e04                 jle     0x421d27
+0x00421d23  33c0                 xor     eax, eax
+0x00421d25  5d                   pop     ebp
+0x00421d26  c3                   ret     
+0x00421d27  53                   push    ebx
+0x00421d28  56                   push    esi
+0x00421d29  57                   push    edi
+0x00421d2a  33ff                 xor     edi, edi
+0x00421d2c  83cdff               or      ebp, 0xffffffff
+0x00421d2f  33db                 xor     ebx, ebx
+0x00421d31  8b4c2414             mov     ecx, dword ptr [esp + 0x14]
+0x00421d35  53                   push    ebx
+0x00421d36  e8e5280100           call    0x434620   ← 调用
+0x00421d3b  8bf0                 mov     esi, eax
+0x00421d3d  85f6                 test    esi, esi
+0x00421d3f  7c2c                 jl      0x421d6d
+0x00421d41  56                   push    esi
+0x00421d42  b9b8484e00           mov     ecx, 0x4e48b8
+0x00421d47  e814d3ffff           call    0x41f060   ← 调用
+0x00421d4c  8b4004               mov     eax, dword ptr [eax + 4]
+0x00421d4f  83f81f               cmp     eax, 0x1f
+0x00421d52  7419                 je      0x421d6d
+0x00421d54  50                   push    eax
+0x00421d55  b9b8484e00           mov     ecx, 0x4e48b8
+0x00421d5a  e8e1d2ffff           call    0x41f040   ← 调用
+0x00421d5f  8b801c010000         mov     eax, dword ptr [eax + 0x11c]
+0x00421d65  3bf8                 cmp     edi, eax
+0x00421d67  7d04                 jge     0x421d6d
+0x00421d69  8bf8                 mov     edi, eax
+0x00421d6b  8bee                 mov     ebp, esi
+0x00421d6d  43                   inc     ebx
+0x00421d6e  83fb05               cmp     ebx, 5
+0x00421d71  7cbe                 jl      0x421d31
+0x00421d73  83fdff               cmp     ebp, -1
+0x00421d76  5f                   pop     edi
+0x00421d77  5e                   pop     esi
+0x00421d78  5b                   pop     ebx
+0x00421d79  7504                 jne     0x421d7f
+0x00421d7b  33c0                 xor     eax, eax
+0x00421d7d  5d                   pop     ebp
+0x00421d7e  c3                   ret     
+0x00421d7f  8b4c240c             mov     ecx, dword ptr [esp + 0xc]
+0x00421d83  8929                 mov     dword ptr [ecx], ebp
+0x00421d85  b801000000           mov     eax, 1
+0x00421d8a  5d                   pop     ebp
+0x00421d8b  c3                   ret     
+0x00421d8c  90                   nop     
+0x00421d8d  90                   nop     
+0x00421d8e  90                   nop     
+0x00421d8f  90                   nop     
+0x00421d90  51                   push    ecx
+0x00421d91  53                   push    ebx
+0x00421d92  55                   push    ebp
+0x00421d93  56                   push    esi
+0x00421d94  33db                 xor     ebx, ebx
+0x00421d96  57                   push    edi
+0x00421d97  33ff                 xor     edi, edi
+0x00421d99  83cdff               or      ebp, 0xffffffff
+0x00421d9c  895c2410             mov     dword ptr [esp + 0x10], ebx
+0x00421da0  8b4c2418             mov     ecx, dword ptr [esp + 0x18]
+0x00421da4  53                   push    ebx
+0x00421da5  e876280100           call    0x434620   ← 调用
+0x00421daa  8bf0                 mov     esi, eax
+0x00421dac  85f6                 test    esi, esi
+0x00421dae  7c2b                 jl      0x421ddb
+0x00421db0  56                   push    esi
+0x00421db1  b9b8484e00           mov     ecx, 0x4e48b8
+0x00421db6  e855d2ffff           call    0x41f010   ← 调用
+0x00421dbb  83b83c010000ff       cmp     dword ptr [eax + 0x13c], -1
+0x00421dc2  7417                 je      0x421ddb
+0x00421dc4  8b801c010000         mov     eax, dword ptr [eax + 0x11c]
+0x00421dca  3bf8                 cmp     edi, eax
+0x00421dcc  7d0d                 jge     0x421ddb
+0x00421dce  8bf8                 mov     edi, eax
+0x00421dd0  8b442410             mov     eax, dword ptr [esp + 0x10]
+0x00421dd4  40                   inc     eax
+0x00421dd5  8bee                 mov     ebp, esi
+0x00421dd7  89442410             mov     dword ptr [esp + 0x10], eax
+0x00421ddb  43                   inc     ebx
+0x00421ddc  83fb05               cmp     ebx, 5
+0x00421ddf  7cbf                 jl      0x421da0
+0x00421de1  83fdff               cmp     ebp, -1
+0x00421de4  7418                 je      0x421dfe
+0x00421de6  837c241002           cmp     dword ptr [esp + 0x10], 2
+0x00421deb  7c11                 jl      0x421dfe
+0x00421ded  8b44241c             mov     eax, dword ptr [esp + 0x1c]
+0x00421df1  5f                   pop     edi
+0x00421df2  5e                   pop     esi
+0x00421df3  8928                 mov     dword ptr [eax], ebp
+0x00421df5  5d                   pop     ebp
+0x00421df6  b801000000           mov     eax, 1
+0x00421dfb  5b                   pop     ebx
+0x00421dfc  59                   pop     ecx
+0x00421dfd  c3                   ret     
+0x00421dfe  5f                   pop     edi
+0x00421dff  5e                   pop     esi
+0x00421e00  5d                   pop     ebp
+0x00421e01  33c0                 xor     eax, eax
+0x00421e03  5b                   pop     ebx
+0x00421e04  59                   pop     ecx
+0x00421e05  c3                   ret     
+0x00421e06  90                   nop     
+0x00421e07  90                   nop     
+0x00421e08  90                   nop     
+0x00421e09  90                   nop     
+0x00421e0a  90                   nop     
+0x00421e0b  90                   nop     
+0x00421e0c  90                   nop     
+0x00421e0d  90                   nop     
+0x00421e0e  90                   nop     
+0x00421e0f  90                   nop     
+0x00421e10  a1302a4f00           mov     eax, dword ptr [0x4f2a30]
+0x00421e15  85c0                 test    eax, eax
+0x00421e17  741f                 je      0x421e38
+0x00421e19  8b442404             mov     eax, dword ptr [esp + 4]
+0x00421e1d  8b8878010000         mov     ecx, dword ptr [eax + 0x178]
+0x00421e23  a18c8e5000           mov     eax, dword ptr [0x508e8c]
+0x00421e28  8b156ce94900         mov     edx, dword ptr [0x49e96c]
+0x00421e2e  03c8                 add     ecx, eax
+0x00421e30  33c0                 xor     eax, eax
+0x00421e32  3bca                 cmp     ecx, edx
+0x00421e34  0f9cc0               setl    al
+0x00421e37  c3                   ret     
+0x00421e38  8b542404             mov     edx, dword ptr [esp + 4]
+0x00421e3c  8b8a78010000         mov     ecx, dword ptr [edx + 0x178]
+0x00421e42  8b1568e94900         mov     edx, dword ptr [0x49e968]
+0x00421e48  33c0                 xor     eax, eax
+0x00421e4a  3bca                 cmp     ecx, edx
+0x00421e4c  0f9cc0               setl    al
+0x00421e4f  c3                   ret     
+0x00421e50  83ec24               sub     esp, 0x24
+0x00421e53  53                   push    ebx
+0x00421e54  55                   push    ebp
+0x00421e55  56                   push    esi
+0x00421e56  8b742434             mov     esi, dword ptr [esp + 0x34]
+0x00421e5a  57                   push    edi
+0x00421e5b  8bce                 mov     ecx, esi
+0x00421e5d  e83e380100           call    0x4356a0   ← 调用
+0x00421e62  83f804               cmp     eax, 4
+0x00421e65  7510                 jne     0x421e77
+0x00421e67  68ff000000           push    0xff   (= 255)
+0x00421e6c  8bce                 mov     ecx, esi
+0x00421e6e  e8bd370100           call    0x435630   ← 调用
+0x00421e73  85c0                 test    eax, eax
+0x00421e75  7d6f                 jge     0x421ee6
+0x00421e77  8b460c               mov     eax, dword ptr [esi + 0xc]
+0x00421e7a  8b4078               mov     eax, dword ptr [eax + 0x78]
+0x00421e7d  50                   push    eax
+0x00421e7e  680000c040           push    0x40c00000   (= 1086324736)
+0x00421e83  6a00                 push    0
+0x00421e85  8d4c2420             lea     ecx, [esp + 0x20]
+0x00421e89  51                   push    ecx
+0x00421e8a  b9081b4f00           mov     ecx, 0x4f1b08
+0x00421e8f  e80c880100           call    0x43a6a0   ← 调用
+0x00421e94  8be8                 mov     ebp, eax
+0x00421e96  33db                 xor     ebx, ebx
+0x00421e98  85ed                 test    ebp, ebp
+0x00421e9a  7e4a                 jle     0x421ee6
+0x00421e9c  8d742414             lea     esi, [esp + 0x14]
+0x00421ea0  8b3e                 mov     edi, dword ptr [esi]
+0x00421ea2  8b570c               mov     edx, dword ptr [edi + 0xc]
+0x00421ea5  8b8298000000         mov     eax, dword ptr [edx + 0x98]
+0x00421eab  85c0                 test    eax, eax
+0x00421ead  742f                 je      0x421ede
+0x00421eaf  8b4c2438             mov     ecx, dword ptr [esp + 0x38]
+0x00421eb3  e868370100           call    0x435620   ← 调用
+0x00421eb8  8bd0                 mov     edx, eax
+0x00421eba  8bcf                 mov     ecx, edi
+0x00421ebc  89542410             mov     dword ptr [esp + 0x10], edx
+0x00421ec0  e85b370100           call    0x435620   ← 调用
+0x00421ec5  8b4c2410             mov     ecx, dword ptr [esp + 0x10]
+0x00421ec9  3bc1                 cmp     eax, ecx
+0x00421ecb  7411                 je      0x421ede
+0x00421ecd  8b0e                 mov     ecx, dword ptr [esi]
+0x00421ecf  68ff000000           push    0xff   (= 255)
+0x00421ed4  e857370100           call    0x435630   ← 调用
+0x00421ed9  83f8ff               cmp     eax, -1
+0x00421edc  7512                 jne     0x421ef0
+0x00421ede  43                   inc     ebx
+0x00421edf  83c604               add     esi, 4
+0x00421ee2  3bdd                 cmp     ebx, ebp
+0x00421ee4  7cba                 jl      0x421ea0
+0x00421ee6  5f                   pop     edi
+0x00421ee7  5e                   pop     esi
+0x00421ee8  5d                   pop     ebp
+0x00421ee9  33c0                 xor     eax, eax
+0x00421eeb  5b                   pop     ebx
+0x00421eec  83c424               add     esp, 0x24
+0x00421eef  c3                   ret     
+0x00421ef0  8b549c14             mov     edx, dword ptr [esp + ebx*4 + 0x14]
+0x00421ef4  8b4238               mov     eax, dword ptr [edx + 0x38]
+0x00421ef7  8b4c243c             mov     ecx, dword ptr [esp + 0x3c]
+0x00421efb  5f                   pop     edi
+0x00421efc  5e                   pop     esi
+0x00421efd  5d                   pop     ebp
+0x00421efe  8901                 mov     dword ptr [ecx], eax
+0x00421f00  b801000000           mov     eax, 1
+0x00421f05  5b                   pop     ebx
+0x00421f06  83c424               add     esp, 0x24
+0x00421f09  c3                   ret     
+0x00421f0a  90                   nop     
+0x00421f0b  90                   nop     
+0x00421f0c  90                   nop     
+0x00421f0d  90                   nop     
+0x00421f0e  90                   nop     
+0x00421f0f  90                   nop     
+0x00421f10  56                   push    esi
+0x00421f11  57                   push    edi
+0x00421f12  8b7c240c             mov     edi, dword ptr [esp + 0xc]
+0x00421f16  8bcf                 mov     ecx, edi
+0x00421f18  e863410100           call    0x436080   ← 调用
+0x00421f1d  8bf0                 mov     esi, eax
+0x00421f1f  85f6                 test    esi, esi
+0x00421f21  7446                 je      0x421f69
+0x00421f23  8b86c0010000         mov     eax, dword ptr [esi + 0x1c0]
+0x00421f29  85c0                 test    eax, eax
+0x00421f2b  743c                 je      0x421f69
+0x00421f2d  6a01                 push    1
+0x00421f2f  8bce                 mov     ecx, esi
+0x00421f31  e8aa400100           call    0x435fe0   ← 调用
+0x00421f36  85c0                 test    eax, eax
+0x00421f38  752f                 jne     0x421f69
+0x00421f3a  56                   push    esi
+0x00421f3b  8bcf                 mov     ecx, edi
+0x00421f3d  e8be340100           call    0x435400   ← 调用
+0x00421f42  85c0                 test    eax, eax
+0x00421f44  7423                 je      0x421f69
+0x00421f46  8b4638               mov     eax, dword ptr [esi + 0x38]
+0x00421f49  8b4c2410             mov     ecx, dword ptr [esp + 0x10]
+0x00421f4d  8901                 mov     dword ptr [ecx], eax
+0x00421f4f  8bce                 mov     ecx, esi
+0x00421f51  e8ca360100           call    0x435620   ← 调用
+0x00421f56  8b484c               mov     ecx, dword ptr [eax + 0x4c]
+0x00421f59  33d2                 xor     edx, edx
+0x00421f5b  81f9a0860100         cmp     ecx, 0x186a0
+0x00421f61  0f9dc2               setge   dl
+0x00421f64  5f                   pop     edi
+0x00421f65  5e                   pop     esi
+0x00421f66  8bc2                 mov     eax, edx
+0x00421f68  c3                   ret     
+0x00421f69  5f                   pop     edi
+0x00421f6a  33c0                 xor     eax, eax
+0x00421f6c  5e                   pop     esi
+0x00421f6d  c3                   ret     
+0x00421f6e  90                   nop     
+0x00421f6f  90                   nop     
+0x00421f70  56                   push    esi
+0x00421f71  57                   push    edi
+0x00421f72  8b7c240c             mov     edi, dword ptr [esp + 0xc]
+0x00421f76  8bcf                 mov     ecx, edi
+0x00421f78  e803410100           call    0x436080   ← 调用
+0x00421f7d  8bf0                 mov     esi, eax
+0x00421f7f  85f6                 test    esi, esi
+0x00421f81  742f                 je      0x421fb2
+0x00421f83  56                   push    esi
+0x00421f84  8bcf                 mov     ecx, edi
+0x00421f86  e875340100           call    0x435400   ← 调用
+0x00421f8b  85c0                 test    eax, eax
+0x00421f8d  7423                 je      0x421fb2
+0x00421f8f  83be1001000003       cmp     dword ptr [esi + 0x110], 3
+0x00421f96  7c1a                 jl      0x421fb2
+0x00421f98  83bf1001000002       cmp     dword ptr [edi + 0x110], 2
+0x00421f9f  7f11                 jg      0x421fb2
+0x00421fa1  8b4638               mov     eax, dword ptr [esi + 0x38]
+0x00421fa4  8b4c2410             mov     ecx, dword ptr [esp + 0x10]
+0x00421fa8  5f                   pop     edi
+0x00421fa9  8901                 mov     dword ptr [ecx], eax
+0x00421fab  b801000000           mov     eax, 1
+0x00421fb0  5e                   pop     esi
+0x00421fb1  c3                   ret     
+0x00421fb2  5f                   pop     edi
+0x00421fb3  33c0                 xor     eax, eax
+0x00421fb5  5e                   pop     esi
+0x00421fb6  c3                   ret     
+0x00421fb7  90                   nop     
+0x00421fb8  90                   nop     
+0x00421fb9  90                   nop     
+0x00421fba  90                   nop     
+0x00421fbb  90                   nop     
+0x00421fbc  90                   nop     
+0x00421fbd  90                   nop     
+0x00421fbe  90                   nop     
+0x00421fbf  90                   nop     
+0x00421fc0  83ec28               sub     esp, 0x28
+0x00421fc3  8b44242c             mov     eax, dword ptr [esp + 0x2c]
+0x00421fc7  8b480c               mov     ecx, dword ptr [eax + 0xc]
+0x00421fca  8b4178               mov     eax, dword ptr [ecx + 0x78]
+0x00421fcd  53                   push    ebx
+0x00421fce  50                   push    eax
+0x00421fcf  680000c040           push    0x40c00000   (= 1086324736)
+0x00421fd4  6a00                 push    0
+0x00421fd6  8d542418             lea     edx, [esp + 0x18]
+0x00421fda  52                   push    edx
+0x00421fdb  b9081b4f00           mov     ecx, 0x4f1b08
+0x00421fe0  e8bb860100           call    0x43a6a0   ← 调用
+0x00421fe5  33db                 xor     ebx, ebx
+0x00421fe7  85c0                 test    eax, eax
+0x00421fe9  895c2404             mov     dword ptr [esp + 4], ebx
+0x00421fed  7e7c                 jle     0x42206b
+0x00421fef  55                   push    ebp
+0x00421ff0  8b6c2438             mov     ebp, dword ptr [esp + 0x38]
+0x00421ff4  56                   push    esi
+0x00421ff5  57                   push    edi
+0x00421ff6  8d742418             lea     esi, [esp + 0x18]
+0x00421ffa  89442410             mov     dword ptr [esp + 0x10], eax
+0x00421ffe  8b3e                 mov     edi, dword ptr [esi]
+0x00422000  8b470c               mov     eax, dword ptr [edi + 0xc]
+0x00422003  8b8898000000         mov     ecx, dword ptr [eax + 0x98]
+0x00422009  85c9                 test    ecx, ecx
+0x0042200b  7449                 je      0x422056
+0x0042200d  8b4c243c             mov     ecx, dword ptr [esp + 0x3c]
+0x00422011  e80a360100           call    0x435620   ← 调用
+0x00422016  8bd0                 mov     edx, eax
+0x00422018  8bcf                 mov     ecx, edi
+0x0042201a  89542440             mov     dword ptr [esp + 0x40], edx
+0x0042201e  e8fd350100           call    0x435620   ← 调用
+0x00422023  8b4c2440             mov     ecx, dword ptr [esp + 0x40]
+0x00422027  3bc1                 cmp     eax, ecx
+0x00422029  742b                 je      0x422056
+0x0042202b  8b0e                 mov     ecx, dword ptr [esi]
+0x0042202d  6a01                 push    1
+0x0042202f  e8ac3f0100           call    0x435fe0   ← 调用
+0x00422034  85c0                 test    eax, eax
+0x00422036  751e                 jne     0x422056
+0x00422038  8b0e                 mov     ecx, dword ptr [esi]
+0x0042203a  e8e1350100           call    0x435620   ← 调用
+0x0042203f  3b584c               cmp     ebx, dword ptr [eax + 0x4c]
+0x00422042  7d12                 jge     0x422056
+0x00422044  8b0e                 mov     ecx, dword ptr [esi]
+0x00422046  e8d5350100           call    0x435620   ← 调用
+0x0042204b  8b584c               mov     ebx, dword ptr [eax + 0x4c]
+0x0042204e  8b16                 mov     edx, dword ptr [esi]
+0x00422050  8b4238               mov     eax, dword ptr [edx + 0x38]
+0x00422053  894500               mov     dword ptr [ebp], eax
+0x00422056  8b442410             mov     eax, dword ptr [esp + 0x10]
+0x0042205a  83c604               add     esi, 4
+0x0042205d  48                   dec     eax
+0x0042205e  89442410             mov     dword ptr [esp + 0x10], eax
+0x00422062  759a                 jne     0x421ffe
+0x00422064  5f                   pop     edi
+0x00422065  5e                   pop     esi
+0x00422066  895c2408             mov     dword ptr [esp + 8], ebx
+0x0042206a  5d                   pop     ebp
+0x0042206b  db442404             fild    dword ptr [esp + 4]
+0x0042206f  8b4c2430             mov     ecx, dword ptr [esp + 0x30]
+0x00422073  dd5c2404             fstp    qword ptr [esp + 4]
+0x00422077  e8a4350100           call    0x435620   ← 调用
+0x0042207c  db404c               fild    dword ptr [eax + 0x4c]
+0x0042207f  5b                   pop     ebx
+0x00422080  dc7c2400             fdivr   qword ptr [esp]
+0x00422084  dc1d585b4900         fcomp   qword ptr [0x495b58]
+0x0042208a  dfe0                 fnstsw  ax
+0x0042208c  f6c441               test    ah, 0x41
+0x0042208f  7509                 jne     0x42209a
+0x00422091  b801000000           mov     eax, 1
+0x00422096  83c428               add     esp, 0x28
+0x00422099  c3                   ret     
+0x0042209a  33c0                 xor     eax, eax
+0x0042209c  83c428               add     esp, 0x28
+0x0042209f  c3                   ret     
+0x004220a0  8b442404             mov     eax, dword ptr [esp + 4]
+0x004220a4  8b400c               mov     eax, dword ptr [eax + 0xc]
+0x004220a7  53                   push    ebx
+0x004220a8  8b5874               mov     ebx, dword ptr [eax + 0x74]
+0x004220ab  8b4078               mov     eax, dword ptr [eax + 0x78]
+0x004220ae  56                   push    esi
+0x004220af  57                   push    edi
+0x004220b0  6a01                 push    1
+0x004220b2  53                   push    ebx
+0x004220b3  8bc8                 mov     ecx, eax
+0x004220b5  e8b69a0000           call    0x42bb70   ← 调用
+0x004220ba  8bf0                 mov     esi, eax
+0x004220bc  bf04000000           mov     edi, 4
+0x004220c1  8b4634               mov     eax, dword ptr [esi + 0x34]
+0x004220c4  85c0                 test    eax, eax
+0x004220c6  7c21                 jl      0x4220e9
+0x004220c8  50                   push    eax
+0x004220c9  b9682e4f00           mov     ecx, 0x4f2e68
+0x004220ce  e8edf90000           call    0x431ac0   ← 调用
+0x004220d3  8b00                 mov     eax, dword ptr [eax]
+0x004220d5  83f806               cmp     eax, 6
+0x004220d8  7428                 je      0x422102
+0x004220da  83f807               cmp     eax, 7
+0x004220dd  7423                 je      0x422102
+0x004220df  83f808               cmp     eax, 8
+0x004220e2  741e                 je      0x422102
+0x004220e4  83f809               cmp     eax, 9
+0x004220e7  7419                 je      0x422102
+0x004220e9  6a01                 push    1
+0x004220eb  53                   push    ebx
+0x004220ec  8bce                 mov     ecx, esi
+0x004220ee  e87d9a0000           call    0x42bb70   ← 调用
+0x004220f3  8bcf                 mov     ecx, edi
+0x004220f5  4f                   dec     edi
+0x004220f6  85c9                 test    ecx, ecx
+0x004220f8  8bf0                 mov     esi, eax
+0x004220fa  75c5                 jne     0x4220c1
+0x004220fc  5f                   pop     edi
+0x004220fd  5e                   pop     esi
+0x004220fe  33c0                 xor     eax, eax
+0x00422100  5b                   pop     ebx
+0x00422101  c3                   ret     
+0x00422102  5f                   pop     edi
+0x00422103  5e                   pop     esi
+0x00422104  b801000000           mov     eax, 1
+0x00422109  5b                   pop     ebx
+0x0042210a  c3                   ret     
+0x0042210b  90                   nop     
+0x0042210c  90                   nop     
+0x0042210d  90                   nop     
+0x0042210e  90                   nop     
+0x0042210f  90                   nop     
+0x00422110  56                   push    esi
+0x00422111  57                   push    edi
+0x00422112  8b7c240c             mov     edi, dword ptr [esp + 0xc]
+0x00422116  8b470c               mov     eax, dword ptr [edi + 0xc]
+0x00422119  8b4878               mov     ecx, dword ptr [eax + 0x78]
+0x0042211c  e82f9a0000           call    0x42bb50   ← 调用
+0x00422121  8bf0                 mov     esi, eax
+0x00422123  85f6                 test    esi, esi
+0x00422125  742a                 je      0x422151
+0x00422127  8bcf                 mov     ecx, edi
+0x00422129  e8f2340100           call    0x435620   ← 调用
+0x0042212e  394634               cmp     dword ptr [esi + 0x34], eax
+0x00422131  751e                 jne     0x422151
+0x00422133  8b7630               mov     esi, dword ptr [esi + 0x30]
+0x00422136  85f6                 test    esi, esi
+0x00422138  740f                 je      0x422149
+0x0042213a  56                   push    esi
+0x0042213b  b918ce4e00           mov     ecx, 0x4ece18
+0x00422140  e8fbacffff           call    0x41ce40   ← 调用
+0x00422145  85c0                 test    eax, eax
+0x00422147  7408                 je      0x422151
+0x00422149  5f                   pop     edi
+0x0042214a  b801000000           mov     eax, 1
+0x0042214f  5e                   pop     esi
+0x00422150  c3                   ret     
+0x00422151  5f                   pop     edi
+0x00422152  33c0                 xor     eax, eax
+0x00422154  5e                   pop     esi
+0x00422155  c3                   ret     
+0x00422156  90                   nop     
+0x00422157  90                   nop     
+0x00422158  90                   nop     
+0x00422159  90                   nop     
+0x0042215a  90                   nop     
+0x0042215b  90                   nop     
+0x0042215c  90                   nop     
+0x0042215d  90                   nop     
+0x0042215e  90                   nop     
+0x0042215f  90                   nop     
+0x00422160  83ec10               sub     esp, 0x10
+0x00422163  8b442414             mov     eax, dword ptr [esp + 0x14]
+0x00422167  53                   push    ebx
+0x00422168  55                   push    ebp
+0x00422169  56                   push    esi
+0x0042216a  57                   push    edi
+0x0042216b  50                   push    eax
+0x0042216c  e80ff8ffff           call    0x421980   ← 调用
+0x00422171  33ed                 xor     ebp, ebp
+0x00422173  83c404               add     esp, 4
+0x00422176  3bc5                 cmp     eax, ebp
+0x00422178  89442414             mov     dword ptr [esp + 0x14], eax
+0x0042217c  750a                 jne     0x422188
+0x0042217e  5f                   pop     edi
+0x0042217f  5e                   pop     esi
+0x00422180  5d                   pop     ebp
+0x00422181  33c0                 xor     eax, eax
+0x00422183  5b                   pop     ebx
+0x00422184  83c410               add     esp, 0x10
+0x00422187  c3                   ret     
+0x00422188  392d302a4f00         cmp     dword ptr [0x4f2a30], ebp
+0x0042218e  741c                 je      0x4221ac
+0x00422190  8b480c               mov     ecx, dword ptr [eax + 0xc]
+0x00422193  8b5178               mov     edx, dword ptr [ecx + 0x78]
+0x00422196  8b420c               mov     eax, dword ptr [edx + 0xc]
+0x00422199  8b4c2428             mov     ecx, dword ptr [esp + 0x28]
+0x0042219d  5f                   pop     edi
+0x0042219e  5e                   pop     esi
+0x0042219f  5d                   pop     ebp
+0x004221a0  8901                 mov     dword ptr [ecx], eax
+0x004221a2  b801000000           mov     eax, 1
+0x004221a7  5b                   pop     ebx
+0x004221a8  83c410               add     esp, 0x10
+0x004221ab  c3                   ret     
+0x004221ac  8b500c               mov     edx, dword ptr [eax + 0xc]
+0x004221af  8b4278               mov     eax, dword ptr [edx + 0x78]
+0x004221b2  8944241c             mov     dword ptr [esp + 0x1c], eax
+0x004221b6  89442418             mov     dword ptr [esp + 0x18], eax
+0x004221ba  a1788e5000           mov     eax, dword ptr [0x508e78]
+0x004221bf  99                   cdq     
